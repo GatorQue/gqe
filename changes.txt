@@ -1,0 +1,22 @@
+Version 0.4
+===========
+- First GoogleCode project posting
+- CMake build scripts
+- Documentation fixes and other fixes
+
+Version 0.3
+===========
+- Bug fixes for Linux compiler
+
+Version 0.2
+===========
+- Bug fixes for compiler problems
+- Bug fixes for Active/Inactive states
+
+Version 0.1
+===========
+- Initial release to SFML Tutorial Wiki
+- Builds fine on Linux.
+- Qt Modules detected and included.
+- BUilds out of the box; packaging needs rework.
+- Tested to work on Linux.
