@@ -8,6 +8,7 @@
  * @date 20100723 - Initial Release
  * @date 20110127 - Moved to GQE Core library and include directory
  * @date 20110131 - Added class and method argument documentation
+ * @date 20110218 - Added new Config asset type
  */
 #ifndef   CORE_ASSET_MANAGER_HPP_INCLUDED
 #define   CORE_ASSET_MANAGER_HPP_INCLUDED
@@ -27,11 +28,13 @@ namespace GQE
     /// Enumeration for all Asset Type values
     enum AssetType {
       FirstStandardAsset  = 0,  ///< First Standard Asset Type Value
-      AssetFont           = 1,  ///< Font Asset Type
-      AssetImage          = 2,  ///< Image/Texture Asset Type
-      AssetMusic          = 3,  ///< Background Music Asset Type
-      AssetSound          = 4,  ///< Sound Effect Asset Type
-      AssetLevel          = 5,  ///< Level/Map Asset Type
+      AssetConfig         = 1,  ///< Config file Asset Type
+      AssetFont           = 2,  ///< Font Asset Type
+      AssetImage          = 3,  ///< Image/Texture Asset Type
+      AssetMusic          = 4,  ///< Background Music Asset Type
+      AssetScript         = 5,  ///< Script Asset Type
+      AssetSound          = 6,  ///< Sound Effect Asset Type
+      AssetLevel          = 7,  ///< Level/Map Asset Type
       LastStandardAsset,        ///< Last Standard Asset Type Value
  
       // The following can be used for custom assets
@@ -75,7 +78,34 @@ namespace GQE
      * @return true if background thread is still running
      */
     bool IsLoading(void);
- 
+
+    /**
+     * AddConfig will add a ConfigAsset object if the ConfigAsset object does
+     * not yet exist, otherwise it will return a pointer to the existing
+     * ConfigAsset.
+     * @param[in] theAssetID is the ID for the asset to be added
+     * @param[in] theFilename to use for loading this asset
+     * @param[in] theStyle is the Loading style to use for this asset
+     * @return pointer to the ConfigAsset that was added
+     */
+    ConfigAsset* AddConfig(
+      const typeAssetID theAssetID,
+      const std::string theFilename = "",
+      AssetLoadingStyle theStyle = AssetLoadStyleBackground);
+
+    /**
+     * UnloadConfig will unload the Config asset specified by theAssetID.
+     * @param[in] theAssetID is the ID for the ConfigAsset to unload
+     */
+    void UnloadConfig(const typeAssetID theAssetID);
+
+    /**
+     * GetConfig will retrieve the Config asset specified by theAssetID.
+     * @param[in] theAssetID is the ID for the ConfigAsset to be retrieved
+     * @return pointer to ConfigAsset or NULL if it doesn't yet exist
+     */
+    ConfigAsset* GetConfig(const typeAssetID theAssetID);
+
     /**
      * AddFont will add a FontAsset object if the FontAsset object does not
      * yet exist, otherwise it will return a pointer to the existing
@@ -207,6 +237,8 @@ namespace GQE
     sf::Thread*                               mBackgroundThread;
     /// Background loading thread mutex
     sf::Mutex                                 mBackgroundMutex;
+    /// Map to store all the Config assets
+    std::map<const typeAssetID, ConfigAsset*> mConfigs;
     /// Map to store all the Font assets
     std::map<const typeAssetID, FontAsset*>   mFonts;
     /// Map to store all the Image/Texture assets
@@ -234,7 +266,18 @@ namespace GQE
      * @param[in] theAssetManager is a pointer to the AssetManager class
      */
     static void BackgroundLoop(void* theAssetManager);
- 
+
+    /**
+     * DeleteConfigs will delete all added Config assets.
+     */
+    void DeleteConfigs(void);
+
+    /**
+     * LoadConfigs will load all the config that match theStyle specified.
+     * @param[in] theStyle that equals the loading style of the unloaded assets
+     */
+    void LoadConfigs(AssetLoadingStyle theStyle);
+
     /**
      * DeleteFonts will delete all added font assets.
      */
