@@ -9,6 +9,7 @@
  * @date 20110127 - Moved to GQE Core library and src directory
  * @date 20110127 - Use new OS independent Uint/Int types
  * @date 20110128 - Fixed erase call in the DeleteXYZ methods.
+ * @date 20110218 - Added boolean result to Read method for success
  */
  
 #include <assert.h>
@@ -185,8 +186,9 @@ namespace GQE
     return anResult;
   }
  
-  void ConfigReader::Read(const std::string theFilename)
+  bool ConfigReader::Read(const std::string theFilename)
   {
+    bool anResult = false;
     char anLine[MAX_CHARS];
     std::string anSection;
     unsigned long anCount = 1;
@@ -229,6 +231,9 @@ namespace GQE
  
       // Don't forget to close the file
       fclose(anFile);
+      
+      // Set success result
+      anResult = true;
     }
     else
     {
@@ -238,6 +243,9 @@ namespace GQE
         mApp->mLog << "ConfigReader::Read() error opening file " << theFilename << std::endl;
       }
     }
+    
+    // Return anResult of true if successful, false otherwise
+    return anResult;
   }
  
   bool ConfigReader::ParseBool(const std::string theValue,
