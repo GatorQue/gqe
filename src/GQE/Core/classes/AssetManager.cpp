@@ -8,12 +8,14 @@
  * @date 20100723 - Initial Release
  * @date 20110127 - Moved to GQE Core library and src directory
  * @date 20110128 - Fixed erase call in the DeleteXYZ methods.
+ * @date 20110218 - Added ConfigAsset to AssetManager
  */
  
 #include <assert.h>
 #include <stddef.h>
 #include "GQE/Core/classes/AssetManager.hpp"
 #include "GQE/Core/classes/App.hpp"
+#include "GQE/Core/assets/ConfigAsset.hpp"
 #include "GQE/Core/assets/FontAsset.hpp"
 #include "GQE/Core/assets/ImageAsset.hpp"
 #include "GQE/Core/assets/MusicAsset.hpp"
@@ -45,6 +47,7 @@ namespace GQE
     }
  
     // Cleanup after ourselves
+    DeleteConfigs();
     DeleteFonts();
     DeleteImages();
     DeleteMusic();
@@ -86,26 +89,177 @@ namespace GQE
       {
         mApp->mLog << "AssetManager::LoadAssets() starting foreground loading thread" << std::endl;
       }
- 
+
+      // Load all the configs
+      LoadConfigs(AssetLoadStyleForeground);
+
       // Load all the fonts
       LoadFonts(AssetLoadStyleForeground);
- 
+
       // Load all the images
       LoadImages(AssetLoadStyleForeground);
- 
+
       // Load all the music
       LoadMusic(AssetLoadStyleForeground);
- 
+
       // Load all the sounds
       LoadSounds(AssetLoadStyleForeground);
     }
   }
- 
+
   bool AssetManager::IsLoading(void)
   {
     return mBackgroundLoading;
   }
- 
+
+  ConfigAsset* AssetManager::AddConfig(
+    const typeAssetID theAssetID,
+    const std::string theFilename,
+    AssetLoadingStyle theStyle)
+  {
+    // ConfigAsset result
+    ConfigAsset* result = NULL;
+
+    // Obtain a lock before trying to access the asset maps
+    mBackgroundMutex.Lock();
+
+    // Check for a duplicate asset using theAssetID as the key
+    std::map<const typeAssetID, ConfigAsset*>::iterator iter;
+    iter = mConfigs.find(theAssetID);
+    if(iter == mConfigs.end())
+    {
+      // Create the asset since it wasn't found
+      result = new (std::nothrow) ConfigAsset(theFilename, theStyle);
+      assert(NULL != result && "AssetManager::AddConfig() unable to allocate memory");
+
+      // Register our App pointer with this asset
+      result->RegisterApp(mApp);
+
+      // Handle Immediate loading style
+      if(AssetLoadStyleImmediate == theStyle)
+      {
+        result->LoadAsset();
+      }
+
+      // Add the asset to the map of available assets
+      mConfigs.insert(std::pair<const typeAssetID, ConfigAsset*>(theAssetID, result));
+      
+      // Output to log file
+      if(NULL != mApp)
+      {
+        mApp->mLog << "AssetManager::AddConfig() adding asset with id=" << theAssetID << std::endl;
+      }
+    }
+    else
+    {
+      // Return the previous asset that was added instead of creating a duplicate
+      result = iter->second;
+
+      // Output to log file
+      if(NULL != mApp)
+      {
+        mApp->mLog << "AssetManager::AddConfig() returning asset with id=" << theAssetID << std::endl;
+      }
+    }
+
+    // Make sure we are actually returning a good pointer
+    assert(NULL != result && "AssetManager::AddConfig() bad return result");
+
+    // Increment our references to this asset
+    result->AddReference();
+
+    // Release the lock after accessing the asset maps
+    mBackgroundMutex.Unlock();
+
+    // Return our results
+    return result;
+  }
+
+  void AssetManager::DeleteConfigs(void)
+  {
+    // Obtain a lock before trying to access the asset maps
+    mBackgroundMutex.Lock();
+
+    // Delete all configs, since they are no longer needed
+    std::map<const typeAssetID, ConfigAsset*>::iterator iter;
+    iter = mConfigs.begin();
+    while(iter != mConfigs.end())
+    {
+      ConfigAsset* anAsset = iter->second;
+      iter = mConfigs.erase(iter);
+      delete anAsset;
+    }
+
+    // Release the lock after accessing the asset maps
+    mBackgroundMutex.Unlock();
+  }
+
+  ConfigAsset* AssetManager::GetConfig(const typeAssetID theAssetID)
+  {
+    ConfigAsset* result = NULL;
+    
+    // Obtain a lock before trying to access the asset maps
+    mBackgroundMutex.Lock();
+
+    // Locate the asset using theAssetID as the key
+    std::map<const typeAssetID, ConfigAsset*>::iterator iter;
+    iter = mConfigs.find(theAssetID);
+    if(iter != mConfigs.end())
+    {
+      // Get the asset found
+      result = iter->second;
+    }
+
+    // Release the lock after accessing the asset maps
+    mBackgroundMutex.Unlock();
+
+    // Return the result found
+    return result;
+  }
+
+  void AssetManager::LoadConfigs(AssetLoadingStyle theStyle)
+  {
+    assert(AssetLoadStyleFirst < theStyle && AssetLoadStyleLast > theStyle &&
+           "AssetManager::LoadConfigs() invalid style provided");
+
+    // Obtain a lock before trying to access the asset maps
+    mBackgroundMutex.Lock();
+
+    // Load all unloaded configs with theStyle specified
+    std::map<const typeAssetID, ConfigAsset*>::iterator iter;
+    iter = mConfigs.begin();
+    while(iter != mConfigs.end())
+    {
+      if(false == iter->second->IsLoaded() &&
+         theStyle == iter->second->GetLoadingStyle())
+      {
+        iter->second->LoadAsset();
+      }
+      iter++;
+    }
+
+    // Release the lock after accessing the asset maps
+    mBackgroundMutex.Unlock();
+  }
+
+  void AssetManager::UnloadConfig(const typeAssetID theAssetID)
+  {
+    // Obtain a lock before trying to access the asset maps
+    mBackgroundMutex.Lock();
+
+    // Locate the asset using theAssetID as the key
+    std::map<const typeAssetID, ConfigAsset*>::iterator iter;
+    iter = mConfigs.find(theAssetID);
+    if(iter != mConfigs.end())
+    {
+      // Drop our reference to this asset and unload if needed
+      iter->second->DropReference();
+    }
+
+    // Release the lock after accessing the asset maps
+    mBackgroundMutex.Unlock();
+  }
+
   FontAsset* AssetManager::AddFont(
     const typeAssetID theAssetID,
     const std::string theFilename,
@@ -113,10 +267,10 @@ namespace GQE
   {
     // FontAsset result
     FontAsset* result = NULL;
- 
+
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
- 
+
     // Check for a duplicate asset using theAssetID as the key
     std::map<const typeAssetID, FontAsset*>::iterator iter;
     iter = mFonts.find(theAssetID);
@@ -737,6 +891,9 @@ namespace GQE
     // Set our running flag
     anManager->mBackgroundLoading = true;
  
+    // Load all the configs
+    anManager->LoadConfigs(AssetLoadStyleBackground);
+
     // Load all the fonts
     anManager->LoadFonts(AssetLoadStyleBackground);
  
