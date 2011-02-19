@@ -10,6 +10,8 @@
  * @date 20110120 - Add ability to drop active state as inactive state
  * @date 20110125 - IState::HandleCleanup is now called from here
  * @date 20110127 - Moved to GQE Core library and src directory
+ * @date 20110218 - Change mDropped to mDead to remove potential confusion
+ * @date 20110218 - Added InactivateActiveState and ResetActiveState methods
  */
  
 #include <assert.h>
@@ -59,13 +61,13 @@ namespace GQE
     }
  
     // Delete all our dropped states
-    while(!mDropped.empty())
+    while(!mDead.empty())
     {
       // Retrieve the currently active state
-      IState* anState = mDropped.back();
+      IState* anState = mDead.back();
  
       // Pop the currently active state off the stack
-      mDropped.pop_back();
+      mDead.pop_back();
  
       // Pause the currently active state
       anState->Pause();
@@ -148,6 +150,67 @@ namespace GQE
     return mStack.back();
   }
 
+  void StateManager::InactivateActivateState(void)
+  {
+    // Is there no currently active state to drop?
+    if(!mStack.empty())
+    {
+      // Retrieve the currently active state
+      IState* anState = mStack.back();
+ 
+      // Log the dropping of each state
+      if(NULL != mApp)
+      {
+        mApp->mLog << "StateManager::InactivateActiveState() StateID=" << anState->GetID() << std::endl;
+      }
+ 
+      // Pause the currently active state
+      anState->Pause();
+
+      // Pop the currently active state off the stack
+      mStack.pop_back();
+ 
+      // Move this now inactive state to the absolute back of our stack
+      mStack.insert(mStack.begin(), anState);
+ 
+      // Don't keep pointers around we don't need anymore
+      anState = NULL;
+    }
+    else
+    {
+      // Quit the application with an error status response
+      if(NULL != mApp)
+      {
+        mApp->Quit(StatusAppStackEmpty);
+      }
+      return;
+    }
+ 
+    // Is there another state to activate? then call Resume to activate it
+    if(!mStack.empty())
+    {
+      // Has this state ever been initialized?
+      if(mStack.back()->IsInitComplete())
+      {
+        // Resume the new active state
+        mStack.back()->Resume();
+      }
+      else
+      {
+        // Initialize the new active state
+        mStack.back()->DoInit();
+      }
+    }
+    else
+    {
+      // There are no states on the stack, exit the program
+      if(NULL != mApp)
+      {
+        mApp->Quit(StatusAppOK);
+      }
+    }
+  }
+
   void StateManager::DropActiveState(void)
   {
     // Is there no currently active state to drop?
@@ -164,8 +227,10 @@ namespace GQE
  
       // Pause the currently active state
       anState->Pause();
- 
-      // Cleanup the currently active state before we pop it off the stack
+
+      // Deinit currently active state before we pop it off the stack
+      // (HandleCleanup() will be called by IState::DoInit() method if this
+      // state is ever set active again)
       anState->DeInit();
  
       // Pop the currently active state off the stack
@@ -212,6 +277,43 @@ namespace GQE
     }
   }
 
+  void StateManager::ResetActiveState(void)
+  {
+    // Is there no currently active state to reset?
+    if(!mStack.empty())
+    {
+      // Retrieve the currently active state
+      IState* anState = mStack.back();
+ 
+      // Log the dropping of each state
+      if(NULL != mApp)
+      {
+        mApp->mLog << "StateManager::ResetActiveState() StateID=" << anState->GetID() << std::endl;
+      }
+ 
+      // Pause the currently active state
+      anState->Pause();
+ 
+      // Call the ReInit method to Reset the currently active state
+      anState->ReInit();
+ 
+      // Resume the currently active state
+      anState->Resume();
+ 
+      // Don't keep pointers around we don't need anymore
+      anState = NULL;
+    }
+    else
+    {
+      // Quit the application with an error status response
+      if(NULL != mApp)
+      {
+        mApp->Quit(StatusAppStackEmpty);
+      }
+      return;
+    }
+  }
+
   void StateManager::RemoveActiveState(void)
   {
     // Is there no currently active state to drop?
@@ -236,7 +338,7 @@ namespace GQE
       mStack.pop_back();
  
       // Move this state to our dropped stack
-      mDropped.push_back(anState);
+      mDead.push_back(anState);
  
       // Don't keep pointers around we don't need anymore
       anState = NULL;
@@ -333,15 +435,15 @@ namespace GQE
  
   void StateManager::HandleCleanup(void)
   {
-    // Remove one of our Dropped states for every state added
-    if(!mDropped.empty())
+    // Remove one of our dead states
+    if(!mDead.empty())
     {
-      // Retrieve the currently active state
-      IState* anState = mDropped.back();
+      // Retrieve the dead state
+      IState* anState = mDead.back();
       assert(NULL != anState && "StateManager::HandleCleanup() invalid dropped state pointer");
  
-      // Pop the currently active state off the stack
-      mDropped.pop_back();
+      // Pop the dead state off the stack
+      mDead.pop_back();
  
       // Call the DeInit if it hasn't been called yet
       if(anState->IsInitComplete())
