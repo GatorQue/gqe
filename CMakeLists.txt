@@ -22,7 +22,7 @@ set(VERSION_PATCH 0)
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
 # add an option for choosing the build type (shared or static)
-set(BUILD_SHARED_LIBS TRUE CACHE BOOL "TRUE to build GQE as shared libraries, FALSE to build it as static libraries")
+set(BUILD_SHARED_LIBS FALSE CACHE BOOL "TRUE to build GQE as shared libraries, FALSE to build it as static libraries")
 
 # add an option for building the examples
 set(BUILD_EXAMPLES FALSE CACHE BOOL "TRUE to build the GQE examples, FALSE to ignore them")
