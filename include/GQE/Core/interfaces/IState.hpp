@@ -10,6 +10,9 @@
  * @date 20110127 - Use new OS independent Uint/Int types
  * @date 20110128 - Moved UPS/FPS calculations to StatManager.
  * @date 20110131 - Added class and method argument documentation
+ * @date 20110218 - Added ReInit method for StateManager::ResetActiveState
+ * @date 20110218 - Reset our Cleanup flag after HandleCleanup is called and
+ *                  call HandleCleanup in DoInit if cleanup flag is set.
  */
 #ifndef   CORE_ISTATE_HPP_INCLUDED
 #define   CORE_ISTATE_HPP_INCLUDED
@@ -49,11 +52,19 @@ namespace GQE
     }
  
     /**
-     * DoInit is responsible for initializing this State
+     * DoInit is responsible for initializing this State.  HandleCleanup will
+     * be called if mCleanup is true so Derived classes should always call
+     * IState::DoInit() first before initializing their assets.
      */
     virtual void DoInit(void) {
       // Output to log file
       mApp->mLog << "IState::DoInit() with ID=" << mID << " was called" << std::endl;
+      // If Cleanup hasn't been called yet, call it now!
+      if(true == mCleanup)
+      {
+        HandleCleanup();
+      }
+      // Initialize if necessary
       if(false == mInit)
       {
         mInit = true;
@@ -65,6 +76,13 @@ namespace GQE
       }
     }
  
+    /**
+     * ReInit is responsible for Reseting this state when the 
+     * StateManager::ResetActiveState() method is called.  This way a Game
+     * State can be restarted without unloading and reloading the game assets
+     */
+    virtual void ReInit(void) = 0;
+
     /**
      * DeInit is responsible for marking this state to be cleaned up
      */
@@ -140,7 +158,7 @@ namespace GQE
     /**
      * HandleEvents is responsible for handling input events for this
      * State when it is the active State.
-	 * @param[in] theEvent to process from the App class Loop method
+     * @param[in] theEvent to process from the App class Loop method
      */
     virtual void HandleEvents(sf::Event theEvent) = 0;
  
@@ -163,7 +181,11 @@ namespace GQE
     void HandleCleanup(void) {
       if(true == mCleanup)
       {
+        // Call cleanup
         Cleanup();
+
+        // Clear our cleanup flag
+        mCleanup = false;
       }
     }
  
