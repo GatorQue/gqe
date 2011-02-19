@@ -6,6 +6,7 @@
  * @author Ryan Lindeman
  * @date 20100710 - Initial Release
  * @date 20110127 - Moved to GQE Core library and src directory
+ * @date 20110218 - Added ReInit method
  */
 #include "GQE/Core/states/MenuState.hpp"
 #include "GQE/Core/classes/App.hpp"
@@ -56,6 +57,11 @@ namespace GQE
 
     // Retrieve a sprite to the above image
     mMenuSprite = mApp->mAssetManager.GetSprite("Menu");
+  }
+
+  void MenuState::ReInit(void)
+  {
+    // Do nothing yet
   }
 
   void MenuState::HandleEvents(sf::Event theEvent)

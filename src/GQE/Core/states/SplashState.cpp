@@ -7,6 +7,7 @@
  * @date 20100710 - Initial Release
  * @date 20110125 - Use the new RemoveActiveState not DropActiveState.
  * @date 20110127 - Moved to GQE Core library and src directory
+ * @date 20110218 - Added ReInit method
  */
 #include "GQE/Core/assets/ImageAsset.hpp"
 #include "GQE/Core/classes/App.hpp"
@@ -41,6 +42,11 @@ namespace GQE
 
     // Retrieve a sprite to the above image
     mSplashSprite = mApp->mAssetManager.GetSprite("Splash");
+  }
+
+  void SplashState::ReInit(void)
+  {
+    // Do nothing yet
   }
 
   void SplashState::Update(void)
