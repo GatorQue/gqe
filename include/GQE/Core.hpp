@@ -6,6 +6,7 @@
  * @date 20100710 - Initial Release
  * @date 20110118 - Added ConfigReader and StateManager includes.
  * @date 20110127 - Changed name from GQE.hpp to Core.hpp and moved to include
+ * @date 20110218 - Added ConfigAsset to Core includes
  */
 #ifndef   GQE_CORE_HPP_INCLUDED
 #define   GQE_CORE_HPP_INCLUDED
@@ -16,6 +17,7 @@
 #include <GQE/Config.hpp>
 
 // GQE Core includes
+#include "GQE/Core/assets/ConfigAsset.hpp"
 #include "GQE/Core/assets/FontAsset.hpp"
 #include "GQE/Core/assets/ImageAsset.hpp"
 #include "GQE/Core/assets/MusicAsset.hpp"
