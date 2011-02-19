@@ -6,6 +6,7 @@
  * @author Ryan Lindeman
  * @date 20110127 - Initial Release
  * @date 20110131 - Added define documentation
+ * @date 20110218 - Next minor release of GQE
  */
 #ifndef GQE_CONFIG_HPP
 #define GQE_CONFIG_HPP
@@ -17,7 +18,7 @@
 /// Define the GQE Major version number
 #define GQE_VERSION_MAJOR 0
 /// Define the GQE Minor version number
-#define GQE_VERSION_MINOR 4
+#define GQE_VERSION_MINOR 5
 
 
 ////////////////////////////////////////////////////////////
