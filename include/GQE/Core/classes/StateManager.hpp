@@ -11,6 +11,8 @@
  * @date 20110125 - IState::HandleCleanup is now called from here
  * @date 20110127 - Moved to GQE Core library and include directory
  * @date 20110131 - Added class and method argument documentation
+ * @date 20110218 - Change mDropped to mDead to remove potential confusion
+ * @date 20110218 - Added InactivateActiveState and ResetActiveState methods
  */
 #ifndef   CORE_STATE_MANAGER_HPP_INCLUDED
 #define   CORE_STATE_MANAGER_HPP_INCLUDED
@@ -66,13 +68,30 @@ namespace GQE
      * @return pointer to the current active state on the stack
      */
     IState* GetActiveState(void);
- 
+
     /**
-     * DropActiveState will cause the current active state to become an
-     * inactive state and return to the previous state on the stack.
+     * InactivateActiveState will cause the current active state to
+     * become an inactive state without uninitializing its assets (doesn't
+     * call DeInit) and return to the previous state on the stack. This
+     * will cause the state to retain its assets.
+     */
+    void InactivateActivateState(void);
+
+    /**
+     * DropActiveState will cause the current active state to uninitialize
+     * (calls DeInit) and become an inactive state and return to the
+     * previous state on the stack. When a state is uninitialized its
+     * assets are unloaded.
      */
     void DropActiveState(void);
  
+    /**
+     * ResetActiveState will cause the current active state to be reset
+     * by calling the ReInit method for that state. This is useful for
+     * "Play Again Y/N?" scenarios.
+     */
+    void ResetActiveState(void);
+
     /**
      * RemoveActiveState will cause the current active state to be removed
      * and return to the previous state on the stack.  Once a state has
@@ -105,8 +124,8 @@ namespace GQE
     App*                  mApp;
     /// Stack to store the current and previously active states
     std::vector<IState*>  mStack;
-    /// Stack to store the dropped states until they properly cleaned up
-    std::vector<IState*>  mDropped;
+    /// Stack to store the dead states until they properly cleaned up
+    std::vector<IState*>  mDead;
  
     /**
      * StateManager copy constructor is private because we do not allow copies
