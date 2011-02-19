@@ -3,6 +3,8 @@ set(SRCROOT ${CMAKE_SOURCE_DIR}/src/GQE/Core)
 
 # all source files
 set(SRC
+    ${SRCROOT}/assets/ConfigAsset.cpp
+    ${INCROOT}/assets/ConfigAsset.hpp
     ${SRCROOT}/assets/FontAsset.cpp
     ${INCROOT}/assets/FontAsset.hpp
     ${SRCROOT}/assets/ImageAsset.cpp
@@ -11,6 +13,7 @@ set(SRC
     ${INCROOT}/assets/MusicAsset.hpp
     ${SRCROOT}/assets/SoundAsset.cpp
     ${INCROOT}/assets/SoundAsset.hpp
+    ${INCROOT}/interfaces/TAsset.hpp
     ${SRCROOT}/classes/App.cpp
     ${INCROOT}/classes/App.hpp
     ${SRCROOT}/classes/AssetManager.cpp
@@ -25,6 +28,9 @@ set(SRC
     ${INCROOT}/states/MenuState.hpp
     ${SRCROOT}/states/SplashState.cpp
     ${INCROOT}/states/SplashState.hpp
+    ${INCROOT}/interfaces/IState.hpp
+    ${INCROOT}/Core_types.hpp
+    ${CMAKE_SOURCE_DIR}/include/GQE/Core.hpp
 )
 
 # add platform specific sources
