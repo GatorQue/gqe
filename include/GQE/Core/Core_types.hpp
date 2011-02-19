@@ -7,6 +7,7 @@
  * @date 20110118 - Add types used by ConfigReader.
  * @date 20110125 - Fix string compare issues
  * @date 20110127 - Changed name from GQE_types.hpp to Core_types.hpp
+ * @date 20110218 - Added ConfigAsset to forward declarations
  */
 #ifndef   GQE_CORE_TYPES_HPP_INCLUDED
 #define   GQE_CORE_TYPES_HPP_INCLUDED
@@ -64,6 +65,7 @@ namespace GQE
   class StateManager;
 
   // Forward declare GQE assets provided
+  class ConfigAsset;
   class FontAsset;
   class ImageAsset;
   class MusicAsset;
