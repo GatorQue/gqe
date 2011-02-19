@@ -9,6 +9,7 @@
  * @date 20110127 - Moved to GQE Core library and include directory
  * @date 20110127 - Use new OS independent Uint/Int types
  * @date 20110131 - Added class and method argument documentation
+ * @date 20110218 - Added boolean result to Read method for success
  */
 #ifndef   CORE_CONFIG_READER_HPP_INCLUDED
 #define   CORE_CONFIG_READER_HPP_INCLUDED
@@ -102,9 +103,10 @@ namespace GQE
     /**
      * Read will open and read the configuration file specified into internal
      * maps that can be later retrieved using the Get* options below.
-	 * @param[in] theFilename to use as the configuration file to read
+     * @param[in] theFilename to use as the configuration file to read
+     * @result true if theFilename was found and opened successfully
      */
-    void Read(const std::string theFilename);
+    bool Read(const std::string theFilename);
  
   private:
     // Constants
