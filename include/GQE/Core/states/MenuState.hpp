@@ -7,6 +7,7 @@
  * @date 20100717 - Initial Release
  * @date 20110127 - Moved to GQE Core library and include directory
  * @date 20110131 - Added class and method argument documentation
+ * @date 20110218 - Added ReInit method
  */
 #ifndef   CORE_MENU_STATE_HPP_INCLUDED
 #define   CORE_MENU_STATE_HPP_INCLUDED
@@ -23,7 +24,7 @@ namespace GQE
   public:
     /**
      * MenuState constructor
-	 * @param[in] theApp is a pointer to the App class.
+     * @param[in] theApp is a pointer to the App class.
      */
     MenuState(App* theApp);
 
@@ -38,10 +39,17 @@ namespace GQE
     virtual void DoInit(void);
 
     /**
+     * ReInit is responsible for Reseting this state when the 
+     * StateManager::ResetActiveState() method is called.  This way a Game
+     * State can be restarted without unloading and reloading the game assets
+     */
+    virtual void ReInit(void);
+
+    /**
      * HandleEvents is responsible for handling input events for this
      * State when it is the active State.
- 	 * @param[in] theEvent to process from the App class Loop method
-    */
+     * @param[in] theEvent to process from the App class Loop method
+     */
     virtual void HandleEvents(sf::Event theEvent);
 
     /**
@@ -69,6 +77,7 @@ namespace GQE
     sf::Sprite*         mMenuSprite;
     sf::String*         mMenuString1;
     sf::String*         mMenuString2;
+
   }; // class MenuState
 }; // namespace GQE
 
