@@ -1,59 +1,75 @@
-set(INCROOT ${CMAKE_SOURCE_DIR}/include/GQE/Core)
-set(SRCROOT ${CMAKE_SOURCE_DIR}/src/GQE/Core)
+# core library public header include file
+set(HEADER ${INCROOT}/Core.hpp)
 
-# all source files
+# core library additional include files
+set(INC
+    ${INCROOT}/Core/assets/ConfigAsset.hpp
+    ${INCROOT}/Core/assets/FontAsset.hpp
+    ${INCROOT}/Core/assets/ImageAsset.hpp
+    ${INCROOT}/Core/assets/MusicAsset.hpp
+    ${INCROOT}/Core/assets/SoundAsset.hpp
+    ${INCROOT}/Core/classes/App.hpp
+    ${INCROOT}/Core/classes/AssetManager.hpp
+    ${INCROOT}/Core/classes/ConfigReader.hpp
+    ${INCROOT}/Core/classes/StatManager.hpp
+    ${INCROOT}/Core/classes/StateManager.hpp
+    ${INCROOT}/Core/states/MenuState.hpp
+    ${INCROOT}/Core/states/SplashState.hpp
+    ${INCROOT}/Core/interfaces/IState.hpp
+    ${INCROOT}/Core/interfaces/TAsset.hpp
+    ${INCROOT}/Core/Core_types.hpp
+)
+
+# core library source files
 set(SRC
-    ${SRCROOT}/assets/ConfigAsset.cpp
-    ${INCROOT}/assets/ConfigAsset.hpp
-    ${SRCROOT}/assets/FontAsset.cpp
-    ${INCROOT}/assets/FontAsset.hpp
-    ${SRCROOT}/assets/ImageAsset.cpp
-    ${INCROOT}/assets/ImageAsset.hpp
-    ${SRCROOT}/assets/MusicAsset.cpp
-    ${INCROOT}/assets/MusicAsset.hpp
-    ${SRCROOT}/assets/SoundAsset.cpp
-    ${INCROOT}/assets/SoundAsset.hpp
-    ${INCROOT}/interfaces/TAsset.hpp
-    ${SRCROOT}/classes/App.cpp
-    ${INCROOT}/classes/App.hpp
-    ${SRCROOT}/classes/AssetManager.cpp
-    ${INCROOT}/classes/AssetManager.hpp
-    ${SRCROOT}/classes/ConfigReader.cpp
-    ${INCROOT}/classes/ConfigReader.hpp
-    ${SRCROOT}/classes/StatManager.cpp
-    ${INCROOT}/classes/StatManager.hpp
-    ${SRCROOT}/classes/StateManager.cpp
-    ${INCROOT}/classes/StateManager.hpp
-    ${SRCROOT}/states/MenuState.cpp
-    ${INCROOT}/states/MenuState.hpp
-    ${SRCROOT}/states/SplashState.cpp
-    ${INCROOT}/states/SplashState.hpp
-    ${INCROOT}/interfaces/IState.hpp
-    ${INCROOT}/Core_types.hpp
-    ${CMAKE_SOURCE_DIR}/include/GQE/Core.hpp
+    ${SRCROOT}/Core/assets/ConfigAsset.cpp
+    ${SRCROOT}/Core/assets/FontAsset.cpp
+    ${SRCROOT}/Core/assets/ImageAsset.cpp
+    ${SRCROOT}/Core/assets/MusicAsset.cpp
+    ${SRCROOT}/Core/assets/SoundAsset.cpp
+    ${SRCROOT}/Core/classes/App.cpp
+    ${SRCROOT}/Core/classes/AssetManager.cpp
+    ${SRCROOT}/Core/classes/ConfigReader.cpp
+    ${SRCROOT}/Core/classes/StatManager.cpp
+    ${SRCROOT}/Core/classes/StateManager.cpp
+    ${SRCROOT}/Core/states/MenuState.cpp
+    ${SRCROOT}/Core/states/SplashState.cpp
 )
 
 # add platform specific sources
 
 
 # find external SFML libraries
-set(SFML_STATIC_LIBRARIES TRUE)
 find_package(SFML REQUIRED audio graphics window system)
 
 # add include paths of external libraries
 include_directories(${SFML_INCLUDE_DIR})
 
-# build the list of external libraries to link
-if(BUILD_SHARED_LIBS)
-  set(CORE_EXT_LIBS
-    ${SFML_AUDIO_LIBRARY}
-    ${SFML_GRAPHICS_LIBRARY}
-    ${SFML_SYSTEM_LIBRARY}
-    ${SFML_WINDOW_LIBRARY}
-  )
-endif()
-
 # define the gqe-core target
 gqe_add_library(gqe-core
-                SOURCES ${SRC}
-                EXTERNAL_LIBS ${CORE_EXT_LIBS})
+                HEADER        ${HEADER}
+                HEADER_DIR    ${INCROOT}/Core
+                INCLUDES      ${INC}
+                SOURCES       ${SRC}
+                EXTERNAL_LIBS ${SFML_AUDIO_LIBRARY} ${SFML_GRAPHICS_LIBRARY} ${SFML_SYSTEM_LIBRARY} ${SFML_WINDOW_LIBRARY})
+                
+#add_library(gqe-core SHARED ${HEADER} ${INC} ${SRC})
+
+#target_link_libraries(gqe-core ${SFML_AUDIO_LIBRARY} ${SFML_GRAPHICS_LIBRARY} ${SFML_SYSTEM_LIBRARY} ${SFML_WINDOW_LIBRARY})
+ 
+# set target public header file for this library
+#set_target_properties(gqe-core PROPERTIES PUBLIC_HEADER "${HEADER}")
+
+# install this library
+#install(TARGETS gqe-core
+#  # IMPORTANT: Add the gqe-core library to the "export-set"
+#  EXPORT GQE_LibraryDepends
+#  RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin
+#  LIBRARY DESTINATION "${INSTALL_LIB_DIR}" COMPONENT shlib
+#  PUBLIC_HEADER DESTINATION "${INSTALL_INCLUDE_DIR}/GQE" COMPONENT dev)
+
+# install Core library include files
+#install(DIRECTORY ${INCROOT}/Core
+#        DESTINATION ${INSTALL_INCLUDE_DIR}/GQE
+#        COMPONENT dev
+#        PATTERN ".svn" EXCLUDE)

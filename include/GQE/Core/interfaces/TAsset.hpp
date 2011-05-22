@@ -10,15 +10,16 @@
  * @date 20110127 - Moved to GQE Core library and include directory
  * @date 20110127 - Use new OS independent Uint/Int types
  * @date 20110131 - Added class and method argument documentation
+ * @date 20110218 - Change to system include style
  */
 #ifndef   CORE_TASSET_HPP_INCLUDED
 #define   CORE_TASSET_HPP_INCLUDED
- 
+
 #include <assert.h>
 #include <string>
 #include <stddef.h>
-#include "GQE/Core/Core_types.hpp"
- 
+#include <GQE/Core/Core_types.hpp>
+
 namespace GQE
 {
   /// Provides base template class for all game assets
@@ -43,7 +44,7 @@ namespace GQE
       assert(AssetLoadStyleFirst < theStyle && AssetLoadStyleLast > theStyle &&
              "TAsset::TAsset() invalid style provided");
     }
- 
+
     /**
      * TAsset deconstructor
      */
@@ -54,7 +55,7 @@ namespace GQE
         // method called!
       }
     }
- 
+
     /**
      * RegisterApp will register a pointer to the App class so it can be used
      * by the TAsset derived classes for error handling and log reporting.
@@ -63,12 +64,12 @@ namespace GQE
     void RegisterApp(App* theApp) {
       // Check that our pointer is good
       assert(NULL != theApp && "TAsset::RegisterApp() theApp pointer provided is bad");
- 
+
       // Make a note of the pointer
       assert(NULL == mApp && "TAsset::RegisterApp() theApp pointer was already registered");
       mApp = theApp;
     }
- 
+
     /**
      * IsLoaded will return true if the Asset has been loaded.
      * @return true if loaded, false otherwise
@@ -76,7 +77,7 @@ namespace GQE
     bool IsLoaded(void) const {
       return mLoaded;
     }
- 
+
     /**
      * GetLoadingStyle will return the Loading Style for this asset.
      * @return LoadingStyle enumeration for this asset
@@ -84,7 +85,7 @@ namespace GQE
     AssetLoadingStyle GetLoadingStyle(void) const {
       return mStyle;
     }
- 
+
     /**
      * SetLoadingStyle will set the Loading Style for this asset.
      * @param[in] theStyle to use when Loading this asset
@@ -92,10 +93,10 @@ namespace GQE
     void SetLoadingStyle(AssetLoadingStyle theStyle) {
       assert(AssetLoadStyleFirst < theStyle && AssetLoadStyleLast > theStyle &&
              "TAsset::SetLoadingStyle() invalid style provided");
- 
+
       mStyle = theStyle;
     }
- 
+
     /**
      * AddReference will increment the reference count.
      */
@@ -103,7 +104,7 @@ namespace GQE
     {
       mReferences++;
     }
- 
+
     /**
      * GetReferences will return the reference count.
      * @return number of entities referencing this Asset
@@ -111,7 +112,7 @@ namespace GQE
     const Uint16 GetReferences(void) const {
       return mReferences;
     }
- 
+
     /**
      * DropReference will decrement the reference count.
 	 * @param[in] theRemoveFlag indicates the asset should be removed when the
@@ -127,7 +128,7 @@ namespace GQE
         UnloadAsset();
       }
     }
- 
+
     /**
      * GetAsset will return the Asset if it is available.
      * @return pointer to the Asset or NULL if not available yet.
@@ -135,12 +136,12 @@ namespace GQE
     TYPE* GetAsset(void) const {
       return mAsset;
     }
- 
+
     /**
      * LoadAsset is responsible for loading the Asset.
      */
     virtual void LoadAsset(void) = 0;
- 
+
   protected:
     // Variables
     ///////////////////////////////////////////////////////////////////////////
@@ -154,23 +155,23 @@ namespace GQE
     TYPE*               mAsset;
     /// True if the asset has been loaded or provided
     bool                mLoaded;
- 
+
     /**
      * UnloadAsset is responsible for destroying or unloading the Asset and
      * is called by FreeAsset.
      */
     virtual void UnloadAsset(void) = 0;
- 
+
   private:
     /// A counter for every time this asset is referenced
     Uint16    mReferences;
- 
+
     /**
      * Our copy constructor is private because we do not allow copies of our
      * class
      */
     TAsset(const TAsset&);  // Intentionally undefined
- 
+
     /**
      * Our assignment operator is private because we do not allow copies of our
      * class
@@ -178,7 +179,7 @@ namespace GQE
     TAsset& operator=(const TAsset&); // Intentionally undefined
   }; // class TAsset
 }; // namespace GQE
- 
+
 #endif // CORE_TASSET_HPP_INCLUDED
 
 /**

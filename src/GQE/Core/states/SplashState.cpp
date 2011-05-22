@@ -8,10 +8,11 @@
  * @date 20110125 - Use the new RemoveActiveState not DropActiveState.
  * @date 20110127 - Moved to GQE Core library and src directory
  * @date 20110218 - Added ReInit method
+ * @date 20110218 - Change to system include style
  */
-#include "GQE/Core/assets/ImageAsset.hpp"
-#include "GQE/Core/classes/App.hpp"
-#include "GQE/Core/states/SplashState.hpp"
+#include <GQE/Core/assets/ImageAsset.hpp>
+#include <GQE/Core/classes/App.hpp>
+#include <GQE/Core/states/SplashState.hpp>
 
 namespace GQE
 {

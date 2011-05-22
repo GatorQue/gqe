@@ -9,6 +9,7 @@
  * @date 20110128 - Add Get/SetUpdateRate methods for changing game rate speed
  * @date 20110128 - Added new StatManager class for collecting game statistics
  * @date 20110131 - Added class and method argument documentation
+ * @date 20110218 - Change to system include style
  */
 #ifndef   CORE_APP_HPP_INCLUDED
 #define   CORE_APP_HPP_INCLUDED
@@ -17,10 +18,10 @@
 #include <stddef.h>
 #include <string.h>
 #include <vector>
-#include "GQE/Core/Core_types.hpp"
-#include "GQE/Core/classes/AssetManager.hpp"
-#include "GQE/Core/classes/StatManager.hpp"
-#include "GQE/Core/classes/StateManager.hpp"
+#include <GQE/Core/Core_types.hpp>
+#include <GQE/Core/classes/AssetManager.hpp>
+#include <GQE/Core/classes/StatManager.hpp>
+#include <GQE/Core/classes/StateManager.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
  
@@ -38,7 +39,7 @@ namespace GQE
     static const unsigned int DEFAULT_VIDEO_HEIGHT = 768;
 	/// Default Video bits per pixel (color depth) if config file not found
     static const unsigned int DEFAULT_VIDEO_BPP = 32;
- 
+
     // Variables
     ///////////////////////////////////////////////////////////////////////////
     /// Title to use for Window
@@ -48,7 +49,11 @@ namespace GQE
     /// Render window to draw to
     sf::RenderWindow          mWindow;
     /// Window settings to use when creating Render window
+#if (SFML_VERSION_MAJOR < 2)
     sf::WindowSettings        mWindowSettings;
+#else
+    sf::ContextSettings       mContextSettings;
+#endif
     /// Window style to use when createing Render window
     unsigned long             mWindowStyle;
     /// Input manager for Render window above
@@ -61,18 +66,18 @@ namespace GQE
     StatManager               mStatManager;
     /// StateManager for managing states
     StateManager              mStateManager;
- 
+
     /**
      * App constructor
      * @param[in] theTitle is the title of the window
      */
     App(const std::string theTitle = "GQE Application");
- 
+
     /**
      * App deconstructor
      */
     virtual ~App();
- 
+
     /**
      * ProcessArguments is responsible for processing command line arguments
      * provided to the application.
@@ -80,7 +85,7 @@ namespace GQE
      * @param[in] argv are the actual arguments
      */
     virtual void ProcessArguments(int argc, char* argv[]);
- 
+
     /**
      * Run is called after the Application is created and will call the
      * Init, Loop, and Cleanup methods that are defined by the derived
@@ -116,7 +121,7 @@ namespace GQE
 	 * @param[in] theExitCode to use when the Run method returns
      */
     void Quit(int theExitCode);
- 
+
   protected:
     /**
      * PreInit is responsible for getting things ready before the derived
@@ -124,24 +129,24 @@ namespace GQE
      * with how the derived classes Init methods are written.
      */
     void PreInit(void);
- 
+
     /**
      * Init is responsible for initializing the Application.
      */
     virtual void Init(void);
- 
+
     /**
      * Loop is responsible for monitoring IsRunning and exiting when the
      * Application is done.
      */
     virtual void Loop(void);
- 
+
     /**
      * Cleanup is responsible for performing any last minute Application
      * cleanup steps before exiting the Application.
      */
     virtual void Cleanup(void);
- 
+
   private:
     /// The exit code value that will be returned by the program
     int                       mExitCode;
@@ -151,13 +156,13 @@ namespace GQE
     float                     mUpdateRate;
     /// Logger output path and filename
     std::string               mLogFile;
- 
+
     /**
      * App copy constructor is private because we do not allow copies of
      * our Singleton class
      */
     App(const App&);                 // Intentionally undefined
- 
+
     /**
      * Our assignment operator is private because we do not allow copies
      * of our Singleton class
@@ -165,7 +170,7 @@ namespace GQE
     App& operator=(const App&);      // Intentionally undefined
   }; // class App
 }; // namespace GQE
- 
+
 #endif // CORE_APP_HPP_INCLUDED
 /**
  * @class GQE::App

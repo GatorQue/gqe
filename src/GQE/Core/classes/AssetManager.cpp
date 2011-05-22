@@ -6,20 +6,22 @@
  * @file src/GQE/Core/classes/AssetManager.cpp
  * @author Ryan Lindeman
  * @date 20100723 - Initial Release
+ * @date 20110110 - Added ability to get sf::Sound from SoundAsset
  * @date 20110127 - Moved to GQE Core library and src directory
  * @date 20110128 - Fixed erase call in the DeleteXYZ methods.
  * @date 20110218 - Added ConfigAsset to AssetManager
+ * @date 20110218 - Change to system include style
  */
  
 #include <assert.h>
 #include <stddef.h>
-#include "GQE/Core/classes/AssetManager.hpp"
-#include "GQE/Core/classes/App.hpp"
-#include "GQE/Core/assets/ConfigAsset.hpp"
-#include "GQE/Core/assets/FontAsset.hpp"
-#include "GQE/Core/assets/ImageAsset.hpp"
-#include "GQE/Core/assets/MusicAsset.hpp"
-#include "GQE/Core/assets/SoundAsset.hpp"
+#include <GQE/Core/classes/AssetManager.hpp>
+#include <GQE/Core/classes/App.hpp>
+#include <GQE/Core/assets/ConfigAsset.hpp>
+#include <GQE/Core/assets/FontAsset.hpp>
+#include <GQE/Core/assets/ImageAsset.hpp>
+#include <GQE/Core/assets/MusicAsset.hpp>
+#include <GQE/Core/assets/SoundAsset.hpp>
  
 namespace GQE
 {
@@ -186,7 +188,7 @@ namespace GQE
     while(iter != mConfigs.end())
     {
       ConfigAsset* anAsset = iter->second;
-      iter = mConfigs.erase(iter);
+      mConfigs.erase(iter++);
       delete anAsset;
     }
 
@@ -513,13 +515,6 @@ namespace GQE
     return result;
   }
  
-  /**
-   * GetSprite will return a sprite object for the image asset specified by
-   * theAssetID.  The caller is responsible for this object and must delete
-   * this object when he is through with it.
-   * @param[in] theAssetID is the ID for the ImageAsset to be retrieved
-   * @return pointer to sf::Sprite or NULL if image was not found
-   */
   sf::Sprite* AssetManager::GetSprite(const typeAssetID theAssetID)
   {
     sf::Sprite* result = NULL;
@@ -840,6 +835,30 @@ namespace GQE
     return result;
   }
  
+  sf::Sound* AssetManager::GetSoundPlayer(const typeAssetID theAssetID)
+  {
+    sf::Sound* result = NULL;
+    SoundAsset* anSoundAsset = GetSound(theAssetID);
+    if(NULL != anSoundAsset)
+    {
+      sf::SoundBuffer* anSoundBuffer = anSoundAsset->GetAsset();
+      assert(NULL != anSoundBuffer && "AssetManager::GetSoundPlayer() failed to obtain sound buffer asset");
+      result = new (std::nothrow) sf::Sound(*anSoundBuffer);
+      assert(NULL != result && "AssetManager::GetSoundPlayer() unable to allocate memory");
+    }
+    else
+    {
+      if(NULL != mApp)
+      {
+        mApp->mLog << "AssetManager::GetSoundPlayer() failed to find sound with id=" << theAssetID << std::endl;
+        mApp->Quit(StatusAppMissingAsset);
+      }
+    }
+
+    // Return our result
+    return result;
+  }
+
   void AssetManager::LoadSounds(AssetLoadingStyle theStyle)
   {
     assert(AssetLoadStyleFirst < theStyle && AssetLoadStyleLast > theStyle &&

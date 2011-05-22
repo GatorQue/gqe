@@ -6,13 +6,14 @@
  * @file include/GQE/Core/assets/ConfigAsset.hpp
  * @author Ryan Lindeman
  * @date 20110218 - Initial Release
+ * @date 20110218 - Change to system include style
  */
 #ifndef   CORE_CONFIG_ASSET_HPP_INCLUDED
 #define   CORE_CONFIG_ASSET_HPP_INCLUDED
 
-#include "GQE/Core/interfaces/TAsset.hpp"
-#include "GQE/Core/Core_types.hpp"
-#include "GQE/Core/classes/ConfigReader.hpp"
+#include <GQE/Core/interfaces/TAsset.hpp>
+#include <GQE/Core/Core_types.hpp>
+#include <GQE/Core/classes/ConfigReader.hpp>
 
 namespace GQE
 {

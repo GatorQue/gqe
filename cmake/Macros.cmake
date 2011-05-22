@@ -91,23 +91,25 @@ endmacro()
 
 # add a new target which is a GQE library
 # ex: gqe_add_library(gqe-core
-#                     SOURCES classes/App.cpp classes/AssetManager.cpp ...
-#                     DEPENDS sfml-audio sfml-graphics sfml-window sfml-system
-#                     EXTERNAL_LIBS opengl freetype ...)
+#                     HEADER        include/GQE/Core.hpp
+#                     HEADER_DIR    include/GQE/Core
+#                     SOURCES       include/GQE/Core/classes/App.hpp src/GQE/Core/classes/App.cpp ...
+#                     DEPENDS       ...
+#                     EXTERNAL_LIBS sfml-audio sfml-graphics sfml-window sfml-system ...)
 macro(gqe_add_library target)
 
     # parse the arguments
-    gqe_parse_arguments(THIS "SOURCES;DEPENDS;EXTERNAL_LIBS" "" ${ARGN})
+    gqe_parse_arguments(THIS "HEADER;HEADER_DIR;INCLUDES;SOURCES;DEPENDS;EXTERNAL_LIBS" "" ${ARGN})
 
     # create the target
-    add_library(${target} ${THIS_SOURCES})
+    add_library(${target} ${THIS_HEADER} ${THIS_INCLUDES} ${THIS_SOURCES})
 
     # adjust the output file prefix/suffix to match our conventions
     if(BUILD_SHARED_LIBS)
         if(WINDOWS)
             # include the major version number in Windows shared library names (but not import library names)
             set_target_properties(${target} PROPERTIES DEBUG_POSTFIX -d)
-            set_target_properties(${target} PROPERTIES SUFFIX "-${VERSION_MAJOR}${CMAKE_SHARED_LIBRARY_SUFFIX}")
+            set_target_properties(${target} PROPERTIES SUFFIX "-${GQE_VERSION_MAJOR}_${GQE_VERSION_MINOR}${CMAKE_SHARED_LIBRARY_SUFFIX}")
         else()
             set_target_properties(${target} PROPERTIES DEBUG_POSTFIX -d)
         endif()
@@ -122,9 +124,14 @@ macro(gqe_add_library target)
         set_target_properties(${target} PROPERTIES RELEASE_POSTFIX -s)
     endif()
 
+    # set target public header file for this library
+    if(THIS_HEADER)
+        set_target_properties(${target} PROPERTIES PUBLIC_HEADER "${THIS_HEADER}")
+    endif(THIS_HEADER)
+
     # set the version and soversion of the target (for compatible systems -- mostly Linuxes)
-    set_target_properties(${target} PROPERTIES SOVERSION ${VERSION_MAJOR}.${VERSION_MINOR})
-    set_target_properties(${target} PROPERTIES VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
+    set_target_properties(${target} PROPERTIES SOVERSION ${GQE_VERSION_MAJOR}.${GQE_VERSION_MINOR})
+    set_target_properties(${target} PROPERTIES VERSION ${GQE_VERSION_MAJOR}.${GQE_VERSION_MINOR}.${GQE_VERSION_PATCH})
 
     # for gcc 4.x on Windows, we add the -static-libgcc linker flag to get rid of an extra gcc DLL
     if(WINDOWS AND COMPILER_GCC)
@@ -147,15 +154,25 @@ macro(gqe_add_library target)
             # in static build there's no link stage, but with some compilers it is possible to force
             # the generated static library to directly contain the symbols from its dependencies
             gqe_static_add_libraries(${target} ${THIS_EXTERNAL_LIBS})
-        endif()
-    endif()
+        endif(BUILD_SHARED_LIBS)
+    endif(THIS_EXTERNAL_LIBS)
 
     # add the install rule
     install(TARGETS ${target}
-            RUNTIME DESTINATION bin COMPONENT bin
-            LIBRARY DESTINATION lib${LIB_SUFFIX} COMPONENT bin 
-            ARCHIVE DESTINATION lib${LIB_SUFFIX} COMPONENT devel)
+            # IMPORTANT: Add the target library to the "export-set"
+            EXPORT GQE_LibraryDepends
+            PUBLIC_HEADER DESTINATION "${INSTALL_INCLUDE_DIR}/GQE" COMPONENT devel
+            RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin
+            LIBRARY DESTINATION "${INSTALL_LIB_DIR}" COMPONENT shlib 
+            ARCHIVE DESTINATION "${INSTALL_LIB_DIR}" COMPONENT devel)
 
+    # install Core library include files
+    if(THIS_HEADER_DIR)
+        install(DIRECTORY ${THIS_HEADER_DIR}
+                DESTINATION ${INSTALL_INCLUDE_DIR}/GQE
+                COMPONENT devel
+                PATTERN ".hg" EXCLUDE)
+    endif(THIS_HEADER_DIR)                
 endmacro()
 
 # add a new target which is a GQE example

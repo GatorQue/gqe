@@ -6,20 +6,22 @@
  * @file include/GQE/Core/classes/StateManager.hpp
  * @author Ryan Lindeman
  * @date 20100728 - Initial Release
- * @date 20110120 - Add ability to add inactive states
+ * @date 20110120 - Add ability to add inactive states and receive Dialog
+ *                  signal events.
  * @date 20110120 - Add ability to drop active state as inactive state
  * @date 20110125 - IState::HandleCleanup is now called from here
  * @date 20110127 - Moved to GQE Core library and include directory
  * @date 20110131 - Added class and method argument documentation
  * @date 20110218 - Change mDropped to mDead to remove potential confusion
  * @date 20110218 - Added InactivateActiveState and ResetActiveState methods
+ * @date 20110218 - Change to system include style
  */
 #ifndef   CORE_STATE_MANAGER_HPP_INCLUDED
 #define   CORE_STATE_MANAGER_HPP_INCLUDED
  
 #include <vector>
 #include <string>
-#include "GQE/Core/Core_types.hpp"
+#include <GQE/Core/Core_types.hpp>
  
 namespace GQE
 {
@@ -31,32 +33,32 @@ namespace GQE
      * StateManager constructor
      */
     StateManager();
- 
+
     /**
      * StateManager deconstructor
      */
     virtual ~StateManager();
- 
+
     /**
      * RegisterApp will register a pointer to the App class so it can be used
      * by the StateManager for error handling and log reporting.
      * @param[in] theApp is a pointer to the App (or App derived) class
      */
     void RegisterApp(App* theApp);
- 
+
     /**
      * IsEmpty will return true if there are no active states on the stack.
      * @return true if state stack is empty, false otherwise.
      */
     bool IsEmpty(void);
- 
+
     /**
      * AddActiveState will add theState provided as the current active
      * state.
      * @param[in] theState to set as the current state
      */
     void AddActiveState(IState* theState);
- 
+
     /**
      * AddInactiveState will add theState provided as an inactive state.
      * @param[in] theState to be added as an inactive state
@@ -117,7 +119,7 @@ namespace GQE
   private:
     // Constants
     ///////////////////////////////////////////////////////////////////////////
- 
+
     // Variables
     ///////////////////////////////////////////////////////////////////////////
     /// Pointer to the App class for error handling and logging
@@ -126,22 +128,22 @@ namespace GQE
     std::vector<IState*>  mStack;
     /// Stack to store the dead states until they properly cleaned up
     std::vector<IState*>  mDead;
- 
+
     /**
      * StateManager copy constructor is private because we do not allow copies
      * of our class
      */
     StateManager(const StateManager&); // Intentionally undefined
- 
+
     /**
      * Our assignment operator is private because we do not allow copies
      * of our class
      */
     StateManager& operator=(const StateManager&); // Intentionally undefined
- 
+
   }; // class StateManager
 }; // namespace GQE
- 
+
 #endif // CORE_STATE_MANAGER_HPP_INCLUDED
 
 /**

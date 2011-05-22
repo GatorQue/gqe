@@ -8,12 +8,13 @@
  * @date 20100724 - Initial Release
  * @date 20110127 - Moved to GQE Core library and include directory
  * @date 20110131 - Added class and method argument documentation
+ * @date 20110218 - Change to system include style
  */
 #ifndef   CORE_FONT_ASSET_HPP_INCLUDED
 #define   CORE_FONT_ASSET_HPP_INCLUDED
  
-#include "GQE/Core/interfaces/TAsset.hpp"
-#include "GQE/Core/Core_types.hpp"
+#include <GQE/Core/interfaces/TAsset.hpp>
+#include <GQE/Core/Core_types.hpp>
 #include <SFML/Graphics.hpp>
  
 namespace GQE

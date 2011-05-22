@@ -7,10 +7,11 @@
  * @date 20100710 - Initial Release
  * @date 20110127 - Moved to GQE Core library and src directory
  * @date 20110218 - Added ReInit method
+ * @date 20110218 - Change to system include style
  */
-#include "GQE/Core/states/MenuState.hpp"
-#include "GQE/Core/classes/App.hpp"
-#include "GQE/Core/assets/FontAsset.hpp"
+#include <GQE/Core/states/MenuState.hpp>
+#include <GQE/Core/classes/App.hpp>
+#include <GQE/Core/assets/FontAsset.hpp>
 
 namespace GQE
 {
@@ -39,10 +40,18 @@ namespace GQE
     mMenuFont = mApp->mAssetManager.AddFont("arial", "arial.ttf", AssetLoadStyleImmediate)->GetAsset();
 
     // Create our String
+#if (SFML_VERSION_MAJOR < 2)
     mMenuString1 = new sf::String("Play Game", *mMenuFont);
+#else
+    mMenuString1 = new sf::Text("Play Game", *mMenuFont);
+#endif
     assert(NULL != mMenuString1 && "MenuState::DoInit() can't allocate memory for string");
 
+#if (SFML_VERSION_MAJOR < 2)
     mMenuString2 = new sf::String("Exit", *mMenuFont);
+#else
+    mMenuString2 = new sf::Text("Exit", *mMenuFont);
+#endif
     assert(NULL != mMenuString2 && "MenuState::DoInit() can't allocate memory for string");
 
     // Position the string

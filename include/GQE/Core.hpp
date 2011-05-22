@@ -17,20 +17,21 @@
 #include <GQE/Config.hpp>
 
 // GQE Core includes
-#include "GQE/Core/assets/ConfigAsset.hpp"
-#include "GQE/Core/assets/FontAsset.hpp"
-#include "GQE/Core/assets/ImageAsset.hpp"
-#include "GQE/Core/assets/MusicAsset.hpp"
-#include "GQE/Core/assets/SoundAsset.hpp"
-#include "GQE/Core/classes/App.hpp"
-#include "GQE/Core/classes/AssetManager.hpp"
-#include "GQE/Core/classes/ConfigReader.hpp"
-#include "GQE/Core/classes/StateManager.hpp"
-#include "GQE/Core/interfaces/IState.hpp"
-#include "GQE/Core/interfaces/TAsset.hpp"
-#include "GQE/Core/states/MenuState.hpp"
-#include "GQE/Core/states/SplashState.hpp"
- 
+#include <GQE/Core/assets/ConfigAsset.hpp>
+#include <GQE/Core/assets/FontAsset.hpp>
+#include <GQE/Core/assets/ImageAsset.hpp>
+#include <GQE/Core/assets/MusicAsset.hpp>
+#include <GQE/Core/assets/SoundAsset.hpp>
+#include <GQE/Core/classes/App.hpp>
+#include <GQE/Core/classes/AssetManager.hpp>
+#include <GQE/Core/classes/ConfigReader.hpp>
+#include <GQE/Core/classes/StatManager.hpp>
+#include <GQE/Core/classes/StateManager.hpp>
+#include <GQE/Core/interfaces/IState.hpp>
+#include <GQE/Core/interfaces/TAsset.hpp>
+#include <GQE/Core/states/MenuState.hpp>
+#include <GQE/Core/states/SplashState.hpp>
+
 namespace GQE
 {
   /// Core module global variable declarations

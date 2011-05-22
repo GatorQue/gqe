@@ -7,12 +7,13 @@
  * @author Ryan Lindeman
  * @date 20100724 - Initial Release
  * @date 20110127 - Moved to GQE Core library and src directory
+ * @date 20110218 - Change to system include style
  */
  
 #include <assert.h>
 #include <stddef.h>
-#include "GQE/Core/assets/SoundAsset.hpp"
-#include "GQE/Core/classes/App.hpp"
+#include <GQE/Core/assets/SoundAsset.hpp>
+#include <GQE/Core/classes/App.hpp>
  
 namespace GQE
 {

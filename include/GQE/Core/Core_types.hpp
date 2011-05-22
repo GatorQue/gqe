@@ -14,22 +14,11 @@
  
 #include <map>
 #include <string>
-#include "GQE/Config.hpp"
+#include <vector>
+#include <GQE/Config.hpp>
 
 namespace GQE
 {
-  /// Declare State ID typedef which is used for identifying State objects
-  typedef std::string typeStateID;
- 
-  /// Declare Asset ID typedef which is used for identifying Asset objects
-  typedef std::string typeAssetID;
- 
-  /// Declare NameValue typedef which is used for config section maps
-  typedef std::map<const std::string, const std::string> typeNameValue;
-
-  /// Declare NameValueIter typedef which is used for name,value pair maps
-  typedef std::map<const std::string, const std::string>::iterator typeNameValueIter;
-
   /// Enumeration of all Asset loading styles
   enum AssetLoadingStyle {
     AssetLoadStyleFirst      = 0,  ///< First Loading Style
@@ -38,7 +27,7 @@ namespace GQE
     AssetLoadStyleImmediate  = 3,  ///< Immediate loading style
     AssetLoadStyleLast             ///< Last Loading Style
   };
- 
+
   /// Status Enumeration for Status Return values
   enum StatusType {
     // Values from -99 to 99 are common Error and Good status responses
@@ -51,7 +40,7 @@ namespace GQE
     StatusFalse           =  0,  ///< False status response
     StatusTrue            =  1,  ///< True status response
     StatusOK              =  1   ///< OK status response
- 
+
     // Values from +-100 to +-199 are reserved for File status responses
   };
  
@@ -70,11 +59,20 @@ namespace GQE
   class ImageAsset;
   class MusicAsset;
   class SoundAsset;
- 
+
   // Forward declare GQE states provided
   class MenuState;
   class SplashState;
  
+  /// Declare Action ID typedef which is used for identifying Action objects
+  typedef std::string typeActionID;
+
+  /// Declare Asset ID typedef which is used for identifying Asset objects
+  typedef std::string typeAssetID;
+
+  /// Declare State ID typedef which is used for identifying State objects
+  typedef std::string typeStateID;
+
 }; // namespace GQE
 #endif // GQE_CORE_TYPES_HPP_INCLUDED
 

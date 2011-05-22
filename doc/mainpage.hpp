@@ -15,7 +15,7 @@
 ///
 ///#include <assert.h>
 ///#include <stddef.h>
-///#include "GQE/Core.hpp"
+///#include <GQE/Core.hpp>
 ///
 ///int main(int argc, char* argv[])
 ///{

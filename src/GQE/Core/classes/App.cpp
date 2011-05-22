@@ -12,14 +12,15 @@
  * @date 20110127 - Moved to GQE Core library and src directory
  * @date 20110128 - Add Get/SetUpdateRate methods for changing game rate speed
  * @date 20110128 - Added new StatManager class for collecting game statistics
+ * @date 20110218 - Change to system include style
+ * @date 20110331 - Removed direct.h include as it is no longer needed
  */
  
 #include <assert.h>
-#include <direct.h>
-#include "GQE/Core/classes/App.hpp"
-#include "GQE/Core/classes/ConfigReader.hpp"
-#include "GQE/Core/states/MenuState.hpp"
-#include "GQE/Core/states/SplashState.hpp"
+#include <GQE/Core/classes/App.hpp>
+#include <GQE/Core/classes/ConfigReader.hpp>
+#include <GQE/Core/states/MenuState.hpp>
+#include <GQE/Core/states/SplashState.hpp>
  
 namespace GQE
 {
@@ -27,7 +28,11 @@ namespace GQE
     mTitle(theTitle),
     mVideoMode(DEFAULT_VIDEO_WIDTH, DEFAULT_VIDEO_HEIGHT, DEFAULT_VIDEO_BPP),
     mWindow(),
+#if (SFML_VERSION_MAJOR < 2)
     mWindowSettings(),
+#else
+    mContextSettings(),
+#endif
     mWindowStyle(sf::Style::Close | sf::Style::Resize),
     mInput(mWindow.GetInput()),
     mAssetManager(),
@@ -157,11 +162,20 @@ namespace GQE
       mVideoMode.BitsPerPixel = DEFAULT_VIDEO_BPP;
     }
  
+#if (SFML_VERSION_MAJOR < 2)
     // Create a RenderWindow object using VideoMode object above
     mWindow.Create(mVideoMode, mTitle, mWindowStyle, mWindowSettings);
- 
+
     // Use Vertical Sync
     mWindow.UseVerticalSync(true);
+#else
+    // Create a RenderWindow object using VideoMode object above
+    mWindow.Create(mVideoMode, mTitle, mWindowStyle, mContextSettings);
+
+    // Use Vertical Sync
+    mWindow.EnableVerticalSync(true);
+#endif
+
  
     // Output to log file
     mLog << "App::PreInit() completed" << std::endl;
@@ -215,7 +229,11 @@ namespace GQE
       {
         // Handle some events and let the current active state handle the rest
         sf::Event anEvent;
+#if (SFML_VERSION_MAJOR < 2)
         while(mWindow.GetEvent(anEvent))
+#else
+        while(mWindow.PollEvent(anEvent))
+#endif
         {
           // Switch on Event Type
           switch(anEvent.Type)

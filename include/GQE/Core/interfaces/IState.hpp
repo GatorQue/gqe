@@ -13,13 +13,14 @@
  * @date 20110218 - Added ReInit method for StateManager::ResetActiveState
  * @date 20110218 - Reset our Cleanup flag after HandleCleanup is called and
  *                  call HandleCleanup in DoInit if cleanup flag is set.
+ * @date 20110218 - Change to system include style
  */
 #ifndef   CORE_ISTATE_HPP_INCLUDED
 #define   CORE_ISTATE_HPP_INCLUDED
  
 #include <assert.h>
-#include "GQE/Core/Core_types.hpp"
-#include "GQE/Core/classes/App.hpp"
+#include <GQE/Core/Core_types.hpp>
+#include <GQE/Core/classes/App.hpp>
 #include <SFML/System.hpp>
  
 namespace GQE
@@ -99,7 +100,7 @@ namespace GQE
         }
       }
     }
- 
+
     /**
      * IsInitComplete will return true if the DoInit method has been called
      * for this state.
@@ -109,7 +110,7 @@ namespace GQE
     bool IsInitComplete(void) {
       return mInit;
     }
- 
+
     /**
      * IsPaused will return true if this state is not the currently active
      * state.
@@ -118,7 +119,7 @@ namespace GQE
     bool IsPaused(void) {
       return mPaused;
     }
- 
+
     /**
      * Pause is responsible for pausing this State since the Application
      * may have lost focus or another State has become activate.
@@ -129,14 +130,14 @@ namespace GQE
         // Output to log file
         mApp->mLog << "State::Pause() with ID=" << mID << " was paused" << std::endl;
       }
- 
+
       if(false == mPaused)
       {
         mPaused = true;
         mPausedClock.Reset();
       }
     }
- 
+
     /**
      * Resume is responsible for resuming this State since the Application
      * may have gained focus or the previous State was removed.
@@ -147,14 +148,14 @@ namespace GQE
         // Output to log file
         mApp->mLog << "State::Resume() with ID=" << mID << " was resumed" << std::endl;
       }
- 
+
       if(true == mPaused)
       {
         mPaused = false;
         mPausedTime += mPausedClock.GetElapsedTime();
       }
     }
- 
+
     /**
      * HandleEvents is responsible for handling input events for this
      * State when it is the active State.
@@ -188,7 +189,7 @@ namespace GQE
         mCleanup = false;
       }
     }
- 
+
     /**
      * GetElapsedTime will return one of the following:
      * 1) If this state is not paused: total elapsed time since DoInit was called
@@ -198,7 +199,7 @@ namespace GQE
      */
     float GetElapsedTime(void) const {
       float result = mElapsedClock.GetElapsedTime();
- 
+
       if(false == mInit)
       {
         result = mElapsedTime;
@@ -206,11 +207,11 @@ namespace GQE
  
       return result;
     }
- 
+
   protected:
     /// Pointer to the App class
     App*                  mApp;
- 
+
     /**
      * IState constructor is private because we do not allow copies of our
      * Singleton class
@@ -238,7 +239,7 @@ namespace GQE
         mApp->mLog << "IState::IState() ctor with ID=" << mID << " was called" << std::endl;
       }
     }
- 
+
     /**
      * Cleanup is responsible for performing any cleanup required before
      * this State is removed.
@@ -247,7 +248,7 @@ namespace GQE
       // Output to log file
       mApp->mLog << "IState::Cleanup() with ID=" << mID << " was called" << std::endl;
     }
- 
+
   private:
     /// The State ID
     const typeStateID     mID;
@@ -265,22 +266,22 @@ namespace GQE
     sf::Clock             mPausedClock;
     /// Total elapsed time paused since DoInit was called
     float                 mPausedTime;
- 
+
     /**
      * Our copy constructor is private because we do not allow copies of
      * our Singleton class
      */
     IState(const IState&);  // Intentionally undefined
- 
+
     /**
      * Our assignment operator is private because we do not allow copies
      * of our Singleton class
      */
     IState& operator=(const IState&); // Intentionally undefined
- 
+
   }; // class IState
 }; // namespace GQE
- 
+
 #endif // CORE_ISTATE_HPP_INCLUDED
 
 /**

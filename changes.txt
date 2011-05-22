@@ -1,3 +1,8 @@
+Version 0.6
+===========
+- Use system level include style
+- Better CMake support for building code
+
 Version 0.5
 ===========
 - Added ConfigAsset class

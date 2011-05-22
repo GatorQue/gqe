@@ -6,12 +6,13 @@
  * @file GQE/Core/assets/ConfigAsset.cpp
  * @author Ryan Lindeman
  * @date 20110218 - Initial Release
+ * @date 20110218 - Change to system include style
  */
 
 #include <assert.h>
 #include <stddef.h>
-#include "GQE/Core/assets/ConfigAsset.hpp"
-#include "GQE/Core/classes/App.hpp"
+#include <GQE/Core/assets/ConfigAsset.hpp>
+#include <GQE/Core/classes/App.hpp>
 
 namespace GQE
 {

@@ -8,12 +8,13 @@
  * @author Ryan Lindeman
  * @date 20110128 - Initial Release
  * @date 20110128 - Moved to GQE Core library and src directory
+ * @date 20110218 - Change to system include style
  */
  
 #include <assert.h>
 #include <sstream>
-#include "GQE/Core/classes/StatManager.hpp"
-#include "GQE/Core/classes/App.hpp"
+#include <GQE/Core/classes/StatManager.hpp>
+#include <GQE/Core/classes/App.hpp>
  
 namespace GQE
 {
@@ -55,9 +56,15 @@ namespace GQE
     mUPS.SetColor(sf::Color(255,255,255,128));
     mUPS.Move(0,30);
 
+#if (SFML_VERSION_MAJOR < 2)
     // Default strings to display for Frames/Updates per second
     mFPS.SetText("");
     mUPS.SetText("");
+#else
+    // Default strings to display for Frames/Updates per second
+    mFPS.SetString("");
+    mUPS.SetString("");
+#endif
   }
 
   void StatManager::DeInit(void)
@@ -110,7 +117,11 @@ namespace GQE
       updates.precision(2);
       updates.width(7);
       updates << "UPS: " << std::fixed << (float)mUpdates / mUpdateClock.GetElapsedTime();
+#if (SFML_VERSION_MAJOR < 2)
       mUPS.SetText(updates.str());
+#else
+      mUPS.SetString(updates.str());
+#endif
 
       // Reset our Update clock and update counter
       mUpdates = 0;
@@ -134,7 +145,11 @@ namespace GQE
       frames.precision(2);
       frames.width(7);
       frames << "FPS: " << std::fixed << (float)mFrames / mFrameClock.GetElapsedTime();
+#if (SFML_VERSION_MAJOR < 2)
       mFPS.SetText(frames.str());
+#else
+      mFPS.SetString(frames.str());
+#endif
 
       // Reset our Frames clock and frame counter
       mFrames = 0;

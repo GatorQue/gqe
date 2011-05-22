@@ -9,11 +9,13 @@
  * @date 20110128 - Initial Release
  * @date 20110128 - Moved to GQE Core library and include directory
  * @date 20110131 - Added class and method argument documentation
+ * @date 20110218 - Add SFML 2.0 support
+ * @date 20110218 - Change to system include style
  */
 #ifndef   CORE_STAT_MANAGER_HPP_INCLUDED
 #define   CORE_STAT_MANAGER_HPP_INCLUDED
 
-#include "GQE/Core/Core_types.hpp"
+#include <GQE/Core/Core_types.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
  
@@ -106,15 +108,24 @@ namespace GQE
     Uint32      mFrames;
     /// Frame clock for displaying Frames per second value
     sf::Clock   mFrameClock;
+#if (SFML_VERSION_MAJOR < 2)
     /// Debug string to display that shows the frames per second
     sf::String  mFPS;
+#else
+    sf::Text    mFPS;
+#endif
+
     /// Total number of updates done since DoInit was called
     Uint32      mUpdates;
     /// Update clock for displaying Updates per second value
     sf::Clock   mUpdateClock;
+#if (SFML_VERSION_MAJOR < 2)
     /// Debug string to display that shows the updates per second
     sf::String  mUPS;
- 
+#else
+    sf::Text    mUPS;
+#endif
+
     /**
      * StatManager copy constructor is private because we do not allow copies
      * of our class

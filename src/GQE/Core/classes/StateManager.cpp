@@ -6,27 +6,29 @@
  * @file src/GQE/Core/classes/StateManager.cpp
  * @author Ryan Lindeman
  * @date 20100728 - Initial Release
- * @date 20110120 - Add ability to add inactive states
+ * @date 20110120 - Added ability to add inactive states and initialize them
+ *                  when they become active and send Dialog signal events.
  * @date 20110120 - Add ability to drop active state as inactive state
  * @date 20110125 - IState::HandleCleanup is now called from here
  * @date 20110127 - Moved to GQE Core library and src directory
  * @date 20110218 - Change mDropped to mDead to remove potential confusion
  * @date 20110218 - Added InactivateActiveState and ResetActiveState methods
+ * @date 20110218 - Change to system include style
  */
- 
+
 #include <assert.h>
 #include <stddef.h>
-#include "GQE/Core/classes/StateManager.hpp"
-#include "GQE/Core/classes/App.hpp"
-#include "GQE/Core/interfaces/IState.hpp"
- 
+#include <GQE/Core/classes/StateManager.hpp>
+#include <GQE/Core/classes/App.hpp>
+#include <GQE/Core/interfaces/IState.hpp>
+
 namespace GQE
 {
   StateManager::StateManager() :
     mApp(NULL)
   {
   }
- 
+
   StateManager::~StateManager()
   {
     // Output to log file
@@ -34,7 +36,7 @@ namespace GQE
     {
       mApp->mLog << "StateManager::~StateManager() dtor called" << std::endl;
     }
- 
+
     // Drop all active states
     while(!mStack.empty())
     {
@@ -49,17 +51,17 @@ namespace GQE
  
       // De-initialize the state
       anState->DeInit();
- 
+
       // Handle the cleanup before we pop it off the stack
       anState->HandleCleanup();
  
       // Just delete the state now
       delete anState;
- 
+
       // Don't keep pointers around we don't need
       anState = NULL;
     }
- 
+
     // Delete all our dropped states
     while(!mDead.empty())
     {
@@ -80,7 +82,7 @@ namespace GQE
  
       // Just delete the state now
       delete anState;
- 
+
       // Don't keep pointers around we don't need
       anState = NULL;
     }
@@ -88,27 +90,27 @@ namespace GQE
     // Clear pointers we don't need anymore
     mApp = NULL;
   }
- 
+
   void StateManager::RegisterApp(App* theApp)
   {
     // Check that our pointer is good
     assert(NULL != theApp && "StateManager::RegisterApp() theApp pointer provided is bad");
- 
+
     // Make a note of the pointer
     assert(NULL == mApp && "StateManager::RegisterApp() theApp pointer was already registered");
     mApp = theApp;
   }
- 
+
   bool StateManager::IsEmpty(void)
   {
     return mStack.empty();
   }
- 
+
   void StateManager::AddActiveState(IState* theState)
   {
     // Check that they didn't provide a bad pointer
     assert(NULL != theState && "StateManager::AddActiveState() received a bad pointer");
- 
+
     // Log the adding of each state
     if(NULL != mApp)
     {
@@ -122,14 +124,14 @@ namespace GQE
       // currently active state to the one provided
       mStack.back()->Pause();
     }
- 
+
     // Add the active state
     mStack.push_back(theState);
  
     // Initialize the new active state
     mStack.back()->DoInit();
   }
- 
+
   void StateManager::AddInactiveState(IState* theState)
   {
     // Check that they didn't provide a bad pointer
@@ -218,13 +220,13 @@ namespace GQE
     {
       // Retrieve the currently active state
       IState* anState = mStack.back();
- 
+
       // Log the dropping of each state
       if(NULL != mApp)
       {
         mApp->mLog << "StateManager::DropActiveState() StateID=" << anState->GetID() << std::endl;
       }
- 
+
       // Pause the currently active state
       anState->Pause();
 
@@ -251,7 +253,7 @@ namespace GQE
       }
       return;
     }
- 
+
     // Is there another state to activate? then call Resume to activate it
     if(!mStack.empty())
     {
@@ -397,7 +399,7 @@ namespace GQE
         {
           mApp->mLog << "StateManager::SetActiveState() StateID=" << anState->GetID() << std::endl;
         }
- 
+
         // Erase it from the list of previously active states
         mStack.erase(it);
  
@@ -408,13 +410,13 @@ namespace GQE
           // currently active state to the one specified by theStateID
           mStack.back()->Pause();
         }
- 
+
         // Add the new active state
         mStack.push_back(anState);
  
         // Don't keep pointers we don't need around
         anState = NULL;
- 
+
         // Has this state ever been initialized?
         if(mStack.back()->IsInitComplete())
         {
@@ -426,7 +428,7 @@ namespace GQE
           // Initialize the new active state
           mStack.back()->DoInit();
         }
- 
+
         // Exit our find loop
         break;
       } // if((*it)->GetID() == theStateID)

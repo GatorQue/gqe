@@ -6,16 +6,19 @@
  * @file include/GQE/Core/classes/AssetManager.hpp
  * @author Ryan Lindeman
  * @date 20100723 - Initial Release
+ * @date 20110110 - Added ability to get sf::Sound from SoundAsset
  * @date 20110127 - Moved to GQE Core library and include directory
  * @date 20110131 - Added class and method argument documentation
  * @date 20110218 - Added new Config asset type
+ * @date 20110218 - Change to system include style
  */
 #ifndef   CORE_ASSET_MANAGER_HPP_INCLUDED
 #define   CORE_ASSET_MANAGER_HPP_INCLUDED
  
 #include <map>
 #include <string>
-#include "GQE/Core/Core_types.hpp"
+#include <GQE/Core/Core_types.hpp>
+#include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
  
@@ -36,7 +39,7 @@ namespace GQE
       AssetSound          = 6,  ///< Sound Effect Asset Type
       AssetLevel          = 7,  ///< Level/Map Asset Type
       LastStandardAsset,        ///< Last Standard Asset Type Value
- 
+
       // The following can be used for custom assets
       FirstCustomAsset    = 10, ///< First Custom Asset Type value
       AssetCustom1        = 11, ///< Custom Asset Type 1
@@ -46,24 +49,24 @@ namespace GQE
       AssetCustom5        = 15, ///< Custom Asset Type 5
       LastCustomAsset,          ///< Last Custom Asset Type Value
     };
- 
+
     /**
      * AssetManager constructor
      */
     AssetManager();
- 
+
     /**
      * AssetManager deconstructor
      */
     virtual ~AssetManager();
- 
+
     /**
      * RegisterApp will register a pointer to the App class so it can be used
      * by the AssetManager for error handling and log reporting.
      * @param[in] theApp is a pointer to the App (or App derived) class
      */
     void RegisterApp(App* theApp);
- 
+
     /**
      * LoadAssets will attempt to load all of the assets that have not been
      * loaded in either the foreground or background depending on
@@ -71,7 +74,7 @@ namespace GQE
      * @param[in] theBackgroundFlag means load assets in the background
      */
     void LoadAssets(bool theBackgroundFlag = false);
- 
+
     /**
      * IsLoading() will return true if the background thread is currently
      * loading the Background loading style assets.
@@ -119,20 +122,20 @@ namespace GQE
       const typeAssetID theAssetID,
       const std::string theFilename = "",
       AssetLoadingStyle theStyle = AssetLoadStyleBackground);
- 
+
     /**
      * UnloadFont will unload the font asset specified by theAssetID.
      * @param[in] theAssetID is the ID for the FontAsset to unload
      */
     void UnloadFont(const typeAssetID theAssetID);
- 
+
     /**
      * GetFont will retrieve the font asset specified by theAssetID.
      * @param[in] theAssetID is the ID for the FontAsset to be retrieved
      * @return pointer to FontAsset or NULL if it doesn't yet exist
      */
     FontAsset* GetFont(const typeAssetID theAssetID);
- 
+
     /**
      * AddImage will add a ImageAsset object if the ImageAsset object does not
      * yet exist, otherwise it will return a pointer to the existing
@@ -146,14 +149,14 @@ namespace GQE
       const typeAssetID theAssetID,
       const std::string theFilename = "",
       AssetLoadingStyle theStyle = AssetLoadStyleBackground);
- 
+
     /**
      * GetImage will retrieve the image asset specified by theAssetID.
      * @param[in] theAssetID is the ID for the ImageAsset to be retrieved
      * @return pointer to ImageAsset or NULL if it doesn't yet exist
      */
     ImageAsset* GetImage(const typeAssetID theAssetID);
- 
+
     /**
      * GetSprite will return a sprite object for the image asset specified by
      * theAssetID.  The caller is responsible for this object and must delete
@@ -162,13 +165,13 @@ namespace GQE
      * @return pointer to sf::Sprite or NULL if image was not found
      */
     sf::Sprite* GetSprite(const typeAssetID theAssetID);
- 
+
     /**
      * UnloadImage will unload the image asset specified by theAssetID.
      * @param[in] theAssetID is the ID for the ImageAsset to unload
      */
     void UnloadImage(const typeAssetID theAssetID);
- 
+
     /**
      * AddMusic will add a MusicAsset object if the MusicAsset object does not
      * yet exist, otherwise it will return a pointer to the existing
@@ -182,20 +185,20 @@ namespace GQE
       const typeAssetID theAssetID,
       const std::string theFilename = "",
       AssetLoadingStyle theStyle = AssetLoadStyleBackground);
- 
+
     /**
      * GetMusic will retrieve the music asset specified by theAssetID.
      * @param[in] theAssetID is the ID for the MusicAsset to be retrieved
      * @return pointer to MusicAsset or NULL if it doesn't yet exist
      */
     MusicAsset* GetMusic(const typeAssetID theAssetID);
- 
+
     /**
      * UnloadMusic will unload the music asset specified by theAssetID.
      * @param[in] theAssetID is the ID for the MusicAsset to unload
      */
     void UnloadMusic(const typeAssetID theAssetID);
- 
+
     /**
      * AddSound will add a SoundAsset object if the SoundAsset object does not
      * yet exist, otherwise it will return a pointer to the existing
@@ -209,24 +212,33 @@ namespace GQE
       const typeAssetID theAssetID,
       const std::string theFilename = "",
       AssetLoadingStyle theStyle = AssetLoadStyleBackground);
- 
+
     /**
      * GetSound will retrieve the sound asset specified by theAssetID.
      * @param[in] theAssetID is the ID for the SoundAsset to be retrieved
      * @return pointer to SoundAsset or NULL if it doesn't yet exist
      */
     SoundAsset* GetSound(const typeAssetID theAssetID);
- 
+
+    /**
+     * GetSoundPlayer will return a Sound object for the sound asset specified
+     * by theAssetID.  The caller is responsible for this object and must
+     * delete this object when he is through with it.
+     * @param[in] theAssetID is the ID for the SoundAsset to be retrieved
+     * @return pointer to sf::Sound or NULL if sound was not found
+     */
+    sf::Sound* GetSoundPlayer(const typeAssetID theAssetID);
+
     /**
      * UnloadSound will unload the sound asset specified by theAssetID.
      * @param[in] theAssetID is the ID for the SoundAsset to unload
      */
     void UnloadSound(const typeAssetID theAssetID);
- 
+
   private:
     // Constants
     ///////////////////////////////////////////////////////////////////////////
- 
+
     // Variables
     ///////////////////////////////////////////////////////////////////////////
     /// Pointer to the App class for error handling and logging
@@ -247,19 +259,19 @@ namespace GQE
     std::map<const typeAssetID, SoundAsset*>  mSounds;
     /// Map to store all the Music assets
     std::map<const typeAssetID, MusicAsset*>  mMusic;
- 
+
     /**
      * AssetManager copy constructor is private because we do not allow copies
      * of our class
      */
     AssetManager(const AssetManager&); // Intentionally undefined
- 
+
     /**
      * Our assignment operator is private because we do not allow copies
      * of our class
      */
     AssetManager& operator=(const AssetManager&); // Intentionally undefined
- 
+
     /**
      * BackgroundLoop is the method that will be called when the background
      * thread is currently running.
@@ -282,49 +294,49 @@ namespace GQE
      * DeleteFonts will delete all added font assets.
      */
     void DeleteFonts(void);
- 
+
     /**
      * LoadFonts will load all the fonts that match theStyle specified.
      * @param[in] theStyle that equals the loading style of the unloaded assets
      */
     void LoadFonts(AssetLoadingStyle theStyle);
- 
+
     /**
      * DeleteImages will delete all added image assets.
      */
     void DeleteImages(void);
- 
+
     /**
      * LoadImages will load all the images that match theStyle specified.
      * @param[in] theStyle that equals the loading style of the unloaded assets
      */
     void LoadImages(AssetLoadingStyle theStyle);
- 
+
     /**
      * DeleteMusic will delete all added music assets.
      */
     void DeleteMusic(void);
- 
+
     /**
      * LoadMusic will load all the music that match theStyle specified.
      * @param[in] theStyle that equals the loading style of the unloaded assets
      */
     void LoadMusic(AssetLoadingStyle theStyle);
- 
+
     /**
      * DeleteSound will delete all added sound assets.
      */
     void DeleteSounds(void);
- 
+
     /**
      * LoadSounds will load all the sounds that match theStyle specified.
      * @param[in] theStyle that equals the loading style of the unloaded assets
      */
     void LoadSounds(AssetLoadingStyle theStyle);
- 
+
   }; // class AssetManager
 }; // namespace GQE
- 
+
 #endif // CORE_ASSET_MANAGER_HPP_INCLUDED
 
 /**

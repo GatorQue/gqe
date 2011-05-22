@@ -8,12 +8,13 @@
  * @date 20110127 - Moved to GQE Core library and include directory
  * @date 20110131 - Added class and method argument documentation
  * @date 20110218 - Added ReInit method
+ * @date 20110218 - Change to system include style
  */
 #ifndef   CORE_MENU_STATE_HPP_INCLUDED
 #define   CORE_MENU_STATE_HPP_INCLUDED
 
-#include "GQE/Core/Core_types.hpp" // Typedef declarations
-#include "GQE/Core/interfaces/IState.hpp"
+#include <GQE/Core/Core_types.hpp>
+#include <GQE/Core/interfaces/IState.hpp>
 #include <SFML/System.hpp>
 
 namespace GQE
@@ -75,9 +76,13 @@ namespace GQE
     /////////////////////////////////////////////////////////////////////////
     sf::Font*           mMenuFont;
     sf::Sprite*         mMenuSprite;
+#if (SFML_VERSION_MAJOR < 2)
     sf::String*         mMenuString1;
     sf::String*         mMenuString2;
-
+#else
+    sf::Text*           mMenuString1;
+    sf::Text*           mMenuString2;
+#endif
   }; // class MenuState
 }; // namespace GQE
 

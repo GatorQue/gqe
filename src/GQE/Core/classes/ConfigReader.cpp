@@ -5,27 +5,29 @@
  * @file src/GQE/Core/classes/ConfigReader.cpp
  * @author Ryan Lindeman
  * @date 20110101 - Initial Release
+ * @date 20110108 - Added GetFloat and ParseFloat
  * @date 20110125 - Fix string compare problems
  * @date 20110127 - Moved to GQE Core library and src directory
  * @date 20110127 - Use new OS independent Uint/Int types
  * @date 20110128 - Fixed erase call in the DeleteXYZ methods.
  * @date 20110218 - Added boolean result to Read method for success
+ * @date 20110218 - Change to system include style
  */
- 
+
 #include <assert.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <sstream>
-#include "GQE/Core/classes/ConfigReader.hpp"
-#include "GQE/Core/classes/App.hpp"
- 
+#include <GQE/Core/classes/ConfigReader.hpp>
+#include <GQE/Core/classes/App.hpp>
+
 namespace GQE
 {
   ConfigReader::ConfigReader() :
     mApp(NULL)
   {
   }
- 
+
   ConfigReader::~ConfigReader()
   {
     // Output to log file
@@ -33,7 +35,7 @@ namespace GQE
     {
       mApp->mLog << "ConfigReader::~ConfigReader() dtor called" << std::endl;
     }
- 
+
     // Delete all section name, value maps
     std::map<const std::string, typeNameValue*>::iterator iter;
     iter = mSections.begin();
@@ -43,27 +45,27 @@ namespace GQE
       mSections.erase(iter++);
       delete anMap;
     }
- 
+
     // Clear pointers we don't need anymore
     mApp = NULL;
   }
- 
+
   void ConfigReader::RegisterApp(App* theApp)
   {
     // Check that our pointer is good
     assert(NULL != theApp && "ConfigReader::RegisterApp() theApp pointer provided is bad");
- 
+
     // Make a note of the pointer
     assert(NULL == mApp && "ConfigReader::RegisterApp() theApp pointer was already registered");
     mApp = theApp;
   }
- 
-  bool ConfigReader::IsSectionEmpty(const std::string theSection)
+
+  bool ConfigReader::IsSectionEmpty(const std::string theSection) const
   {
     bool anResult = false;
- 
+
     // Check if theSection really exists
-    std::map<const std::string, typeNameValue*>::iterator iter;
+    std::map<const std::string, typeNameValue*>::const_iterator iter;
     iter = mSections.find(theSection);
     if(iter != mSections.end())
     {
@@ -73,18 +75,18 @@ namespace GQE
         anResult = anMap->empty();
       }
     }
- 
+
     // Return the result found above or the default value of false
     return anResult;
   }
- 
+
   bool ConfigReader::GetBool(const std::string theSection,
-    const std::string theName, const bool theDefault)
+    const std::string theName, const bool theDefault) const
   {
     bool anResult = theDefault;
- 
+
     // Check if theSection really exists
-    std::map<const std::string, typeNameValue*>::iterator iter;
+    std::map<const std::string, typeNameValue*>::const_iterator iter;
     iter = mSections.find(theSection);
     if(iter != mSections.end())
     {
@@ -100,72 +102,18 @@ namespace GQE
         }
       }
     }
- 
+
     // Return the result found or theDefault assigned above
     return anResult;
   }
- 
-  std::string ConfigReader::GetString(const std::string theSection,
-    const std::string theName, const std::string theDefault)
-  {
-    std::string anResult = theDefault;
- 
-    // Check if theSection really exists
-    std::map<const std::string, typeNameValue*>::iterator iter;
-    iter = mSections.find(theSection);
-    if(iter != mSections.end())
-    {
-      // Try to obtain the name, value pair
-      typeNameValue* anMap = iter->second;
-      if(NULL != anMap)
-      {
-        typeNameValueIter iterNameValue;
-        iterNameValue = anMap->find(theName);
-        if(iterNameValue != anMap->end())
-        {
-          anResult = iterNameValue->second;
-        }
-      }
-    }
- 
-    // Return the result found or theDefault assigned above
-    return anResult;
-  }
- 
-  Uint32 ConfigReader::GetUint32(const std::string theSection,
-    const std::string theName, const Uint32 theDefault)
-  {
-    Uint32 anResult = theDefault;
- 
-    // Check if theSection really exists
-    std::map<const std::string, typeNameValue*>::iterator iter;
-    iter = mSections.find(theSection);
-    if(iter != mSections.end())
-    {
-      // Try to obtain the name, value pair
-      typeNameValue* anMap = iter->second;
-      if(NULL != anMap)
-      {
-        typeNameValueIter iterNameValue;
-        iterNameValue = anMap->find(theName);
-        if(iterNameValue != anMap->end())
-        {
-          anResult = ParseUint32(iterNameValue->second, theDefault);
-        }
-      }
-    }
- 
-    // Return the result found or theDefault assigned above
-    return anResult;
-  }
- 
+
   sf::Color ConfigReader::GetColor(const std::string theSection,
-    const std::string theName, const sf::Color theDefault)
+    const std::string theName, const sf::Color theDefault) const
   {
     sf::Color anResult = theDefault;
- 
+
     // Check if theSection really exists
-    std::map<const std::string, typeNameValue*>::iterator iter;
+    std::map<const std::string, typeNameValue*>::const_iterator iter;
     iter = mSections.find(theSection);
     if(iter != mSections.end())
     {
@@ -181,27 +129,108 @@ namespace GQE
         }
       }
     }
- 
+
+    // Return the result found or theDefault assigned above
+    return anResult;
+  }
+
+  float ConfigReader::GetFloat(const std::string theSection,
+    const std::string theName, const float theDefault) const
+  {
+    float anResult = theDefault;
+
+    // Check if theSection really exists
+    std::map<const std::string, typeNameValue*>::const_iterator iter;
+    iter = mSections.find(theSection);
+    if(iter != mSections.end())
+    {
+      // Try to obtain the name, value pair
+      typeNameValue* anMap = iter->second;
+      if(NULL != anMap)
+      {
+        typeNameValueIter iterNameValue;
+        iterNameValue = anMap->find(theName);
+        if(iterNameValue != anMap->end())
+        {
+          anResult = ParseFloat(iterNameValue->second, theDefault);
+        }
+      }
+    }
+
+    // Return the result found or theDefault assigned above
+    return anResult;
+  }
+
+  std::string ConfigReader::GetString(const std::string theSection,
+    const std::string theName, const std::string theDefault) const
+  {
+    std::string anResult = theDefault;
+
+    // Check if theSection really exists
+    std::map<const std::string, typeNameValue*>::const_iterator iter;
+    iter = mSections.find(theSection);
+    if(iter != mSections.end())
+    {
+      // Try to obtain the name, value pair
+      typeNameValue* anMap = iter->second;
+      if(NULL != anMap)
+      {
+        typeNameValueIter iterNameValue;
+        iterNameValue = anMap->find(theName);
+        if(iterNameValue != anMap->end())
+        {
+          anResult = iterNameValue->second;
+        }
+      }
+    }
+
     // Return the result found or theDefault assigned above
     return anResult;
   }
  
+  Uint32 ConfigReader::GetUint32(const std::string theSection,
+    const std::string theName, const Uint32 theDefault) const
+  {
+    Uint32 anResult = theDefault;
+ 
+    // Check if theSection really exists
+    std::map<const std::string, typeNameValue*>::const_iterator iter;
+    iter = mSections.find(theSection);
+    if(iter != mSections.end())
+    {
+      // Try to obtain the name, value pair
+      typeNameValue* anMap = iter->second;
+      if(NULL != anMap)
+      {
+        typeNameValueIter iterNameValue;
+        iterNameValue = anMap->find(theName);
+        if(iterNameValue != anMap->end())
+        {
+          anResult = ParseUint32(iterNameValue->second, theDefault);
+        }
+      }
+    }
+
+    // Return the result found or theDefault assigned above
+    return anResult;
+  }
+
   bool ConfigReader::Read(const std::string theFilename)
   {
     bool anResult = false;
     char anLine[MAX_CHARS];
     std::string anSection;
     unsigned long anCount = 1;
- 
+
     // Let the log know about the file we are about to read in
     if(NULL != mApp)
     {
       mApp->mLog << "ConfigReader::Read() opening file " << theFilename << std::endl;
     }
- 
+
     // Attempt to open the file
     FILE* anFile = fopen(theFilename.c_str(), "r");
- 
+
     // Read from the file if successful
     if(NULL != anFile)
     {
@@ -224,11 +253,11 @@ namespace GQE
           // Parse the line
           anSection = ParseLine(anLine, anCount, anSection);
         }
- 
+
         // Increment our Line counter
         anCount++;
       }
- 
+
       // Don't forget to close the file
       fclose(anFile);
       
@@ -247,9 +276,9 @@ namespace GQE
     // Return anResult of true if successful, false otherwise
     return anResult;
   }
- 
+
   bool ConfigReader::ParseBool(const std::string theValue,
-    const bool theDefault)
+    const bool theDefault) const
   {
     bool anResult = theDefault;
     // Look for true results
@@ -262,16 +291,16 @@ namespace GQE
        GQE_STRICMP(theValue.c_str(),"0") == 0 ||
        GQE_STRICMP(theValue.c_str(),"off") == 0)
        anResult = false;
- 
+
     // Return the result found or theDefault assigned above
     return anResult;
   }
- 
+
   sf::Color ConfigReader::ParseColor(const std::string theValue,
-    const sf::Color theDefault)
+    const sf::Color theDefault) const
   {
     sf::Color anResult = theDefault;
- 
+
     // Try to find the first value: Red
     size_t anRedOffset = theValue.find_first_of(',');
     if(anRedOffset != std::string::npos)
@@ -296,30 +325,43 @@ namespace GQE
         }
       }
     }
- 
+
+    // Return the result found or theDefault assigned above
+    return anResult;
+  }
+
+  float ConfigReader::ParseFloat(const std::string theValue,
+    const float theDefault) const
+  {
+    float anResult = theDefault;
+    std::istringstream iss(theValue);
+
+    // Convert the string to an unsigned 32 bit integer
+    iss >> anResult;
+
     // Return the result found or theDefault assigned above
     return anResult;
   }
  
   Uint32 ConfigReader::ParseUint32(const std::string theValue,
-      const Uint32 theDefault)
+      const Uint32 theDefault) const
   {
     Uint32 anResult = theDefault;
     std::istringstream iss(theValue);
- 
+
     // Convert the string to an unsigned 32 bit integer
     iss >> anResult;
- 
+
     // Return the result found or theDefault assigned above
     return anResult;
   }
- 
+
   std::string ConfigReader::ParseLine(const char* theLine,
     const unsigned long theCount, const std::string theSection)
   {
     std::string anResult = theSection;
     size_t anLength = strlen(theLine);
-    if(anLength > 0)
+    if(anLength > 1)
     {
       // Skip preceeding spaces at the begining of the line
       size_t anOffset = 0;
@@ -327,7 +369,7 @@ namespace GQE
       {
         anOffset++;
       }
- 
+
       // Now check for comments
       if(theLine[anOffset] != '#' && theLine[anOffset] != ';')
       {
@@ -336,13 +378,13 @@ namespace GQE
         {
           // Skip over the begin section marker '['
           anOffset++;
- 
+
           // Skip preceeding spaces of section name
           while(anOffset < anLength && theLine[anOffset] == ' ')
           {
             anOffset++;
           }
- 
+
           // Retrieve the section name while looking for the section end marker ']'
           size_t anIndex = 0;
           char anSection[MAX_CHARS] = {0};
@@ -358,7 +400,7 @@ namespace GQE
             // Put a null terminator at the end of the section name
             anSection[--anIndex] = '\0';
           }
- 
+
           // Only update the current section name if we found the section end
           // marker before the end of the line
           if((anOffset+anIndex) < anLength && anIndex > 0)
@@ -401,16 +443,16 @@ namespace GQE
             // Put a null terminator at the end of the name
             anName[--anNameIndex] = '\0';
           }
- 
+
           // Only search for the value if we found the '=' or ':' delimiter
           if(anOffset < anLength && anNameIndex > 0)
           {
             size_t anValueIndex = 0;
             char anValue[MAX_CHARS];
- 
+
             // Skip over the delimiter between name and value '=' or ':'
             anOffset++;
- 
+
             // Skip preceeding spaces
             while(anOffset < anLength && theLine[anOffset] == ' ')
             {
@@ -434,7 +476,7 @@ namespace GQE
               // Put a null terminator at the end of the name
               anValue[--anValueIndex] = '\0';
             }
- 
+
             // Store the name,value pair obtained into the current section
             StoreNameValue(theSection,anName,anValue);
           }
@@ -449,12 +491,12 @@ namespace GQE
           }
         }
       } // if(theLine[anOffset] != '#' && theLine[anOffset] != ';') // Not a comment
-    } // if(anLength > 0)
- 
+    } // if(anLength > 1)
+
     // Return either the previous section name or the new section name found
     return anResult;
   }
- 
+
   void ConfigReader::StoreNameValue(const std::string theSection,
     const std::string theName, const std::string theValue)
   {
@@ -465,7 +507,7 @@ namespace GQE
     {
       // First try to create a new name, value pair map for this new section
       typeNameValue* anMap = new (std::nothrow) typeNameValue;
- 
+
       // Make sure we were able to create the map ok
       if(NULL != anMap)
       {
@@ -475,10 +517,10 @@ namespace GQE
           mApp->mLog << "ConfigReader::StoreNameValue() adding new section (" << theSection
             << ") the name, value pair (" << theName << "," << theValue << ")" << std::endl;
         }
- 
+
         // Add the new name, value pair to this map
         anMap->insert(std::pair<const std::string, const std::string>(theName,theValue));
- 
+
         // Add the new name, value pair map for this new section
         mSections.insert(std::pair<const std::string, typeNameValue*>(theSection, anMap));
       }
@@ -495,7 +537,7 @@ namespace GQE
     {
       // Retrieve the existing name, value pair map
       typeNameValue* anMap = iterSection->second;
- 
+
       // Make sure we were able to retrieve the map ok
       if(NULL != anMap)
       {
@@ -510,7 +552,7 @@ namespace GQE
             mApp->mLog << "ConfigReader::StoreNameValue() adding to existing section (" << theSection
               << ") the name, value pair (" << theName << "," << theValue << ")" << std::endl;
           }
- 
+
           // Add the new name, value pair to this map
           anMap->insert(std::pair<const std::string, const std::string>(theName,theValue));
         }
@@ -526,7 +568,7 @@ namespace GQE
       }
     } // else(iterSection == mSections.end())
   }
- 
+
 }; // namespace GQE
 
 /**
