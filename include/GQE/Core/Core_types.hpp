@@ -8,6 +8,7 @@
  * @date 20110125 - Fix string compare issues
  * @date 20110127 - Changed name from GQE_types.hpp to Core_types.hpp
  * @date 20110218 - Added ConfigAsset to forward declarations
+ * @date 20110523 - Readded NameValue types
  */
 #ifndef   GQE_CORE_TYPES_HPP_INCLUDED
 #define   GQE_CORE_TYPES_HPP_INCLUDED
@@ -72,6 +73,12 @@ namespace GQE
 
   /// Declare State ID typedef which is used for identifying State objects
   typedef std::string typeStateID;
+
+  /// Declare NameValue typedef which is used for config section maps
+  typedef std::map<const std::string, const std::string> typeNameValue;
+
+  /// Declare NameValueIter typedef which is used for name,value pair maps
+  typedef std::map<const std::string, const std::string>::iterator typeNameValueIter;
 
 }; // namespace GQE
 #endif // GQE_CORE_TYPES_HPP_INCLUDED
