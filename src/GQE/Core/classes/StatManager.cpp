@@ -9,10 +9,12 @@
  * @date 20110128 - Initial Release
  * @date 20110128 - Moved to GQE Core library and src directory
  * @date 20110218 - Change to system include style
+ * @date 20110611 - Convert logging to new Log macros
  */
  
 #include <assert.h>
 #include <sstream>
+#include <GQE/Core/loggers/Log_macros.hpp>
 #include <GQE/Core/classes/StatManager.hpp>
 #include <GQE/Core/classes/App.hpp>
  
@@ -26,15 +28,12 @@ namespace GQE
     mFPS(),
     mUPS()
   {
+    ILOGM("StatManager::ctor()");
   }
  
   StatManager::~StatManager()
   {
-    // Output to log file
-    if(NULL != mApp)
-    {
-      mApp->mLog << "StatManager::~StatManager() dtor called" << std::endl;
-    }
+    ILOGM("StatManager::dtor()");
  
     // Clear pointers we don't need anymore
     mApp = NULL;
@@ -42,6 +41,8 @@ namespace GQE
 
   void StatManager::DoInit(void)
   {
+    ILOGM("StatManager::DoInit()");
+
     // Reset our counters
     mFrames = 0;
     mUpdates = 0;
@@ -69,6 +70,7 @@ namespace GQE
 
   void StatManager::DeInit(void)
   {
+    ILOGM("StatManager::DeInit()");
   }
 
   bool StatManager::IsShowing(void) const

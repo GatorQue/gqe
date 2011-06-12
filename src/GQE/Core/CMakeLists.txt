@@ -13,8 +13,15 @@ set(INC
     ${INCROOT}/Core/classes/ConfigReader.hpp
     ${INCROOT}/Core/classes/StatManager.hpp
     ${INCROOT}/Core/classes/StateManager.hpp
+    ${INCROOT}/Core/loggers/Log_macros.hpp
+    ${INCROOT}/Core/loggers/FatalLogger.hpp
+    ${INCROOT}/Core/loggers/FileLogger.hpp
+    ${INCROOT}/Core/loggers/ScopeLogger.hpp
+    ${INCROOT}/Core/loggers/StringLogger.hpp
+    ${INCROOT}/Core/loggers/onullstream
     ${INCROOT}/Core/states/MenuState.hpp
     ${INCROOT}/Core/states/SplashState.hpp
+    ${INCROOT}/Core/interfaces/ILogger.hpp
     ${INCROOT}/Core/interfaces/IState.hpp
     ${INCROOT}/Core/interfaces/TAsset.hpp
     ${INCROOT}/Core/Core_types.hpp
@@ -32,8 +39,13 @@ set(SRC
     ${SRCROOT}/Core/classes/ConfigReader.cpp
     ${SRCROOT}/Core/classes/StatManager.cpp
     ${SRCROOT}/Core/classes/StateManager.cpp
+    ${SRCROOT}/Core/loggers/FatalLogger.cpp
+    ${SRCROOT}/Core/loggers/FileLogger.cpp
+    ${SRCROOT}/Core/loggers/ScopeLogger.cpp
+    ${SRCROOT}/Core/loggers/StringLogger.cpp
     ${SRCROOT}/Core/states/MenuState.cpp
     ${SRCROOT}/Core/states/SplashState.cpp
+    ${SRCROOT}/Core/Core_types.cpp
 )
 
 # add platform specific sources
@@ -45,31 +57,20 @@ find_package(SFML REQUIRED audio graphics window system)
 # add include paths of external libraries
 include_directories(${SFML_INCLUDE_DIR})
 
-# define the gqe-core target
-gqe_add_library(gqe-core
-                HEADER        ${HEADER}
-                HEADER_DIR    ${INCROOT}/Core
-                INCLUDES      ${INC}
-                SOURCES       ${SRC}
-                EXTERNAL_LIBS ${SFML_AUDIO_LIBRARY} ${SFML_GRAPHICS_LIBRARY} ${SFML_SYSTEM_LIBRARY} ${SFML_WINDOW_LIBRARY})
-                
-#add_library(gqe-core SHARED ${HEADER} ${INC} ${SRC})
-
-#target_link_libraries(gqe-core ${SFML_AUDIO_LIBRARY} ${SFML_GRAPHICS_LIBRARY} ${SFML_SYSTEM_LIBRARY} ${SFML_WINDOW_LIBRARY})
- 
-# set target public header file for this library
-#set_target_properties(gqe-core PROPERTIES PUBLIC_HEADER "${HEADER}")
-
-# install this library
-#install(TARGETS gqe-core
-#  # IMPORTANT: Add the gqe-core library to the "export-set"
-#  EXPORT GQE_LibraryDepends
-#  RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin
-#  LIBRARY DESTINATION "${INSTALL_LIB_DIR}" COMPONENT shlib
-#  PUBLIC_HEADER DESTINATION "${INSTALL_INCLUDE_DIR}/GQE" COMPONENT dev)
-
-# install Core library include files
-#install(DIRECTORY ${INCROOT}/Core
-#        DESTINATION ${INSTALL_INCLUDE_DIR}/GQE
-#        COMPONENT dev
-#        PATTERN ".svn" EXCLUDE)
+if(BUILD_SHARED_LIBS)
+  # define the gqe-core target
+  gqe_add_library(gqe-core
+                  HEADER        ${HEADER}
+                  HEADER_DIR    ${INCROOT}/Core
+                  INCLUDES      ${INC}
+                  SOURCES       ${SRC}
+                  EXTERNAL_LIBS ${SFML_WINDOW_LIBRARY} ${SFML_SYSTEM_LIBRARY} ${SFML_GRAPHICS_LIBRARY} ${SFML_AUDIO_LIBRARY})
+else()
+  # define the gqe-core target (for a static build, we use depends to remove LNK4006 and LNK4221 errors with Visual Studio)
+  gqe_add_library(gqe-core
+                  HEADER        ${HEADER}
+                  HEADER_DIR    ${INCROOT}/Core
+                  INCLUDES      ${INC}
+                  SOURCES       ${SRC}
+                  DEPENDS       ${SFML_WINDOW_LIBRARY} ${SFML_SYSTEM_LIBRARY} ${SFML_GRAPHICS_LIBRARY} ${SFML_AUDIO_LIBRARY})
+endif()

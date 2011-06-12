@@ -14,10 +14,12 @@
  * @date 20110218 - Change mDropped to mDead to remove potential confusion
  * @date 20110218 - Added InactivateActiveState and ResetActiveState methods
  * @date 20110218 - Change to system include style
+ * @date 20110611 - Convert logging to new Log macros
  */
 
 #include <assert.h>
 #include <stddef.h>
+#include <GQE/Core/loggers/Log_macros.hpp>
 #include <GQE/Core/classes/StateManager.hpp>
 #include <GQE/Core/classes/App.hpp>
 #include <GQE/Core/interfaces/IState.hpp>
@@ -27,15 +29,12 @@ namespace GQE
   StateManager::StateManager() :
     mApp(NULL)
   {
+    ILOGM("StateManager::ctor()");
   }
 
   StateManager::~StateManager()
   {
-    // Output to log file
-    if(NULL != mApp)
-    {
-      mApp->mLog << "StateManager::~StateManager() dtor called" << std::endl;
-    }
+    ILOGM("StateManager::dtor()");
 
     // Drop all active states
     while(!mStack.empty())
@@ -112,10 +111,7 @@ namespace GQE
     assert(NULL != theState && "StateManager::AddActiveState() received a bad pointer");
 
     // Log the adding of each state
-    if(NULL != mApp)
-    {
-      mApp->mLog << "StateManager::AddActiveState() StateID=" << theState->GetID() << std::endl;
-    }
+    ILOG() << "StateManager::AddActiveState(" << theState->GetID() << ")" << std::endl;
  
     // Is there a state currently running? then Pause it
     if(!mStack.empty())
@@ -138,10 +134,7 @@ namespace GQE
     assert(NULL != theState && "StateManager::AddInactiveState() received a bad pointer");
 
     // Log the adding of each state
-    if(NULL != mApp)
-    {
-      mApp->mLog << "StateManager::AddInactiveState() StateID=" << theState->GetID() << std::endl;
-    }
+    ILOG() << "StateManager::AddInactiveState(" << theState->GetID() << ")" << std::endl;
 
     // Add the inactive state to the bottom of the stack
     mStack.insert(mStack.begin(), theState);
@@ -160,11 +153,8 @@ namespace GQE
       // Retrieve the currently active state
       IState* anState = mStack.back();
  
-      // Log the dropping of each state
-      if(NULL != mApp)
-      {
-        mApp->mLog << "StateManager::InactivateActiveState() StateID=" << anState->GetID() << std::endl;
-      }
+      // Log the inactivating an active state
+      ILOG() << "StateManager::InactivateActiveState(" << anState->GetID() << ")" << std::endl;
  
       // Pause the currently active state
       anState->Pause();
@@ -221,11 +211,8 @@ namespace GQE
       // Retrieve the currently active state
       IState* anState = mStack.back();
 
-      // Log the dropping of each state
-      if(NULL != mApp)
-      {
-        mApp->mLog << "StateManager::DropActiveState() StateID=" << anState->GetID() << std::endl;
-      }
+      // Log the dropping of an active state
+      ILOG() << "StateManager::DropActiveState(" << anState->GetID() << ")" << std::endl;
 
       // Pause the currently active state
       anState->Pause();
@@ -287,11 +274,8 @@ namespace GQE
       // Retrieve the currently active state
       IState* anState = mStack.back();
  
-      // Log the dropping of each state
-      if(NULL != mApp)
-      {
-        mApp->mLog << "StateManager::ResetActiveState() StateID=" << anState->GetID() << std::endl;
-      }
+      // Log the resetting of an active state
+      ILOG() << "StateManager::ResetActiveState(" << anState->GetID() << ")" << std::endl;
  
       // Pause the currently active state
       anState->Pause();
@@ -324,11 +308,8 @@ namespace GQE
       // Retrieve the currently active state
       IState* anState = mStack.back();
  
-      // Log the dropping of each state
-      if(NULL != mApp)
-      {
-        mApp->mLog << "StateManager::RemoveActiveState() StateID=" << anState->GetID() << std::endl;
-      }
+      // Log the removing of an active state
+      ILOG() << "StateManager::RemoveActiveState(" << anState->GetID() << ")" << std::endl;
  
       // Pause the currently active state
       anState->Pause();
@@ -394,11 +375,8 @@ namespace GQE
         // Get a pointer to soon to be currently active state
         IState* anState = *it;
  
-        // Log the setting of a previously active state as the active state
-        if(NULL != mApp)
-        {
-          mApp->mLog << "StateManager::SetActiveState() StateID=" << anState->GetID() << std::endl;
-        }
+        // Log the setting of a previously active state as the current active state
+        ILOG() << "StateManager::SetActiveState(" << anState->GetID() << ")" << std::endl;
 
         // Erase it from the list of previously active states
         mStack.erase(it);

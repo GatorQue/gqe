@@ -18,13 +18,13 @@ endif()
 project(GQE)
 
 # project options
-OPTION(BUILD_SHARED_LIBS "Set to OFF to build static libraries" ON)
+OPTION(BUILD_SHARED_LIBS "Set to OFF to build static libraries" OFF)
 OPTION(BUILD_EXAMPLES "Set to OFF to skip building examples" ON) 
 OPTION(INSTALL_DOC "Set to OFF to skip build/install Documentation" ON)
 
 # setup version numbers
 set(GQE_VERSION_MAJOR 0)
-set(GQE_VERSION_MINOR 6)
+set(GQE_VERSION_MINOR 7)
 set(GQE_VERSION_PATCH 0)
 
 # define the path of our additional CMake modules
@@ -37,14 +37,6 @@ include(${PROJECT_SOURCE_DIR}/cmake/Config.cmake)
 include_directories(
   "${PROJECT_SOURCE_DIR}/include"
   "${PROJECT_SOURCE_DIR}/extlibs/headers")
-
-# require proper c++
-#ADD_DEFINITIONS("-Wall -ansi -pedantic")
-
-# remove SL security warnings with Visual C++
-#if(MSVC)
-#    add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
-#endif()
 
 # disable the rpath stuff
 set(CMAKE_SKIP_BUILD_RPATH TRUE)
@@ -102,9 +94,9 @@ install(FILES ${PROJECT_SOURCE_DIR}/cmake/Modules/FindGQE.cmake DESTINATION ${CM
 # install our license file into our INSTALL_DATA_DIR
 install(FILES license.txt DESTINATION ${INSTALL_DATA_DIR})
 
-#if(WINDOWS)
-#    install(FILES extlibs/bin/libsndfile-1.dll DESTINATION bin)
-#    install(FILES extlibs/bin/openal32.dll DESTINATION bin)
-#elseif(MACOSX)
-#    install(DIRECTORY extlibs/libs-osx/Frameworks/sndfile.framework DESTINATION /Library/Frameworks PATTERN "hg" EXCLUDE)
-#endif()
+if(WINDOWS)
+    install(FILES extlibs/bin/libsndfile-1.dll DESTINATION bin)
+    install(FILES extlibs/bin/openal32.dll DESTINATION bin)
+elseif(MACOSX)
+    install(DIRECTORY extlibs/libs-osx/Frameworks/sndfile.framework DESTINATION /Library/Frameworks PATTERN "hg" EXCLUDE)
+endif()

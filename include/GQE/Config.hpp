@@ -8,6 +8,7 @@
  * @date 20110131 - Added define documentation
  * @date 20110218 - Next minor release of GQE
  * @date 20110318 - Next minor release of GQE
+ * @date 20110611 - Next minor release of GQE
  */
 #ifndef GQE_CONFIG_HPP
 #define GQE_CONFIG_HPP
@@ -19,7 +20,7 @@
 /// Define the GQE Major version number
 #define GQE_VERSION_MAJOR 0
 /// Define the GQE Minor version number
-#define GQE_VERSION_MINOR 6
+#define GQE_VERSION_MINOR 7
 
 
 ////////////////////////////////////////////////////////////
@@ -118,7 +119,7 @@
 #else
 
     // Other platforms and static build don't need these export macros
-	/// Define the GQE DLL API for non DLL OS platforms as nothing
+    /// Define the GQE DLL API for non DLL OS platforms as nothing
     #define GQE_API
 
 #endif

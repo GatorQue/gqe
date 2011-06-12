@@ -42,19 +42,31 @@ if(WINDOWS)
     set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "${PROJECT_SOURCE_DIR}/extlibs/headers")
     if(COMPILER_GCC)
         set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "${PROJECT_SOURCE_DIR}/extlibs/libs-mingw")
+
+        # require proper c++
+        ADD_DEFINITIONS("-Wall -ansi -pedantic")
     elseif(COMPILER_MSVC)
         if(ARCH_32BITS)
             set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "${CMAKE_SOURCE_DIR}/extlibs/libs-msvc/x86")
         else()
             set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "${CMAKE_SOURCE_DIR}/extlibs/libs-msvc/x64")
         endif()
+
+        # remove SL security warnings with Visual C++
+        add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
     endif()
 elseif(LINUX)
     set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "${PROJECT_SOURCE_DIR}/extlibs/headers")
     set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "${PROJECT_SOURCE_DIR}/extlibs/libs-gcc")
+
+    # require proper c++
+    ADD_DEFINITIONS("-Wall -ansi -pedantic")
 elseif(MACOSX)
     set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "${PROJECT_SOURCE_DIR}/extlibs/headers")
     set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "${PROJECT_SOURCE_DIR}/extlibs/libs-osx/lib/")
+
+    # require proper c++
+    ADD_DEFINITIONS("-Wall -ansi -pedantic")
 endif()
 
 # offer the user the choice of overriding the installation directories

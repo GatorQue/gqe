@@ -12,12 +12,14 @@
  * @date 20110128 - Fixed erase call in the DeleteXYZ methods.
  * @date 20110218 - Added boolean result to Read method for success
  * @date 20110218 - Change to system include style
+ * @date 20110611 - Convert logging to new Log macros
  */
 
 #include <assert.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <sstream>
+#include <GQE/Core/loggers/Log_macros.hpp>
 #include <GQE/Core/classes/ConfigReader.hpp>
 #include <GQE/Core/classes/App.hpp>
 
@@ -26,15 +28,12 @@ namespace GQE
   ConfigReader::ConfigReader() :
     mApp(NULL)
   {
+    ILOGM("ConfigReader::ctor()");
   }
 
   ConfigReader::~ConfigReader()
   {
-    // Output to log file
-    if(NULL != mApp)
-    {
-      mApp->mLog << "ConfigReader::~ConfigReader() dtor called" << std::endl;
-    }
+    ILOGM("ConfigReader::dtor()");
 
     // Delete all section name, value maps
     std::map<const std::string, typeNameValue*>::iterator iter;
@@ -223,10 +222,7 @@ namespace GQE
     unsigned long anCount = 1;
 
     // Let the log know about the file we are about to read in
-    if(NULL != mApp)
-    {
-      mApp->mLog << "ConfigReader::Read() opening file " << theFilename << std::endl;
-    }
+    ILOG() << "ConfigReader:Read(" << theFilename << ") opening..." << std::endl;
 
     // Attempt to open the file
     FILE* anFile = fopen(theFilename.c_str(), "r");
@@ -241,9 +237,9 @@ namespace GQE
         if(fgets(anLine, MAX_CHARS, anFile) == NULL)
         {
           // Log the failure to read a line from the file if not at the end of the file
-          if(NULL != mApp && !feof(anFile))
+          if(!feof(anFile))
           {
-            mApp->mLog << "ConfigReader::Read() error reading line " << anCount << " from file " << theFilename << std::endl;
+            ELOG() << "ConfigReader::Read(" << anFile << ") error reading line " << anCount << std::endl;
           }
           // Exit our while loop, were done!
           break;
@@ -266,11 +262,7 @@ namespace GQE
     }
     else
     {
-      // Log the failure to open the file
-      if(NULL != mApp)
-      {
-        mApp->mLog << "ConfigReader::Read() error opening file " << theFilename << std::endl;
-      }
+      ELOG() << "ConfigReader::Read(" << theFilename << ") error opening file" << std::endl;
     }
     
     // Return anResult of true if successful, false otherwise
@@ -410,12 +402,7 @@ namespace GQE
           }
           else
           {
-            // Log the failure to open the file
-            if(NULL != mApp)
-            {
-              mApp->mLog << "ConfigReader::ParseLine() missing section end marker ']' on line "
-                << theCount << std::endl;
-            }
+            ELOG() << "ConfigReader::ParseLine(" << theCount << ") missing section end marker ']'" << std::endl;
           }
         }
         // Just read the name=value pair into the current section
@@ -482,12 +469,7 @@ namespace GQE
           }
           else
           {
-            // Log the failure to open the file
-            if(NULL != mApp)
-            {
-              mApp->mLog << "ConfigReader::ParseLine() missing name or value delimiter of '=' or ':'"
-                << " on line " << theCount << std::endl;
-            }
+            ELOG() << "ConfigReader::ParseLine(" << theCount << ") missing name or value delimiter of '=' or ':'" << std::endl;
           }
         }
       } // if(theLine[anOffset] != '#' && theLine[anOffset] != ';') // Not a comment
@@ -511,12 +493,7 @@ namespace GQE
       // Make sure we were able to create the map ok
       if(NULL != anMap)
       {
-        // Log the failure to open the file
-        if(NULL != mApp)
-        {
-          mApp->mLog << "ConfigReader::StoreNameValue() adding new section (" << theSection
-            << ") the name, value pair (" << theName << "," << theValue << ")" << std::endl;
-        }
+        ILOG() << "ConfigReader::StoreNameValue(" << theSection << ") adding (" << theName << "," << theValue << ")" << std::endl;
 
         // Add the new name, value pair to this map
         anMap->insert(std::pair<const std::string, const std::string>(theName,theValue));
@@ -526,11 +503,7 @@ namespace GQE
       }
       else
       {
-        // Log the failure to open the file
-        if(NULL != mApp)
-        {
-          mApp->mLog << "ConfigReader::StoreNameValue() unable to create name, value map" << std::endl;
-        }
+        ELOG() << "ConfigReader::StoreNameValue(" << theSection << ") unable to add (" << theName << "," << theValue << ") out of memory!" << std::endl;
       }
     }
     else
@@ -546,24 +519,14 @@ namespace GQE
         iterNameValue = anMap->find(theName);
         if(iterNameValue == anMap->end())
         {
-          // Log the failure to open the file
-          if(NULL != mApp)
-          {
-            mApp->mLog << "ConfigReader::StoreNameValue() adding to existing section (" << theSection
-              << ") the name, value pair (" << theName << "," << theValue << ")" << std::endl;
-          }
+          ILOG() << "ConfigReader::StoreNameValue(" << theSection << ") adding (" << theName << "," << theValue << ")" << std::endl;
 
           // Add the new name, value pair to this map
           anMap->insert(std::pair<const std::string, const std::string>(theName,theValue));
         }
         else
         {
-          // Log the failure to open the file
-          if(NULL != mApp)
-          {
-            mApp->mLog << "ConfigReader::StoreNameValue() name, value pair (" << theName
-              << "," << theValue << ") already exists" << std::endl;
-          }
+          ELOG() << "ConfigReader::StoreNameValue(" << theSection << ") unable to add (" << theName << "," << theValue << ") already exists!" << std::endl;
         }
       }
     } // else(iterSection == mSections.end())

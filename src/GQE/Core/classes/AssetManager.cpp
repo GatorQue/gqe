@@ -11,10 +11,12 @@
  * @date 20110128 - Fixed erase call in the DeleteXYZ methods.
  * @date 20110218 - Added ConfigAsset to AssetManager
  * @date 20110218 - Change to system include style
+ * @date 20110611 - Convert logging to new Log macros
  */
  
 #include <assert.h>
 #include <stddef.h>
+#include <GQE/Core/loggers/Log_macros.hpp>
 #include <GQE/Core/classes/AssetManager.hpp>
 #include <GQE/Core/classes/App.hpp>
 #include <GQE/Core/assets/ConfigAsset.hpp>
@@ -30,17 +32,15 @@ namespace GQE
     mBackgroundLoading(false),
     mBackgroundThread(NULL)
   {
+    ILOGM("AssetManager::ctor()");
+
     // Create our background loading thread for use later
     mBackgroundThread = new(std::nothrow) sf::Thread(&AssetManager::BackgroundLoop, this);
   }
  
   AssetManager::~AssetManager()
   {
-    // Output to log file
-    if(NULL != mApp)
-    {
-      mApp->mLog << "AssetManager::~AssetManager() dtor called" << std::endl;
-    }
+    ILOGM("AssetManager::dtor()");
  
     if(true == mBackgroundLoading)
     {
@@ -74,11 +74,7 @@ namespace GQE
     // Background loading thread
     if(true == theBackgroundFlag && false == mBackgroundLoading)
     {
-      // Output error condition to log file
-      if(NULL != mApp)
-      {
-        mApp->mLog << "AssetManager::LoadAssets() starting background loading thread" << std::endl;
-      }
+      ILOGM("AssetManager::LoadAssets() starting background loading thread");
  
       // Launch the background loading thread
       mBackgroundThread->Launch();
@@ -86,11 +82,7 @@ namespace GQE
     // Foreground loading thread
     else
     {
-      // Output error condition to log file
-      if(NULL != mApp)
-      {
-        mApp->mLog << "AssetManager::LoadAssets() starting foreground loading thread" << std::endl;
-      }
+      ILOGM("AssetManager::LoadAssets() starting foreground loading thread");
 
       // Load all the configs
       LoadConfigs(AssetLoadStyleForeground);
@@ -146,22 +138,14 @@ namespace GQE
       // Add the asset to the map of available assets
       mConfigs.insert(std::pair<const typeAssetID, ConfigAsset*>(theAssetID, result));
       
-      // Output to log file
-      if(NULL != mApp)
-      {
-        mApp->mLog << "AssetManager::AddConfig() adding asset with id=" << theAssetID << std::endl;
-      }
+      ILOG() << "AssetManager::AddConfig(" << theAssetID << ") added" << std::endl;
     }
     else
     {
       // Return the previous asset that was added instead of creating a duplicate
       result = iter->second;
 
-      // Output to log file
-      if(NULL != mApp)
-      {
-        mApp->mLog << "AssetManager::AddConfig() returning asset with id=" << theAssetID << std::endl;
-      }
+      ILOG() << "AssetManager::AddConfig(" << theAssetID << ") returning existing" << std::endl;
     }
 
     // Make sure we are actually returning a good pointer
@@ -294,22 +278,14 @@ namespace GQE
       // Add the asset to the map of available assets
       mFonts.insert(std::pair<const typeAssetID, FontAsset*>(theAssetID, result));
  
-      // Output to log file
-      if(NULL != mApp)
-      {
-        mApp->mLog << "AssetManager::AddFont() adding asset with id=" << theAssetID << std::endl;
-      }
+      ILOG() << "AssetManager::AddFont(" << theAssetID << ") added" << std::endl;
     }
     else
     {
       // Return the previous asset that was added instead of creating a duplicate
       result = iter->second;
  
-      // Output to log file
-      if(NULL != mApp)
-      {
-        mApp->mLog << "AssetManager::AddFont() returning asset with id=" << theAssetID << std::endl;
-      }
+      ILOG() << "AssetManager::AddFont(" << theAssetID << ") returning existing" << std::endl;
     }
  
     // Make sure we are actually returning a good pointer
@@ -442,22 +418,14 @@ namespace GQE
       // Add the asset to the map of available assets
       mImages.insert(std::pair<const typeAssetID, ImageAsset*>(theAssetID, result));
  
-      // Output to log file
-      if(NULL != mApp)
-      {
-        mApp->mLog << "AssetManager::AddImage() adding asset with id=" << theAssetID << std::endl;
-      }
+      ILOG() << "AssetManager::AddImage(" << theAssetID << ") added" << std::endl;
     }
     else
     {
       // Return the previous asset that was added instead of creating a duplicate
       result = iter->second;
  
-      // Output to log file
-      if(NULL != mApp)
-      {
-        mApp->mLog << "AssetManager::AddImage() returning asset with id=" << theAssetID << std::endl;
-      }
+      ILOG() << "AssetManager::AddImage(" << theAssetID << ") returning existing" << std::endl;
     }
  
     // Make sure we are actually returning a good pointer
@@ -528,11 +496,7 @@ namespace GQE
     }
     else
     {
-      if(NULL != mApp)
-      {
-        mApp->mLog << "AssetManager::GetSprite() failed to find image with id=" << theAssetID << std::endl;
-        mApp->Quit(StatusAppMissingAsset);
-      }
+      FLOG(StatusAppMissingAsset) << "AssetManager::GetSprite(" << theAssetID << ") can't find image" << std::endl;
     }
  
     // Return our result
@@ -614,22 +578,14 @@ namespace GQE
       // Add the asset to the map of available assets
       mMusic.insert(std::pair<const typeAssetID, MusicAsset*>(theAssetID, result));
  
-      // Output to log file
-      if(NULL != mApp)
-      {
-        mApp->mLog << "AssetManager::AddMusic() adding asset with id=" << theAssetID << std::endl;
-      }
+      ILOG() << "AssetManager::AddMusic(" << theAssetID << ") added" << std::endl;
     }
     else
     {
       // Return the previous asset that was added instead of creating a duplicate
       result = iter->second;
  
-      // Output to log file
-      if(NULL != mApp)
-      {
-        mApp->mLog << "AssetManager::AddMusic() returning asset with id=" << theAssetID << std::endl;
-      }
+      ILOG() << "AssetManager::AddMusic(" << theAssetID << ") returning existing" << std::endl;
     }
  
     // Make sure we are actually returning a good pointer
@@ -762,22 +718,14 @@ namespace GQE
       // Add the asset to the map of available assets
       mSounds.insert(std::pair<const typeAssetID, SoundAsset*>(theAssetID, result));
  
-      // Output to log file
-      if(NULL != mApp)
-      {
-        mApp->mLog << "AssetManager::AddSound() adding asset with id=" << theAssetID << std::endl;
-      }
+      ILOG() << "AssetManager::AddSound(" << theAssetID << ") added" << std::endl;
     }
     else
     {
       // Return the previous asset that was added instead of creating a duplicate
       result = iter->second;
  
-      // Output to log file
-      if(NULL != mApp)
-      {
-        mApp->mLog << "AssetManager::AddSound() returning asset with id=" << theAssetID << std::endl;
-      }
+      ILOG() << "AssetManager::AddSound(" << theAssetID << ") returning existing" << std::endl;
     }
  
     // Make sure we are actually returning a good pointer
@@ -848,11 +796,7 @@ namespace GQE
     }
     else
     {
-      if(NULL != mApp)
-      {
-        mApp->mLog << "AssetManager::GetSoundPlayer() failed to find sound with id=" << theAssetID << std::endl;
-        mApp->Quit(StatusAppMissingAsset);
-      }
+      FLOG(StatusAppMissingAsset) << "AssetManager::GetSoundPlayer(" << theAssetID << ") can't find sound" << std::endl;
     }
 
     // Return our result

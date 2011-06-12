@@ -1,3 +1,12 @@
+Version 0.7
+===========
+- New logging technique using macros and C++ logger classes
+- Static build CMake fixes
+
+Version 0.6.1
+=============
+- Quick build issue fix
+
 Version 0.6
 ===========
 - Use system level include style

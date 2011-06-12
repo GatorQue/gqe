@@ -10,6 +10,7 @@
  * @date 20110128 - Added new StatManager class for collecting game statistics
  * @date 20110131 - Added class and method argument documentation
  * @date 20110218 - Change to system include style
+ * @date 20110611 - Convert logging to new Log macros
  */
 #ifndef   CORE_APP_HPP_INCLUDED
 #define   CORE_APP_HPP_INCLUDED
@@ -58,8 +59,6 @@ namespace GQE
     unsigned long             mWindowStyle;
     /// Input manager for Render window above
     const sf::Input&          mInput;
-    /// Output Logger file
-    std::ofstream             mLog;
     /// AssetManager for managing assets
     AssetManager              mAssetManager;
     /// StatManager for managing game statistics
@@ -154,8 +153,6 @@ namespace GQE
     bool                      mRunning;
     /// Update rate in seconds (1.0f / UpdateRate) to use for game loop
     float                     mUpdateRate;
-    /// Logger output path and filename
-    std::string               mLogFile;
 
     /**
      * App copy constructor is private because we do not allow copies of
@@ -169,7 +166,7 @@ namespace GQE
      */
     App& operator=(const App&);      // Intentionally undefined
   }; // class App
-}; // namespace GQE
+} // namespace GQE
 
 #endif // CORE_APP_HPP_INCLUDED
 /**

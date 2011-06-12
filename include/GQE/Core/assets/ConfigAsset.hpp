@@ -7,6 +7,7 @@
  * @author Ryan Lindeman
  * @date 20110218 - Initial Release
  * @date 20110218 - Change to system include style
+ * @date 20110611 - Add abreviated comment for Docs
  */
 #ifndef   CORE_CONFIG_ASSET_HPP_INCLUDED
 #define   CORE_CONFIG_ASSET_HPP_INCLUDED
@@ -17,6 +18,7 @@
 
 namespace GQE
 {
+  /// Provides the ConfigReader asset class
   class ConfigAsset : public TAsset<ConfigReader>
   {
   public:

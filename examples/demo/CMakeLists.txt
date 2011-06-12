@@ -6,7 +6,7 @@ set(SRC ${SRCROOT}/main.cpp)
 
 # find external SFML libraries
 set(SFML_STATIC_LIBRARIES TRUE)
-find_package(SFML REQUIRED)
+find_package(SFML REQUIRED main)
 
 # add include paths of external libraries
 include_directories(${SFML_INCLUDE_DIR})

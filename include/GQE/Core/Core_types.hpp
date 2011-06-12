@@ -9,6 +9,7 @@
  * @date 20110127 - Changed name from GQE_types.hpp to Core_types.hpp
  * @date 20110218 - Added ConfigAsset to forward declarations
  * @date 20110523 - Readded NameValue types
+ * @date 20110611 - Add new logging classes and new Log macros
  */
 #ifndef   GQE_CORE_TYPES_HPP_INCLUDED
 #define   GQE_CORE_TYPES_HPP_INCLUDED
@@ -17,6 +18,13 @@
 #include <string>
 #include <vector>
 #include <GQE/Config.hpp>
+#include <GQE/Core/loggers/onullstream>
+
+#define INFO_LEVEL   0  ///< Defines the value for GQE::SeverityInfo
+#define WARN_LEVEL   1  ///< Defines the value for GQE::SeverityWarning
+#define ERROR_LEVEL  2  ///< Defines the value for GQE::SeverityError
+#define FATAL_LEVEL  3  ///< Defines the value for GQE::Severity
+#define NO_LOG_LEVEL 4  ///< Defines the value for no logging
 
 namespace GQE
 {
@@ -29,10 +37,19 @@ namespace GQE
     AssetLoadStyleLast             ///< Last Loading Style
   };
 
+  /// Enumeration of all Logging severity types
+  enum SeverityType {
+    // Logger severity types range from 0 to 5
+    SeverityInfo          = INFO_LEVEL,   ///< Informational severity type
+    SeverityWarning       = WARN_LEVEL,   ///< Warning severity type
+    SeverityError         = ERROR_LEVEL,  ///< Error severity type
+    SeverityFatal         = FATAL_LEVEL,  ///< Fatal severity type
+  };
+
   /// Status Enumeration for Status Return values
   enum StatusType {
     // Values from -99 to 99 are common Error and Good status responses
-    StatusAppMissingAsset = -4, ///< Application failed due to missing asset file
+    StatusAppMissingAsset = -4,  ///< Application failed due to missing asset file
     StatusAppStackEmpty   = -3,  ///< Application States stack is empty
     StatusAppInitFailed   = -2,  ///< Application initialization failed
     StatusError           = -1,  ///< General error status response
@@ -46,6 +63,7 @@ namespace GQE
   };
  
   // Forward declare GQE interfaces provided
+  class ILogger;
   class IState;
 
   // Forward declare GQE classes provided
@@ -61,6 +79,12 @@ namespace GQE
   class MusicAsset;
   class SoundAsset;
 
+  // Forward declare GQE loggers provided
+  class FatalLogger;
+  class FileLogger;
+  class ScopeLogger;
+  class StringLogger;
+  
   // Forward declare GQE states provided
   class MenuState;
   class SplashState;
@@ -80,6 +104,13 @@ namespace GQE
   /// Declare NameValueIter typedef which is used for name,value pair maps
   typedef std::map<const std::string, const std::string>::iterator typeNameValueIter;
 
+  // Internal Core global variables
+  /// Pointer to App class used by Logger to gracefully shutdown App.
+  extern GQE_API App*             gApp;
+  /// Pointer to Logger tool, usually created in main().
+  extern GQE_API ILogger*         gLogger;
+  /// Null stream for Logger macros if not active or severity level is disabled
+  extern GQE_API std::onullstream gNullStream;
 }; // namespace GQE
 #endif // GQE_CORE_TYPES_HPP_INCLUDED
 

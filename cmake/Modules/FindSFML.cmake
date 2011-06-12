@@ -103,8 +103,11 @@ foreach(FIND_SFML_COMPONENT ${SFML_FIND_COMPONENTS})
         
         # if both are found, set SFML_XXX_LIBRARY to contain both
         if (SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DEBUG AND SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_RELEASE)
-            set(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY debug     ${SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DEBUG}
-                                                          optimized ${SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_RELEASE})
+        # This causes problems with building under NMake Makefiles (command line Visual Studio)
+        #    set(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY debug     ${SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DEBUG}
+        #                                                  optimized ${SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_RELEASE})
+        # Use Release only if both are found
+             set(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY        ${SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_RELEASE})
         endif()
 
         # if only one debug/release variant is found, set the other to be equal to the found one

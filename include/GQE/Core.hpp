@@ -1,5 +1,6 @@
 /**
- * Provides the GQE namespace includes for the GQE Core engine includes and variables.
+ * Provides the GQE namespace includes for the GQE Core engine includes and
+ * variables.
  *
  * @file include/GQE/Core.hpp
  * @author Ryan Lindeman
@@ -11,9 +12,9 @@
 #ifndef   GQE_CORE_HPP_INCLUDED
 #define   GQE_CORE_HPP_INCLUDED
  
-////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // Headers
-////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 #include <GQE/Config.hpp>
 
 // GQE Core includes
@@ -27,15 +28,17 @@
 #include <GQE/Core/classes/ConfigReader.hpp>
 #include <GQE/Core/classes/StatManager.hpp>
 #include <GQE/Core/classes/StateManager.hpp>
+#include <GQE/Core/interfaces/ILogger.hpp>
 #include <GQE/Core/interfaces/IState.hpp>
 #include <GQE/Core/interfaces/TAsset.hpp>
+#include <GQE/Core/loggers/Log_macros.hpp>
+#include <GQE/Core/loggers/FatalLogger.hpp>
+#include <GQE/Core/loggers/FileLogger.hpp>
+#include <GQE/Core/loggers/ScopeLogger.hpp>
+#include <GQE/Core/loggers/StringLogger.hpp>
+#include <GQE/Core/loggers/onullstream>
 #include <GQE/Core/states/MenuState.hpp>
 #include <GQE/Core/states/SplashState.hpp>
-
-namespace GQE
-{
-  /// Core module global variable declarations
-}; // namespace GQE
 
 #endif // GQE_CORE_HPP_INCLUDED
 

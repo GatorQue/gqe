@@ -14,9 +14,11 @@
  * @date 20110128 - Added new StatManager class for collecting game statistics
  * @date 20110218 - Change to system include style
  * @date 20110331 - Removed direct.h include as it is no longer needed
+ * @date 20110611 - Convert logging to new Log macros and added gApp pointer
  */
  
 #include <assert.h>
+#include <GQE/Core/loggers/Log_macros.hpp>
 #include <GQE/Core/classes/App.hpp>
 #include <GQE/Core/classes/ConfigReader.hpp>
 #include <GQE/Core/states/MenuState.hpp>
@@ -42,38 +44,40 @@ namespace GQE
     mRunning(false),
     mUpdateRate(1.0f / 100)
   {
-    mLogFile.assign("output.txt");
-    mLog.open(mLogFile.c_str());
-    mLog << "LogFile: " << mLogFile << std::endl;
- 
-    // Output to log file
-    mLog << "App::App() ctor called" << std::endl;
+    // Save our global App pointer
+    gApp = this;
   }
  
   App::~App()
   {
+    // Make sure our running flag is false
     mRunning = false;
-    // Output to log file
-    mLog << "App::~App() dtor called" << std::endl;
+
+    // Remove our global App pointer
+    gApp = NULL;
   }
  
   void App::ProcessArguments(int argc, char* argv[])
   {
     // Handle command line arguments
     // TODO: Add handling of command line arguments
-    mLog << "App::ProcessArguments() Program: " << argv[0] << std::endl;
-    mLog << "App::ProcessArguments() Command Line: ";
-    for(int iloop = 1; iloop<argc; iloop++)
+    if(argc == 1)
     {
-      mLog << argv[iloop] << ", ";
+      ILOG() << "App::ProcessArguments(" << argv[0] << ") command line: (none)" << std::endl;
     }
-    mLog << std::endl;
+    else
+    {
+      ILOG() << "App::ProcessArguments(" << argv[0] << ") command line:" << std::endl;
+      for(int iloop = 1; iloop<argc; iloop++)
+      {
+        ILOG() << "Argument" << iloop << "=(" << argv[iloop] << ")" << std::endl;
+      }
+    }
   }
  
   int App::Run(void)
   {
-    // Log the starting of Run
-    mLog << "App::Run() starting" << std::endl;
+    SLOG(App_Run,SeverityInfo) << std::endl;
  
     // First set our Running flag to true
     mRunning = true;
@@ -104,10 +108,12 @@ namespace GQE
     // Make sure our Running flag is set to false before exiting
     mRunning = false;
  
-    // Log our Exit Code value
-    mLog << "App::Run() returning with " << mExitCode << std::endl;
- 
-    // Return the Exit Code specified by Quit or 0 of Quit was never called
+    if(mExitCode < 0)
+      SLOGR(App_Run,SeverityError) << "exitCode=" << mExitCode << std::endl;
+    else
+      SLOGR(App_Run,SeverityInfo) << "exitCode=" << mExitCode << std::endl;
+
+     // Return the Exit Code specified by Quit or 0 of Quit was never called
     return mExitCode;
   }
  
@@ -137,6 +143,7 @@ namespace GQE
  
   void App::PreInit(void)
   {
+    SLOG(App_PreInit, SeverityInfo) << std::endl;
     ConfigReader anConfig;       // For reading .INI style files
  
     // Use our default configuration file to obtain the initial window settings
@@ -175,14 +182,12 @@ namespace GQE
     // Use Vertical Sync
     mWindow.EnableVerticalSync(true);
 #endif
-
- 
-    // Output to log file
-    mLog << "App::PreInit() completed" << std::endl;
   }
  
   void App::Init(void)
   {
+    SLOG(App_Init, SeverityInfo) << std::endl;
+
     // Give the StatManager a chance to initialize
     mStatManager.DoInit();
 
@@ -194,13 +199,12 @@ namespace GQE
  
     // Add Splash State as current active state
     mStateManager.AddActiveState(new(std::nothrow) SplashState(this));
- 
-    // Output to log file
-    mLog << "App::Init() completed" << std::endl;
   }
  
   void App::Loop(void)
   {
+    SLOG(App_Loop, SeverityInfo) << std::endl;
+
     // Clock used in restricting Update loop to a fixed rate
     sf::Clock anUpdateClock;
     anUpdateClock.Reset();
@@ -280,6 +284,8 @@ namespace GQE
  
   void App::Cleanup(void)
   {
+    SLOG(App_Cleanup, SeverityInfo) << std::endl;
+
     // Give the StatManager a chance to de-initialize
     mStatManager.DeInit();
 
@@ -292,9 +298,6 @@ namespace GQE
       // Close the Render window
       mWindow.Close();
     }
- 
-    // Output to log file
-    mLog << "App::Cleanup() completed" << std::endl;
   }
  
 }; // namespace GQE

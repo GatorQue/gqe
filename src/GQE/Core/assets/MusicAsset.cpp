@@ -8,10 +8,12 @@
  * @date 20100724 - Initial Release
  * @date 20110127 - Moved to GQE Core library and src directory
  * @date 20110218 - Change to system include style
+ * @date 20110611 - Convert logging to new Log macros
  */
  
 #include <assert.h>
 #include <stddef.h>
+#include <GQE/Core/loggers/Log_macros.hpp>
 #include <GQE/Core/assets/MusicAsset.hpp>
 #include <GQE/Core/classes/App.hpp>
  
@@ -39,11 +41,7 @@ namespace GQE
       mAsset = new(std::nothrow) sf::Music;
       assert(NULL != mAsset && "MusicAsset::LoadAsset() unable to allocate memory");
  
-      // Output to log file
-      if(NULL != mApp)
-      {
-        mApp->mLog << "MusicAsset::LoadAsset() loading asset with filename=" << mFilename << std::endl;
-      }
+      ILOG() << "MusicAsset::LoadAsset(" << mFilename << ") loading..." << std::endl;
  
       // Attempt to load the asset from a file
       mLoaded = mAsset->OpenFromFile(mFilename);
@@ -51,12 +49,7 @@ namespace GQE
       // If the asset did not load successfully, delete the memory
       if(false == mLoaded)
       {
-        // Output to log file
-        if(NULL != mApp)
-        {
-          mApp->mLog << "MusicAsset::LoadAsset() asset with filename=" << mFilename << " is missing" << std::endl;
-          mApp->Quit(StatusAppMissingAsset);
-        }
+        FLOG(StatusAppMissingAsset) << "MusicAsset::LoadAsset(" << mFilename << ") is missing" << std::endl;
       }
     }
   }

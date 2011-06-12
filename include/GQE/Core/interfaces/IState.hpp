@@ -14,18 +14,20 @@
  * @date 20110218 - Reset our Cleanup flag after HandleCleanup is called and
  *                  call HandleCleanup in DoInit if cleanup flag is set.
  * @date 20110218 - Change to system include style
+ * @date 20110611 - Convert logging to new Log macros
  */
 #ifndef   CORE_ISTATE_HPP_INCLUDED
 #define   CORE_ISTATE_HPP_INCLUDED
  
 #include <assert.h>
+#include <GQE/Core/loggers/Log_macros.hpp>
 #include <GQE/Core/Core_types.hpp>
 #include <GQE/Core/classes/App.hpp>
 #include <SFML/System.hpp>
  
 namespace GQE
 {
-  /// Provides base class interface for all game states
+  /// Provides the base class interface for all game states
   class GQE_API IState
   {
   public:
@@ -33,12 +35,9 @@ namespace GQE
     /**
      * State deconstructor
      */
-    virtual ~IState() {
-      if(NULL != mApp)
-      {
-        // Output to log file
-        mApp->mLog << "IState::~IState() dtor with ID=" << mID << " was called" << std::endl;
-      }
+    virtual ~IState()
+    {
+      ILOG() << "IState::dtor(" << mID << ")" << std::endl;
  
       // Clear out pointers that we don't need anymore
       mApp = NULL;
@@ -48,7 +47,8 @@ namespace GQE
      * GetID will return the ID used to identify this State object
      * @return GQE::typeStateID is the ID for this State object
      */
-    const GQE::typeStateID GetID(void) const {
+    const GQE::typeStateID GetID(void) const
+    {
       return mID;
     }
  
@@ -57,9 +57,10 @@ namespace GQE
      * be called if mCleanup is true so Derived classes should always call
      * IState::DoInit() first before initializing their assets.
      */
-    virtual void DoInit(void) {
-      // Output to log file
-      mApp->mLog << "IState::DoInit() with ID=" << mID << " was called" << std::endl;
+    virtual void DoInit(void)
+    {
+      ILOG() << "IState::DoInit(" << mID << ")" << std::endl;
+
       // If Cleanup hasn't been called yet, call it now!
       if(true == mCleanup)
       {
@@ -87,8 +88,10 @@ namespace GQE
     /**
      * DeInit is responsible for marking this state to be cleaned up
      */
-    void DeInit(void) {
-      mApp->mLog << "IState::DeInit() with ID=" << mID << " was called" << std::endl;
+    void DeInit(void)
+    {
+      ILOG() << "IState::DeInit(" << mID << ")" << std::endl;
+
       if(true == mInit)
       {
         mCleanup = true;
@@ -107,7 +110,8 @@ namespace GQE
      * @return true if DoInit has been called, false otherwise or if DeInit
      *         was called
      */
-    bool IsInitComplete(void) {
+    bool IsInitComplete(void)
+    {
       return mInit;
     }
 
@@ -116,7 +120,8 @@ namespace GQE
      * state.
      * @return true if state is not current active state, false otherwise
      */
-    bool IsPaused(void) {
+    bool IsPaused(void)
+    {
       return mPaused;
     }
 
@@ -124,12 +129,9 @@ namespace GQE
      * Pause is responsible for pausing this State since the Application
      * may have lost focus or another State has become activate.
      */
-    virtual void Pause(void) {
-      if(NULL != mApp)
-      {
-        // Output to log file
-        mApp->mLog << "State::Pause() with ID=" << mID << " was paused" << std::endl;
-      }
+    virtual void Pause(void)
+    {
+      ILOG() << "IState::Pause(" << mID << ")" << std::endl;
 
       if(false == mPaused)
       {
@@ -142,12 +144,9 @@ namespace GQE
      * Resume is responsible for resuming this State since the Application
      * may have gained focus or the previous State was removed.
      */
-    virtual void Resume(void) {
-      if(NULL != mApp)
-      {
-        // Output to log file
-        mApp->mLog << "State::Resume() with ID=" << mID << " was resumed" << std::endl;
-      }
+    virtual void Resume(void)
+    {
+      ILOG() << "IState::Resume(" << mID << ")" << std::endl;
 
       if(true == mPaused)
       {
@@ -179,7 +178,8 @@ namespace GQE
      * HandleCleanup is responsible for calling Cleanup if this class has been
      * flagged to be cleaned up after it completes the game loop.
      */
-    void HandleCleanup(void) {
+    void HandleCleanup(void)
+    {
       if(true == mCleanup)
       {
         // Call cleanup
@@ -197,7 +197,8 @@ namespace GQE
      * 3) If this state is not initialized: total elapsed time from DoInit to DeInit
      * @return total elapsed time as described above.
      */
-    float GetElapsedTime(void) const {
+    float GetElapsedTime(void) const
+    {
       float result = mElapsedClock.GetElapsedTime();
 
       if(false == mInit)
@@ -227,26 +228,22 @@ namespace GQE
         mElapsedTime(0.0f),
         mPausedTime(0.0f)
     {
+      ILOG() << "IState::ctor(" << mID << ")" << std::endl;
+
       // Check that our pointer is good
       assert(NULL != theApp && "IState::IState() theApp pointer is bad");
  
       // Keep a copy of our Application pointer
-      mApp = theApp;
- 
-      // Output to log file
-      if(NULL != mApp)
-      {
-        mApp->mLog << "IState::IState() ctor with ID=" << mID << " was called" << std::endl;
-      }
+      mApp = theApp; 
     }
 
     /**
      * Cleanup is responsible for performing any cleanup required before
      * this State is removed.
      */
-    virtual void Cleanup(void) {
-      // Output to log file
-      mApp->mLog << "IState::Cleanup() with ID=" << mID << " was called" << std::endl;
+    virtual void Cleanup(void)
+    {
+      ILOG() << "IState::Cleanup(" << mID << ")" << std::endl;
     }
 
   private:
