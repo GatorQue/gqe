@@ -1,3 +1,8 @@
+Version 0.8
+=============
+- Provide pre-compiled extlibs for SFML 2.0 and 1.6
+- More shared/static build CMake fixes (should work now)
+
 Version 0.7
 ===========
 - New logging technique using macros and C++ logger classes

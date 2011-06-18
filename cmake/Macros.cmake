@@ -1,4 +1,3 @@
-
 # some of these macros are inspired from the boost/cmake macros
 
 # this macro adds external dependencies to a static target,
@@ -10,50 +9,50 @@
 # - we don't do anything for other compilers and OSes; static build is not encouraged on Unix (Linux, Mac OS X)
 #   where shared libraries are properly managed and have many advantages over static libraries
 macro(gqe_static_add_libraries target)
-    if(WINDOWS AND COMPILER_GCC)
-        # Windows - gcc
-        foreach(lib ${ARGN})
-            if(NOT ${lib} MATCHES ".*/.*")
-                string(REGEX REPLACE "(.*)/bin/.*\\.exe" "\\1" STANDARD_LIBS_PATH "${CMAKE_CXX_COMPILER}")
-                set(lib "${STANDARD_LIBS_PATH}/lib/lib${lib}.a")
-            endif()
-            string(TOUPPER ${CMAKE_BUILD_TYPE} BUILD_TYPE)
-            get_target_property(TARGET_FILENAME ${target} ${BUILD_TYPE}_LOCATION)
-            add_custom_command(TARGET ${target}
-                               POST_BUILD
-                               COMMAND ${CMAKE_AR} x ${lib}
-                               COMMAND ${CMAKE_AR} rcs ${TARGET_FILENAME} *.o
-                               COMMAND del *.o /f /q
-                               VERBATIM)
-        endforeach()
-    elseif(MSVC)
-        # Visual C++
-        set(LIBRARIES "")
-        foreach(lib ${ARGN})
-            if(NOT ${lib} MATCHES ".*\\.lib")
-                set(lib ${lib}.lib)
-            endif()
-            if(MSVC_IDE AND COMPILER_MSVC LESS 2010)
-                # for Visual Studio projects < 2010, we must add double quotes
-                # around paths because they may contain spaces
-                set(LIBRARIES "${LIBRARIES} &quot\\;${lib}&quot\\;")
-            else()
-                set(LIBRARIES "${LIBRARIES} \"${lib}\"")
-            endif()
-        endforeach()
-        set_target_properties(${target} PROPERTIES STATIC_LIBRARY_FLAGS ${LIBRARIES})
-    endif()
+  if(WINDOWS AND COMPILER_GCC)
+    # Windows - gcc
+    foreach(lib ${ARGN})
+      if(NOT ${lib} MATCHES ".*/.*")
+        string(REGEX REPLACE "(.*)/bin/.*\\.exe" "\\1" STANDARD_LIBS_PATH "${CMAKE_CXX_COMPILER}")
+        set(lib "${STANDARD_LIBS_PATH}/lib/lib${lib}.a")
+      endif()
+      string(TOUPPER ${CMAKE_BUILD_TYPE} BUILD_TYPE)
+      get_target_property(TARGET_FILENAME ${target} ${BUILD_TYPE}_LOCATION)
+      add_custom_command(TARGET ${target}
+                         POST_BUILD
+                         COMMAND ${CMAKE_AR} x ${lib}
+                         COMMAND ${CMAKE_AR} rcs ${TARGET_FILENAME} *.o
+                         COMMAND del *.o /f /q
+                         VERBATIM)
+    endforeach()
+  elseif(MSVC)
+    # Visual C++
+    set(LIBRARIES "")
+    foreach(lib ${ARGN})
+      if(NOT ${lib} MATCHES ".*\\.lib")
+        set(lib ${lib}.lib)
+      endif()
+      if(MSVC_IDE AND COMPILER_MSVC LESS 2010)
+        # for Visual Studio projects < 2010, we must add double quotes
+        # around paths because they may contain spaces
+        set(LIBRARIES "${LIBRARIES} &quot\\;${lib}&quot\\;")
+      else()
+        set(LIBRARIES "${LIBRARIES} \"${lib}\"")
+      endif()
+    endforeach()
+    set_target_properties(${target} PROPERTIES STATIC_LIBRARY_FLAGS ${LIBRARIES})
+  endif()
 endmacro()
 
 # check if a value is contained in a list
 # sets ${var} to TRUE if the value is found
 macro(gqe_list_contains var value)
-    set(${var})
-    foreach(value2 ${ARGN})
-        if(${value} STREQUAL ${value2})
-            set(${var} TRUE)
-        endif()
-    endforeach()
+  set(${var})
+  foreach(value2 ${ARGN})
+    if(${value} STREQUAL ${value2})
+      set(${var} TRUE)
+    endif()
+  endforeach()
 endmacro()
 
 # parse a list of arguments and options
@@ -63,30 +62,30 @@ endmacro()
 # - THIS_DEPENDS (d1 d2)
 # - THIS_FLAG TRUE
 macro(gqe_parse_arguments prefix arg_names option_names)
-    foreach(arg_name ${arg_names})
-        set(${prefix}_${arg_name})
-    endforeach()
-    foreach(option_name ${option_names})
-        set(${prefix}_${option_name} FALSE)
-    endforeach()
-    set(current_arg_name)
-    set(current_arg_list)
-    foreach(arg ${ARGN})
-        gqe_list_contains(is_arg_name ${arg} ${arg_names})
-        if(is_arg_name)
-            set(${prefix}_${current_arg_name} ${current_arg_list})
-            set(current_arg_name ${arg})
-            set(current_arg_list)
-        else()
-            gqe_list_contains(is_option ${arg} ${option_names})
-            if(is_option)
-                set(${prefix}_${arg} TRUE)
-            else()
-                set(current_arg_list ${current_arg_list} ${arg})
-            endif()
-        endif()
-    endforeach()
-    set(${prefix}_${current_arg_name} ${current_arg_list})
+  foreach(arg_name ${arg_names})
+    set(${prefix}_${arg_name})
+  endforeach()
+  foreach(option_name ${option_names})
+    set(${prefix}_${option_name} FALSE)
+  endforeach()
+  set(current_arg_name)
+  set(current_arg_list)
+  foreach(arg ${ARGN})
+    gqe_list_contains(is_arg_name ${arg} ${arg_names})
+    if(is_arg_name)
+      set(${prefix}_${current_arg_name} ${current_arg_list})
+      set(current_arg_name ${arg})
+      set(current_arg_list)
+    else()
+      gqe_list_contains(is_option ${arg} ${option_names})
+      if(is_option)
+        set(${prefix}_${arg} TRUE)
+      else()
+        set(current_arg_list ${current_arg_list} ${arg})
+      endif()
+    endif()
+  endforeach()
+  set(${prefix}_${current_arg_name} ${current_arg_list})
 endmacro()
 
 # add a new target which is a GQE library
@@ -97,82 +96,81 @@ endmacro()
 #                     DEPENDS       ...
 #                     EXTERNAL_LIBS sfml-audio sfml-graphics sfml-window sfml-system ...)
 macro(gqe_add_library target)
+  # parse the arguments
+  gqe_parse_arguments(THIS "HEADER;HEADER_DIR;INCLUDES;SOURCES;DEPENDS;EXTERNAL_LIBS" "" ${ARGN})
 
-    # parse the arguments
-    gqe_parse_arguments(THIS "HEADER;HEADER_DIR;INCLUDES;SOURCES;DEPENDS;EXTERNAL_LIBS" "" ${ARGN})
+  # create the target
+  add_library(${target} ${THIS_HEADER} ${THIS_INCLUDES} ${THIS_SOURCES})
 
-    # create the target
-    add_library(${target} ${THIS_HEADER} ${THIS_INCLUDES} ${THIS_SOURCES})
-
-    # adjust the output file prefix/suffix to match our conventions
-    if(BUILD_SHARED_LIBS)
-        if(WINDOWS)
-            # include the major version number in Windows shared library names (but not import library names)
-            set_target_properties(${target} PROPERTIES DEBUG_POSTFIX -d)
-            set_target_properties(${target} PROPERTIES SUFFIX "-${GQE_VERSION_MAJOR}_${GQE_VERSION_MINOR}${CMAKE_SHARED_LIBRARY_SUFFIX}")
-        else()
-            set_target_properties(${target} PROPERTIES DEBUG_POSTFIX -d)
-        endif()
-        if (WINDOWS AND COMPILER_GCC)
-            # on Windows/gcc get rid of "lib" prefix for shared libraries,
-            # and transform the ".dll.a" suffix into ".a" for import libraries
-            set_target_properties(${target} PROPERTIES PREFIX "")
-            set_target_properties(${target} PROPERTIES IMPORT_SUFFIX ".a")
-        endif()
+  # adjust the output file prefix/suffix to match our conventions
+  if(BUILD_SHARED_LIBS)
+    if(WINDOWS)
+      # include the major version number in Windows shared library names (but not import library names)
+      set_target_properties(${target} PROPERTIES DEBUG_POSTFIX -d)
+      set_target_properties(${target} PROPERTIES SUFFIX "-${GQE_VERSION_MAJOR}_${GQE_VERSION_MINOR}${CMAKE_SHARED_LIBRARY_SUFFIX}")
     else()
-        set_target_properties(${target} PROPERTIES DEBUG_POSTFIX -s-d)
-        set_target_properties(${target} PROPERTIES RELEASE_POSTFIX -s)
+      set_target_properties(${target} PROPERTIES DEBUG_POSTFIX -d)
     endif()
-
-    # set target public header file for this library
-    if(THIS_HEADER)
-        set_target_properties(${target} PROPERTIES PUBLIC_HEADER "${THIS_HEADER}")
-    endif(THIS_HEADER)
-
-    # set the version and soversion of the target (for compatible systems -- mostly Linuxes)
-    set_target_properties(${target} PROPERTIES SOVERSION ${GQE_VERSION_MAJOR}.${GQE_VERSION_MINOR})
-    set_target_properties(${target} PROPERTIES VERSION ${GQE_VERSION_MAJOR}.${GQE_VERSION_MINOR}.${GQE_VERSION_PATCH})
-
-    # for gcc 4.x on Windows, we add the -static-libgcc linker flag to get rid of an extra gcc DLL
-    if(WINDOWS AND COMPILER_GCC)
-        if(${GCC_VERSION} MATCHES "4\\..*")
-            set_target_properties(${target} PROPERTIES LINK_FLAGS -static-libgcc)
-        endif()
+    if (WINDOWS AND COMPILER_GCC)
+      # on Windows/gcc get rid of "lib" prefix for shared libraries,
+      # and transform the ".dll.a" suffix into ".a" for import libraries
+      set_target_properties(${target} PROPERTIES PREFIX "")
+      set_target_properties(${target} PROPERTIES IMPORT_SUFFIX ".a")
     endif()
+  else()
+    set_target_properties(${target} PROPERTIES DEBUG_POSTFIX -s-d)
+    set_target_properties(${target} PROPERTIES RELEASE_POSTFIX -s)
+  endif()
 
-    # link the target to its GQE dependencies
-    if(THIS_DEPENDS)
-        target_link_libraries(${target} ${THIS_DEPENDS})
+  # set target public header file for this library
+  if(THIS_HEADER)
+    set_target_properties(${target} PROPERTIES PUBLIC_HEADER "${THIS_HEADER}")
+  endif(THIS_HEADER)
+
+  # set the version and soversion of the target (for compatible systems -- mostly Linuxes)
+  set_target_properties(${target} PROPERTIES SOVERSION ${GQE_VERSION_MAJOR}.${GQE_VERSION_MINOR})
+  set_target_properties(${target} PROPERTIES VERSION ${GQE_VERSION_MAJOR}.${GQE_VERSION_MINOR}.${GQE_VERSION_PATCH})
+
+  # for gcc 4.x on Windows, apply the BUILD_STATIC_STD_LIBS option if it is enabled
+  if(WINDOWS AND COMPILER_GCC AND BUILD_STATIC_STD_LIBS)
+    if(${GCC_VERSION} MATCHES "4\\..*")
+      set_target_properties(${target} PROPERTIES LINK_FLAGS "-static-libgcc -static-libstdc++")
     endif()
+  endif()
 
-    # link the target to its external dependencies
-    if(THIS_EXTERNAL_LIBS)
-        if(BUILD_SHARED_LIBS)
-            # in shared build, we use the regular linker commands
-            target_link_libraries(${target} ${THIS_EXTERNAL_LIBS})
-        else()
-            # in static build there's no link stage, but with some compilers it is possible to force
-            # the generated static library to directly contain the symbols from its dependencies
-            gqe_static_add_libraries(${target} ${THIS_EXTERNAL_LIBS})
-        endif(BUILD_SHARED_LIBS)
-    endif(THIS_EXTERNAL_LIBS)
+  # link the target to its GQE dependencies
+  if(THIS_DEPENDS)
+    target_link_libraries(${target} ${THIS_DEPENDS})
+  endif()
 
-    # add the install rule
-    install(TARGETS ${target}
-            # IMPORTANT: Add the target library to the "export-set"
-            EXPORT GQE_LibraryDepends
-            PUBLIC_HEADER DESTINATION "${INSTALL_INCLUDE_DIR}/GQE" COMPONENT devel
-            RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin
-            LIBRARY DESTINATION "${INSTALL_LIB_DIR}" COMPONENT shlib 
-            ARCHIVE DESTINATION "${INSTALL_LIB_DIR}" COMPONENT devel)
+  # link the target to its external dependencies
+  if(THIS_EXTERNAL_LIBS)
+    if(BUILD_SHARED_LIBS)
+      # in shared build, we use the regular linker commands
+      target_link_libraries(${target} ${THIS_EXTERNAL_LIBS})
+    else()
+      # in static build there's no link stage, but with some compilers it is possible to force
+      # the generated static library to directly contain the symbols from its dependencies
+      gqe_static_add_libraries(${target} ${THIS_EXTERNAL_LIBS})
+    endif(BUILD_SHARED_LIBS)
+  endif(THIS_EXTERNAL_LIBS)
 
-    # install Core library include files
-    if(THIS_HEADER_DIR)
-        install(DIRECTORY ${THIS_HEADER_DIR}
-                DESTINATION ${INSTALL_INCLUDE_DIR}/GQE
-                COMPONENT devel
-                PATTERN ".hg" EXCLUDE)
-    endif(THIS_HEADER_DIR)                
+  # add the install rule
+  install(TARGETS ${target}
+          # IMPORTANT: Add the target library to the "export-set"
+          EXPORT GQE_LibraryDepends
+          PUBLIC_HEADER DESTINATION "${INSTALL_INCLUDE_DIR}/GQE" COMPONENT devel
+          RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin
+          LIBRARY DESTINATION "${INSTALL_LIB_DIR}" COMPONENT shlib 
+          ARCHIVE DESTINATION "${INSTALL_LIB_DIR}" COMPONENT devel)
+
+  # install Core library include files
+  if(THIS_HEADER_DIR)
+    install(DIRECTORY ${THIS_HEADER_DIR}
+            DESTINATION ${INSTALL_INCLUDE_DIR}/GQE
+            COMPONENT devel
+            PATTERN ".hg" EXCLUDE)
+  endif(THIS_HEADER_DIR)                
 endmacro()
 
 # add a new target which is a GQE example
@@ -195,10 +193,10 @@ macro(gqe_add_example target)
     # set the debug suffix
     set_target_properties(${target} PROPERTIES DEBUG_POSTFIX -d)
 
-    # for gcc 4.x on Windows, we add the -static-libgcc linker flag to get rid of an extra gcc DLL
-    if(WINDOWS AND COMPILER_GCC)
+    # for gcc 4.x on Windows, apply the BUILD_STATIC_STD_LIBS option if it is enabled
+    if(WINDOWS AND COMPILER_GCC AND BUILD_STATIC_STD_LIBS)
         if(${GCC_VERSION} MATCHES "4\\..*")
-            set_target_properties(${target} PROPERTIES LINK_FLAGS -static-libgcc)
+            set_target_properties(${target} PROPERTIES LINK_FLAGS "-static-libgcc -static-libstdc++")
         endif()
     endif()
 

@@ -11,13 +11,8 @@ set(LIBRARY_OUTPUT_PATH "${PROJECT_BINARY_DIR}/lib")
 set(INCROOT ${PROJECT_SOURCE_DIR}/include/GQE)
 set(SRCROOT ${PROJECT_SOURCE_DIR}/src/GQE)
 
-# define the export symbol
+# GQE needs to export symbols when build so define the export flag
 add_definitions(-DGQE_EXPORTS)
-
-# define GQE_STATIC if the build type is not set to 'shared'
-if(NOT BUILD_SHARED_LIBS)
-    add_definitions(-DGQE_STATIC)
-endif()
 
 # add the modules subdirectories
 add_subdirectory(Core)

@@ -11,21 +11,24 @@ cmake_minimum_required(VERSION 2.6)
 # set a default build type if none was provided
 # this has to be done before the project() instruction!
 if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build (Debug or Release)" FORCE)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build (Debug or Release)" FORCE)
 endif()
 
 # project name
 project(GQE)
 
 # project options
+OPTION(BUILD_STATIC_STD_LIBS "Set to ON to statically link to the standard libraries, OFF to use them as DLLs" OFF)
 OPTION(BUILD_SHARED_LIBS "Set to OFF to build static libraries" OFF)
 OPTION(BUILD_EXAMPLES "Set to OFF to skip building examples" ON) 
 OPTION(INSTALL_DOC "Set to OFF to skip build/install Documentation" ON)
+OPTION(SFML_STATIC_LIBRARIES "Set to TRUE to statically link SFML libraries to GQE" ON)
 
 # setup version numbers
 set(GQE_VERSION_MAJOR 0)
 set(GQE_VERSION_MINOR 7)
 set(GQE_VERSION_PATCH 0)
+set(GQE_VERSION "${GQE_VERSION_MAJOR}.${GQE_VERSION_MINOR}.${GQE_VERSION_PATCH}")
 
 # define the path of our additional CMake modules
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/Modules/")
@@ -41,8 +44,10 @@ include_directories(
 # disable the rpath stuff
 set(CMAKE_SKIP_BUILD_RPATH TRUE)
 
-# add the subdirectories
+# add the GQE subdirectory
 add_subdirectory(src/GQE)
+
+# add the examples subdirectory
 if(BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()
@@ -95,8 +100,23 @@ install(FILES ${PROJECT_SOURCE_DIR}/cmake/Modules/FindGQE.cmake DESTINATION ${CM
 install(FILES license.txt DESTINATION ${INSTALL_DATA_DIR})
 
 if(WINDOWS)
-    install(FILES extlibs/bin/libsndfile-1.dll DESTINATION bin)
-    install(FILES extlibs/bin/openal32.dll DESTINATION bin)
+  if(COMPILER_GCC)
+    if(ARCH_32BITS)
+      install(FILES extlibs/bin-mingw/x86/libsndfile-1.dll DESTINATION bin)
+      install(FILES extlibs/bin-mingw/x86/openal32.dll DESTINATION bin)
+    else()
+      install(FILES extlibs/bin-mingw/x64/libsndfile-1.dll DESTINATION bin)
+      install(FILES extlibs/bin-mingw/x64/openal32.dll DESTINATION bin)
+    endif()
+  elseif(COMPILER_MSVC)
+    if(ARCH_32BITS)
+      install(FILES extlibs/bin-msvc/x86/libsndfile-1.dll DESTINATION bin)
+      install(FILES extlibs/bin-msvc/x86/openal32.dll DESTINATION bin)
+    else()
+      install(FILES extlibs/bin-msvc/x64/libsndfile-1.dll DESTINATION bin)
+      install(FILES extlibs/bin-msvc/x64/openal32.dll DESTINATION bin)
+    endif()
+  endif()
 elseif(MACOSX)
-    install(DIRECTORY extlibs/libs-osx/Frameworks/sndfile.framework DESTINATION /Library/Frameworks PATTERN "hg" EXCLUDE)
+  install(DIRECTORY extlibs/libs-osx/Frameworks/sndfile.framework DESTINATION /Library/Frameworks PATTERN ".hg" EXCLUDE)
 endif()
