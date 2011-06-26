@@ -11,6 +11,7 @@
  * @date 20110131 - Added class and method argument documentation
  * @date 20110218 - Add SFML 2.0 support
  * @date 20110218 - Change to system include style
+ * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
  */
 #ifndef   CORE_STAT_MANAGER_HPP_INCLUDED
 #define   CORE_STAT_MANAGER_HPP_INCLUDED
@@ -83,10 +84,10 @@ namespace GQE
     void RegisterApp(App* theApp);
 
     /**
-     * Update is responsible for updating game loop statistics like Updates
-     * per second.
+     * UpdateFixed is responsible for updating game loop statistics like
+     * Updates per second.
      */
-    void Update(void);
+    void UpdateFixed(void);
  
     /**
      * Draw is responsible for updating game loop statistics like Frames

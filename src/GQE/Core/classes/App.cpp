@@ -15,6 +15,7 @@
  * @date 20110218 - Change to system include style
  * @date 20110331 - Removed direct.h include as it is no longer needed
  * @date 20110611 - Convert logging to new Log macros and added gApp pointer
+ * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
  */
  
 #include <assert.h>
@@ -42,7 +43,11 @@ namespace GQE
     mStateManager(),
     mExitCode(0),
     mRunning(false),
-    mUpdateRate(1.0f / 100)
+#if (SFML_VERSION_MAJOR < 2)
+    mUpdateRate(1.0f / 100.0f) // in seconds
+#else
+    mUpdateRate((Uint32)(1000.0f / 100.0f)) // in milliseconds
+#endif
   {
     // Save our global App pointer
     gApp = this;
@@ -124,14 +129,22 @@ namespace GQE
 
   float App::GetUpdateRate(void) const
   {
+#if (SFML_VERSION_MAJOR < 2)
     return (1.0f / mUpdateRate);
+#else
+    return (1000.0f / (float)mUpdateRate);
+#endif
   }
 
   void App::SetUpdateRate(float theRate)
   {
     if(1000.0f >= theRate && 1.0f <= theRate)
     {
+#if (SFML_VERSION_MAJOR < 2)
       mUpdateRate = 1.0f / theRate;
+#else
+      mUpdateRate = (Uint32)(1000.0f / theRate);
+#endif
     }
   }
 
@@ -209,8 +222,13 @@ namespace GQE
     sf::Clock anUpdateClock;
     anUpdateClock.Reset();
  
-    // When do we need to update next?
+#if (SFML_VERSION_MAJOR < 2)
+    // When do we need to update next (in seconds)?
     float anUpdateNext = anUpdateClock.GetElapsedTime();
+#else
+    // When do we need to update next (in milliseconds)?
+    Uint32 anUpdateNext = anUpdateClock.GetElapsedTime();
+#endif
  
     // Make sure we have at least one state active
     if(mStateManager.IsEmpty())
@@ -258,16 +276,24 @@ namespace GQE
           } // switch(anEvent.Type)
         } // while(mWindow.GetEvent(anEvent))
  
-        // Let the current active state perform updates next
-        anState->Update();
+        // Let the current active state perform fixed updates next
+        anState->UpdateFixed();
  
         // Let the StatManager perfom its updates
-        mStatManager.Update();
+        mStatManager.UpdateFixed();
 
         // Update our update next time
         anUpdateNext += mUpdateRate;
       } // while(anUpdateClock.GetElapsedTime() > anUpdateNext)
- 
+
+      // Let the current active state perform its variable update
+#if (SFML_VERSION_MAJOR < 2)
+      anState->UpdateVariable(mWindow.GetFrameTime());
+#else
+      // Convert to floating point value of seconds for SFML 2.0
+      anState->UpdateVariable( (float)mWindow.GetFrameTime() / 1000.0f);
+#endif
+
       // Let the current active state draw stuff
       anState->Draw();
  

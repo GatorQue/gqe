@@ -10,6 +10,7 @@
  * @date 20110128 - Moved to GQE Core library and src directory
  * @date 20110218 - Change to system include style
  * @date 20110611 - Convert logging to new Log macros
+ * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
  */
  
 #include <assert.h>
@@ -103,14 +104,18 @@ namespace GQE
     mApp = theApp;
   }
 
-  void StatManager::Update(void)
+  void StatManager::UpdateFixed(void)
   {
     // Check our App pointer
     assert(NULL != mApp && "StatManager::Update() bad app pointer");
 
     // Increment our update counter
     mUpdates++;
+#if (SFML_VERSION_MAJOR < 2)
     if(mUpdateClock.GetElapsedTime() > 1.0f)
+#else
+    if(mUpdateClock.GetElapsedTime() > 1000)
+#endif
     {
       // Updates string stream
       std::ostringstream updates;
@@ -118,7 +123,7 @@ namespace GQE
       // Update our UPS string to be displayed
       updates.precision(2);
       updates.width(7);
-      updates << "UPS: " << std::fixed << (float)mUpdates / mUpdateClock.GetElapsedTime();
+      updates << "UPS: " << std::fixed << mUpdates;
 #if (SFML_VERSION_MAJOR < 2)
       mUPS.SetText(updates.str());
 #else
@@ -138,7 +143,11 @@ namespace GQE
 
     // Increment our frame counter
     mFrames++;
+#if (SFML_VERSION_MAJOR < 2)
     if(mFrameClock.GetElapsedTime() > 1.0f)
+#else
+    if(mFrameClock.GetElapsedTime() > 1000)
+#endif
     {
       // Frames string stream
       std::ostringstream frames;
@@ -146,7 +155,7 @@ namespace GQE
       // Get our FramesPerSecond value
       frames.precision(2);
       frames.width(7);
-      frames << "FPS: " << std::fixed << (float)mFrames / mFrameClock.GetElapsedTime();
+      frames << "FPS: " << std::fixed << mFrames;
 #if (SFML_VERSION_MAJOR < 2)
       mFPS.SetText(frames.str());
 #else

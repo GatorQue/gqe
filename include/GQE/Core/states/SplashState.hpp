@@ -9,6 +9,7 @@
  * @date 20110131 - Added class and method argument documentation
  * @date 20110218 - Added ReInit method
  * @date 20110218 - Change to system include style
+ * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
  */
 #ifndef   CORE_SPLASH_STATE_HPP_INCLUDED
 #define   CORE_SPLASH_STATE_HPP_INCLUDED
@@ -54,10 +55,17 @@ namespace GQE
     virtual void HandleEvents(sf::Event theEvent);
 
     /**
-     * Update is responsible for handling all State update needs for this
-     * State when it is the active State.
+     * UpdateFixed is responsible for handling all State fixed update needs for
+     * this State when it is the active State.
      */
-    virtual void Update(void);
+    virtual void UpdateFixed(void);
+ 
+    /**
+     * UpdateVariable is responsible for handling all State variable update
+     * needs for this State when it is the active State.
+     * @param[in] theElapsedTime since the last Draw was called
+     */
+    virtual void UpdateVariable(float theElapsedTime);
 
     /**
      * Draw is responsible for handling all Drawing needs for this State

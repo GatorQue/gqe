@@ -8,6 +8,7 @@
  * @date 20110127 - Moved to GQE Core library and src directory
  * @date 20110218 - Added ReInit method
  * @date 20110218 - Change to system include style
+ * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
  */
 #include <GQE/Core/states/MenuState.hpp>
 #include <GQE/Core/classes/App.hpp>
@@ -85,12 +86,18 @@ namespace GQE
     }
   }
 
-  void MenuState::Update(void)
+  void MenuState::UpdateFixed(void)
   {
     // Check our App pointer
-    assert(NULL != mApp && "MenuState::Update() bad app pointer, init must be called first");
+    assert(NULL != mApp && "MenuState::UpdateFixed() bad app pointer, init must be called first");
   }
 
+  void MenuState::UpdateVariable(float theElapsedTime)
+  {
+    // Check our App pointer
+    assert(NULL != mApp && "MenuState::UpdateVariable() bad app pointer, init must be called first");
+  }
+  
   void MenuState::Draw(void)
   {
     // Check our App pointer

@@ -15,6 +15,7 @@
  *                  call HandleCleanup in DoInit if cleanup flag is set.
  * @date 20110218 - Change to system include style
  * @date 20110611 - Convert logging to new Log macros
+ * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
  */
 #ifndef   CORE_ISTATE_HPP_INCLUDED
 #define   CORE_ISTATE_HPP_INCLUDED
@@ -96,10 +97,18 @@ namespace GQE
       {
         mCleanup = true;
         mInit = false;
+#if (SFML_VERSION_MAJOR < 2)
         mElapsedTime += mElapsedClock.GetElapsedTime();
+#else
+        mElapsedTime += (float)mElapsedClock.GetElapsedTime() / 1000.0f;
+#endif
         if(true == mPaused)
         {
+#if (SFML_VERSION_MAJOR < 2)
           mPausedTime += mPausedClock.GetElapsedTime();
+#else
+          mPausedTime += (float)mPausedClock.GetElapsedTime() / 1000.0f;
+#endif
         }
       }
     }
@@ -151,7 +160,11 @@ namespace GQE
       if(true == mPaused)
       {
         mPaused = false;
+#if (SFML_VERSION_MAJOR < 2)
         mPausedTime += mPausedClock.GetElapsedTime();
+#else
+        mPausedTime += (float)mPausedClock.GetElapsedTime() / 1000.0f;
+#endif
       }
     }
 
@@ -163,10 +176,17 @@ namespace GQE
     virtual void HandleEvents(sf::Event theEvent) = 0;
  
     /**
-     * Update is responsible for handling all State update needs for this
-     * State when it is the active State.
+     * UpdateFixed is responsible for handling all State fixed update needs for
+     * this State when it is the active State.
      */
-    virtual void Update(void) = 0;
+    virtual void UpdateFixed(void) = 0;
+ 
+    /**
+     * UpdateVariable is responsible for handling all State variable update
+     * needs for this State when it is the active State.
+     * @param[in] theElapsedTime since the last Draw was called
+     */
+    virtual void UpdateVariable(float theElapsedTime) = 0;
  
     /**
      * Draw is responsible for handling all Drawing needs for this State
@@ -199,7 +219,11 @@ namespace GQE
      */
     float GetElapsedTime(void) const
     {
+#if (SFML_VERSION_MAJOR < 2)
       float result = mElapsedClock.GetElapsedTime();
+#else
+      float result = (float)mElapsedClock.GetElapsedTime() / 1000.0f;
+#endif
 
       if(false == mInit)
       {

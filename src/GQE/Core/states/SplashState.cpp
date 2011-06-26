@@ -9,6 +9,7 @@
  * @date 20110127 - Moved to GQE Core library and src directory
  * @date 20110218 - Added ReInit method
  * @date 20110218 - Change to system include style
+ * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
  */
 #include <GQE/Core/assets/ImageAsset.hpp>
 #include <GQE/Core/classes/App.hpp>
@@ -50,16 +51,22 @@ namespace GQE
     // Do nothing yet
   }
 
-  void SplashState::Update(void)
+  void SplashState::UpdateFixed(void)
   {
     // Check our App pointer
-    assert(NULL != mApp && "SplashState::Update() bad app pointer, init must be called first");
+    assert(NULL != mApp && "SplashState::UpdateFixed() bad app pointer, init must be called first");
 
     // Drop our state after 10 seconds have elapsed
     if(false == IsPaused() && GetElapsedTime() > 10.0f)
     {
       mApp->mStateManager.RemoveActiveState();
     }
+  }
+
+  void SplashState::UpdateVariable(float theElapsedTime)
+  {
+    // Check our App pointer
+    assert(NULL != mApp && "SplashState::UpdateVariable() bad app pointer, init must be called first");
   }
 
   void SplashState::Draw(void)

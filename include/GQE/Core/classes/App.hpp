@@ -11,6 +11,7 @@
  * @date 20110131 - Added class and method argument documentation
  * @date 20110218 - Change to system include style
  * @date 20110611 - Convert logging to new Log macros
+ * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
  */
 #ifndef   CORE_APP_HPP_INCLUDED
 #define   CORE_APP_HPP_INCLUDED
@@ -117,7 +118,7 @@ namespace GQE
 
     /**
      * Quit will signal the Application to stop running.
-	 * @param[in] theExitCode to use when the Run method returns
+     * @param[in] theExitCode to use when the Run method returns
      */
     void Quit(int theExitCode);
 
@@ -151,8 +152,13 @@ namespace GQE
     int                       mExitCode;
     /// True if the Application is currently running
     bool                      mRunning;
-    /// Update rate in seconds (1.0f / UpdateRate) to use for game loop
+#if (SFML_VERSION_MAJOR < 2)
+    /// Update rate in seconds to use for fixed update in game loop
     float                     mUpdateRate;
+#else
+    /// Update rate in milliseconds to use for fixed update in game loop
+    Uint32                    mUpdateRate;
+#endif
 
     /**
      * App copy constructor is private because we do not allow copies of
