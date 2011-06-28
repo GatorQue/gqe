@@ -12,6 +12,7 @@
  * @date 20110218 - Add SFML 2.0 support
  * @date 20110218 - Change to system include style
  * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
+ * @date 20110627 - Removed extra ; from namespace
  */
 #ifndef   CORE_STAT_MANAGER_HPP_INCLUDED
 #define   CORE_STAT_MANAGER_HPP_INCLUDED
@@ -140,7 +141,7 @@ namespace GQE
     StatManager& operator=(const StatManager&); // Intentionally undefined
  
   }; // class StatManager
-}; // namespace GQE
+} // namespace GQE
  
 #endif // CORE_STAT_MANAGER_HPP_INCLUDED
 

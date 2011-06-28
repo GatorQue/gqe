@@ -11,6 +11,7 @@
  * @date 20110218 - Change to system include style
  * @date 20110611 - Convert logging to new Log macros
  * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
+ * @date 20110627 - Fixed ctor init order and removed extra ; from namespace
  */
  
 #include <assert.h>
@@ -25,8 +26,10 @@ namespace GQE
     mApp(NULL),
     mShow(false),
     mFrames(0),
-    mUpdates(0),
+    mFrameClock(),
     mFPS(),
+    mUpdates(0),
+    mUpdateClock(),
     mUPS()
   {
     ILOGM("StatManager::ctor()");
@@ -177,7 +180,7 @@ namespace GQE
       mApp->mWindow.Draw(mUPS);
     }
   }
-}; // namespace GQE
+} // namespace GQE
 
 /**
  * Copyright (c) 2010-2011 Ryan Lindeman

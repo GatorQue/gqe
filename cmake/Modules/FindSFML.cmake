@@ -16,11 +16,20 @@
 # If SFML is not installed in a standard path, you can use the SFMLDIR CMake variable or environment variable
 # to tell CMake where SFML is.
 
+# deduce the libraries prefix from the OS
+set(FIND_SFML_LIB_PREFIX "")
+if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  set(FIND_SFML_LIB_PREFIX "lib")
+endif(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+
 # deduce the libraries suffix from the options
 set(FIND_SFML_LIB_SUFFIX "")
 if(SFML_STATIC_LIBRARIES)
   set(FIND_SFML_LIB_SUFFIX "${FIND_SFML_LIB_SUFFIX}-s")
 endif()
+if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  set(FIND_SFML_LIB_SUFFIX "${FIND_SFML_LIB_SUFFIX}.so")
+endif(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 # find the SFML include directory
 find_path(SFML_INCLUDE_DIR SFML/Config.hpp
@@ -36,6 +45,8 @@ find_path(SFML_INCLUDE_DIR SFML/Config.hpp
           /opt/
           ${SFMLDIR}
           $ENV{SFMLDIR})
+
+Message(STATUS "Include Dir ${SFML_INCLUDE_DIR}")
 
 # check the version number
 set(SFML_VERSION_OK TRUE)
@@ -90,7 +101,7 @@ foreach(FIND_SFML_COMPONENT ${SFML_FIND_COMPONENTS})
   unset(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_RELEASE CACHE)
 
   # Define the SFML component name
-  set(FIND_SFML_COMPONENT_NAME sfml-${FIND_SFML_COMPONENT_LOWER}${FIND_SFML_LIB_SUFFIX})
+  set(FIND_SFML_COMPONENT_NAME ${FIND_SFML_LIB_PREFIX}sfml-${FIND_SFML_COMPONENT_LOWER}${FIND_SFML_LIB_SUFFIX})
 
   # no suffix for sfml-main, it is always a static library
   if(FIND_SFML_COMPONENT_LOWER STREQUAL "main")
@@ -98,12 +109,14 @@ foreach(FIND_SFML_COMPONENT ${SFML_FIND_COMPONENTS})
   endif()
 
   # debug library
+  Message(STATUS "Searching for ${FIND_SFML_COMPONENT_NAME}-d")
   find_library(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DEBUG
                ${FIND_SFML_COMPONENT_NAME}-d
                PATH_SUFFIXES lib64 lib
                PATHS ${FIND_SFML_LIB_PATHS})
 
   # release library
+  Message(STATUS "Searching for ${FIND_SFML_COMPONENT_NAME}")
   find_library(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_RELEASE
                ${FIND_SFML_COMPONENT_NAME}
                PATH_SUFFIXES lib64 lib

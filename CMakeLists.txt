@@ -22,7 +22,11 @@ OPTION(BUILD_STATIC_STD_LIBS "Set to ON to statically link to the standard libra
 OPTION(BUILD_SHARED_LIBS "Set to OFF to build static libraries" OFF)
 OPTION(BUILD_EXAMPLES "Set to OFF to skip building examples" ON) 
 OPTION(INSTALL_DOC "Set to OFF to skip build/install Documentation" ON)
-OPTION(SFML_STATIC_LIBRARIES "Set to TRUE to statically link SFML libraries to GQE" ON)
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  OPTION(SFML_STATIC_LIBRARIES "Set to TRUE to statically link SFML libraries to GQE" ON)
+else(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  OPTION(SFML_STATIC_LIBRARIES "Set to TRUE to statically link SFML libraries to GQE" OFF)
+endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 # setup version numbers
 set(GQE_VERSION_MAJOR 0)

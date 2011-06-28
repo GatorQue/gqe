@@ -13,6 +13,7 @@
  * @date 20110218 - Added boolean result to Read method for success
  * @date 20110218 - Change to system include style
  * @date 20110611 - Convert logging to new Log macros
+ * @date 20110627 - Fixed build warnings and removed extra ; from namespace
  */
 
 #include <assert.h>
@@ -382,7 +383,11 @@ namespace GQE
           char anSection[MAX_CHARS] = {0};
           while((anOffset+anIndex) < anLength && theLine[anOffset+anIndex] != ']')
           {
-            anSection[anIndex] = theLine[anOffset+anIndex++];
+            // Retrieve the section name from theLine
+            anSection[anIndex] = theLine[anOffset+anIndex];
+
+            // Increment anIndex
+            anIndex++;
           }
           // Add null terminator
           anSection[anIndex] = '\0';
@@ -417,8 +422,11 @@ namespace GQE
             theLine[(anOffset+anNameIndex)] != '=' &&
             theLine[(anOffset+anNameIndex)] != ':')
           {
-            // Grab the name
-            anName[anNameIndex] = theLine[anOffset+anNameIndex++];
+            // Retrieve anName from theLine
+            anName[anNameIndex] = theLine[anOffset+anNameIndex];
+
+            // Increment anNameIndex
+            anNameIndex++;
           }
           // Assign our starting offset value
           anOffset += anNameIndex;
@@ -452,8 +460,11 @@ namespace GQE
               theLine[(anOffset+anValueIndex)] != ';' &&
               theLine[(anOffset+anValueIndex)] != '#')
             {
-              // Grab the value
-              anValue[anValueIndex] = theLine[anOffset+anValueIndex++];
+              // Retrieve anValue from theLine
+              anValue[anValueIndex] = theLine[anOffset+anValueIndex];
+
+              // Increment anValueIndex
+              anValueIndex++;
             }
             // Put a null terminator at the end of the section name
             anValue[anValueIndex] = '\0';
@@ -532,7 +543,7 @@ namespace GQE
     } // else(iterSection == mSections.end())
   }
 
-}; // namespace GQE
+} // namespace GQE
 
 /**
  * Copyright (c) 2010-2011 Ryan Lindeman

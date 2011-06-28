@@ -16,6 +16,7 @@
  * @date 20110331 - Removed direct.h include as it is no longer needed
  * @date 20110611 - Convert logging to new Log macros and added gApp pointer
  * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
+ * @date 20110627 - Removed extra ; from namespace
  */
  
 #include <assert.h>
@@ -326,7 +327,7 @@ namespace GQE
     }
   }
  
-}; // namespace GQE
+} // namespace GQE
 
 /**
  * Copyright (c) 2010-2011 Ryan Lindeman

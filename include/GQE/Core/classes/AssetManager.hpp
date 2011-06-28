@@ -11,6 +11,7 @@
  * @date 20110131 - Added class and method argument documentation
  * @date 20110218 - Added new Config asset type
  * @date 20110218 - Change to system include style
+ * @date 20110627 - Remove extra , from enum and extra ; from namespace
  */
 #ifndef   CORE_ASSET_MANAGER_HPP_INCLUDED
 #define   CORE_ASSET_MANAGER_HPP_INCLUDED
@@ -47,7 +48,7 @@ namespace GQE
       AssetCustom3        = 13, ///< Custom Asset Type 3
       AssetCustom4        = 14, ///< Custom Asset Type 4
       AssetCustom5        = 15, ///< Custom Asset Type 5
-      LastCustomAsset,          ///< Last Custom Asset Type Value
+      LastCustomAsset           ///< Last Custom Asset Type Value
     };
 
     /**
@@ -335,7 +336,7 @@ namespace GQE
     void LoadSounds(AssetLoadingStyle theStyle);
 
   }; // class AssetManager
-}; // namespace GQE
+} // namespace GQE
 
 #endif // CORE_ASSET_MANAGER_HPP_INCLUDED
 

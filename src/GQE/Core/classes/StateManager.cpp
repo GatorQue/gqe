@@ -15,6 +15,7 @@
  * @date 20110218 - Added InactivateActiveState and ResetActiveState methods
  * @date 20110218 - Change to system include style
  * @date 20110611 - Convert logging to new Log macros
+ * @date 20110627 - Removed extra ; from namespace
  */
 
 #include <assert.h>
@@ -442,7 +443,7 @@ namespace GQE
     }
   }
 
-}; // namespace GQE
+} // namespace GQE
 
 /**
  * Copyright (c) 2010-2011 Ryan Lindeman

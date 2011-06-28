@@ -5,7 +5,9 @@ set(SRCROOT ${CMAKE_SOURCE_DIR}/examples/demo)
 set(SRC ${SRCROOT}/main.cpp)
 
 # find external SFML libraries
-find_package(SFML REQUIRED main)
+if(Windows)
+  find_package(SFML REQUIRED main)
+endif(Windows)
 
 # add include paths of external libraries
 include_directories(${SFML_INCLUDE_DIR})

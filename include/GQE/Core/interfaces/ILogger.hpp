@@ -5,6 +5,7 @@
  * @file include/GQE/Core/interfaces/ILogger.hpp
  * @author Ryan Lindeman
  * @date 20110524 - Initial Release
+ * @date 20110627 - Added docs and remove extra ;
  */
 #ifndef   CORE_ILOGGER_HPP_INCLUDED
 #define   CORE_ILOGGER_HPP_INCLUDED
@@ -94,6 +95,7 @@ namespace GQE
     /**
      * ILogger constructor is protected because we do not allow copies of our
      * Singleton class except to those who derive from us.
+     * @param[in] theExitCode to use if FatalShutdown is called
      */
     ILogger(int theExitCode = StatusError) :
         mActive(false),
@@ -205,7 +207,7 @@ namespace GQE
     ILogger& operator=(const ILogger&); // Intentionally undefined
 
   }; // class ILogger
-}; // namespace GQE
+} // namespace GQE
 
 #endif // CORE_ILOGGER_HPP_INCLUDED
 

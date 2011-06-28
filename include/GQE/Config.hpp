@@ -10,6 +10,7 @@
  * @date 20110318 - Next minor release of GQE
  * @date 20110611 - Next minor release of GQE
  * @date 20110618 - Next minor release of GQE
+ * @date 20110627 - Next minor release of GQE
  */
 #ifndef GQE_CONFIG_HPP
 #define GQE_CONFIG_HPP
@@ -21,7 +22,7 @@
 /// Define the GQE Major version number
 #define GQE_VERSION_MAJOR 0
 /// Define the GQE Minor version number
-#define GQE_VERSION_MINOR 8
+#define GQE_VERSION_MINOR 9
 
 
 ////////////////////////////////////////////////////////////
@@ -142,6 +143,7 @@
 ////////////////////////////////////////////////////////////
 // Define portable fixed-size types
 ////////////////////////////////////////////////////////////
+#include <stdint.h>
 namespace GQE
 {
     // All "common" platforms use the same size for char, short and int
@@ -149,24 +151,24 @@ namespace GQE
     // we can use them without doing any kind of check
 
     // 8 bits integer types
-    typedef signed   char Int8;
-    typedef unsigned char Uint8;
+    typedef signed   char Int8;     ///< Standard 8 bit signed integer
+    typedef unsigned char Uint8;    ///< Standard 8 bit unsigned integer
 
     // 16 bits integer types
-    typedef signed   short Int16;
-    typedef unsigned short Uint16;
+    typedef signed   short Int16;   ///< Standard 16 bit signed integer
+    typedef unsigned short Uint16;  ///< Standard 16 bit unsigned integer
 
     // 32 bits integer types
-    typedef signed   int Int32;
-    typedef unsigned int Uint32;
+    typedef signed   int Int32;     ///< Standard 32 bit signed integer
+    typedef unsigned int Uint32;    ///< Standard 32 bit unsigned integer
 
     // 64 bits integer types
     #if defined(_MSC_VER)
-        typedef signed   __int64 Int64;
-        typedef unsigned __int64 Uint64;
+        typedef signed   __int64 Int64;  ///< Standard 64 bit signed integer
+        typedef unsigned __int64 Uint64; ///< Standard 64 bit unsigned integer
     #else
-        typedef signed   long long Int64;
-        typedef unsigned long long Uint64;
+        typedef int64_t          Int64;  ///< Standard 64 bit signed integer
+        typedef uint64_t         Uint64; ///< Standard 64 bit unsigned integer
     #endif
 
 } // namespace GQE

@@ -16,6 +16,7 @@
  * @date 20110218 - Change to system include style
  * @date 20110611 - Convert logging to new Log macros
  * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
+ * @date 20110627 - Removed extra ; from namespace
  */
 #ifndef   CORE_ISTATE_HPP_INCLUDED
 #define   CORE_ISTATE_HPP_INCLUDED
@@ -301,7 +302,7 @@ namespace GQE
     IState& operator=(const IState&); // Intentionally undefined
 
   }; // class IState
-}; // namespace GQE
+} // namespace GQE
 
 #endif // CORE_ISTATE_HPP_INCLUDED
 

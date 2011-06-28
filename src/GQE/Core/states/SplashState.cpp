@@ -10,6 +10,7 @@
  * @date 20110218 - Added ReInit method
  * @date 20110218 - Change to system include style
  * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
+ * @date 20110627 - Removed extra ; from namespace
  */
 #include <GQE/Core/assets/ImageAsset.hpp>
 #include <GQE/Core/classes/App.hpp>
@@ -91,7 +92,7 @@ namespace GQE
     IState::Cleanup();
   }
 
-}; // namespace GQE
+} // namespace GQE
 
 /**
  * Copyright (c) 2010-2011 Ryan Lindeman

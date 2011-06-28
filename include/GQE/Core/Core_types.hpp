@@ -10,6 +10,7 @@
  * @date 20110218 - Added ConfigAsset to forward declarations
  * @date 20110523 - Readded NameValue types
  * @date 20110611 - Add new logging classes and new Log macros
+ * @date 20110627 - Removed extra , from enum and ; from namespace
  */
 #ifndef   GQE_CORE_TYPES_HPP_INCLUDED
 #define   GQE_CORE_TYPES_HPP_INCLUDED
@@ -43,7 +44,7 @@ namespace GQE
     SeverityInfo          = INFO_LEVEL,   ///< Informational severity type
     SeverityWarning       = WARN_LEVEL,   ///< Warning severity type
     SeverityError         = ERROR_LEVEL,  ///< Error severity type
-    SeverityFatal         = FATAL_LEVEL,  ///< Fatal severity type
+    SeverityFatal         = FATAL_LEVEL   ///< Fatal severity type
   };
 
   /// Status Enumeration for Status Return values
@@ -111,7 +112,7 @@ namespace GQE
   extern GQE_API ILogger*         gLogger;
   /// Null stream for Logger macros if not active or severity level is disabled
   extern GQE_API std::onullstream gNullStream;
-}; // namespace GQE
+} // namespace GQE
 #endif // GQE_CORE_TYPES_HPP_INCLUDED
 
 /**

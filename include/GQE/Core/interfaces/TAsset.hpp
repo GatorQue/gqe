@@ -11,6 +11,7 @@
  * @date 20110127 - Use new OS independent Uint/Int types
  * @date 20110131 - Added class and method argument documentation
  * @date 20110218 - Change to system include style
+ * @date 20110627 - Removed extra ; from namespace
  */
 #ifndef   CORE_TASSET_HPP_INCLUDED
 #define   CORE_TASSET_HPP_INCLUDED
@@ -178,7 +179,7 @@ namespace GQE
      */
     TAsset& operator=(const TAsset&); // Intentionally undefined
   }; // class TAsset
-}; // namespace GQE
+} // namespace GQE
 
 #endif // CORE_TASSET_HPP_INCLUDED
 

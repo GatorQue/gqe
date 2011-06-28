@@ -8,6 +8,7 @@
  * @date 20110218 - Initial Release
  * @date 20110218 - Change to system include style
  * @date 20110611 - Add abreviated comment for Docs
+ * @date 20110627 - Removed extra ; from namespace
  */
 #ifndef   CORE_CONFIG_ASSET_HPP_INCLUDED
 #define   CORE_CONFIG_ASSET_HPP_INCLUDED
@@ -50,7 +51,7 @@ namespace GQE
     // Variables
     ///////////////////////////////////////////////////////////////////////////
   }; // class ConfigAsset
-}; // namespace GQE
+} // namespace GQE
 
 #endif // CORE_CONFIG_ASSET_HPP_INCLUDED
 

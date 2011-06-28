@@ -10,6 +10,7 @@
  * @date 20110218 - Added ReInit method
  * @date 20110218 - Change to system include style
  * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
+ * @date 20110627 - Removed extra ; from namespace
  */
 #ifndef   CORE_MENU_STATE_HPP_INCLUDED
 #define   CORE_MENU_STATE_HPP_INCLUDED
@@ -92,7 +93,7 @@ namespace GQE
     sf::Text*           mMenuString2;
 #endif
   }; // class MenuState
-}; // namespace GQE
+} // namespace GQE
 
 #endif // CORE_MENU_STATE_HPP_INCLUDED
 /**

@@ -9,6 +9,7 @@
  * @date 20110127 - Moved to GQE Core library and include directory
  * @date 20110131 - Added class and method argument documentation
  * @date 20110218 - Change to system include style
+ * @date 20110627 - Removed extra ; from namespace
  */
 #ifndef   CORE_SOUND_ASSET_HPP_INCLUDED
 #define   CORE_SOUND_ASSET_HPP_INCLUDED
@@ -51,7 +52,7 @@ namespace GQE
     // Variables
     ///////////////////////////////////////////////////////////////////////////
   }; // class SoundAsset
-}; // namespace GQE
+} // namespace GQE
  
 #endif // CORE_SOUND_ASSET_HPP_INCLUDED
 

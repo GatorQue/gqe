@@ -12,6 +12,7 @@
  * @date 20110131 - Added class and method argument documentation
  * @date 20110218 - Added boolean result to Read method for success
  * @date 20110218 - Change to system include style
+ * @date 20110627 - Removed extra ; from namespace
  */
 #ifndef   CORE_CONFIG_READER_HPP_INCLUDED
 #define   CORE_CONFIG_READER_HPP_INCLUDED
@@ -205,7 +206,7 @@ namespace GQE
     ConfigReader& operator=(const ConfigReader&); // Intentionally undefined
 
   }; // class ConfigReader
-}; // namespace GQE
+} // namespace GQE
 
 #endif // CORE_CONFIG_READER_HPP_INCLUDED
 

@@ -15,6 +15,7 @@
  * @date 20110218 - Change mDropped to mDead to remove potential confusion
  * @date 20110218 - Added InactivateActiveState and ResetActiveState methods
  * @date 20110218 - Change to system include style
+ * @date 20110627 - Removed extra ; from namespace
  */
 #ifndef   CORE_STATE_MANAGER_HPP_INCLUDED
 #define   CORE_STATE_MANAGER_HPP_INCLUDED
@@ -142,7 +143,7 @@ namespace GQE
     StateManager& operator=(const StateManager&); // Intentionally undefined
 
   }; // class StateManager
-}; // namespace GQE
+} // namespace GQE
 
 #endif // CORE_STATE_MANAGER_HPP_INCLUDED
 

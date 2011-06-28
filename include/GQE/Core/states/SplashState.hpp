@@ -10,6 +10,7 @@
  * @date 20110218 - Added ReInit method
  * @date 20110218 - Change to system include style
  * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
+ * @date 20110627 - Removed extra ; from namespace
  */
 #ifndef   CORE_SPLASH_STATE_HPP_INCLUDED
 #define   CORE_SPLASH_STATE_HPP_INCLUDED
@@ -85,7 +86,7 @@ namespace GQE
     /////////////////////////////////////////////////////////////////////////
     sf::Sprite*         mSplashSprite;
   }; // class SplashState
-}; // namespace GQE
+} // namespace GQE
 
 #endif // CORE_SPLASH_STATE_HPP_INCLUDED
 
