@@ -12,6 +12,7 @@
  * @date 20110611 - Convert logging to new Log macros
  * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
  * @date 20110627 - Fixed ctor init order and removed extra ; from namespace
+ * @date 20110704 - Changed Move to SetPosition
  */
  
 #include <assert.h>
@@ -57,9 +58,9 @@ namespace GQE
 
     // Position and color for the FPS/UPS string
     mFPS.SetColor(sf::Color(255,255,255,128));
-    mFPS.Move(0,0);
+    mFPS.SetPosition(0,0);
     mUPS.SetColor(sf::Color(255,255,255,128));
-    mUPS.Move(0,30);
+    mUPS.SetPosition(0,30);
 
 #if (SFML_VERSION_MAJOR < 2)
     // Default strings to display for Frames/Updates per second

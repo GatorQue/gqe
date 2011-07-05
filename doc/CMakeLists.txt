@@ -53,10 +53,10 @@ add_custom_target(doc
 
 # setup install rules
 install(DIRECTORY ${DOXYGEN_OUTPUT_DIR}/html
-        DESTINATION ${INSTALL_MISC_DIR}/doc
+        DESTINATION ${INSTALL_DATA_DIR}/doc
         COMPONENT doc)
 if(DOXYGEN_HHC_PROGRAM)
     install(FILES ${DOXYGEN_OUTPUT_DIR}/gqe.chm
-            DESTINATION ${INSTALL_MISC_DIR}/doc
+            DESTINATION ${INSTALL_DATA_DIR}/doc
             COMPONENT doc)
 endif()

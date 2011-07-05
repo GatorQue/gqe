@@ -17,14 +17,14 @@
  * @date 20110611 - Convert logging to new Log macros and added gApp pointer
  * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
  * @date 20110627 - Removed extra ; from namespace
+ * @date 20110704 - Removed Init method (moved StatManager.DoInit to Run method)
  */
  
 #include <assert.h>
 #include <GQE/Core/loggers/Log_macros.hpp>
 #include <GQE/Core/classes/App.hpp>
 #include <GQE/Core/classes/ConfigReader.hpp>
-#include <GQE/Core/states/MenuState.hpp>
-#include <GQE/Core/states/SplashState.hpp>
+#include <GQE/Core/interfaces/IState.hpp>
  
 namespace GQE
 {
@@ -101,6 +101,12 @@ namespace GQE
     // 1) Opening our configuration file
     // 2) Setting up our render window
     PreInit();
+
+    // Give the StatManager a chance to initialize
+    mStatManager.DoInit();
+
+    // Show statistics: Frames per second (FPS) and Updates per second (UPS)
+    mStatManager.SetShow(false);
  
     // Initialize our application which might set our Running flag to false
     Init();
@@ -162,10 +168,10 @@ namespace GQE
  
     // Use our default configuration file to obtain the initial window settings
     anConfig.RegisterApp(this);  // For logging purposes, let ConfigReader know about us
-    anConfig.Read("window.cfg"); // Read in our window settings
+    anConfig.Read("resources/window.cfg"); // Read in our window settings
  
     // Are we in Fullscreen mode?
-    if(anConfig.GetBool("window","fullscreen",false))
+    if(anConfig.GetBool("window","fullscreen",true))
     {
       mWindowStyle = sf::Style::Fullscreen;
     }
@@ -196,23 +202,6 @@ namespace GQE
     // Use Vertical Sync
     mWindow.EnableVerticalSync(true);
 #endif
-  }
- 
-  void App::Init(void)
-  {
-    SLOG(App_Init, SeverityInfo) << std::endl;
-
-    // Give the StatManager a chance to initialize
-    mStatManager.DoInit();
-
-    // Show statistics: Frames per second (FPS) and Updates per second (UPS)
-    mStatManager.SetShow(true);
-
-    // Add Menu State as the next active state
-    mStateManager.AddActiveState(new(std::nothrow) MenuState(this));
- 
-    // Add Splash State as current active state
-    mStateManager.AddActiveState(new(std::nothrow) SplashState(this));
   }
  
   void App::Loop(void)

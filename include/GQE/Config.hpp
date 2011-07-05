@@ -22,7 +22,7 @@
 /// Define the GQE Major version number
 #define GQE_VERSION_MAJOR 0
 /// Define the GQE Minor version number
-#define GQE_VERSION_MINOR 9
+#define GQE_VERSION_MINOR 10
 
 
 ////////////////////////////////////////////////////////////

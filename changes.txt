@@ -1,54 +1,62 @@
+Version 0.10.0
+==============
+- Fixed copying of resources to build directory
+- Fixed copying of examples to install directory
+- Fixed copying of documentation to install directory
+- Added TicTacToe example
+- Made App class abstract, requires that you subclass it
+
 Version 0.9.0
-=============
+==============
 - Fix SFML find issues with linux and build warnings
 
 Version 0.8.1
-=============
+==============
 - Fixed SFML 2.0 Clock.GetElapsedTime() changes (float->Uint32)
 
 Version 0.8.0
-=============
+==============
 - Provide pre-compiled extlibs for SFML 2.0 and 1.6
 - More shared/static build CMake fixes (should work now)
 
 Version 0.7.0
-=============
+==============
 - New logging technique using macros and C++ logger classes
 - Static build CMake fixes
 
 Version 0.6.1
-=============
+==============
 - Quick build issue fix
 
 Version 0.6.0
-=============
+==============
 - Use system level include style
 - Better CMake support for building code
 
 Version 0.5.0
-=============
+==============
 - Added ConfigAsset class
 - Added ReInit method to IState class
 - Added InactivateActiveState and ResetActiveState methods to StateManager
 - Call HandleCleanup from DoInit in IState for dropped active states
 
 Version 0.4.0
-=============
+==============
 - First GoogleCode project posting
 - CMake build scripts
 - Documentation fixes and other fixes
 
 Version 0.3.0
-=============
+==============
 - Bug fixes for Linux compiler
 
 Version 0.2.0
-=============
+==============
 - Bug fixes for compiler problems
 - Bug fixes for Active/Inactive states
 
 Version 0.1.0
-=============
+==============
 - Initial release to SFML Tutorial Wiki
 - Builds fine on Linux.
 - Qt Modules detected and included.

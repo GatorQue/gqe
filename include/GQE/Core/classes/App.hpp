@@ -12,6 +12,7 @@
  * @date 20110218 - Change to system include style
  * @date 20110611 - Convert logging to new Log macros
  * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
+ * @date 20110704 - Changed Init to pure virtual function and defaults to 800x600
  */
 #ifndef   CORE_APP_HPP_INCLUDED
 #define   CORE_APP_HPP_INCLUDED
@@ -36,9 +37,9 @@ namespace GQE
     // Constants
     ///////////////////////////////////////////////////////////////////////////
 	/// Default Video Width to use if config file not found
-    static const unsigned int DEFAULT_VIDEO_WIDTH = 1024;
+    static const unsigned int DEFAULT_VIDEO_WIDTH = 800;
 	/// Default Video Height to use if config file not found
-    static const unsigned int DEFAULT_VIDEO_HEIGHT = 768;
+    static const unsigned int DEFAULT_VIDEO_HEIGHT = 600;
 	/// Default Video bits per pixel (color depth) if config file not found
     static const unsigned int DEFAULT_VIDEO_BPP = 32;
 
@@ -120,7 +121,7 @@ namespace GQE
      * Quit will signal the Application to stop running.
      * @param[in] theExitCode to use when the Run method returns
      */
-    void Quit(int theExitCode);
+    void Quit(int theExitCode = StatusAppOK);
 
   protected:
     /**
@@ -133,7 +134,7 @@ namespace GQE
     /**
      * Init is responsible for initializing the Application.
      */
-    virtual void Init(void);
+    virtual void Init(void) = 0;
 
     /**
      * Loop is responsible for monitoring IsRunning and exiting when the

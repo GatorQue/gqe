@@ -205,15 +205,75 @@ macro(gqe_add_example target)
         target_link_libraries(${target} ${THIS_DEPENDS})
     endif()
 
+    # always copy dll files over to build directory after build
+    if(WINDOWS)
+      if(COMPILER_GCC)
+        if(ARCH_32BITS)
+          add_custom_command(TARGET ${target}
+                             POST_BUILD
+                             COMMAND ${CMAKE_COMMAND} -E copy
+                               ${CMAKE_SOURCE_DIR}/extlibs/bin-mingw/x86/libsndfile-1.dll
+                               ${CMAKE_BINARY_DIR}/examples/${target}/${CMAKE_CFG_INTDIR})
+          add_custom_command(TARGET ${target}
+                             POST_BUILD
+                             COMMAND ${CMAKE_COMMAND} -E copy
+                               ${CMAKE_SOURCE_DIR}/extlibs/bin-mingw/x86/openal32.dll
+                               ${CMAKE_BINARY_DIR}/examples/${target}/${CMAKE_CFG_INTDIR})
+        else()
+          add_custom_command(TARGET ${target}
+                             POST_BUILD
+                             COMMAND ${CMAKE_COMMAND} -E copy
+                               ${CMAKE_SOURCE_DIR}/extlibs/bin-mingw/x64/libsndfile-1.dll
+                               ${CMAKE_BINARY_DIR}/examples/${target}/${CMAKE_CFG_INTDIR})
+          add_custom_command(TARGET ${target}
+                             POST_BUILD
+                             COMMAND ${CMAKE_COMMAND} -E copy
+                               ${CMAKE_SOURCE_DIR}/extlibs/bin-mingw/x64/openal32.dll
+                               ${CMAKE_BINARY_DIR}/examples/${target}/${CMAKE_CFG_INTDIR})
+        endif()
+      elseif(COMPILER_MSVC)
+        if(ARCH_32BITS)
+          add_custom_command(TARGET ${target}
+                             POST_BUILD
+                             COMMAND ${CMAKE_COMMAND} -E copy
+                               ${CMAKE_SOURCE_DIR}/extlibs/bin-msvc/x86/libsndfile-1.dll
+                               ${CMAKE_BINARY_DIR}/examples/${target}/${CMAKE_CFG_INTDIR})
+          add_custom_command(TARGET ${target}
+                             POST_BUILD
+                             COMMAND ${CMAKE_COMMAND} -E copy
+                               ${CMAKE_SOURCE_DIR}/extlibs/bin-msvc/x86/openal32.dll
+                               ${CMAKE_BINARY_DIR}/examples/${target}/${CMAKE_CFG_INTDIR})
+        else()
+          add_custom_command(TARGET ${target}
+                             POST_BUILD
+                             COMMAND ${CMAKE_COMMAND} -E copy
+                               ${CMAKE_SOURCE_DIR}/extlibs/bin-msvc/x64/libsndfile-1.dll
+                               ${CMAKE_BINARY_DIR}/examples/${target}/${CMAKE_CFG_INTDIR})
+          add_custom_command(TARGET ${target}
+                             POST_BUILD
+                             COMMAND ${CMAKE_COMMAND} -E copy
+                               ${CMAKE_SOURCE_DIR}/extlibs/bin-msvc/x64/openal32.dll
+                               ${CMAKE_BINARY_DIR}/examples/${target}/${CMAKE_CFG_INTDIR})
+        endif()
+      endif()
+    endif()
+
+    # always copy resources over to build directory after build
+    add_custom_command(TARGET ${target}
+                       POST_BUILD
+                       COMMAND ${CMAKE_COMMAND} -E copy_directory
+                         ${CMAKE_SOURCE_DIR}/examples/${target}/resources
+                         ${CMAKE_BINARY_DIR}/examples/${target}/${CMAKE_CFG_INTDIR}/resources)
+
     # add the install rule
     install(TARGETS ${target}
-            RUNTIME DESTINATION ${INSTALL_MISC_DIR}/examples/${target} COMPONENT examples)
+            RUNTIME DESTINATION ${INSTALL_DATA_DIR}/examples/${target} COMPONENT examples)
 
     # install the example's resources as well
     set(EXAMPLE_RESOURCES "${CMAKE_SOURCE_DIR}/examples/${target}/resources")
     if(EXISTS ${EXAMPLE_RESOURCES})
         install(DIRECTORY ${EXAMPLE_RESOURCES}
-                DESTINATION ${INSTALL_MISC_DIR}/examples/${target}
+                DESTINATION ${INSTALL_DATA_DIR}/examples/${target}
                 COMPONENT examples
                 PATTERN ".hg" EXCLUDE)
     endif()

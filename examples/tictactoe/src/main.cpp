@@ -11,6 +11,7 @@
 #include <assert.h>
 #include <stddef.h>
 #include <GQE/Core.hpp>
+#include "TicTacToeApp.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -21,7 +22,7 @@ int main(int argc, char* argv[])
   GQE::gLogger = new(std::nothrow) GQE::FileLogger("output.txt");
 
   // Create our action application.
-  GQE::App* anApp = new(std::nothrow) GQE::App();
+  GQE::App* anApp = new(std::nothrow) TicTacToeApp();
   assert(NULL != anApp && "main() Can't create Application");
  
   // Process command line arguments

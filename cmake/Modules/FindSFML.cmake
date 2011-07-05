@@ -46,8 +46,6 @@ find_path(SFML_INCLUDE_DIR SFML/Config.hpp
           ${SFMLDIR}
           $ENV{SFMLDIR})
 
-Message(STATUS "Include Dir ${SFML_INCLUDE_DIR}")
-
 # check the version number
 set(SFML_VERSION_OK TRUE)
 if(SFML_FIND_VERSION AND SFML_INCLUDE_DIR)
@@ -109,14 +107,12 @@ foreach(FIND_SFML_COMPONENT ${SFML_FIND_COMPONENTS})
   endif()
 
   # debug library
-  Message(STATUS "Searching for ${FIND_SFML_COMPONENT_NAME}-d")
   find_library(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DEBUG
                ${FIND_SFML_COMPONENT_NAME}-d
                PATH_SUFFIXES lib64 lib
                PATHS ${FIND_SFML_LIB_PATHS})
 
   # release library
-  Message(STATUS "Searching for ${FIND_SFML_COMPONENT_NAME}")
   find_library(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_RELEASE
                ${FIND_SFML_COMPONENT_NAME}
                PATH_SUFFIXES lib64 lib
