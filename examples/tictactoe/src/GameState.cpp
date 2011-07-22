@@ -4,6 +4,7 @@
  * @file examples/demo/GameState.cpp
  * @author Ryan Lindeman
  * @date 20110704 - Initial Release
+ * @date 20110721 - Remove * from GetAsset() calls since it now returns TYPE&
  */
 #include "GameState.hpp"
 #include <GQE/Core/assets/ImageAsset.hpp>
@@ -36,7 +37,7 @@ void GameState::DoInit(void)
     GQE::AssetLoadStyleImmediate);
   if(NULL != mBackground)
   {
-    mBackgroundSprite.SetImage(*mBackground->GetAsset());
+    mBackgroundSprite.SetImage(mBackground->GetAsset());
   }
 
   // Load our Player 1 and Player 2 images which will show an X and O pieces
@@ -67,7 +68,7 @@ void GameState::ReInit(void)
     for(GQE::Uint8 col = 0; col < 3; col++)
     {
       // Reset the sprite for this square to empty
-      mBoardSprite[row][col].SetImage(*mEmpty->GetAsset());
+      mBoardSprite[row][col].SetImage(mEmpty->GetAsset());
       mBoardSprite[row][col].SetPosition((col*270.0f), (row*202.0f));
 
       // Set this squares owner to no player
@@ -76,7 +77,7 @@ void GameState::ReInit(void)
   }
 
   // Set Cursor to Player 1 image
-  mCursor.SetImage(*mPlayer1->GetAsset());
+  mCursor.SetImage(mPlayer1->GetAsset());
 
   // Set Cursor scale to be 25% of original image
   mCursor.SetScale(0.25f, 0.25f);
@@ -116,20 +117,20 @@ void GameState::HandleEvents(sf::Event theEvent)
       {
       case 1:
         // Set Player 1 image for this square
-        mBoardSprite[row][col].SetImage(*mPlayer1->GetAsset());
+        mBoardSprite[row][col].SetImage(mPlayer1->GetAsset());
 
         // Set Cursor to Player 2 image
-        mCursor.SetImage(*mPlayer2->GetAsset());
+        mCursor.SetImage(mPlayer2->GetAsset());
 
         // Switch to Player 2
         mCurrentPlayer = 2;
         break;
       case 2:
         // Set Player 2 image for this square
-        mBoardSprite[row][col].SetImage(*mPlayer2->GetAsset());
+        mBoardSprite[row][col].SetImage(mPlayer2->GetAsset());
 
         // Set Cursor to Player 1 image
-        mCursor.SetImage(*mPlayer1->GetAsset());
+        mCursor.SetImage(mPlayer1->GetAsset());
 
         // Switch to Player 1
         mCurrentPlayer = 1;
@@ -239,7 +240,7 @@ void GameState::UpdateFixed(void)
   if(anWinner != 0)
   {
     // Set Cursor to Player 1 image
-    mCursor.SetImage(*mEmpty->GetAsset());
+    mCursor.SetImage(mEmpty->GetAsset());
 
     // Switch to empty (no player)
     mCurrentPlayer = 0;

@@ -13,6 +13,7 @@
  * @date 20110218 - Change to system include style
  * @date 20110611 - Convert logging to new Log macros
  * @date 20110627 - Removed extra ; from namespace
+ * @date 20110721 - Remove * from GetAsset() calls since it now returns TYPE&
  */
  
 #include <assert.h>
@@ -490,9 +491,8 @@ namespace GQE
     ImageAsset* anImageAsset = GetImage(theAssetID);
     if(NULL != anImageAsset)
     {
-      sf::Image* anImage = anImageAsset->GetAsset();
-      assert(NULL != anImage && "AssetManager::GetSprite() failed to obtain image asset");
-      result = new(std::nothrow) sf::Sprite(*anImage);
+      sf::Image& anImage = anImageAsset->GetAsset();
+      result = new(std::nothrow) sf::Sprite(anImage);
       assert(NULL != result && "AssetManager::GetSprite() unable to allocate memory");
     }
     else
@@ -790,9 +790,8 @@ namespace GQE
     SoundAsset* anSoundAsset = GetSound(theAssetID);
     if(NULL != anSoundAsset)
     {
-      sf::SoundBuffer* anSoundBuffer = anSoundAsset->GetAsset();
-      assert(NULL != anSoundBuffer && "AssetManager::GetSoundPlayer() failed to obtain sound buffer asset");
-      result = new (std::nothrow) sf::Sound(*anSoundBuffer);
+      sf::SoundBuffer& anSoundBuffer = anSoundAsset->GetAsset();
+      result = new (std::nothrow) sf::Sound(anSoundBuffer);
       assert(NULL != result && "AssetManager::GetSoundPlayer() unable to allocate memory");
     }
     else

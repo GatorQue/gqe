@@ -12,6 +12,8 @@
  * @date 20110131 - Added class and method argument documentation
  * @date 20110218 - Change to system include style
  * @date 20110627 - Removed extra ; from namespace
+ * @date 20110721 - Make GetAsset method return TYPE& because that is usually
+ *                  what SFML is expecting.
  */
 #ifndef   CORE_TASSET_HPP_INCLUDED
 #define   CORE_TASSET_HPP_INCLUDED
@@ -134,8 +136,8 @@ namespace GQE
      * GetAsset will return the Asset if it is available.
      * @return pointer to the Asset or NULL if not available yet.
      */
-    TYPE* GetAsset(void) const {
-      return mAsset;
+    TYPE& GetAsset(void) const {
+      return *mAsset;
     }
 
     /**

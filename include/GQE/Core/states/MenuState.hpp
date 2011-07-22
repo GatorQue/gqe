@@ -83,7 +83,6 @@ namespace GQE
   private:
     // Variables
     /////////////////////////////////////////////////////////////////////////
-    sf::Font*           mMenuFont;
     sf::Sprite*         mMenuSprite;
 #if (SFML_VERSION_MAJOR < 2)
     sf::String*         mMenuString1;

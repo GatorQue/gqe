@@ -10,9 +10,9 @@ cmake_minimum_required(VERSION 2.6)
 
 # set a default build type if none was provided
 # this has to be done before the project() instruction!
-if(NOT CMAKE_BUILD_TYPE)
+if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build (Debug or Release)" FORCE)
-endif()
+endif(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
 
 # project name
 project(GQE)

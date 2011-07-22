@@ -1,3 +1,10 @@
+Version 0.10.1
+==============
+- Fixed some build issues when SFML has both debug and release and CMake is
+  configured for NMake Makefiles.
+- Made TAssets.hpp return TYPE& instead of TYPE* since that is what SFML is
+  usually expecting.
+
 Version 0.10.0
 ==============
 - Fixed copying of resources to build directory

@@ -10,6 +10,7 @@
  * @date 20110218 - Change to system include style
  * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
  * @date 20110627 - Removed extra ; from namespace
+ * @date 20110721 - Remove * from GetAsset() calls since it now returns TYPE&
  */
 #include <GQE/Core/states/MenuState.hpp>
 #include <GQE/Core/classes/App.hpp>
@@ -19,7 +20,6 @@ namespace GQE
 {
   MenuState::MenuState(App* theApp) :
     IState("Menu", theApp),
-    mMenuFont(NULL),
     mMenuSprite(NULL),
     mMenuString1(NULL),
     mMenuString2(NULL)
@@ -38,21 +38,22 @@ namespace GQE
     // Check our App pointer
     assert(NULL != mApp && "MenuState::DoInit() bad app pointer");
 
-    // Load our arial font
-    mMenuFont = mApp->mAssetManager.AddFont("arial", "arial.ttf", AssetLoadStyleImmediate)->GetAsset();
-
     // Create our String
 #if (SFML_VERSION_MAJOR < 2)
-    mMenuString1 = new sf::String("Play Game", *mMenuFont);
+    mMenuString1 = new sf::String("Play Game",
+      mApp->mAssetManager.AddFont("arial", "arial.ttf", AssetLoadStyleImmediate)->GetAsset());
 #else
-    mMenuString1 = new sf::Text("Play Game", *mMenuFont);
+    mMenuString1 = new sf::Text("Play Game",
+      mApp->mAssetManager.AddFont("arial", "arial.ttf", AssetLoadStyleImmediate)->GetAsset());
 #endif
     assert(NULL != mMenuString1 && "MenuState::DoInit() can't allocate memory for string");
 
 #if (SFML_VERSION_MAJOR < 2)
-    mMenuString2 = new sf::String("Exit", *mMenuFont);
+    mMenuString2 = new sf::String("Exit",
+      mApp->mAssetManager.AddFont("arial", "arial.ttf", AssetLoadStyleImmediate)->GetAsset());
 #else
-    mMenuString2 = new sf::Text("Exit", *mMenuFont);
+    mMenuString2 = new sf::Text("Exit",
+      mApp->mAssetManager.AddFont("arial", "arial.ttf", AssetLoadStyleImmediate)->GetAsset());
 #endif
     assert(NULL != mMenuString2 && "MenuState::DoInit() can't allocate memory for string");
 

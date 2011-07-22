@@ -124,11 +124,19 @@ foreach(FIND_SFML_COMPONENT ${SFML_FIND_COMPONENTS})
     
     # if both are found, set SFML_XXX_LIBRARY to contain both
     if (SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DEBUG AND SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_RELEASE)
-      # This causes problems with building under NMake Makefiles (command line Visual Studio)
-      #set(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY debug     ${SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DEBUG}
-      #                                              optimized ${SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_RELEASE})
-      # Use Release only if both are found
-      set(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY        ${SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_RELEASE})
+      # Are we using a multiconfig generator type (e.g. Visual Studio/Xcode)
+      if(CMAKE_CONFIGURATION_TYPES)
+        # This is safe to do for multiconfig generator types
+        set(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY debug     ${SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DEBUG}
+                                                      optimized ${SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_RELEASE})
+      else(CMAKE_CONFIGURATION_TYPES)
+        # Use CMAKE_BUILD_TYPE value to determine correct library to link against, otherwise we will get LNK4098 errors
+        if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+          set(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY         ${SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DEBUG})
+        else(CMAKE_BUILD_TYPE STREQUAL "Debug")
+          set(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY         ${SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_RELEASE})
+        endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+      endif(CMAKE_CONFIGURATION_TYPES)
     endif()
 
     # if only one debug/release variant is found, set the other to be equal to the found one

@@ -11,6 +11,7 @@
  * @date 20110218 - Change to system include style
  * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
  * @date 20110627 - Removed extra ; from namespace
+ * @date 20110721 - Remove * from GetAsset() calls since it now returns TYPE&
  */
 #include <GQE/Core/assets/ImageAsset.hpp>
 #include <GQE/Core/classes/App.hpp>
