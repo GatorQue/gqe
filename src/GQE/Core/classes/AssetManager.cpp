@@ -14,6 +14,7 @@
  * @date 20110611 - Convert logging to new Log macros
  * @date 20110627 - Removed extra ; from namespace
  * @date 20110721 - Remove * from GetAsset() calls since it now returns TYPE&
+ * @date 20110831 - Support new SFML2 snapshot changes
  */
  
 #include <assert.h>
@@ -491,7 +492,11 @@ namespace GQE
     ImageAsset* anImageAsset = GetImage(theAssetID);
     if(NULL != anImageAsset)
     {
+#if (SFML_VERSION_MAJOR < 2)
       sf::Image& anImage = anImageAsset->GetAsset();
+#else
+      sf::Texture& anImage = anImageAsset->GetAsset();
+#endif
       result = new(std::nothrow) sf::Sprite(anImage);
       assert(NULL != result && "AssetManager::GetSprite() unable to allocate memory");
     }

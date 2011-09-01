@@ -1,3 +1,7 @@
+Version 0.11.0
+==============
+- Update support for latest SFML2 snapshot (8-31-2011)
+
 Version 0.10.1
 ==============
 - Fixed some build issues when SFML has both debug and release and CMake is

@@ -13,6 +13,7 @@
  * @date 20110611 - Convert logging to new Log macros
  * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
  * @date 20110704 - Changed Init to pure virtual function and defaults to 800x600
+ * @date 20110831 - Support new SFML2 snapshot changes
  */
 #ifndef   CORE_APP_HPP_INCLUDED
 #define   CORE_APP_HPP_INCLUDED
@@ -60,7 +61,9 @@ namespace GQE
     /// Window style to use when createing Render window
     unsigned long             mWindowStyle;
     /// Input manager for Render window above
+#if (SFML_VERSION_MAJOR < 2)
     const sf::Input&          mInput;
+#endif
     /// AssetManager for managing assets
     AssetManager              mAssetManager;
     /// StatManager for managing game statistics

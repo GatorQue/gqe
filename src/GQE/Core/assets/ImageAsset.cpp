@@ -10,6 +10,7 @@
  * @date 20110218 - Change to system include style
  * @date 20110611 - Convert logging to new Log macros
  * @date 20110627 - Removed extra ; from namespace
+ * @date 20110831 - Support new SFML2 snapshot changes
  */
  
 #include <assert.h>
@@ -21,7 +22,11 @@
 namespace GQE
 {
   ImageAsset::ImageAsset(std::string theFilename, AssetLoadingStyle theStyle) :
+#if (SFML_VERSION_MAJOR < 2)
     TAsset<sf::Image>(theFilename, theStyle)
+#else
+    TAsset<sf::Texture>(theFilename, theStyle)
+#endif
   {
   }
  
@@ -39,7 +44,11 @@ namespace GQE
       assert(NULL == mAsset && "ImageAsset::LoadAsset() memory already allocated!");
  
       // Create the asset
+#if (SFML_VERSION_MAJOR < 2)
       mAsset = new(std::nothrow) sf::Image;
+#else
+      mAsset = new(std::nothrow) sf::Texture;
+#endif
       assert(NULL != mAsset && "ImageAsset::LoadAsset() unable to allocate memory");
  
       ILOG() << "ImageAsset::LoadAsset(" << mFilename << ") loading..." << std::endl;

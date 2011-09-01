@@ -18,6 +18,7 @@
  * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
  * @date 20110627 - Removed extra ; from namespace
  * @date 20110704 - Removed Init method (moved StatManager.DoInit to Run method)
+ * @date 20110831 - Support new SFML2 snapshot changes
  */
  
 #include <assert.h>
@@ -38,7 +39,9 @@ namespace GQE
     mContextSettings(),
 #endif
     mWindowStyle(sf::Style::Close | sf::Style::Resize),
+#if (SFML_VERSION_MAJOR < 2)
     mInput(mWindow.GetInput()),
+#endif
     mAssetManager(),
     mStatManager(),
     mStateManager(),

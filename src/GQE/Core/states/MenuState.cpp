@@ -11,6 +11,7 @@
  * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
  * @date 20110627 - Removed extra ; from namespace
  * @date 20110721 - Remove * from GetAsset() calls since it now returns TYPE&
+ * @date 20110831 - Support new SFML2 snapshot changes
  */
 #include <GQE/Core/states/MenuState.hpp>
 #include <GQE/Core/classes/App.hpp>
@@ -79,7 +80,11 @@ namespace GQE
   void MenuState::HandleEvents(sf::Event theEvent)
   {
     // Escape key pressed
+#if (SFML_VERSION_MAJOR < 2)
     if ((theEvent.Type == sf::Event::KeyPressed) && (theEvent.Key.Code == sf::Key::Escape))
+#else
+    if ((theEvent.Type == sf::Event::KeyPressed) && (theEvent.Key.Code == sf::Keyboard::Escape))
+#endif
     {
       if(NULL != mApp)
       {

@@ -10,6 +10,7 @@
  * @date 20110131 - Added class and method argument documentation
  * @date 20110218 - Change to system include style
  * @date 20110627 - Removed extra ; from namespace
+ * @date 20110831 - Support new SFML2 snapshot changes
  */
 #ifndef   CORE_IMAGE_ASSET_HPP_INCLUDED
 #define   CORE_IMAGE_ASSET_HPP_INCLUDED
@@ -21,7 +22,11 @@
 namespace GQE
 {
   /// Provides the Image asset class
+#if (SFML_VERSION_MAJOR < 2)
   class GQE_API ImageAsset : public TAsset<sf::Image>
+#else
+  class GQE_API ImageAsset : public TAsset<sf::Texture>
+#endif
   {
   public:
     /**

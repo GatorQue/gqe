@@ -5,6 +5,7 @@
  * @author Ryan Lindeman
  * @date 20110704 - Initial Release
  * @date 20110721 - Remove * from GetAsset() calls since it now returns TYPE&
+ * @date 20110831 - Support new SFML2 snapshot changes
  */
 #include "GameState.hpp"
 #include <GQE/Core/assets/ImageAsset.hpp>
@@ -37,7 +38,11 @@ void GameState::DoInit(void)
     GQE::AssetLoadStyleImmediate);
   if(NULL != mBackground)
   {
+#if (SFML_VERSION_MAJOR < 2)
     mBackgroundSprite.SetImage(mBackground->GetAsset());
+#else
+    mBackgroundSprite.SetTexture(mBackground->GetAsset());
+#endif
   }
 
   // Load our Player 1 and Player 2 images which will show an X and O pieces
@@ -68,7 +73,11 @@ void GameState::ReInit(void)
     for(GQE::Uint8 col = 0; col < 3; col++)
     {
       // Reset the sprite for this square to empty
+#if (SFML_VERSION_MAJOR < 2)
       mBoardSprite[row][col].SetImage(mEmpty->GetAsset());
+#else
+      mBoardSprite[row][col].SetTexture(mEmpty->GetAsset());
+#endif
       mBoardSprite[row][col].SetPosition((col*270.0f), (row*202.0f));
 
       // Set this squares owner to no player
@@ -77,7 +86,11 @@ void GameState::ReInit(void)
   }
 
   // Set Cursor to Player 1 image
+#if (SFML_VERSION_MAJOR < 2)
   mCursor.SetImage(mPlayer1->GetAsset());
+#else
+  mCursor.SetTexture(mPlayer1->GetAsset());
+#endif
 
   // Set Cursor scale to be 25% of original image
   mCursor.SetScale(0.25f, 0.25f);
@@ -96,7 +109,11 @@ void GameState::ReInit(void)
 void GameState::HandleEvents(sf::Event theEvent)
 {
   // Exit program if Escape key is pressed
+#if (SFML_VERSION_MAJOR < 2)
   if((theEvent.Type == sf::Event::KeyReleased) && (theEvent.Key.Code == sf::Key::Escape))
+#else
+  if((theEvent.Type == sf::Event::KeyReleased) && (theEvent.Key.Code == sf::Keyboard::Escape))
+#endif
   {
     // Signal the application to exit
     mApp->Quit(GQE::StatusAppOK);
@@ -117,20 +134,36 @@ void GameState::HandleEvents(sf::Event theEvent)
       {
       case 1:
         // Set Player 1 image for this square
+#if (SFML_VERSION_MAJOR < 2)
         mBoardSprite[row][col].SetImage(mPlayer1->GetAsset());
+#else
+        mBoardSprite[row][col].SetTexture(mPlayer1->GetAsset());
+#endif
 
         // Set Cursor to Player 2 image
+#if (SFML_VERSION_MAJOR < 2)
         mCursor.SetImage(mPlayer2->GetAsset());
+#else
+        mCursor.SetTexture(mPlayer2->GetAsset());
+#endif
 
         // Switch to Player 2
         mCurrentPlayer = 2;
         break;
       case 2:
         // Set Player 2 image for this square
+#if (SFML_VERSION_MAJOR < 2)
         mBoardSprite[row][col].SetImage(mPlayer2->GetAsset());
+#else
+        mBoardSprite[row][col].SetTexture(mPlayer2->GetAsset());
+#endif
 
         // Set Cursor to Player 1 image
+#if (SFML_VERSION_MAJOR < 2)
         mCursor.SetImage(mPlayer1->GetAsset());
+#else
+        mCursor.SetTexture(mPlayer1->GetAsset());
+#endif
 
         // Switch to Player 1
         mCurrentPlayer = 1;
@@ -240,7 +273,11 @@ void GameState::UpdateFixed(void)
   if(anWinner != 0)
   {
     // Set Cursor to Player 1 image
+#if (SFML_VERSION_MAJOR < 2)
     mCursor.SetImage(mEmpty->GetAsset());
+#else
+    mCursor.SetTexture(mEmpty->GetAsset());
+#endif
 
     // Switch to empty (no player)
     mCurrentPlayer = 0;
@@ -253,7 +290,11 @@ void GameState::UpdateVariable(float theElapsedTime)
   assert(NULL != mApp && "GameState::UpdateVariable() bad app pointer, init must be called first");
 
   // Draw the current player image at the mouse position
+#if (SFML_VERSION_MAJOR < 2)
   mCursor.SetPosition(mApp->mInput.GetMouseX()-32.0f, mApp->mInput.GetMouseY()-25.25f);
+#else
+  mCursor.SetPosition(sf::Mouse::GetPosition().x-32.0f, sf::Mouse::GetPosition().y-25.25f);
+#endif
 }
 
 void GameState::Draw(void)
