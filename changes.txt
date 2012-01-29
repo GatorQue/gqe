@@ -1,3 +1,8 @@
+Version 0.12.0
+==============
+- Fix -ansi compiler issue
+- Fix FindSFML issue when using MinGW compiler 
+
 Version 0.11.0
 ==============
 - Update support for latest SFML2 snapshot (8-31-2011)

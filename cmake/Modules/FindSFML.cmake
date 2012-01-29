@@ -18,9 +18,9 @@
 
 # deduce the libraries prefix from the OS
 set(FIND_SFML_LIB_PREFIX "")
-if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows" OR COMPILER_GCC)
   set(FIND_SFML_LIB_PREFIX "lib")
-endif(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+endif(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows" OR COMPILER_GCC)
 
 # deduce the libraries suffix from the options
 set(FIND_SFML_LIB_SUFFIX "")
@@ -100,7 +100,7 @@ foreach(FIND_SFML_COMPONENT ${SFML_FIND_COMPONENTS})
 
   # Define the SFML component name
   set(FIND_SFML_COMPONENT_NAME ${FIND_SFML_LIB_PREFIX}sfml-${FIND_SFML_COMPONENT_LOWER}${FIND_SFML_LIB_SUFFIX})
-
+  
   # no suffix for sfml-main, it is always a static library
   if(FIND_SFML_COMPONENT_LOWER STREQUAL "main")
       set(FIND_SFML_COMPONENT_NAME sfml-${FIND_SFML_COMPONENT_LOWER})
