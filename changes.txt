@@ -1,6 +1,7 @@
 Version 0.13.0
 ==============
 - Fix link order of SFML libraries for GCC compiler problems
+- Fix destination path for CMake FindGQE.cmake module file
 
 Version 0.12.0
 ==============

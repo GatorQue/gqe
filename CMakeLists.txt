@@ -98,7 +98,7 @@ install(FILES
   DESTINATION "${GQE_CMAKE_DIR}" COMPONENT dev)
 
 # install our FindGQE cmake module into the Cmake Modules directory
-install(FILES ${PROJECT_SOURCE_DIR}/cmake/Modules/FindGQE.cmake DESTINATION ${CMAKE_ROOT}/Modules)
+install(FILES ${PROJECT_SOURCE_DIR}/cmake/Modules/FindGQE.cmake DESTINATION ${INSTALLDATA_DIR}/cmake/Modules)
 
 # install our license file into our INSTALL_DATA_DIR
 install(FILES license.txt DESTINATION ${INSTALL_DATA_DIR})
