@@ -64,7 +64,7 @@ if(BUILD_SHARED_LIBS)
                   HEADER_DIR    ${INCROOT}/Core
                   INCLUDES      ${INC}
                   SOURCES       ${SRC}
-                  EXTERNAL_LIBS ${SFML_WINDOW_LIBRARY} ${SFML_SYSTEM_LIBRARY} ${SFML_GRAPHICS_LIBRARY} ${SFML_AUDIO_LIBRARY})
+                  EXTERNAL_LIBS ${SFML_AUDIO_LIBRARY} ${SFML_GRAPHICS_LIBRARY} ${SFML_WINDOW_LIBRARY} ${SFML_SYSTEM_LIBRARY})
 else()
   # define the gqe-core target (for a static build, we use depends to remove LNK4006 and LNK4221 errors with Visual Studio)
   gqe_add_library(gqe-core
@@ -72,5 +72,5 @@ else()
                   HEADER_DIR    ${INCROOT}/Core
                   INCLUDES      ${INC}
                   SOURCES       ${SRC}
-                  DEPENDS       ${SFML_WINDOW_LIBRARY} ${SFML_SYSTEM_LIBRARY} ${SFML_GRAPHICS_LIBRARY} ${SFML_AUDIO_LIBRARY})
+                  DEPENDS       ${SFML_AUDIO_LIBRARY} ${SFML_GRAPHICS_LIBRARY} ${SFML_WINDOW_LIBRARY} ${SFML_SYSTEM_LIBRARY})
 endif()
