@@ -1,5 +1,5 @@
 # core library public header include file
-set(HEADER ${INCROOT}/Core.hpp)
+set(CORE_HEADER ${INCROOT}/Core.hpp)
 
 # core library additional include files
 set(INC
@@ -60,7 +60,7 @@ include_directories(${SFML_INCLUDE_DIR})
 if(BUILD_SHARED_LIBS)
   # define the gqe-core target
   gqe_add_library(gqe-core
-                  HEADER        ${HEADER}
+                  HEADER        ${CORE_HEADER}
                   HEADER_DIR    ${INCROOT}/Core
                   INCLUDES      ${INC}
                   SOURCES       ${SRC}
@@ -68,7 +68,7 @@ if(BUILD_SHARED_LIBS)
 else()
   # define the gqe-core target (for a static build, we use depends to remove LNK4006 and LNK4221 errors with Visual Studio)
   gqe_add_library(gqe-core
-                  HEADER        ${HEADER}
+                  HEADER        ${CORE_HEADER}
                   HEADER_DIR    ${INCROOT}/Core
                   INCLUDES      ${INC}
                   SOURCES       ${SRC}
