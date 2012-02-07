@@ -209,51 +209,67 @@ macro(gqe_add_example target)
     if(WINDOWS)
       if(COMPILER_GCC)
         if(ARCH_32BITS)
-          add_custom_command(TARGET ${target}
-                             POST_BUILD
-                             COMMAND ${CMAKE_COMMAND} -E copy
-                               ${CMAKE_SOURCE_DIR}/extlibs/bin-mingw/x86/libsndfile-1.dll
+          if(EXISTS ${SFML_INCLUDE_DIR}/../bin-mingw/x86/libsndfile-1.dll)
+            add_custom_command(TARGET ${target}
+                               POST_BUILD
+                               COMMAND ${CMAKE_COMMAND} -E copy
+                               ${SFML_INCLUDE_DIR}/../bin-mingw/x86/libsndfile-1.dll
                                ${CMAKE_BINARY_DIR}/examples/${target}/${CMAKE_CFG_INTDIR})
-          add_custom_command(TARGET ${target}
-                             POST_BUILD
-                             COMMAND ${CMAKE_COMMAND} -E copy
-                               ${CMAKE_SOURCE_DIR}/extlibs/bin-mingw/x86/openal32.dll
+          endif()
+          if(EXISTS ${SFML_INCLUDE_DIR}/../bin-mingw/x86/openal32.dll)
+            add_custom_command(TARGET ${target}
+                               POST_BUILD
+                               COMMAND ${CMAKE_COMMAND} -E copy
+                               ${SFML_INCLUDE_DIR}/../bin-mingw/x86/openal32.dll
                                ${CMAKE_BINARY_DIR}/examples/${target}/${CMAKE_CFG_INTDIR})
+          endif()
         else()
-          add_custom_command(TARGET ${target}
-                             POST_BUILD
-                             COMMAND ${CMAKE_COMMAND} -E copy
-                               ${CMAKE_SOURCE_DIR}/extlibs/bin-mingw/x64/libsndfile-1.dll
+          if(EXISTS ${SFML_INCLUDE_DIR}/../bin-mingw/x64/libsndfile-1.dll)
+            add_custom_command(TARGET ${target}
+                               POST_BUILD
+                               COMMAND ${CMAKE_COMMAND} -E copy
+                               ${SFML_INCLUDE_DIR}/../bin-mingw/x64/libsndfile-1.dll
                                ${CMAKE_BINARY_DIR}/examples/${target}/${CMAKE_CFG_INTDIR})
-          add_custom_command(TARGET ${target}
-                             POST_BUILD
-                             COMMAND ${CMAKE_COMMAND} -E copy
-                               ${CMAKE_SOURCE_DIR}/extlibs/bin-mingw/x64/openal32.dll
+          endif()
+          if(EXISTS ${SFML_INCLUDE_DIR}/../bin-mingw/x64/openal32.dll)
+            add_custom_command(TARGET ${target}
+                               POST_BUILD
+                               COMMAND ${CMAKE_COMMAND} -E copy
+                               ${SFML_INCLUDE_DIR}/../bin-mingw/x64/openal32.dll
                                ${CMAKE_BINARY_DIR}/examples/${target}/${CMAKE_CFG_INTDIR})
+          endif()
         endif()
       elseif(COMPILER_MSVC)
         if(ARCH_32BITS)
-          add_custom_command(TARGET ${target}
-                             POST_BUILD
-                             COMMAND ${CMAKE_COMMAND} -E copy
-                               ${CMAKE_SOURCE_DIR}/extlibs/bin-msvc/x86/libsndfile-1.dll
+          if(EXISTS ${SFML_INCLUDE_DIR}/../bin-msvc/x86/libsndfile-1.dll)
+            add_custom_command(TARGET ${target}
+                               POST_BUILD
+                               COMMAND ${CMAKE_COMMAND} -E copy
+                               ${SFML_INCLUDE_DIR}/../bin-msvc/x86/libsndfile-1.dll
                                ${CMAKE_BINARY_DIR}/examples/${target}/${CMAKE_CFG_INTDIR})
-          add_custom_command(TARGET ${target}
-                             POST_BUILD
-                             COMMAND ${CMAKE_COMMAND} -E copy
-                               ${CMAKE_SOURCE_DIR}/extlibs/bin-msvc/x86/openal32.dll
+          endif()
+          if(EXISTS ${SFML_INCLUDE_DIR}/../bin-msvc/x86/openal32.dll)
+            add_custom_command(TARGET ${target}
+                               POST_BUILD
+                               COMMAND ${CMAKE_COMMAND} -E copy
+                               ${SFML_INCLUDE_DIR}/../bin-msvc/x86/openal32.dll
                                ${CMAKE_BINARY_DIR}/examples/${target}/${CMAKE_CFG_INTDIR})
+          endif()
         else()
-          add_custom_command(TARGET ${target}
-                             POST_BUILD
-                             COMMAND ${CMAKE_COMMAND} -E copy
-                               ${CMAKE_SOURCE_DIR}/extlibs/bin-msvc/x64/libsndfile-1.dll
+          if(EXISTS ${SFML_INCLUDE_DIR}/../bin-msvc/x64/libsndfile-1.dll)
+            add_custom_command(TARGET ${target}
+                               POST_BUILD
+                               COMMAND ${CMAKE_COMMAND} -E copy
+                               ${SFML_INCLUDE_DIR}/../bin-msvc/x64/libsndfile-1.dll
                                ${CMAKE_BINARY_DIR}/examples/${target}/${CMAKE_CFG_INTDIR})
-          add_custom_command(TARGET ${target}
-                             POST_BUILD
-                             COMMAND ${CMAKE_COMMAND} -E copy
-                               ${CMAKE_SOURCE_DIR}/extlibs/bin-msvc/x64/openal32.dll
+          endif()
+          if(EXISTS ${SFML_INCLUDE_DIR}/../bin-msvc/x64/openal32.dll)
+            add_custom_command(TARGET ${target}
+                               POST_BUILD
+                               COMMAND ${CMAKE_COMMAND} -E copy
+                               ${SFML_INCLUDE_DIR}/../bin-msvc/x64/openal32.dll
                                ${CMAKE_BINARY_DIR}/examples/${target}/${CMAKE_CFG_INTDIR})
+          endif()
         endif()
       endif()
     endif()

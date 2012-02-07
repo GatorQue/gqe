@@ -78,14 +78,14 @@ configure_file(gqe-configversion.cmake.in
 
 # Install the export set for use with the install-tree
 install(EXPORT GQE_LibraryDepends DESTINATION
-  "${INSTALL_DATA_DIR}/CMake"
+  "${INSTALL_DATA_DIR}/cmake"
   COMPONENT dev)
  
 # Create a GQE_Config.cmake file for the use from the install tree
 # and install it
 set(GQE_INCLUDE_DIRS "${INSTALL_INCLUDE_DIR}")
 set(GQE_LIB_DIR "${INSTALL_LIB_DIR}")
-set(GQE_CMAKE_DIR "${INSTALL_DATA_DIR}/CMake")
+set(GQE_CMAKE_DIR "${INSTALL_DATA_DIR}/cmake")
 configure_file(gqe-config.cmake.in
   "${PROJECT_BINARY_DIR}/InstallFiles/gqe-config.cmake" @ONLY)
 configure_file(gqe-configversion.cmake.in
@@ -98,7 +98,7 @@ install(FILES
   DESTINATION "${GQE_CMAKE_DIR}" COMPONENT dev)
 
 # install our FindGQE cmake module into the Cmake Modules directory
-install(FILES ${PROJECT_SOURCE_DIR}/cmake/Modules/FindGQE.cmake DESTINATION ${INSTALLDATA_DIR}/cmake/Modules)
+install(FILES ${PROJECT_SOURCE_DIR}/cmake/Modules/FindGQE.cmake DESTINATION ${INSTALL_DATA_DIR}/cmake/Modules)
 
 # install our license file into our INSTALL_DATA_DIR
 install(FILES license.txt DESTINATION ${INSTALL_DATA_DIR})
@@ -106,21 +106,39 @@ install(FILES license.txt DESTINATION ${INSTALL_DATA_DIR})
 if(WINDOWS)
   if(COMPILER_GCC)
     if(ARCH_32BITS)
-      install(FILES extlibs/bin-mingw/x86/libsndfile-1.dll DESTINATION bin)
-      install(FILES extlibs/bin-mingw/x86/openal32.dll DESTINATION bin)
+      if(EXISTS ${SFML_INCLUDE_DIR}/../bin-mingw/x86/libsndfile-1.dll)
+        install(FILES extlibs/bin-mingw/x86/libsndfile-1.dll DESTINATION bin)
+      endif()
+      if(EXISTS ${SFML_INCLUDE_DIR}/../bin-mingw/x86/openal32.dll)
+        install(FILES ${SFML_INCLUDE_DIR}/..bin-mingw/x86/openal32.dll DESTINATION bin)
+      endif()
     else()
-      install(FILES extlibs/bin-mingw/x64/libsndfile-1.dll DESTINATION bin)
-      install(FILES extlibs/bin-mingw/x64/openal32.dll DESTINATION bin)
+      if(EXISTS ${SFML_INCLUDE_DIR}/../bin-mingw/x64/libsndfile-1.dll)
+        install(FILES ${SFML_INCLUDE_DIR}/../bin-mingw/x64/libsndfile-1.dll DESTINATION bin)
+      endif()
+      if(EXISTS ${SFML_INCLUDE_DIR}/../bin-mingw/x64/openal32.dll)
+        install(FILES ${SFML_INCLUDE_DIR}/../bin-mingw/x64/openal32.dll DESTINATION bin)
+      endif()
     endif()
   elseif(COMPILER_MSVC)
     if(ARCH_32BITS)
-      install(FILES extlibs/bin-msvc/x86/libsndfile-1.dll DESTINATION bin)
-      install(FILES extlibs/bin-msvc/x86/openal32.dll DESTINATION bin)
+      if(EXISTS ${SFML_INCLUDE_DIR}/../bin-msvc/x86/libsndfile-1.dll)
+        install(FILES ${SFML_INCLUDE_DIR}/../bin-msvc/x86/libsndfile-1.dll DESTINATION bin)
+      endif()
+      if(EXISTS ${SFML_INCLUDE_DIR}/../bin-msvc/x86/openal32.dll)
+        install(FILES ${SFML_INCLUDE_DIR}/../bin-msvc/x86/openal32.dll DESTINATION bin)
+      endif()
     else()
-      install(FILES extlibs/bin-msvc/x64/libsndfile-1.dll DESTINATION bin)
-      install(FILES extlibs/bin-msvc/x64/openal32.dll DESTINATION bin)
+      if(EXISTS ${SFML_INCLUDE_DIR}/../bin-msvc/x64/libsndfile-1.dll)
+        install(FILES ${SFML_INCLUDE_DIR}/../bin-msvc/x64/libsndfile-1.dll DESTINATION bin)
+      endif()
+      if(EXISTS ${PROJECT_SOURCE_DIR}/../bin-msvc/x64/openal32.dll)
+        install(FILES ${SFML_INCLUDE_DIR}/../bin-msvc/x64/openal32.dll DESTINATION bin)
+      endif()
     endif()
   endif()
 elseif(MACOSX)
-  install(DIRECTORY extlibs/libs-osx/Frameworks/sndfile.framework DESTINATION /Library/Frameworks PATTERN ".hg" EXCLUDE)
+  if(EXISTS ${SFML_INCLUDE_DIR}/../libs-osx/Frameworks/sndfile.framework)
+    install(DIRECTORY ${SFML_INCLUDE_DIR}/../libs-osx/Frameworks/sndfile.framework DESTINATION /Library/Frameworks PATTERN ".hg" EXCLUDE)
+  endif()
 endif()
