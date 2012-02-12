@@ -28,8 +28,12 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   string(REGEX REPLACE "([0-9]+\\.[0-9]+).*" "\\1" GCC_VERSION "${GCC_VERSION_OUTPUT}")
 elseif(MSVC_VERSION EQUAL 1400)
   set(COMPILER_MSVC 2005)
+  # Add some include files missing in MSVC 2005
+  set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} ${CMAKE_SOURCE_DIR}/extlibs/msvc)
 elseif(MSVC_VERSION EQUAL 1500)
   set(COMPILER_MSVC 2008)
+  # Add some include files missing in MSVC 2008
+  set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} ${CMAKE_SOURCE_DIR}/extlibs/msvc)
 elseif(MSVC_VERSION EQUAL 1600)
   set(COMPILER_MSVC 2010)
 else()
