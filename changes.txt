@@ -3,6 +3,7 @@ Version 0.14.0
 - Fix install to check for files before including them to be installed
 - Fix cmake install path case mismatch
 - Fix unusual, subtle bug preventing Core.hpp from being installed
+- Fix Reset and GetElapsedTime SFML 2 call changes
 
 Version 0.13.0
 ==============

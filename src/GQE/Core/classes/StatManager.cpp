@@ -13,6 +13,7 @@
  * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
  * @date 20110627 - Fixed ctor init order and removed extra ; from namespace
  * @date 20110704 - Changed Move to SetPosition
+ * @date 20120211 - Support new SFML2 snapshot changes
  */
  
 #include <assert.h>
@@ -53,8 +54,13 @@ namespace GQE
     mUpdates = 0;
 
     // Reset our clocks
+#if (SFML_VERSION_MAJOR < 2)
     mFrameClock.Reset();
     mUpdateClock.Reset();
+#else
+    mFrameClock.Restart();
+    mUpdateClock.Restart();
+#endif
 
     // Position and color for the FPS/UPS string
     mFPS.SetColor(sf::Color(255,255,255,128));
@@ -118,7 +124,7 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
     if(mUpdateClock.GetElapsedTime() > 1.0f)
 #else
-    if(mUpdateClock.GetElapsedTime() > 1000)
+    if(mUpdateClock.GetElapsedTime().AsSeconds() > 1.0f)
 #endif
     {
       // Updates string stream
@@ -136,7 +142,11 @@ namespace GQE
 
       // Reset our Update clock and update counter
       mUpdates = 0;
+#if (SFML_VERSION_MAJOR < 2)
       mUpdateClock.Reset();
+#else
+      mUpdateClock.Restart();
+#endif
     }
   }
 
@@ -150,7 +160,7 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
     if(mFrameClock.GetElapsedTime() > 1.0f)
 #else
-    if(mFrameClock.GetElapsedTime() > 1000)
+    if(mFrameClock.GetElapsedTime().AsSeconds() > 1.0f)
 #endif
     {
       // Frames string stream
@@ -168,7 +178,11 @@ namespace GQE
 
       // Reset our Frames clock and frame counter
       mFrames = 0;
+#if (SFML_VERSION_MAJOR < 2)
       mFrameClock.Reset();
+#else
+      mFrameClock.Restart();
+#endif
     }
 
     // Are we showing the current statistics?

@@ -17,34 +17,35 @@
  * @date 20110611 - Convert logging to new Log macros
  * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
  * @date 20110627 - Removed extra ; from namespace
+ * @date 20120211 - Support new SFML2 snapshot changes
  */
 #ifndef   CORE_ISTATE_HPP_INCLUDED
 #define   CORE_ISTATE_HPP_INCLUDED
- 
+
 #include <assert.h>
 #include <GQE/Core/loggers/Log_macros.hpp>
 #include <GQE/Core/Core_types.hpp>
 #include <GQE/Core/classes/App.hpp>
 #include <SFML/System.hpp>
- 
+
 namespace GQE
 {
   /// Provides the base class interface for all game states
   class GQE_API IState
   {
   public:
- 
+
     /**
      * State deconstructor
      */
     virtual ~IState()
     {
       ILOG() << "IState::dtor(" << mID << ")" << std::endl;
- 
+
       // Clear out pointers that we don't need anymore
       mApp = NULL;
     }
- 
+
     /**
      * GetID will return the ID used to identify this State object
      * @return GQE::typeStateID is the ID for this State object
@@ -53,7 +54,7 @@ namespace GQE
     {
       return mID;
     }
- 
+
     /**
      * DoInit is responsible for initializing this State.  HandleCleanup will
      * be called if mCleanup is true so Derived classes should always call
@@ -74,12 +75,20 @@ namespace GQE
         mInit = true;
         mPaused = false;
         mElapsedTime = 0.0f;
+#if (SFML_VERSION_MAJOR < 2)
         mElapsedClock.Reset();
+#else
+        mElapsedClock.Restart();
+#endif
         mPausedTime = 0.0f;
+#if (SFML_VERSION_MAJOR < 2)
         mPausedClock.Reset();
+#else
+        mPausedClock.Restart();
+#endif
       }
     }
- 
+
     /**
      * ReInit is responsible for Reseting this state when the 
      * StateManager::ResetActiveState() method is called.  This way a Game
@@ -101,14 +110,14 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
         mElapsedTime += mElapsedClock.GetElapsedTime();
 #else
-        mElapsedTime += (float)mElapsedClock.GetElapsedTime() / 1000.0f;
+        mElapsedTime += mElapsedClock.GetElapsedTime().AsSeconds();
 #endif
         if(true == mPaused)
         {
 #if (SFML_VERSION_MAJOR < 2)
           mPausedTime += mPausedClock.GetElapsedTime();
 #else
-          mPausedTime += (float)mPausedClock.GetElapsedTime() / 1000.0f;
+          mPausedTime += mPausedClock.GetElapsedTime().AsSeconds();
 #endif
         }
       }
@@ -146,7 +155,12 @@ namespace GQE
       if(false == mPaused)
       {
         mPaused = true;
+
+#if (SFML_VERSION_MAJOR < 2)
         mPausedClock.Reset();
+#else
+        mPausedClock.Restart();
+#endif
       }
     }
 
@@ -164,7 +178,7 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
         mPausedTime += mPausedClock.GetElapsedTime();
 #else
-        mPausedTime += (float)mPausedClock.GetElapsedTime() / 1000.0f;
+        mPausedTime += mPausedClock.GetElapsedTime().AsSeconds();
 #endif
       }
     }
@@ -175,26 +189,26 @@ namespace GQE
      * @param[in] theEvent to process from the App class Loop method
      */
     virtual void HandleEvents(sf::Event theEvent) = 0;
- 
+
     /**
      * UpdateFixed is responsible for handling all State fixed update needs for
      * this State when it is the active State.
      */
     virtual void UpdateFixed(void) = 0;
- 
+
     /**
      * UpdateVariable is responsible for handling all State variable update
      * needs for this State when it is the active State.
      * @param[in] theElapsedTime since the last Draw was called
      */
     virtual void UpdateVariable(float theElapsedTime) = 0;
- 
+
     /**
      * Draw is responsible for handling all Drawing needs for this State
      * when it is the Active State.
      */
     virtual void Draw(void) = 0;
- 
+
     /**
      * HandleCleanup is responsible for calling Cleanup if this class has been
      * flagged to be cleaned up after it completes the game loop.
@@ -223,14 +237,14 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
       float result = mElapsedClock.GetElapsedTime();
 #else
-      float result = (float)mElapsedClock.GetElapsedTime() / 1000.0f;
+      float result = mElapsedClock.GetElapsedTime().AsSeconds();
 #endif
 
       if(false == mInit)
       {
         result = mElapsedTime;
       }
- 
+
       return result;
     }
 
@@ -257,9 +271,9 @@ namespace GQE
 
       // Check that our pointer is good
       assert(NULL != theApp && "IState::IState() theApp pointer is bad");
- 
+
       // Keep a copy of our Application pointer
-      mApp = theApp; 
+      mApp = theApp;
     }
 
     /**
