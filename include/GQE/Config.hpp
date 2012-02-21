@@ -25,7 +25,7 @@
 /// Define the GQE Major version number
 #define GQE_VERSION_MAJOR 0
 /// Define the GQE Minor version number
-#define GQE_VERSION_MINOR 15
+#define GQE_VERSION_MINOR 16
 
 
 ////////////////////////////////////////////////////////////
@@ -87,7 +87,7 @@
 ////////////////////////////////////////////////////////////
 #if !defined(NDEBUG)
 
-	/// Define a GQE Debug build flag
+    /// Define a GQE Debug build flag
     #define GQE_DEBUG
 
 #endif

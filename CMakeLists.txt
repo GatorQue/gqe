@@ -30,12 +30,12 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 # setup version numbers
 set(GQE_VERSION_MAJOR 0)
-set(GQE_VERSION_MINOR 15)
+set(GQE_VERSION_MINOR 16)
 set(GQE_VERSION_PATCH 0)
 set(GQE_VERSION "${GQE_VERSION_MAJOR}.${GQE_VERSION_MINOR}.${GQE_VERSION_PATCH}")
 
 # define the path of our additional CMake modules
-set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/Modules/")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake/Modules/)
 
 # include the configuration file after the project options are defined
 include(${PROJECT_SOURCE_DIR}/cmake/Config.cmake)
