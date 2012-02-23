@@ -214,14 +214,14 @@ macro(gqe_add_example target)
                                POST_BUILD
                                COMMAND ${CMAKE_COMMAND} -E copy
                                ${SFML_INCLUDE_DIR}/../bin-mingw/x86/libsndfile-1.dll
-                               ${CMAKE_BINARY_DIR}/examples/${target}/${CMAKE_CFG_INTDIR})
+                               ${PROJECT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
           endif()
           if(EXISTS ${SFML_INCLUDE_DIR}/../bin-mingw/x86/openal32.dll)
             add_custom_command(TARGET ${target}
                                POST_BUILD
                                COMMAND ${CMAKE_COMMAND} -E copy
                                ${SFML_INCLUDE_DIR}/../bin-mingw/x86/openal32.dll
-                               ${CMAKE_BINARY_DIR}/examples/${target}/${CMAKE_CFG_INTDIR})
+                               ${PROJECT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
           endif()
         else()
           if(EXISTS ${SFML_INCLUDE_DIR}/../bin-mingw/x64/libsndfile-1.dll)
@@ -229,14 +229,14 @@ macro(gqe_add_example target)
                                POST_BUILD
                                COMMAND ${CMAKE_COMMAND} -E copy
                                ${SFML_INCLUDE_DIR}/../bin-mingw/x64/libsndfile-1.dll
-                               ${CMAKE_BINARY_DIR}/examples/${target}/${CMAKE_CFG_INTDIR})
+                               ${PROJECT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
           endif()
           if(EXISTS ${SFML_INCLUDE_DIR}/../bin-mingw/x64/openal32.dll)
             add_custom_command(TARGET ${target}
                                POST_BUILD
                                COMMAND ${CMAKE_COMMAND} -E copy
                                ${SFML_INCLUDE_DIR}/../bin-mingw/x64/openal32.dll
-                               ${CMAKE_BINARY_DIR}/examples/${target}/${CMAKE_CFG_INTDIR})
+                               ${PROJECT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
           endif()
         endif()
       elseif(COMPILER_MSVC)
@@ -246,14 +246,14 @@ macro(gqe_add_example target)
                                POST_BUILD
                                COMMAND ${CMAKE_COMMAND} -E copy
                                ${SFML_INCLUDE_DIR}/../bin-msvc/x86/libsndfile-1.dll
-                               ${CMAKE_BINARY_DIR}/examples/${target}/${CMAKE_CFG_INTDIR})
+                               ${PROJECT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
           endif()
           if(EXISTS ${SFML_INCLUDE_DIR}/../bin-msvc/x86/openal32.dll)
             add_custom_command(TARGET ${target}
                                POST_BUILD
                                COMMAND ${CMAKE_COMMAND} -E copy
                                ${SFML_INCLUDE_DIR}/../bin-msvc/x86/openal32.dll
-                               ${CMAKE_BINARY_DIR}/examples/${target}/${CMAKE_CFG_INTDIR})
+                               ${PROJECT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
           endif()
         else()
           if(EXISTS ${SFML_INCLUDE_DIR}/../bin-msvc/x64/libsndfile-1.dll)
@@ -261,14 +261,14 @@ macro(gqe_add_example target)
                                POST_BUILD
                                COMMAND ${CMAKE_COMMAND} -E copy
                                ${SFML_INCLUDE_DIR}/../bin-msvc/x64/libsndfile-1.dll
-                               ${CMAKE_BINARY_DIR}/examples/${target}/${CMAKE_CFG_INTDIR})
+                               ${PROJECT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
           endif()
           if(EXISTS ${SFML_INCLUDE_DIR}/../bin-msvc/x64/openal32.dll)
             add_custom_command(TARGET ${target}
                                POST_BUILD
                                COMMAND ${CMAKE_COMMAND} -E copy
                                ${SFML_INCLUDE_DIR}/../bin-msvc/x64/openal32.dll
-                               ${CMAKE_BINARY_DIR}/examples/${target}/${CMAKE_CFG_INTDIR})
+                               ${PROJECT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
           endif()
         endif()
       endif()
@@ -278,15 +278,15 @@ macro(gqe_add_example target)
     add_custom_command(TARGET ${target}
                        POST_BUILD
                        COMMAND ${CMAKE_COMMAND} -E copy_directory
-                         ${CMAKE_SOURCE_DIR}/examples/${target}/resources
-                         ${CMAKE_BINARY_DIR}/examples/${target}/${CMAKE_CFG_INTDIR}/resources)
+                         ${PROJECT_SOURCE_DIR}/resources
+                         ${PROJECT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/resources)
 
     # add the install rule
     install(TARGETS ${target}
             RUNTIME DESTINATION ${INSTALL_DATA_DIR}/examples/${target} COMPONENT examples)
 
     # install the example's resources as well
-    set(EXAMPLE_RESOURCES "${CMAKE_SOURCE_DIR}/examples/${target}/resources")
+    set(EXAMPLE_RESOURCES "${PROJECT_SOURCE_DIR}/resources")
     if(EXISTS ${EXAMPLE_RESOURCES})
         install(DIRECTORY ${EXAMPLE_RESOURCES}
                 DESTINATION ${INSTALL_DATA_DIR}/examples/${target}
