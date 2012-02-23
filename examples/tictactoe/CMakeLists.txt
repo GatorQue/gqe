@@ -1,6 +1,6 @@
 project(TicTacToe)
 
-set(SRCROOT ${CMAKE_SOURCE_DIR}/examples/tictactoe/src)
+set(SRCROOT ${PROJECT_SOURCE_DIR}/src)
 
 # all source files
 set(SRC
