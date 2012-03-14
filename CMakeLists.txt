@@ -1,5 +1,5 @@
 # Project master CMakeList.txt file
-# 
+#
 # Reference(s):
 # http://www.itk.org/Wiki/CMake/Tutorials/How_to_create_a_ProjectConfig.cmake_file
 # http://www.sfml-dev.org/
@@ -18,16 +18,15 @@ endif(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
 project(GQE)
 
 # project options
-OPTION(BUILD_STATIC_STD_LIBS "Set to ON to statically link to the standard libraries, OFF to use them as DLLs" OFF)
-OPTION(BUILD_SHARED_LIBS "Set to OFF to build static libraries" OFF)
-OPTION(BUILD_EXAMPLES "Set to OFF to skip building examples" ON) 
-OPTION(INSTALL_DOC "Set to OFF to skip build/install Documentation" ON)
+set_option(BUILD_STATIC_STD_LIBS FALSE BOOL "Set to TRUE to statically link to the standard libraries, FALSE to use them as DLLs")
+set_option(BUILD_SHARED_LIBS FALSE BOOL "Set to FALSE to build static libraries")
+set_option(BUILD_EXAMPLES TRUE BOOL "Set to FALSE to skip building examples")
+set_option(INSTALL_DOC TRUE BOOL "Set to FALSE to skip build/install Documentation")
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  OPTION(SFML_STATIC_LIBRARIES "Set to TRUE to statically link SFML libraries to GQE" ON)
+  set_option(SFML_STATIC_LIBRARIES TRUE BOOL "Set to TRUE to statically link SFML libraries to GQE")
 else(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  OPTION(SFML_STATIC_LIBRARIES "Set to TRUE to statically link SFML libraries to GQE" OFF)
+  set_option(SFML_STATIC_LIBRARIES FALSE BOOL "Set to TRUE to statically link SFML libraries to GQE")
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-
 # setup version numbers
 set(GQE_VERSION_MAJOR 0)
 set(GQE_VERSION_MINOR 16)
@@ -60,13 +59,13 @@ if(INSTALL_DOC)
 endif()
 
 # Add all targets to the build-tree export set
-export(TARGETS gqe-core
-  FILE "${PROJECT_BINARY_DIR}/GQE_LibraryDepends.cmake")
- 
+#export(TARGETS gqe-core
+#  FILE "${PROJECT_BINARY_DIR}/GQE_LibraryDepends.cmake")
+
 # Export the package for use from the build-tree
 # (this registers the build-tree with a global CMake-registry)
-export(PACKAGE GQE)
- 
+#export(PACKAGE GQE)
+
 # Create a GQE_Config.cmake file for the use from the build tree
 set(GQE_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}")
 set(GQE_LIB_DIR "${PROJECT_BINARY_DIR}")
@@ -78,14 +77,14 @@ configure_file(gqe-configversion.cmake.in
 
 # Install the export set for use with the install-tree
 install(EXPORT GQE_LibraryDepends DESTINATION
-  "${INSTALL_DATA_DIR}/cmake"
+  "cmake"
   COMPONENT dev)
- 
+
 # Create a GQE_Config.cmake file for the use from the install tree
 # and install it
-set(GQE_INCLUDE_DIRS "${INSTALL_INCLUDE_DIR}")
-set(GQE_LIB_DIR "${INSTALL_LIB_DIR}")
-set(GQE_CMAKE_DIR "${INSTALL_DATA_DIR}/cmake")
+set(GQE_INCLUDE_DIRS include)
+set(GQE_LIB_DIR lib)
+set(GQE_CMAKE_DIR cmake)
 configure_file(gqe-config.cmake.in
   "${PROJECT_BINARY_DIR}/InstallFiles/gqe-config.cmake" @ONLY)
 configure_file(gqe-configversion.cmake.in
@@ -98,10 +97,10 @@ install(FILES
   DESTINATION "${GQE_CMAKE_DIR}" COMPONENT dev)
 
 # install our FindGQE cmake module into the Cmake Modules directory
-install(FILES ${PROJECT_SOURCE_DIR}/cmake/Modules/FindGQE.cmake DESTINATION ${INSTALL_DATA_DIR}/cmake/Modules)
+install(FILES ${PROJECT_SOURCE_DIR}/cmake/Modules/FindGQE.cmake DESTINATION cmake/Modules)
 
 # install our license file into our INSTALL_DATA_DIR
-install(FILES license.txt DESTINATION ${INSTALL_DATA_DIR})
+install(FILES license.txt DESTINATION .)
 
 if(WINDOWS)
   if(COMPILER_GCC)

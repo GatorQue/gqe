@@ -1,5 +1,17 @@
-# some of these macros are inspired from the boost/cmake macros
 
+# Name: set_option
+# Description: Set the CMAKE option to default if not found or to the value
+# specified.
+# Usage: set_option(var default type docstring)
+# Example: set_option(TARGET_HOST_TYPE "x86" String "x64")
+macro(set_option var default type docstring)
+  if(NOT DEFINED ${var})
+    set(${var} ${default})
+  endif()
+  set(${var} ${${var}} CACHE ${type} ${docstring} FORCE)
+endmacro(set_option)
+
+# some of these macros are inspired from the boost/cmake macros
 # this macro adds external dependencies to a static target,
 # compensating for the lack of a link step when building a static library.
 # every compiler has its own way of doing it:
@@ -159,18 +171,18 @@ macro(gqe_add_library target)
   install(TARGETS ${target}
           # IMPORTANT: Add the target library to the "export-set"
           EXPORT GQE_LibraryDepends
-          PUBLIC_HEADER DESTINATION "${INSTALL_INCLUDE_DIR}/GQE" COMPONENT devel
-          RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin
-          LIBRARY DESTINATION "${INSTALL_LIB_DIR}" COMPONENT shlib 
-          ARCHIVE DESTINATION "${INSTALL_LIB_DIR}" COMPONENT devel)
+          PUBLIC_HEADER DESTINATION include/GQE COMPONENT devel
+          RUNTIME DESTINATION bin COMPONENT bin
+          LIBRARY DESTINATION lib COMPONENT shlib
+          ARCHIVE DESTINATION lib COMPONENT devel)
 
   # install Core library include files
   if(THIS_HEADER_DIR)
     install(DIRECTORY ${THIS_HEADER_DIR}
-            DESTINATION ${INSTALL_INCLUDE_DIR}/GQE
+            DESTINATION include/GQE
             COMPONENT devel
             PATTERN ".hg" EXCLUDE)
-  endif(THIS_HEADER_DIR)                
+  endif(THIS_HEADER_DIR)
 endmacro()
 
 # add a new target which is a GQE example
@@ -283,13 +295,13 @@ macro(gqe_add_example target)
 
     # add the install rule
     install(TARGETS ${target}
-            RUNTIME DESTINATION ${INSTALL_DATA_DIR}/examples/${target} COMPONENT examples)
+            RUNTIME DESTINATION examples/${target} COMPONENT examples)
 
     # install the example's resources as well
     set(EXAMPLE_RESOURCES "${PROJECT_SOURCE_DIR}/resources")
     if(EXISTS ${EXAMPLE_RESOURCES})
         install(DIRECTORY ${EXAMPLE_RESOURCES}
-                DESTINATION ${INSTALL_DATA_DIR}/examples/${target}
+                DESTINATION examples/${target}
                 COMPONENT examples
                 PATTERN ".hg" EXCLUDE)
     endif()

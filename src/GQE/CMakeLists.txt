@@ -19,5 +19,5 @@ add_subdirectory(Core)
 
 # install Config header include file
 install(FILES ${INCROOT}/Config.hpp
-        DESTINATION ${INSTALL_INCLUDE_DIR}/GQE
+        DESTINATION include/GQE
         COMPONENT dev)
