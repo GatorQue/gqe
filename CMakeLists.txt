@@ -76,9 +76,9 @@ configure_file(gqe-configversion.cmake.in
   "${PROJECT_BINARY_DIR}/gqe-configversion.cmake" @ONLY)
 
 # Install the export set for use with the install-tree
-install(EXPORT GQE_LibraryDepends DESTINATION
-  "cmake"
-  COMPONENT dev)
+#install(EXPORT GQE_LibraryDepends DESTINATION
+#  "cmake"
+#  COMPONENT dev)
 
 # Create a GQE_Config.cmake file for the use from the install tree
 # and install it
