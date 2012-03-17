@@ -29,11 +29,11 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 elseif(MSVC_VERSION EQUAL 1400)
   set(COMPILER_MSVC 2005)
   # Add some include files missing in MSVC 2005
-  set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} ${PROJECT_SOURCE_DIR}/extlibs/msvc)
+  include_directories(${PROJECT_SOURCE_DIR}/extlibs/msvc)
 elseif(MSVC_VERSION EQUAL 1500)
   set(COMPILER_MSVC 2008)
   # Add some include files missing in MSVC 2008
-  set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} ${PROJECT_SOURCE_DIR}/extlibs/msvc)
+  include_directories(${PROJECT_SOURCE_DIR}/extlibs/msvc)
 elseif(MSVC_VERSION EQUAL 1600)
   set(COMPILER_MSVC 2010)
 else()
@@ -55,9 +55,8 @@ if(NOT BUILD_SHARED_LIBS)
 endif()
 
 # let CMake know about our additional libraries paths (on Windows and OS X)
+include_directories(${PROJECT_SOURCE_DIR}/extlibs/headers)
 if(WINDOWS)
-  set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "${PROJECT_SOURCE_DIR}/extlibs/headers")
-
   if(COMPILER_GCC)
     # Specify where to find DLL and LIB files according to 32bit or 64bit compiling
     if(ARCH_32BITS)
@@ -95,13 +94,11 @@ if(WINDOWS)
     endif()
   endif()
 elseif(LINUX)
-  set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "${PROJECT_SOURCE_DIR}/extlibs/headers")
   set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "${PROJECT_SOURCE_DIR}/extlibs/libs-gcc")
 
   # require proper c++
   ADD_DEFINITIONS("-Wall -pedantic")
 elseif(MACOSX)
-  set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "${PROJECT_SOURCE_DIR}/extlibs/headers")
   set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "${PROJECT_SOURCE_DIR}/extlibs/libs-osx/lib/")
 
   # require proper c++

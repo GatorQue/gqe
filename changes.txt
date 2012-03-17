@@ -3,6 +3,7 @@ Version 0.16.0
 - Support externally defined CMAKE_MODULE_PATH values
 - Replace references to CMAKE_SOURCE_DIR and CMAKE_BINARY_DIR
 - Replace install absolute paths with relative paths
+- Fix missing stdint.h problem with Visual Studio
 
 Version 0.15.0
 ==============
