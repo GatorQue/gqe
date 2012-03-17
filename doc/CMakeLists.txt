@@ -44,17 +44,23 @@ configure_file(${DOXYGEN_INPUT_DIR}/doc/doxyfile.in ${DOXYGEN_CONFIGURED_INPUT} 
 #configure_file(${DOXYGEN_INPUT_DIR}/doc/logo.jpg    ${DOXYGEN_OUTPUT_DIR}/html/logo.jpg    COPYONLY)
 #configure_file(${DOXYGEN_INPUT_DIR}/doc/logo-bg.jpg ${DOXYGEN_OUTPUT_DIR}/html/logo-bg.jpg COPYONLY)
 
-# target setup
-add_custom_target(gqe-doc
-                  COMMAND ${CMAKE_COMMAND} -E echo_append "Building API Documentation..."
-                  COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_CONFIGURED_INPUT}
-                  COMMAND ${CMAKE_COMMAND} -E echo "Done."
-                  WORKING_DIRECTORY ${DOXYGEN_INPUT_DIR})
+# Create documentation build target
+add_custom_target(doc-gqe ALL
+  DEPENDS ${PROJECT_BINARY_DIR}/doc-gqe.touch)
+
+# Create command to build documentation
+add_custom_command(OUTPUT ${PROJECT_BINARY_DIR}/doc-gqe.touch
+  COMMENT "Creating documentation for 'GQE'"
+  COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_CONFIGURED_INPUT}
+  COMMAND ${CMAKE_COMMAND} -E touch ${PROJECT_BINARY_DIR}/doc-gqe.touch
+  WORKING_DIRECTORY ${DOXYGEN_INPUT_DIR}
+  VERBATIM)
 
 # setup install rules
 install(DIRECTORY ${DOXYGEN_OUTPUT_DIR}/html
         DESTINATION ${INSTALL_DATA_DIR}/doc
         COMPONENT doc)
+
 if(DOXYGEN_HHC_PROGRAM)
     install(FILES ${DOXYGEN_OUTPUT_DIR}/gqe.chm
             DESTINATION ${INSTALL_DATA_DIR}/doc
