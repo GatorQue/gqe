@@ -12,6 +12,7 @@
  * @date 20110627 - Removed extra ; from namespace
  * @date 20110721 - Remove * from GetAsset() calls since it now returns TYPE&
  * @date 20110831 - Support new SFML2 snapshot changes
+ * @date 20120322 - Support new SFML2 snapshot changes
  */
 #include <GQE/Core/states/MenuState.hpp>
 #include <GQE/Core/classes/App.hpp>
@@ -58,12 +59,21 @@ namespace GQE
 #endif
     assert(NULL != mMenuString2 && "MenuState::DoInit() can't allocate memory for string");
 
+#if (SFML_VERSION_MAJOR < 2)
     // Position the string
     mMenuString1->SetColor(sf::Color(255,255,255));
     mMenuString1->Move(400.f, 300.f);
 
     mMenuString2->SetColor(sf::Color(255,255,255));
     mMenuString2->Move(400.f, 400.f);
+#else
+    // Position the string
+    mMenuString1->setColor(sf::Color(255,255,255));
+    mMenuString1->move(400.f, 300.f);
+
+    mMenuString2->setColor(sf::Color(255,255,255));
+    mMenuString2->move(400.f, 400.f);
+#endif
 
     // Load our splash image
     mApp->mAssetManager.AddImage("Menu", "MenuImage.png", AssetLoadStyleImmediate);
@@ -83,7 +93,7 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
     if ((theEvent.Type == sf::Event::KeyPressed) && (theEvent.Key.Code == sf::Key::Escape))
 #else
-    if ((theEvent.Type == sf::Event::KeyPressed) && (theEvent.Key.Code == sf::Keyboard::Escape))
+    if ((theEvent.type == sf::Event::KeyPressed) && (theEvent.key.code == sf::Keyboard::Escape))
 #endif
     {
       if(NULL != mApp)
@@ -110,11 +120,19 @@ namespace GQE
     // Check our App pointer
     assert(NULL != mApp && "MenuState::Draw() bad app pointer, init must be called first");
 
+#if (SFML_VERSION_MAJOR < 2)
     // Draw our Splash sprite
     mApp->mWindow.Draw(*mMenuSprite);
 
     // Draw our Menu String in the middle of the screen
     mApp->mWindow.Draw(*mMenuString2);
+#else
+    // Draw our Splash sprite
+    mApp->mWindow.draw(*mMenuSprite);
+
+    // Draw our Menu String in the middle of the screen
+    mApp->mWindow.draw(*mMenuString2);
+#endif
   }
 
   void MenuState::Cleanup(void)

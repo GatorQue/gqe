@@ -10,6 +10,7 @@
  * @date 20110218 - Change to system include style
  * @date 20110611 - Convert logging to new Log macros
  * @date 20110627 - Removed extra ; from namespace
+ * @date 20120322 - Support new SFML2 snapshot changes
  */
  
 #include <assert.h>
@@ -44,8 +45,13 @@ namespace GQE
  
       ILOG() << "MusicAsset::LoadAsset(" << mFilename << ") loading..." << std::endl;
  
+#if (SFML_VERSION_MAJOR < 2)
       // Attempt to load the asset from a file
       mLoaded = mAsset->OpenFromFile(mFilename);
+#else
+      // Attempt to load the asset from a file
+      mLoaded = mAsset->openFromFile(mFilename);
+#endif
  
       // If the asset did not load successfully, delete the memory
       if(false == mLoaded)
@@ -60,8 +66,13 @@ namespace GQE
     // If the music asset is currently loaded, make sure it is stopped
     if(true == mLoaded && NULL != mAsset)
     {
+#if (SFML_VERSION_MAJOR < 2)
        // Always stop music from playing before removing from memory
        mAsset->Stop();
+#else
+       // Always stop music from playing before removing from memory
+       mAsset->stop();
+#endif
     }
  
     // Delete the asset, forcing it to be removed from memory

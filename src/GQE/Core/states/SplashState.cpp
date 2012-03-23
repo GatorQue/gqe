@@ -12,6 +12,7 @@
  * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
  * @date 20110627 - Removed extra ; from namespace
  * @date 20110721 - Remove * from GetAsset() calls since it now returns TYPE&
+ * @date 20120322 - Support new SFML2 snapshot changes
  */
 #include <GQE/Core/assets/ImageAsset.hpp>
 #include <GQE/Core/classes/App.hpp>
@@ -37,7 +38,7 @@ namespace GQE
   {
     // First call our base class implementation
     IState::DoInit();
-    
+
     // Check our App pointer
     assert(NULL != mApp && "SplashState::DoInit() bad app pointer");
 
@@ -76,8 +77,13 @@ namespace GQE
     // Check our App pointer
     assert(NULL != mApp && "SplashState::Draw() bad app pointer, init must be called first");
 
+#if (SFML_VERSION_MAJOR < 2)
     // Draw our Splash sprite
     mApp->mWindow.Draw(*mSplashSprite);
+#else
+    // Draw our Splash sprite
+    mApp->mWindow.draw(*mSplashSprite);
+#endif
   }
 
   void SplashState::Cleanup(void)

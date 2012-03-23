@@ -20,6 +20,7 @@
  * @date 20110704 - Removed Init method (moved StatManager.DoInit to Run method)
  * @date 20110831 - Support new SFML2 snapshot changes
  * @date 20120211 - Support new SFML2 snapshot changes
+ * @date 20120322 - Support new SFML2 snapshot changes
  */
 
 #include <assert.h>
@@ -180,6 +181,7 @@ namespace GQE
       mWindowStyle = sf::Style::Fullscreen;
     }
 
+#if (SFML_VERSION_MAJOR < 2)
     // What size window does the user want?
     mVideoMode.Width = anConfig.GetUint32("window","width",DEFAULT_VIDEO_WIDTH);
     mVideoMode.Height = anConfig.GetUint32("window","height",DEFAULT_VIDEO_HEIGHT);
@@ -193,18 +195,30 @@ namespace GQE
       mVideoMode.BitsPerPixel = DEFAULT_VIDEO_BPP;
     }
 
-#if (SFML_VERSION_MAJOR < 2)
     // Create a RenderWindow object using VideoMode object above
     mWindow.Create(mVideoMode, mTitle, mWindowStyle, mWindowSettings);
 
     // Use Vertical Sync
     mWindow.UseVerticalSync(true);
 #else
+    // What size window does the user want?
+    mVideoMode.width = anConfig.GetUint32("window","width",DEFAULT_VIDEO_WIDTH);
+    mVideoMode.height = anConfig.GetUint32("window","height",DEFAULT_VIDEO_HEIGHT);
+    mVideoMode.bitsPerPixel = anConfig.GetUint32("window","depth",DEFAULT_VIDEO_BPP);
+
+    // For Fullscreen, verify valid VideoMode, otherwise revert to defaults for Fullscreen
+    if(sf::Style::Fullscreen == mWindowStyle && false == mVideoMode.isValid())
+    {
+      mVideoMode.width = DEFAULT_VIDEO_WIDTH;
+      mVideoMode.height = DEFAULT_VIDEO_HEIGHT;
+      mVideoMode.bitsPerPixel = DEFAULT_VIDEO_BPP;
+    }
+
     // Create a RenderWindow object using VideoMode object above
-    mWindow.Create(mVideoMode, mTitle, mWindowStyle, mContextSettings);
+    mWindow.create(mVideoMode, mTitle, mWindowStyle, mContextSettings);
 
     // Use Vertical Sync
-    mWindow.EnableVerticalSync(true);
+    mWindow.setVerticalSyncEnabled(true);
 #endif
   }
 
@@ -226,10 +240,10 @@ namespace GQE
 	sf::Clock anFrameClock;
 
 	// Restart/Reset our Update clock
-    anUpdateClock.Restart();
+    anUpdateClock.restart();
 
 	// When do we need to update next (in milliseconds)?
-    Int32 anUpdateNext = anUpdateClock.GetElapsedTime().AsMilliseconds();
+    Int32 anUpdateNext = anUpdateClock.getElapsedTime().asMilliseconds();
 #endif
 
     // Make sure we have at least one state active
@@ -243,7 +257,7 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
     while(IsRunning() && mWindow.IsOpened() && !mStateManager.IsEmpty())
 #else
-    while(IsRunning() && mWindow.IsOpen() && !mStateManager.IsEmpty())
+    while(IsRunning() && mWindow.isOpen() && !mStateManager.IsEmpty())
 #endif
     {
       // Get the currently active state
@@ -256,7 +270,7 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
       while(anUpdateClock.GetElapsedTime() > anUpdateNext)
 #else
-      while(anUpdateClock.GetElapsedTime().AsMilliseconds() > anUpdateNext)
+      while(anUpdateClock.getElapsedTime().asMilliseconds() > anUpdateNext)
 #endif
       {
         // Handle some events and let the current active state handle the rest
@@ -264,11 +278,16 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
         while(mWindow.GetEvent(anEvent))
 #else
-        while(mWindow.PollEvent(anEvent))
+        while(mWindow.pollEvent(anEvent))
 #endif
         {
+#if (SFML_VERSION_MAJOR < 2)
           // Switch on Event Type
           switch(anEvent.Type)
+#else
+          // Switch on Event Type
+          switch(anEvent.type)
+#endif
           {
           case sf::Event::Closed:       // Window closed
             Quit(StatusAppOK);
@@ -301,7 +320,7 @@ namespace GQE
       anState->UpdateVariable(mWindow.GetFrameTime());
 #else
       // Convert to floating point value of seconds for SFML 2.0
-      anState->UpdateVariable(anFrameClock.Restart().AsSeconds());
+      anState->UpdateVariable(anFrameClock.restart().asSeconds());
 #endif
 
       // Let the current active state draw stuff
@@ -310,8 +329,13 @@ namespace GQE
       // Let the StatManager perform its drawing
       mStatManager.Draw();
 
+#if (SFML_VERSION_MAJOR < 2)
       // Display Render window to the screen
       mWindow.Display();
+#else
+      // Display Render window to the screen
+      mWindow.display();
+#endif
 
       // Handle Cleanup of any recently removed states at this point as needed
       mStateManager.HandleCleanup(); 
@@ -329,14 +353,22 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
     if(mWindow.IsOpened())
 #else
-    if(mWindow.IsOpen())
+    if(mWindow.isOpen())
 #endif
     {
+#if (SFML_VERSION_MAJOR < 2)
       // Show the Mouse cursor
       mWindow.ShowMouseCursor(true);
 
       // Close the Render window
       mWindow.Close();
+#else
+      // Show the Mouse cursor
+      mWindow.setMouseCursorVisible(true);
+
+      // Close the Render window
+      mWindow.close();
+#endif
     }
   }
 

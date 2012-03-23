@@ -15,6 +15,7 @@
  * @date 20110627 - Removed extra ; from namespace
  * @date 20110721 - Remove * from GetAsset() calls since it now returns TYPE&
  * @date 20110831 - Support new SFML2 snapshot changes
+ * @date 20120322 - Support new SFML2 snapshot changes
  */
  
 #include <assert.h>
@@ -47,8 +48,13 @@ namespace GQE
  
     if(true == mBackgroundLoading)
     {
+#if (SFML_VERSION_MAJOR < 2)
       // Wait for thread to finish first
       mBackgroundThread->Wait();
+#else
+      // Wait for thread to finish first
+      mBackgroundThread->wait();
+#endif
     }
  
     // Cleanup after ourselves
@@ -79,8 +85,13 @@ namespace GQE
     {
       ILOGM("AssetManager::LoadAssets() starting background loading thread");
  
+#if (SFML_VERSION_MAJOR < 2)
       // Launch the background loading thread
       mBackgroundThread->Launch();
+#else
+      // Launch the background loading thread
+      mBackgroundThread->launch();
+#endif
     }
     // Foreground loading thread
     else
@@ -117,8 +128,13 @@ namespace GQE
     // ConfigAsset result
     ConfigAsset* result = NULL;
 
+#if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
+#else
+    // Obtain a lock before trying to access the asset maps
+    mBackgroundMutex.lock();
+#endif
 
     // Check for a duplicate asset using theAssetID as the key
     std::map<const typeAssetID, ConfigAsset*>::iterator iter;
@@ -157,8 +173,13 @@ namespace GQE
     // Increment our references to this asset
     result->AddReference();
 
+#if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
+#else
+    // Release the lock after accessing the asset maps
+    mBackgroundMutex.unlock();
+#endif
 
     // Return our results
     return result;
@@ -166,8 +187,13 @@ namespace GQE
 
   void AssetManager::DeleteConfigs(void)
   {
+#if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
+#else
+    // Obtain a lock before trying to access the asset maps
+    mBackgroundMutex.lock();
+#endif
 
     // Delete all configs, since they are no longer needed
     std::map<const typeAssetID, ConfigAsset*>::iterator iter;
@@ -179,16 +205,26 @@ namespace GQE
       delete anAsset;
     }
 
+#if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
+#else
+    // Release the lock after accessing the asset maps
+    mBackgroundMutex.unlock();
+#endif
   }
 
   ConfigAsset* AssetManager::GetConfig(const typeAssetID theAssetID)
   {
     ConfigAsset* result = NULL;
     
+#if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
+#else
+    // Obtain a lock before trying to access the asset maps
+    mBackgroundMutex.lock();
+#endif
 
     // Locate the asset using theAssetID as the key
     std::map<const typeAssetID, ConfigAsset*>::iterator iter;
@@ -199,8 +235,13 @@ namespace GQE
       result = iter->second;
     }
 
+#if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
+#else
+    // Release the lock after accessing the asset maps
+    mBackgroundMutex.unlock();
+#endif
 
     // Return the result found
     return result;
@@ -211,8 +252,13 @@ namespace GQE
     assert(AssetLoadStyleFirst < theStyle && AssetLoadStyleLast > theStyle &&
            "AssetManager::LoadConfigs() invalid style provided");
 
+#if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
+#else
+    // Obtain a lock before trying to access the asset maps
+    mBackgroundMutex.lock();
+#endif
 
     // Load all unloaded configs with theStyle specified
     std::map<const typeAssetID, ConfigAsset*>::iterator iter;
@@ -227,14 +273,24 @@ namespace GQE
       iter++;
     }
 
+#if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
+#else
+    // Release the lock after accessing the asset maps
+    mBackgroundMutex.unlock();
+#endif
   }
 
   void AssetManager::UnloadConfig(const typeAssetID theAssetID)
   {
+#if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
+#else
+    // Obtain a lock before trying to access the asset maps
+    mBackgroundMutex.lock();
+#endif
 
     // Locate the asset using theAssetID as the key
     std::map<const typeAssetID, ConfigAsset*>::iterator iter;
@@ -245,8 +301,13 @@ namespace GQE
       iter->second->DropReference();
     }
 
+#if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
+#else
+    // Release the lock after accessing the asset maps
+    mBackgroundMutex.unlock();
+#endif
   }
 
   FontAsset* AssetManager::AddFont(
@@ -257,8 +318,13 @@ namespace GQE
     // FontAsset result
     FontAsset* result = NULL;
 
+#if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
+#else
+    // Obtain a lock before trying to access the asset maps
+    mBackgroundMutex.lock();
+#endif
 
     // Check for a duplicate asset using theAssetID as the key
     std::map<const typeAssetID, FontAsset*>::iterator iter;
@@ -297,8 +363,13 @@ namespace GQE
     // Increment our references to this asset
     result->AddReference();
  
+#if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
+#else
+    // Release the lock after accessing the asset maps
+    mBackgroundMutex.unlock();
+#endif
  
     // Return our results
     return result;
@@ -306,8 +377,13 @@ namespace GQE
  
   void AssetManager::DeleteFonts(void)
   {
+#if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
+#else
+    // Obtain a lock before trying to access the asset maps
+    mBackgroundMutex.lock();
+#endif
  
     // Delete all fonts, since they are no longer needed
     std::map<const typeAssetID, FontAsset*>::iterator iter;
@@ -319,16 +395,26 @@ namespace GQE
       delete anAsset;
     }
  
+#if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
+#else
+    // Release the lock after accessing the asset maps
+    mBackgroundMutex.unlock();
+#endif
   }
  
   FontAsset* AssetManager::GetFont(const typeAssetID theAssetID)
   {
     FontAsset* result = NULL;
  
+#if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
+#else
+    // Obtain a lock before trying to access the asset maps
+    mBackgroundMutex.lock();
+#endif
  
     // Locate the asset using theAssetID as the key
     std::map<const typeAssetID, FontAsset*>::iterator iter;
@@ -339,8 +425,13 @@ namespace GQE
       result = iter->second;
     }
  
+#if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
+#else
+    // Release the lock after accessing the asset maps
+    mBackgroundMutex.unlock();
+#endif
  
     // Return the result found
     return result;
@@ -351,8 +442,13 @@ namespace GQE
     assert(AssetLoadStyleFirst < theStyle && AssetLoadStyleLast > theStyle &&
            "AssetManager::LoadFonts() invalid style provided");
  
+#if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
+#else
+    // Obtain a lock before trying to access the asset maps
+    mBackgroundMutex.lock();
+#endif
  
     // Load all unloaded fonts with theStyle specified
     std::map<const typeAssetID, FontAsset*>::iterator iter;
@@ -367,14 +463,24 @@ namespace GQE
       iter++;
     }
  
+#if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
+#else
+    // Release the lock after accessing the asset maps
+    mBackgroundMutex.unlock();
+#endif
   }
  
   void AssetManager::UnloadFont(const typeAssetID theAssetID)
   {
+#if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
+#else
+    // Obtain a lock before trying to access the asset maps
+    mBackgroundMutex.lock();
+#endif
  
     // Locate the asset using theAssetID as the key
     std::map<const typeAssetID, FontAsset*>::iterator iter;
@@ -385,8 +491,13 @@ namespace GQE
       iter->second->DropReference();
     }
  
+#if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
+#else
+    // Release the lock after accessing the asset maps
+    mBackgroundMutex.unlock();
+#endif
   }
  
   ImageAsset* AssetManager::AddImage(
@@ -397,8 +508,13 @@ namespace GQE
     // Our return result
     ImageAsset* result = NULL;
  
+#if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
+#else
+    // Obtain a lock before trying to access the asset maps
+    mBackgroundMutex.lock();
+#endif
  
     // Check for a duplicate asset using theAssetID as the key
     std::map<const typeAssetID, ImageAsset*>::iterator iter;
@@ -437,8 +553,13 @@ namespace GQE
     // Increment our references to this asset
     result->AddReference();
  
+#if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
+#else
+    // Release the lock after accessing the asset maps
+    mBackgroundMutex.unlock();
+#endif
  
     // Return our results
     return result;
@@ -446,8 +567,13 @@ namespace GQE
  
   void AssetManager::DeleteImages(void)
   {
+#if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
+#else
+    // Obtain a lock before trying to access the asset maps
+    mBackgroundMutex.lock();
+#endif
  
     // Delete all images, since they are no longer needed
     std::map<const typeAssetID, ImageAsset*>::iterator iter;
@@ -459,16 +585,26 @@ namespace GQE
       delete anAsset;
     }
  
+#if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
+#else
+    // Release the lock after accessing the asset maps
+    mBackgroundMutex.unlock();
+#endif
   }
  
   ImageAsset* AssetManager::GetImage(const typeAssetID theAssetID)
   {
     ImageAsset* result = NULL;
  
+#if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
+#else
+    // Obtain a lock before trying to access the asset maps
+    mBackgroundMutex.lock();
+#endif
  
     // Locate the asset using theAssetID as the key
     std::map<const typeAssetID, ImageAsset*>::iterator iter;
@@ -479,8 +615,13 @@ namespace GQE
       result = iter->second;
     }
  
+#if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
+#else
+    // Release the lock after accessing the asset maps
+    mBackgroundMutex.unlock();
+#endif
  
     // Return the result found
     return result;
@@ -514,8 +655,13 @@ namespace GQE
     assert(AssetLoadStyleFirst < theStyle && AssetLoadStyleLast > theStyle &&
            "AssetManager::LoadImages() invalid style provided");
  
+#if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
+#else
+    // Obtain a lock before trying to access the asset maps
+    mBackgroundMutex.lock();
+#endif
  
     // Load all unloaded images with theStyle specified
     std::map<const typeAssetID, ImageAsset*>::iterator iter;
@@ -530,14 +676,24 @@ namespace GQE
       iter++;
     }
  
+#if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
+#else
+    // Release the lock after accessing the asset maps
+    mBackgroundMutex.unlock();
+#endif
   }
  
   void AssetManager::UnloadImage(const typeAssetID theAssetID)
   {
+#if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
+#else
+    // Obtain a lock before trying to access the asset maps
+    mBackgroundMutex.lock();
+#endif
  
     // Locate the asset using theAssetID as the key
     std::map<const typeAssetID, ImageAsset*>::iterator iter;
@@ -548,8 +704,13 @@ namespace GQE
       iter->second->DropReference();
     }
  
+#if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
+#else
+    // Release the lock after accessing the asset maps
+    mBackgroundMutex.unlock();
+#endif
   }
  
   MusicAsset* AssetManager::AddMusic(
@@ -560,8 +721,13 @@ namespace GQE
     // Our return result
     MusicAsset* result = NULL;
  
+#if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
+#else
+    // Obtain a lock before trying to access the asset maps
+    mBackgroundMutex.lock();
+#endif
  
     // Check for a duplicate asset using theAssetID as the key
     std::map<const typeAssetID, MusicAsset*>::iterator iter;
@@ -600,8 +766,13 @@ namespace GQE
     // Increment our references to this asset
     result->AddReference();
  
+#if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
+#else
+    // Release the lock after accessing the asset maps
+    mBackgroundMutex.unlock();
+#endif
  
     // Return our results
     return result;
@@ -609,8 +780,13 @@ namespace GQE
  
   void AssetManager::DeleteMusic(void)
   {
+#if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
+#else
+    // Obtain a lock before trying to access the asset maps
+    mBackgroundMutex.lock();
+#endif
  
     // Delete all music, since they are no longer needed
     std::map<const typeAssetID, MusicAsset*>::iterator iter;
@@ -622,16 +798,26 @@ namespace GQE
       delete anAsset;
     }
  
+#if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
+#else
+    // Release the lock after accessing the asset maps
+    mBackgroundMutex.unlock();
+#endif
   }
  
   MusicAsset* AssetManager::GetMusic(const typeAssetID theAssetID)
   {
     MusicAsset* result = NULL;
  
+#if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
+#else
+    // Obtain a lock before trying to access the asset maps
+    mBackgroundMutex.lock();
+#endif
  
     // Locate the asset using theAssetID as the key
     std::map<const typeAssetID, MusicAsset*>::iterator iter;
@@ -642,8 +828,13 @@ namespace GQE
       result = iter->second;
     }
  
+#if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
+#else
+    // Release the lock after accessing the asset maps
+    mBackgroundMutex.unlock();
+#endif
  
     // Return the result found
     return result;
@@ -654,8 +845,13 @@ namespace GQE
     assert(AssetLoadStyleFirst < theStyle && AssetLoadStyleLast > theStyle &&
            "AssetManager::LoadMusic() invalid style provided");
  
+#if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
+#else
+    // Obtain a lock before trying to access the asset maps
+    mBackgroundMutex.lock();
+#endif
  
     // Load all unloaded music with theStyle specified
     std::map<const typeAssetID, MusicAsset*>::iterator iter;
@@ -670,14 +866,24 @@ namespace GQE
       iter++;
     }
  
+#if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
+#else
+    // Release the lock after accessing the asset maps
+    mBackgroundMutex.unlock();
+#endif
   }
  
   void AssetManager::UnloadMusic(const typeAssetID theAssetID)
   {
+#if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
+#else
+    // Obtain a lock before trying to access the asset maps
+    mBackgroundMutex.lock();
+#endif
  
     // Locate the asset using theAssetID as the key
     std::map<const typeAssetID, MusicAsset*>::iterator iter;
@@ -688,8 +894,13 @@ namespace GQE
       iter->second->DropReference();
     }
  
+#if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
+#else
+    // Release the lock after accessing the asset maps
+    mBackgroundMutex.unlock();
+#endif
   }
  
   SoundAsset* AssetManager::AddSound(
@@ -700,8 +911,13 @@ namespace GQE
     // Our return result
     SoundAsset* result = NULL;
  
+#if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
+#else
+    // Obtain a lock before trying to access the asset maps
+    mBackgroundMutex.lock();
+#endif
  
     // Check for a duplicate asset using theAssetID as the key
     std::map<const typeAssetID, SoundAsset*>::iterator iter;
@@ -740,8 +956,13 @@ namespace GQE
     // Increment our references to this asset
     result->AddReference();
  
+#if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
+#else
+    // Release the lock after accessing the asset maps
+    mBackgroundMutex.unlock();
+#endif
  
     // Return our results
     return result;
@@ -749,8 +970,13 @@ namespace GQE
  
   void AssetManager::DeleteSounds(void)
   {
+#if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
+#else
+    // Obtain a lock before trying to access the asset maps
+    mBackgroundMutex.lock();
+#endif
  
     // Delete all sounds, since they are no longer needed
     std::map<const typeAssetID, SoundAsset*>::iterator iter;
@@ -762,16 +988,26 @@ namespace GQE
       delete anAsset;
     }
  
+#if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
+#else
+    // Release the lock after accessing the asset maps
+    mBackgroundMutex.unlock();
+#endif
   }
  
   SoundAsset* AssetManager::GetSound(const typeAssetID theAssetID)
   {
     SoundAsset* result = NULL;
  
+#if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
+#else
+    // Obtain a lock before trying to access the asset maps
+    mBackgroundMutex.lock();
+#endif
  
     // Locate the asset using theAssetID as the key
     std::map<const typeAssetID, SoundAsset*>::iterator iter;
@@ -782,8 +1018,13 @@ namespace GQE
       result = iter->second;
     }
  
+#if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
+#else
+    // Release the lock after accessing the asset maps
+    mBackgroundMutex.unlock();
+#endif
  
     // Return the result found
     return result;
@@ -813,8 +1054,13 @@ namespace GQE
     assert(AssetLoadStyleFirst < theStyle && AssetLoadStyleLast > theStyle &&
            "AssetManager::LoadSounds() invalid style provided");
  
+#if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
+#else
+    // Obtain a lock before trying to access the asset maps
+    mBackgroundMutex.lock();
+#endif
  
     // Load all unloaded sounds with theStyle specified
     std::map<const typeAssetID, SoundAsset*>::iterator iter;
@@ -829,14 +1075,24 @@ namespace GQE
       iter++;
     }
  
+#if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
+#else
+    // Release the lock after accessing the asset maps
+    mBackgroundMutex.unlock();
+#endif
   }
  
   void AssetManager::UnloadSound(const typeAssetID theAssetID)
   {
+#if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
+#else
+    // Obtain a lock before trying to access the asset maps
+    mBackgroundMutex.lock();
+#endif
  
     // Locate the asset using theAssetID as the key
     std::map<const typeAssetID, SoundAsset*>::iterator iter;
@@ -847,8 +1103,13 @@ namespace GQE
       iter->second->DropReference();
     }
  
+#if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
+#else
+    // Release the lock after accessing the asset maps
+    mBackgroundMutex.unlock();
+#endif
   }
  
   void AssetManager::BackgroundLoop(void* theAssetManager)

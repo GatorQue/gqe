@@ -14,6 +14,7 @@
  * @date 20110627 - Fixed ctor init order and removed extra ; from namespace
  * @date 20110704 - Changed Move to SetPosition
  * @date 20120211 - Support new SFML2 snapshot changes
+ * @date 20120322 - Support new SFML2 snapshot changes
  */
  
 #include <assert.h>
@@ -57,10 +58,6 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
     mFrameClock.Reset();
     mUpdateClock.Reset();
-#else
-    mFrameClock.Restart();
-    mUpdateClock.Restart();
-#endif
 
     // Position and color for the FPS/UPS string
     mFPS.SetColor(sf::Color(255,255,255,128));
@@ -68,14 +65,22 @@ namespace GQE
     mUPS.SetColor(sf::Color(255,255,255,128));
     mUPS.SetPosition(0,30);
 
-#if (SFML_VERSION_MAJOR < 2)
     // Default strings to display for Frames/Updates per second
     mFPS.SetText("");
     mUPS.SetText("");
 #else
+    mFrameClock.restart();
+    mUpdateClock.restart();
+
+    // Position and color for the FPS/UPS string
+    mFPS.setColor(sf::Color(255,255,255,128));
+    mFPS.setPosition(0,0);
+    mUPS.setColor(sf::Color(255,255,255,128));
+    mUPS.setPosition(0,30);
+
     // Default strings to display for Frames/Updates per second
-    mFPS.SetString("");
-    mUPS.SetString("");
+    mFPS.setString("");
+    mUPS.setString("");
 #endif
   }
 
@@ -124,7 +129,7 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
     if(mUpdateClock.GetElapsedTime() > 1.0f)
 #else
-    if(mUpdateClock.GetElapsedTime().AsSeconds() > 1.0f)
+    if(mUpdateClock.getElapsedTime().asSeconds() > 1.0f)
 #endif
     {
       // Updates string stream
@@ -137,7 +142,7 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
       mUPS.SetText(updates.str());
 #else
-      mUPS.SetString(updates.str());
+      mUPS.setString(updates.str());
 #endif
 
       // Reset our Update clock and update counter
@@ -145,7 +150,7 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
       mUpdateClock.Reset();
 #else
-      mUpdateClock.Restart();
+      mUpdateClock.restart();
 #endif
     }
   }
@@ -160,7 +165,7 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
     if(mFrameClock.GetElapsedTime() > 1.0f)
 #else
-    if(mFrameClock.GetElapsedTime().AsSeconds() > 1.0f)
+    if(mFrameClock.getElapsedTime().asSeconds() > 1.0f)
 #endif
     {
       // Frames string stream
@@ -173,7 +178,7 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
       mFPS.SetText(frames.str());
 #else
-      mFPS.SetString(frames.str());
+      mFPS.setString(frames.str());
 #endif
 
       // Reset our Frames clock and frame counter
@@ -181,18 +186,26 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
       mFrameClock.Reset();
 #else
-      mFrameClock.Restart();
+      mFrameClock.restart();
 #endif
     }
 
     // Are we showing the current statistics?
     if(mShow)
     {
+#if (SFML_VERSION_MAJOR < 2)
       // Draw the Frames Per Second debug value on the screen
       mApp->mWindow.Draw(mFPS);
 
       // Draw the Updates Per Second debug value on the screen
       mApp->mWindow.Draw(mUPS);
+#else
+      // Draw the Frames Per Second debug value on the screen
+      mApp->mWindow.draw(mFPS);
+
+      // Draw the Updates Per Second debug value on the screen
+      mApp->mWindow.draw(mUPS);
+#endif
     }
   }
 } // namespace GQE

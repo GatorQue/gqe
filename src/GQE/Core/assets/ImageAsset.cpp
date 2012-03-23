@@ -11,6 +11,7 @@
  * @date 20110611 - Convert logging to new Log macros
  * @date 20110627 - Removed extra ; from namespace
  * @date 20110831 - Support new SFML2 snapshot changes
+ * @date 20120322 - Support new SFML2 snapshot changes
  */
  
 #include <assert.h>
@@ -53,9 +54,14 @@ namespace GQE
  
       ILOG() << "ImageAsset::LoadAsset(" << mFilename << ") loading..." << std::endl;
  
+#if (SFML_VERSION_MAJOR < 2)
       // Attempt to load the asset from a file
       mLoaded = mAsset->LoadFromFile(mFilename);
- 
+#else
+      // Attempt to load the asset from a file
+      mLoaded = mAsset->loadFromFile(mFilename);
+#endif
+
       // If the asset did not load successfully, delete the memory
       if(false == mLoaded)
       {

@@ -18,6 +18,7 @@
  * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
  * @date 20110627 - Removed extra ; from namespace
  * @date 20120211 - Support new SFML2 snapshot changes
+ * @date 20120322 - Support new SFML2 snapshot changes
  */
 #ifndef   CORE_ISTATE_HPP_INCLUDED
 #define   CORE_ISTATE_HPP_INCLUDED
@@ -78,13 +79,13 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
         mElapsedClock.Reset();
 #else
-        mElapsedClock.Restart();
+        mElapsedClock.restart();
 #endif
         mPausedTime = 0.0f;
 #if (SFML_VERSION_MAJOR < 2)
         mPausedClock.Reset();
 #else
-        mPausedClock.Restart();
+        mPausedClock.restart();
 #endif
       }
     }
@@ -110,14 +111,14 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
         mElapsedTime += mElapsedClock.GetElapsedTime();
 #else
-        mElapsedTime += mElapsedClock.GetElapsedTime().AsSeconds();
+        mElapsedTime += mElapsedClock.getElapsedTime().asSeconds();
 #endif
         if(true == mPaused)
         {
 #if (SFML_VERSION_MAJOR < 2)
           mPausedTime += mPausedClock.GetElapsedTime();
 #else
-          mPausedTime += mPausedClock.GetElapsedTime().AsSeconds();
+          mPausedTime += mPausedClock.getElapsedTime().asSeconds();
 #endif
         }
       }
@@ -159,7 +160,7 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
         mPausedClock.Reset();
 #else
-        mPausedClock.Restart();
+        mPausedClock.restart();
 #endif
       }
     }
@@ -178,7 +179,7 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
         mPausedTime += mPausedClock.GetElapsedTime();
 #else
-        mPausedTime += mPausedClock.GetElapsedTime().AsSeconds();
+        mPausedTime += mPausedClock.getElapsedTime().asSeconds();
 #endif
       }
     }
@@ -237,7 +238,7 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
       float result = mElapsedClock.GetElapsedTime();
 #else
-      float result = mElapsedClock.GetElapsedTime().AsSeconds();
+      float result = mElapsedClock.getElapsedTime().asSeconds();
 #endif
 
       if(false == mInit)
