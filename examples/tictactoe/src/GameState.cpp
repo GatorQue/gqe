@@ -10,6 +10,7 @@
 #include "GameState.hpp"
 #include <GQE/Core/assets/ImageAsset.hpp>
 #include <GQE/Core/classes/App.hpp>
+#include <SFML/Graphics/Color.hpp>
 
 GameState::GameState(GQE::App* theApp) :
   GQE::IState("Game",theApp),
@@ -41,7 +42,7 @@ void GameState::DoInit(void)
 #if (SFML_VERSION_MAJOR < 2)
     mBackgroundSprite.SetImage(mBackground->GetAsset());
 #else
-    mBackgroundSprite.SetTexture(mBackground->GetAsset());
+    mBackgroundSprite.setTexture(mBackground->GetAsset());
 #endif
   }
 
@@ -55,8 +56,13 @@ void GameState::DoInit(void)
   mEmpty = mApp->mAssetManager.AddImage("Empty", "resources/Empty.png",
     GQE::AssetLoadStyleImmediate);
 
+#if (SFML_VERSION_MAJOR < 2)
   // Setup winner text color as White
   mWinnerText.SetColor(sf::Color::White);
+#else
+  // Setup winner text color as White
+  mWinnerText.setColor(sf::Color::White);
+#endif
 
   // Call ReInit to reset the board
   ReInit();
@@ -75,10 +81,11 @@ void GameState::ReInit(void)
       // Reset the sprite for this square to empty
 #if (SFML_VERSION_MAJOR < 2)
       mBoardSprite[row][col].SetImage(mEmpty->GetAsset());
-#else
-      mBoardSprite[row][col].SetTexture(mEmpty->GetAsset());
-#endif
       mBoardSprite[row][col].SetPosition((col*270.0f), (row*202.0f));
+#else
+      mBoardSprite[row][col].setTexture(mEmpty->GetAsset());
+      mBoardSprite[row][col].setPosition((col*270.0f), (row*202.0f));
+#endif
 
       // Set this squares owner to no player
       mBoardPlayer[row][col] = 0;
@@ -88,12 +95,15 @@ void GameState::ReInit(void)
   // Set Cursor to Player 1 image
 #if (SFML_VERSION_MAJOR < 2)
   mCursor.SetImage(mPlayer1->GetAsset());
-#else
-  mCursor.SetTexture(mPlayer1->GetAsset());
-#endif
 
   // Set Cursor scale to be 25% of original image
   mCursor.SetScale(0.25f, 0.25f);
+#else
+  mCursor.setTexture(mPlayer1->GetAsset());
+
+  // Set Cursor scale to be 25% of original image
+  mCursor.setScale(0.25f, 0.25f);
+#endif
 
   // Set current player to player 1
   mCurrentPlayer = 1;
@@ -102,7 +112,7 @@ void GameState::ReInit(void)
 #if (SFML_VERSION_MAJOR < 2)
   mWinnerText.SetText("");
 #else
-  mWinnerText.SetString("");
+  mWinnerText.setString("");
 #endif
 }
 
@@ -112,18 +122,28 @@ void GameState::HandleEvents(sf::Event theEvent)
 #if (SFML_VERSION_MAJOR < 2)
   if((theEvent.Type == sf::Event::KeyReleased) && (theEvent.Key.Code == sf::Key::Escape))
 #else
-  if((theEvent.Type == sf::Event::KeyReleased) && (theEvent.Key.Code == sf::Keyboard::Escape))
+  if((theEvent.type == sf::Event::KeyReleased) && (theEvent.key.code == sf::Keyboard::Escape))
 #endif
   {
     // Signal the application to exit
     mApp->Quit(GQE::StatusAppOK);
   }
 
+#if (SFML_VERSION_MAJOR < 2)
   if(theEvent.Type == sf::Event::MouseButtonReleased)
+#else
+  if(theEvent.type == sf::Event::MouseButtonReleased)
+#endif
   {
+#if (SFML_VERSION_MAJOR < 2)
     // Determine which square they clicked on
     GQE::Uint8 col = (theEvent.MouseButton.X / 270);
     GQE::Uint8 row = (theEvent.MouseButton.Y / 202);
+#else
+    // Determine which square they clicked on
+    GQE::Uint8 col = (theEvent.mouseButton.x / 270);
+    GQE::Uint8 row = (theEvent.mouseButton.y / 202);
+#endif
     if(3 > col && 3 > row && mBoardPlayer[row][col] == 0)
     {
       // Set ownership of this square to the current player
@@ -137,14 +157,14 @@ void GameState::HandleEvents(sf::Event theEvent)
 #if (SFML_VERSION_MAJOR < 2)
         mBoardSprite[row][col].SetImage(mPlayer1->GetAsset());
 #else
-        mBoardSprite[row][col].SetTexture(mPlayer1->GetAsset());
+        mBoardSprite[row][col].setTexture(mPlayer1->GetAsset());
 #endif
 
         // Set Cursor to Player 2 image
 #if (SFML_VERSION_MAJOR < 2)
         mCursor.SetImage(mPlayer2->GetAsset());
 #else
-        mCursor.SetTexture(mPlayer2->GetAsset());
+        mCursor.setTexture(mPlayer2->GetAsset());
 #endif
 
         // Switch to Player 2
@@ -155,14 +175,14 @@ void GameState::HandleEvents(sf::Event theEvent)
 #if (SFML_VERSION_MAJOR < 2)
         mBoardSprite[row][col].SetImage(mPlayer2->GetAsset());
 #else
-        mBoardSprite[row][col].SetTexture(mPlayer2->GetAsset());
+        mBoardSprite[row][col].setTexture(mPlayer2->GetAsset());
 #endif
 
         // Set Cursor to Player 1 image
 #if (SFML_VERSION_MAJOR < 2)
         mCursor.SetImage(mPlayer1->GetAsset());
 #else
-        mCursor.SetTexture(mPlayer1->GetAsset());
+        mCursor.setTexture(mPlayer1->GetAsset());
 #endif
 
         // Switch to Player 1
@@ -242,31 +262,37 @@ void GameState::UpdateFixed(void)
   {
 #if (SFML_VERSION_MAJOR < 2)
     mWinnerText.SetText("Player 1 Wins!");
-#else
-    mWinnerText.SetString("Player 1 Wins!");
-#endif
     // Setup winner text in middle of screen
     mWinnerText.SetPosition(300.0f,280.0f);
+#else
+    mWinnerText.setString("Player 1 Wins!");
+    // Setup winner text in middle of screen
+    mWinnerText.setPosition(300.0f,280.0f);
+#endif
   }
   else if(anWinner == 2)
   {
 #if (SFML_VERSION_MAJOR < 2)
     mWinnerText.SetText("Player 2 Wins!");
-#else
-    mWinnerText.SetString("Player 2 Wins!");
-#endif
     // Setup winner text in middle of screen
     mWinnerText.SetPosition(300.0f,280.0f);
+#else
+    mWinnerText.setString("Player 2 Wins!");
+    // Setup winner text in middle of screen
+    mWinnerText.setPosition(300.0f,280.0f);
+#endif
   }
   else if(anWinner == 3)
   {
 #if (SFML_VERSION_MAJOR < 2)
     mWinnerText.SetText("Tie Game");
-#else
-    mWinnerText.SetString("Tie Game");
-#endif
     // Setup winner text in middle of screen
     mWinnerText.SetPosition(340.0f,280.0f);
+#else
+    mWinnerText.setString("Tie Game");
+    // Setup winner text in middle of screen
+    mWinnerText.setPosition(340.0f,280.0f);
+#endif
   }
 
   // Set current player and cursor to empty if a winner was declared
@@ -276,7 +302,7 @@ void GameState::UpdateFixed(void)
 #if (SFML_VERSION_MAJOR < 2)
     mCursor.SetImage(mEmpty->GetAsset());
 #else
-    mCursor.SetTexture(mEmpty->GetAsset());
+    mCursor.setTexture(mEmpty->GetAsset());
 #endif
 
     // Switch to empty (no player)
@@ -293,7 +319,7 @@ void GameState::UpdateVariable(float theElapsedTime)
 #if (SFML_VERSION_MAJOR < 2)
   mCursor.SetPosition(mApp->mInput.GetMouseX()-32.0f, mApp->mInput.GetMouseY()-25.25f);
 #else
-  mCursor.SetPosition(sf::Mouse::GetPosition().x-32.0f, sf::Mouse::GetPosition().y-25.25f);
+  mCursor.setPosition(sf::Mouse::getPosition().x-32.0f, sf::Mouse::getPosition().y-25.25f);
 #endif
 }
 
@@ -302,23 +328,41 @@ void GameState::Draw(void)
   // Check our App pointer
   assert(NULL != mApp && "GameState::Draw() bad app pointer, init must be called first");
 
+#if (SFML_VERSION_MAJOR < 2)
   // Draw our Board sprite
   mApp->mWindow.Draw(mBackgroundSprite);
+#else
+  // Draw our Board sprite
+  mApp->mWindow.draw(mBackgroundSprite);
+#endif
 
   for(GQE::Uint8 row = 0; row < 3; row++)
   {
     for(GQE::Uint8 col = 0; col < 3; col++)
     {
+#if (SFML_VERSION_MAJOR < 2)
       // Draw our Board
       mApp->mWindow.Draw(mBoardSprite[row][col]);
+#else
+      // Draw our Board
+      mApp->mWindow.draw(mBoardSprite[row][col]);
+#endif
     }
   }
 
+#if (SFML_VERSION_MAJOR < 2)
   // Draw winner text
   mApp->mWindow.Draw(mWinnerText);
 
   // Draw our cursor
   mApp->mWindow.Draw(mCursor);
+#else
+  // Draw winner text
+  mApp->mWindow.draw(mWinnerText);
+
+  // Draw our cursor
+  mApp->mWindow.draw(mCursor);
+#endif
 }
 
 void GameState::Cleanup(void)
