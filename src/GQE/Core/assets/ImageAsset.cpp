@@ -57,6 +57,9 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
       // Attempt to load the asset from a file
       mLoaded = mAsset->LoadFromFile(mFilename);
+
+      // Disable smoothing on all images
+      mAsset->SetSmooth(false);
 #else
       // Attempt to load the asset from a file
       mLoaded = mAsset->loadFromFile(mFilename);
