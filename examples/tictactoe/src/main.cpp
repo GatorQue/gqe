@@ -17,30 +17,30 @@ int main(int argc, char* argv[])
 {
   // Default anExitCode to a specific value
   int anExitCode = GQE::StatusNoError;
- 
+
   // Create our Logger first before creating our application
   GQE::gLogger = new(std::nothrow) GQE::FileLogger("output.txt");
 
   // Create our action application.
   GQE::App* anApp = new(std::nothrow) TicTacToeApp();
   assert(NULL != anApp && "main() Can't create Application");
- 
+
   // Process command line arguments
   anApp->ProcessArguments(argc, argv);
- 
+
   // Start the action application:
   // Initialize the action application
   // Enter the Game Loop where the application will remain until it is shutdown
   // Cleanup the action application
   // Exit back to here
   anExitCode = anApp->Run();
- 
+
   // Cleanup ourselves by deleting the action application
   delete anApp;
- 
+
   // Don't keep pointers to objects we have just deleted
   anApp = NULL;
- 
+
   // Delete our Logger last before exiting
   delete GQE::gLogger;
 

@@ -8,31 +8,31 @@
  */
 #ifndef   TIC_TAC_TOE_APP_HPP_INCLUDED
 #define   TIC_TAC_TOE_APP_HPP_INCLUDED
- 
+
 #include <GQE/Core/classes/App.hpp>
- 
+
 /// Provides the core game loop algorithm for all game engines.
 class TicTacToeApp : public GQE::App
 {
-public:
-  /**
-   * TicTacToeApp constructor
-   * @param[in] theTitle is the title of the window
-   */
-  TicTacToeApp(const std::string theTitle = "TicTacToe");
+  public:
+    /**
+     * TicTacToeApp constructor
+     * @param[in] theTitle is the title of the window
+     */
+    TicTacToeApp(const std::string theTitle = "TicTacToe");
 
-  /**
-   * TicTacToeApp deconstructor
-   */
-  virtual ~TicTacToeApp();
+    /**
+     * TicTacToeApp deconstructor
+     */
+    virtual ~TicTacToeApp();
 
-protected:
-  /**
-   * Init is responsible for initializing the Application.
-   */
-  virtual void Init(void);
+  protected:
+    /**
+     * Init is responsible for initializing the Application.
+     */
+    virtual void Init(void);
 
-private:
+  private:
 }; // class TicTacToeApp
 
 #endif // TIC_TAC_TOE_APP_HPP_INCLUDED

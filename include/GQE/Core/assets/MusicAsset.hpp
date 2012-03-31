@@ -13,47 +13,47 @@
  */
 #ifndef   CORE_MUSIC_ASSET_HPP_INCLUDED
 #define   CORE_MUSIC_ASSET_HPP_INCLUDED
- 
+
 #include <GQE/Core/interfaces/TAsset.hpp>
 #include <GQE/Core/Core_types.hpp>
 #include <SFML/Audio.hpp>
- 
+
 namespace GQE
 {
   /// Provides the MusicAsset class
   class GQE_API MusicAsset : public TAsset<sf::Music>
   {
-  public:
-    /**
-     * MusicAsset constructor
-     * @param[in] theFilename to use when loading this asset
-     * @param[in] theStyle to use when loading this asset
-     */
-    MusicAsset(std::string theFilename, AssetLoadingStyle theStyle = AssetLoadStyleBackground);
- 
-    /**
-     * MusicAsset deconstructor
-     */
-    virtual ~MusicAsset();
- 
-    /**
-     * LoadAsset is responsible for loading the Asset.
-     */
-    virtual void LoadAsset(void);
- 
-  protected:
-    /**
-     * UnloadAsset is responsible for destroying or unloading the Asset and
-     * is called by FreeAsset.
-     */
-    virtual void UnloadAsset(void);
- 
-  private:
-    // Variables
-    ///////////////////////////////////////////////////////////////////////////
+    public:
+      /**
+       * MusicAsset constructor
+       * @param[in] theFilename to use when loading this asset
+       * @param[in] theStyle to use when loading this asset
+       */
+      MusicAsset(std::string theFilename, AssetLoadingStyle theStyle = AssetLoadStyleBackground);
+
+      /**
+       * MusicAsset deconstructor
+       */
+      virtual ~MusicAsset();
+
+      /**
+       * LoadAsset is responsible for loading the Asset.
+       */
+      virtual void LoadAsset(void);
+
+    protected:
+      /**
+       * UnloadAsset is responsible for destroying or unloading the Asset and
+       * is called by FreeAsset.
+       */
+      virtual void UnloadAsset(void);
+
+    private:
+      // Variables
+      ///////////////////////////////////////////////////////////////////////////
   }; // class MusicAsset
 } // namespace GQE
- 
+
 #endif // CORE_MUSIC_ASSET_HPP_INCLUDED
 
 /**

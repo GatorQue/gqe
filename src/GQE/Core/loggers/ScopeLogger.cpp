@@ -8,19 +8,19 @@
  * @author Ryan Lindeman
  * @date 20110610 - Initial Release
  */
- 
+
 #include <GQE/Core/loggers/ScopeLogger.hpp>
- 
+
 namespace GQE
 {
   ScopeLogger::ScopeLogger(SeverityType theSeverity,
       const char* theSourceFile, int theSourceLine,
       const char* theScopeName, int theExitCode) :
-      ILogger(theExitCode),
-      mSeverity(theSeverity),
-      mSourceFile(theSourceFile),
-      mSourceLine(theSourceLine),
-      mScopeName(theScopeName)
+    ILogger(theExitCode),
+    mSeverity(theSeverity),
+    mSourceFile(theSourceFile),
+    mSourceLine(theSourceLine),
+    mScopeName(theScopeName)
   {
     // Make sure our global logger is defined before using it
     if(GQE::gLogger)
@@ -28,9 +28,9 @@ namespace GQE
       // Log the scope Entry with theScopeName provided to the
       // global logger (see GQE::gLogger).
       GQE::gLogger->GetStream(mSeverity, mSourceFile, mSourceLine,
-        theExitCode) << "Enter(" << theScopeName << ") ";
+          theExitCode) << "Enter(" << theScopeName << ") ";
     }
-  }  
+  }
 
   ScopeLogger::~ScopeLogger()
   {
@@ -56,7 +56,7 @@ namespace GQE
     if(GQE::gLogger)
     {
       // Just return whatever the global logger returns for GetStream()
-      return GQE::gLogger->GetStream();      
+      return GQE::gLogger->GetStream();
     }
     else
     {
@@ -80,7 +80,7 @@ namespace GQE
     {
       // Just return whatever the global logger returns for GetStream()
       return GQE::gLogger->GetStream(theSeverity, theSourceFile,
-        theSourceLine, theExitCode) << "Result(" << mScopeName << ") ";      
+          theSourceLine, theExitCode) << "Result(" << mScopeName << ") ";
     }
     else
     {
@@ -88,14 +88,14 @@ namespace GQE
       return GQE::gNullStream;
     }
   }
-  
+
   void ScopeLogger::LogMessage(const char* theMessage)
   {
     // Make sure our global logger is defined before using it
     if(GQE::gLogger)
     {
       // Use the global logger to log theMessage provided
-      GQE::gLogger->LogMessage(theMessage);      
+      GQE::gLogger->LogMessage(theMessage);
     }
   }
 
@@ -115,8 +115,28 @@ namespace GQE
     {
       // Use the global logger to log theMessage and other info provided
       GQE::gLogger->LogMessage(theSeverity, theSourceFile, theSourceLine,
-        theMessage);      
+          theMessage);
     }
   }
-
 } // namespace GQE
+
+/**
+ * Copyright (c) 2010-2011 Ryan Lindeman
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */

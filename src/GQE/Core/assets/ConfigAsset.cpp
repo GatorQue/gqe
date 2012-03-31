@@ -36,7 +36,7 @@ namespace GQE
     {
       // Make sure memory is not already allocated
       assert(NULL == mAsset && "ConfigAsset::LoadAsset() memory already allocated!");
-    
+
       // Create the asset
       mAsset = new (std::nothrow) ConfigReader;
       assert(NULL != mAsset && "ConfigAsset::LoadAsset() unable to allocate memory");
@@ -44,10 +44,7 @@ namespace GQE
       ILOG() << "ConfigAsset::LoadAsset(" << mFilename << ") loading..." << std::endl;
 
       // Attempt to load the asset from a file
-      mLoaded = mAsset->Read(mFilename);
-
-      // Register the App pointer with this asset
-      mAsset->RegisterApp(mApp);
+      mLoaded = mAsset->LoadFromFile(mFilename);
 
       // If the asset did not load successfully, delete the memory
       if(false == mLoaded)

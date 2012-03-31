@@ -17,7 +17,7 @@
  * @date 20110831 - Support new SFML2 snapshot changes
  * @date 20120322 - Support new SFML2 snapshot changes
  */
- 
+
 #include <assert.h>
 #include <stddef.h>
 #include <GQE/Core/loggers/Log_macros.hpp>
@@ -28,7 +28,7 @@
 #include <GQE/Core/assets/ImageAsset.hpp>
 #include <GQE/Core/assets/MusicAsset.hpp>
 #include <GQE/Core/assets/SoundAsset.hpp>
- 
+
 namespace GQE
 {
   AssetManager::AssetManager() :
@@ -41,11 +41,11 @@ namespace GQE
     // Create our background loading thread for use later
     mBackgroundThread = new(std::nothrow) sf::Thread(&AssetManager::BackgroundLoop, this);
   }
- 
+
   AssetManager::~AssetManager()
   {
     ILOGM("AssetManager::dtor()");
- 
+
     if(true == mBackgroundLoading)
     {
 #if (SFML_VERSION_MAJOR < 2)
@@ -56,35 +56,35 @@ namespace GQE
       mBackgroundThread->wait();
 #endif
     }
- 
+
     // Cleanup after ourselves
     DeleteConfigs();
     DeleteFonts();
     DeleteImages();
     DeleteMusic();
     DeleteSounds();
- 
+
     // Clear pointers we don't need anymore
     mApp = NULL;
   }
- 
+
   void AssetManager::RegisterApp(App* theApp)
   {
     // Check that our pointer is good
     assert(NULL != theApp && "AssetManager::RegisterApp() theApp pointer provided is bad");
- 
+
     // Make a note of the pointer
     assert(NULL == mApp && "AssetManager::RegisterApp() theApp pointer was already registered");
     mApp = theApp;
   }
- 
+
   void AssetManager::LoadAssets(bool theBackgroundFlag)
   {
     // Background loading thread
     if(true == theBackgroundFlag && false == mBackgroundLoading)
     {
       ILOGM("AssetManager::LoadAssets() starting background loading thread");
- 
+
 #if (SFML_VERSION_MAJOR < 2)
       // Launch the background loading thread
       mBackgroundThread->Launch();
@@ -121,9 +121,9 @@ namespace GQE
   }
 
   ConfigAsset* AssetManager::AddConfig(
-    const typeAssetID theAssetID,
-    const std::string theFilename,
-    AssetLoadingStyle theStyle)
+      const typeAssetID theAssetID,
+      const std::string theFilename,
+      AssetLoadingStyle theStyle)
   {
     // ConfigAsset result
     ConfigAsset* result = NULL;
@@ -156,7 +156,7 @@ namespace GQE
 
       // Add the asset to the map of available assets
       mConfigs.insert(std::pair<const typeAssetID, ConfigAsset*>(theAssetID, result));
-      
+
       ILOG() << "AssetManager::AddConfig(" << theAssetID << ") added" << std::endl;
     }
     else
@@ -217,7 +217,7 @@ namespace GQE
   ConfigAsset* AssetManager::GetConfig(const typeAssetID theAssetID)
   {
     ConfigAsset* result = NULL;
-    
+
 #if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
@@ -250,7 +250,7 @@ namespace GQE
   void AssetManager::LoadConfigs(AssetLoadingStyle theStyle)
   {
     assert(AssetLoadStyleFirst < theStyle && AssetLoadStyleLast > theStyle &&
-           "AssetManager::LoadConfigs() invalid style provided");
+        "AssetManager::LoadConfigs() invalid style provided");
 
 #if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
@@ -266,7 +266,7 @@ namespace GQE
     while(iter != mConfigs.end())
     {
       if(false == iter->second->IsLoaded() &&
-         theStyle == iter->second->GetLoadingStyle())
+          theStyle == iter->second->GetLoadingStyle())
       {
         iter->second->LoadAsset();
       }
@@ -311,9 +311,9 @@ namespace GQE
   }
 
   FontAsset* AssetManager::AddFont(
-    const typeAssetID theAssetID,
-    const std::string theFilename,
-    AssetLoadingStyle theStyle)
+      const typeAssetID theAssetID,
+      const std::string theFilename,
+      AssetLoadingStyle theStyle)
   {
     // FontAsset result
     FontAsset* result = NULL;
@@ -334,35 +334,35 @@ namespace GQE
       // Create the asset since it wasn't found
       result = new(std::nothrow) FontAsset(theFilename, theStyle);
       assert(NULL != result && "AssetManager::AddFont() unable to allocate memory");
- 
+
       // Register our App pointer with this asset
       result->RegisterApp(mApp);
- 
+
       // Handle Immediate loading style
       if(AssetLoadStyleImmediate == theStyle)
       {
         result->LoadAsset();
       }
- 
+
       // Add the asset to the map of available assets
       mFonts.insert(std::pair<const typeAssetID, FontAsset*>(theAssetID, result));
- 
+
       ILOG() << "AssetManager::AddFont(" << theAssetID << ") added" << std::endl;
     }
     else
     {
       // Return the previous asset that was added instead of creating a duplicate
       result = iter->second;
- 
+
       ILOG() << "AssetManager::AddFont(" << theAssetID << ") returning existing" << std::endl;
     }
- 
+
     // Make sure we are actually returning a good pointer
     assert(NULL != result && "AssetManager::AddFont() bad return result");
- 
+
     // Increment our references to this asset
     result->AddReference();
- 
+
 #if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
@@ -370,11 +370,11 @@ namespace GQE
     // Release the lock after accessing the asset maps
     mBackgroundMutex.unlock();
 #endif
- 
+
     // Return our results
     return result;
   }
- 
+
   void AssetManager::DeleteFonts(void)
   {
 #if (SFML_VERSION_MAJOR < 2)
@@ -384,7 +384,7 @@ namespace GQE
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.lock();
 #endif
- 
+
     // Delete all fonts, since they are no longer needed
     std::map<const typeAssetID, FontAsset*>::iterator iter;
     iter = mFonts.begin();
@@ -394,7 +394,7 @@ namespace GQE
       mFonts.erase(iter++);
       delete anAsset;
     }
- 
+
 #if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
@@ -403,11 +403,11 @@ namespace GQE
     mBackgroundMutex.unlock();
 #endif
   }
- 
+
   FontAsset* AssetManager::GetFont(const typeAssetID theAssetID)
   {
     FontAsset* result = NULL;
- 
+
 #if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
@@ -415,7 +415,7 @@ namespace GQE
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.lock();
 #endif
- 
+
     // Locate the asset using theAssetID as the key
     std::map<const typeAssetID, FontAsset*>::iterator iter;
     iter = mFonts.find(theAssetID);
@@ -424,7 +424,7 @@ namespace GQE
       // Get the asset found
       result = iter->second;
     }
- 
+
 #if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
@@ -432,16 +432,16 @@ namespace GQE
     // Release the lock after accessing the asset maps
     mBackgroundMutex.unlock();
 #endif
- 
+
     // Return the result found
     return result;
   }
- 
+
   void AssetManager::LoadFonts(AssetLoadingStyle theStyle)
   {
     assert(AssetLoadStyleFirst < theStyle && AssetLoadStyleLast > theStyle &&
-           "AssetManager::LoadFonts() invalid style provided");
- 
+        "AssetManager::LoadFonts() invalid style provided");
+
 #if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
@@ -449,20 +449,20 @@ namespace GQE
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.lock();
 #endif
- 
+
     // Load all unloaded fonts with theStyle specified
     std::map<const typeAssetID, FontAsset*>::iterator iter;
     iter = mFonts.begin();
     while(iter != mFonts.end())
     {
       if(false == iter->second->IsLoaded() &&
-         theStyle == iter->second->GetLoadingStyle())
+          theStyle == iter->second->GetLoadingStyle())
       {
         iter->second->LoadAsset();
       }
       iter++;
     }
- 
+
 #if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
@@ -471,7 +471,7 @@ namespace GQE
     mBackgroundMutex.unlock();
 #endif
   }
- 
+
   void AssetManager::UnloadFont(const typeAssetID theAssetID)
   {
 #if (SFML_VERSION_MAJOR < 2)
@@ -481,7 +481,7 @@ namespace GQE
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.lock();
 #endif
- 
+
     // Locate the asset using theAssetID as the key
     std::map<const typeAssetID, FontAsset*>::iterator iter;
     iter = mFonts.find(theAssetID);
@@ -490,7 +490,7 @@ namespace GQE
       // Drop our reference to this asset and unload if needed
       iter->second->DropReference();
     }
- 
+
 #if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
@@ -499,15 +499,15 @@ namespace GQE
     mBackgroundMutex.unlock();
 #endif
   }
- 
+
   ImageAsset* AssetManager::AddImage(
-    const typeAssetID theAssetID,
-    const std::string theFilename,
-    AssetLoadingStyle theStyle)
+      const typeAssetID theAssetID,
+      const std::string theFilename,
+      AssetLoadingStyle theStyle)
   {
     // Our return result
     ImageAsset* result = NULL;
- 
+
 #if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
@@ -515,7 +515,7 @@ namespace GQE
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.lock();
 #endif
- 
+
     // Check for a duplicate asset using theAssetID as the key
     std::map<const typeAssetID, ImageAsset*>::iterator iter;
     iter = mImages.find(theAssetID);
@@ -524,35 +524,35 @@ namespace GQE
       // Create the asset since it wasn't found
       result = new(std::nothrow) ImageAsset(theFilename, theStyle);
       assert(NULL != result && "AssetManager::AddImage() unable to allocate memory");
- 
+
       // Register our App pointer with this asset
       result->RegisterApp(mApp);
- 
+
       // Handle Immediate loading style
       if(AssetLoadStyleImmediate == theStyle)
       {
         result->LoadAsset();
       }
- 
+
       // Add the asset to the map of available assets
       mImages.insert(std::pair<const typeAssetID, ImageAsset*>(theAssetID, result));
- 
+
       ILOG() << "AssetManager::AddImage(" << theAssetID << ") added" << std::endl;
     }
     else
     {
       // Return the previous asset that was added instead of creating a duplicate
       result = iter->second;
- 
+
       ILOG() << "AssetManager::AddImage(" << theAssetID << ") returning existing" << std::endl;
     }
- 
+
     // Make sure we are actually returning a good pointer
     assert(NULL != result && "AssetManager::AddImage() bad return result");
- 
+
     // Increment our references to this asset
     result->AddReference();
- 
+
 #if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
@@ -560,11 +560,11 @@ namespace GQE
     // Release the lock after accessing the asset maps
     mBackgroundMutex.unlock();
 #endif
- 
+
     // Return our results
     return result;
   }
- 
+
   void AssetManager::DeleteImages(void)
   {
 #if (SFML_VERSION_MAJOR < 2)
@@ -574,7 +574,7 @@ namespace GQE
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.lock();
 #endif
- 
+
     // Delete all images, since they are no longer needed
     std::map<const typeAssetID, ImageAsset*>::iterator iter;
     iter = mImages.begin();
@@ -584,7 +584,7 @@ namespace GQE
       mImages.erase(iter++);
       delete anAsset;
     }
- 
+
 #if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
@@ -593,11 +593,11 @@ namespace GQE
     mBackgroundMutex.unlock();
 #endif
   }
- 
+
   ImageAsset* AssetManager::GetImage(const typeAssetID theAssetID)
   {
     ImageAsset* result = NULL;
- 
+
 #if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
@@ -605,7 +605,7 @@ namespace GQE
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.lock();
 #endif
- 
+
     // Locate the asset using theAssetID as the key
     std::map<const typeAssetID, ImageAsset*>::iterator iter;
     iter = mImages.find(theAssetID);
@@ -614,7 +614,7 @@ namespace GQE
       // Get the asset found
       result = iter->second;
     }
- 
+
 #if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
@@ -622,11 +622,11 @@ namespace GQE
     // Release the lock after accessing the asset maps
     mBackgroundMutex.unlock();
 #endif
- 
+
     // Return the result found
     return result;
   }
- 
+
   sf::Sprite* AssetManager::GetSprite(const typeAssetID theAssetID)
   {
     sf::Sprite* result = NULL;
@@ -645,16 +645,16 @@ namespace GQE
     {
       FLOG(StatusAppMissingAsset) << "AssetManager::GetSprite(" << theAssetID << ") can't find image" << std::endl;
     }
- 
+
     // Return our result
     return result;
   }
- 
+
   void AssetManager::LoadImages(AssetLoadingStyle theStyle)
   {
     assert(AssetLoadStyleFirst < theStyle && AssetLoadStyleLast > theStyle &&
-           "AssetManager::LoadImages() invalid style provided");
- 
+        "AssetManager::LoadImages() invalid style provided");
+
 #if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
@@ -662,20 +662,20 @@ namespace GQE
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.lock();
 #endif
- 
+
     // Load all unloaded images with theStyle specified
     std::map<const typeAssetID, ImageAsset*>::iterator iter;
     iter = mImages.begin();
     while(iter != mImages.end())
     {
       if(false == iter->second->IsLoaded() &&
-         theStyle == iter->second->GetLoadingStyle())
+          theStyle == iter->second->GetLoadingStyle())
       {
         iter->second->LoadAsset();
       }
       iter++;
     }
- 
+
 #if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
@@ -684,7 +684,7 @@ namespace GQE
     mBackgroundMutex.unlock();
 #endif
   }
- 
+
   void AssetManager::UnloadImage(const typeAssetID theAssetID)
   {
 #if (SFML_VERSION_MAJOR < 2)
@@ -694,7 +694,7 @@ namespace GQE
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.lock();
 #endif
- 
+
     // Locate the asset using theAssetID as the key
     std::map<const typeAssetID, ImageAsset*>::iterator iter;
     iter = mImages.find(theAssetID);
@@ -703,7 +703,7 @@ namespace GQE
       // Drop our reference to this asset and unload if needed
       iter->second->DropReference();
     }
- 
+
 #if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
@@ -712,15 +712,15 @@ namespace GQE
     mBackgroundMutex.unlock();
 #endif
   }
- 
+
   MusicAsset* AssetManager::AddMusic(
-    const typeAssetID theAssetID,
-    const std::string theFilename,
-    AssetLoadingStyle theStyle)
+      const typeAssetID theAssetID,
+      const std::string theFilename,
+      AssetLoadingStyle theStyle)
   {
     // Our return result
     MusicAsset* result = NULL;
- 
+
 #if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
@@ -728,7 +728,7 @@ namespace GQE
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.lock();
 #endif
- 
+
     // Check for a duplicate asset using theAssetID as the key
     std::map<const typeAssetID, MusicAsset*>::iterator iter;
     iter = mMusic.find(theAssetID);
@@ -737,35 +737,35 @@ namespace GQE
       // Create the asset since it wasn't found
       result = new(std::nothrow) MusicAsset(theFilename, theStyle);
       assert(NULL != result && "AssetManager::AddMusic() unable to allocate memory");
- 
+
       // Register our App pointer with this asset
       result->RegisterApp(mApp);
- 
+
       // Handle Immediate loading style
       if(AssetLoadStyleImmediate == theStyle)
       {
         result->LoadAsset();
       }
- 
+
       // Add the asset to the map of available assets
       mMusic.insert(std::pair<const typeAssetID, MusicAsset*>(theAssetID, result));
- 
+
       ILOG() << "AssetManager::AddMusic(" << theAssetID << ") added" << std::endl;
     }
     else
     {
       // Return the previous asset that was added instead of creating a duplicate
       result = iter->second;
- 
+
       ILOG() << "AssetManager::AddMusic(" << theAssetID << ") returning existing" << std::endl;
     }
- 
+
     // Make sure we are actually returning a good pointer
     assert(NULL != result && "AssetManager::AddMusic() bad return result");
- 
+
     // Increment our references to this asset
     result->AddReference();
- 
+
 #if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
@@ -773,11 +773,11 @@ namespace GQE
     // Release the lock after accessing the asset maps
     mBackgroundMutex.unlock();
 #endif
- 
+
     // Return our results
     return result;
   }
- 
+
   void AssetManager::DeleteMusic(void)
   {
 #if (SFML_VERSION_MAJOR < 2)
@@ -787,7 +787,7 @@ namespace GQE
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.lock();
 #endif
- 
+
     // Delete all music, since they are no longer needed
     std::map<const typeAssetID, MusicAsset*>::iterator iter;
     iter = mMusic.begin();
@@ -797,7 +797,7 @@ namespace GQE
       mMusic.erase(iter++);
       delete anAsset;
     }
- 
+
 #if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
@@ -806,11 +806,11 @@ namespace GQE
     mBackgroundMutex.unlock();
 #endif
   }
- 
+
   MusicAsset* AssetManager::GetMusic(const typeAssetID theAssetID)
   {
     MusicAsset* result = NULL;
- 
+
 #if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
@@ -818,7 +818,7 @@ namespace GQE
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.lock();
 #endif
- 
+
     // Locate the asset using theAssetID as the key
     std::map<const typeAssetID, MusicAsset*>::iterator iter;
     iter = mMusic.find(theAssetID);
@@ -827,7 +827,7 @@ namespace GQE
       // Get the asset found
       result = iter->second;
     }
- 
+
 #if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
@@ -835,16 +835,16 @@ namespace GQE
     // Release the lock after accessing the asset maps
     mBackgroundMutex.unlock();
 #endif
- 
+
     // Return the result found
     return result;
   }
- 
+
   void AssetManager::LoadMusic(AssetLoadingStyle theStyle)
   {
     assert(AssetLoadStyleFirst < theStyle && AssetLoadStyleLast > theStyle &&
-           "AssetManager::LoadMusic() invalid style provided");
- 
+        "AssetManager::LoadMusic() invalid style provided");
+
 #if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
@@ -852,20 +852,20 @@ namespace GQE
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.lock();
 #endif
- 
+
     // Load all unloaded music with theStyle specified
     std::map<const typeAssetID, MusicAsset*>::iterator iter;
     iter = mMusic.begin();
     while(iter != mMusic.end())
     {
       if(false == iter->second->IsLoaded() &&
-         theStyle == iter->second->GetLoadingStyle())
+          theStyle == iter->second->GetLoadingStyle())
       {
         iter->second->LoadAsset();
       }
       iter++;
     }
- 
+
 #if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
@@ -874,7 +874,7 @@ namespace GQE
     mBackgroundMutex.unlock();
 #endif
   }
- 
+
   void AssetManager::UnloadMusic(const typeAssetID theAssetID)
   {
 #if (SFML_VERSION_MAJOR < 2)
@@ -884,7 +884,7 @@ namespace GQE
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.lock();
 #endif
- 
+
     // Locate the asset using theAssetID as the key
     std::map<const typeAssetID, MusicAsset*>::iterator iter;
     iter = mMusic.find(theAssetID);
@@ -893,7 +893,7 @@ namespace GQE
       // Drop our reference to this asset and unload if needed
       iter->second->DropReference();
     }
- 
+
 #if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
@@ -902,15 +902,15 @@ namespace GQE
     mBackgroundMutex.unlock();
 #endif
   }
- 
+
   SoundAsset* AssetManager::AddSound(
-    const typeAssetID theAssetID,
-    const std::string theFilename,
-    AssetLoadingStyle theStyle)
+      const typeAssetID theAssetID,
+      const std::string theFilename,
+      AssetLoadingStyle theStyle)
   {
     // Our return result
     SoundAsset* result = NULL;
- 
+
 #if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
@@ -918,7 +918,7 @@ namespace GQE
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.lock();
 #endif
- 
+
     // Check for a duplicate asset using theAssetID as the key
     std::map<const typeAssetID, SoundAsset*>::iterator iter;
     iter = mSounds.find(theAssetID);
@@ -927,35 +927,35 @@ namespace GQE
       // Create the asset since it wasn't found
       result = new(std::nothrow) SoundAsset(theFilename, theStyle);
       assert(NULL != result && "AssetManager::AddSound() unable to allocate memory");
- 
+
       // Register our App pointer with this asset
       result->RegisterApp(mApp);
- 
+
       // Handle Immediate loading style
       if(AssetLoadStyleImmediate == theStyle)
       {
         result->LoadAsset();
       }
- 
+
       // Add the asset to the map of available assets
       mSounds.insert(std::pair<const typeAssetID, SoundAsset*>(theAssetID, result));
- 
+
       ILOG() << "AssetManager::AddSound(" << theAssetID << ") added" << std::endl;
     }
     else
     {
       // Return the previous asset that was added instead of creating a duplicate
       result = iter->second;
- 
+
       ILOG() << "AssetManager::AddSound(" << theAssetID << ") returning existing" << std::endl;
     }
- 
+
     // Make sure we are actually returning a good pointer
     assert(NULL != result && "AssetManager::AddSound() bad return result");
- 
+
     // Increment our references to this asset
     result->AddReference();
- 
+
 #if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
@@ -963,11 +963,11 @@ namespace GQE
     // Release the lock after accessing the asset maps
     mBackgroundMutex.unlock();
 #endif
- 
+
     // Return our results
     return result;
   }
- 
+
   void AssetManager::DeleteSounds(void)
   {
 #if (SFML_VERSION_MAJOR < 2)
@@ -977,7 +977,7 @@ namespace GQE
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.lock();
 #endif
- 
+
     // Delete all sounds, since they are no longer needed
     std::map<const typeAssetID, SoundAsset*>::iterator iter;
     iter = mSounds.begin();
@@ -987,7 +987,7 @@ namespace GQE
       mSounds.erase(iter++);
       delete anAsset;
     }
- 
+
 #if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
@@ -996,11 +996,11 @@ namespace GQE
     mBackgroundMutex.unlock();
 #endif
   }
- 
+
   SoundAsset* AssetManager::GetSound(const typeAssetID theAssetID)
   {
     SoundAsset* result = NULL;
- 
+
 #if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
@@ -1008,7 +1008,7 @@ namespace GQE
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.lock();
 #endif
- 
+
     // Locate the asset using theAssetID as the key
     std::map<const typeAssetID, SoundAsset*>::iterator iter;
     iter = mSounds.find(theAssetID);
@@ -1017,7 +1017,7 @@ namespace GQE
       // Get the asset found
       result = iter->second;
     }
- 
+
 #if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
@@ -1025,11 +1025,11 @@ namespace GQE
     // Release the lock after accessing the asset maps
     mBackgroundMutex.unlock();
 #endif
- 
+
     // Return the result found
     return result;
   }
- 
+
   sf::Sound* AssetManager::GetSoundPlayer(const typeAssetID theAssetID)
   {
     sf::Sound* result = NULL;
@@ -1052,8 +1052,8 @@ namespace GQE
   void AssetManager::LoadSounds(AssetLoadingStyle theStyle)
   {
     assert(AssetLoadStyleFirst < theStyle && AssetLoadStyleLast > theStyle &&
-           "AssetManager::LoadSounds() invalid style provided");
- 
+        "AssetManager::LoadSounds() invalid style provided");
+
 #if (SFML_VERSION_MAJOR < 2)
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.Lock();
@@ -1061,20 +1061,20 @@ namespace GQE
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.lock();
 #endif
- 
+
     // Load all unloaded sounds with theStyle specified
     std::map<const typeAssetID, SoundAsset*>::iterator iter;
     iter = mSounds.begin();
     while(iter != mSounds.end())
     {
       if(false == iter->second->IsLoaded() &&
-         theStyle == iter->second->GetLoadingStyle())
+          theStyle == iter->second->GetLoadingStyle())
       {
         iter->second->LoadAsset();
       }
       iter++;
     }
- 
+
 #if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
@@ -1083,7 +1083,7 @@ namespace GQE
     mBackgroundMutex.unlock();
 #endif
   }
- 
+
   void AssetManager::UnloadSound(const typeAssetID theAssetID)
   {
 #if (SFML_VERSION_MAJOR < 2)
@@ -1093,7 +1093,7 @@ namespace GQE
     // Obtain a lock before trying to access the asset maps
     mBackgroundMutex.lock();
 #endif
- 
+
     // Locate the asset using theAssetID as the key
     std::map<const typeAssetID, SoundAsset*>::iterator iter;
     iter = mSounds.find(theAssetID);
@@ -1102,7 +1102,7 @@ namespace GQE
       // Drop our reference to this asset and unload if needed
       iter->second->DropReference();
     }
- 
+
 #if (SFML_VERSION_MAJOR < 2)
     // Release the lock after accessing the asset maps
     mBackgroundMutex.Unlock();
@@ -1111,30 +1111,30 @@ namespace GQE
     mBackgroundMutex.unlock();
 #endif
   }
- 
+
   void AssetManager::BackgroundLoop(void* theAssetManager)
   {
     AssetManager* anManager = static_cast<AssetManager*>(theAssetManager);
     assert(NULL != anManager && "AssetManager::BackgroundLoop() invalid pointer provided");
- 
+
     // Set our running flag
     anManager->mBackgroundLoading = true;
- 
+
     // Load all the configs
     anManager->LoadConfigs(AssetLoadStyleBackground);
 
     // Load all the fonts
     anManager->LoadFonts(AssetLoadStyleBackground);
- 
+
     // Load all the images
     anManager->LoadImages(AssetLoadStyleBackground);
- 
+
     // Load all the music
     anManager->LoadMusic(AssetLoadStyleBackground);
- 
+
     // Load all the sounds
     anManager->LoadSounds(AssetLoadStyleBackground);
- 
+
     // Set our running flag
     anManager->mBackgroundLoading = false;
   }

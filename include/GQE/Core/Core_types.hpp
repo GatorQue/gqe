@@ -14,7 +14,7 @@
  */
 #ifndef   GQE_CORE_TYPES_HPP_INCLUDED
 #define   GQE_CORE_TYPES_HPP_INCLUDED
- 
+
 #include <map>
 #include <string>
 #include <vector>
@@ -30,7 +30,8 @@
 namespace GQE
 {
   /// Enumeration of all Asset loading styles
-  enum AssetLoadingStyle {
+  enum AssetLoadingStyle
+  {
     AssetLoadStyleFirst      = 0,  ///< First Loading Style
     AssetLoadStyleBackground = 1,  ///< Background thread loading style
     AssetLoadStyleForeground = 2,  ///< Foreground thread loading style
@@ -39,7 +40,8 @@ namespace GQE
   };
 
   /// Enumeration of all Logging severity types
-  enum SeverityType {
+  enum SeverityType
+  {
     // Logger severity types range from 0 to 5
     SeverityInfo          = INFO_LEVEL,   ///< Informational severity type
     SeverityWarning       = WARN_LEVEL,   ///< Warning severity type
@@ -48,7 +50,8 @@ namespace GQE
   };
 
   /// Status Enumeration for Status Return values
-  enum StatusType {
+  enum StatusType
+  {
     // Values from -99 to 99 are common Error and Good status responses
     StatusAppMissingAsset = -4,  ///< Application failed due to missing asset file
     StatusAppStackEmpty   = -3,  ///< Application States stack is empty
@@ -62,34 +65,34 @@ namespace GQE
 
     // Values from +-100 to +-199 are reserved for File status responses
   };
- 
-  // Forward declare GQE interfaces provided
+
+  // Forward declare GQE core interfaces provided
   class ILogger;
   class IState;
 
-  // Forward declare GQE classes provided
+  // Forward declare GQE core classes provided
   class App;
   class AssetManager;
   class ConfigReader;
   class StateManager;
 
-  // Forward declare GQE assets provided
+  // Forward declare GQE core assets provided
   class ConfigAsset;
   class FontAsset;
   class ImageAsset;
   class MusicAsset;
   class SoundAsset;
 
-  // Forward declare GQE loggers provided
+  // Forward declare GQE core loggers provided
   class FatalLogger;
   class FileLogger;
   class ScopeLogger;
   class StringLogger;
-  
-  // Forward declare GQE states provided
+
+  // Forward declare GQE core states provided
   class MenuState;
   class SplashState;
- 
+
   /// Declare Action ID typedef which is used for identifying Action objects
   typedef std::string typeActionID;
 

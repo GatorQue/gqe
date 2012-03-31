@@ -14,22 +14,29 @@
  * @date 20110218 - Change to system include style
  * @date 20110611 - Convert logging to new Log macros
  * @date 20110627 - Fixed build warnings and removed extra ; from namespace
+ * @date 20110810 - Remove mApp variable and added copy constructor and assignment operator
+ * @date 20110820 - Moved private Parse methods to StringUtil.hpp/cpp
+ * @date 20110820 - Changed Read to LoadFromFile to match SFML style
+ * @date 20110820 - Removed GetColor, use GetString and ParseColor instead
  */
 
-#include <assert.h>
-#include <stddef.h>
-#include <stdlib.h>
-#include <sstream>
-#include <GQE/Core/loggers/Log_macros.hpp>
+#include <cstdio>
+#include <cstring>
 #include <GQE/Core/classes/ConfigReader.hpp>
 #include <GQE/Core/classes/App.hpp>
+#include <GQE/Core/loggers/Log_macros.hpp>
+#include <GQE/Core/utils/StringUtil.hpp>
 
 namespace GQE
 {
-  ConfigReader::ConfigReader() :
-    mApp(NULL)
+  ConfigReader::ConfigReader()
   {
     ILOGM("ConfigReader::ctor()");
+  }
+
+  ConfigReader::ConfigReader(const ConfigReader& theCopy) :
+    mSections(theCopy.mSections)
+  {
   }
 
   ConfigReader::~ConfigReader()
@@ -45,19 +52,6 @@ namespace GQE
       mSections.erase(iter++);
       delete anMap;
     }
-
-    // Clear pointers we don't need anymore
-    mApp = NULL;
-  }
-
-  void ConfigReader::RegisterApp(App* theApp)
-  {
-    // Check that our pointer is good
-    assert(NULL != theApp && "ConfigReader::RegisterApp() theApp pointer provided is bad");
-
-    // Make a note of the pointer
-    assert(NULL == mApp && "ConfigReader::RegisterApp() theApp pointer was already registered");
-    mApp = theApp;
   }
 
   bool ConfigReader::IsSectionEmpty(const std::string theSection) const
@@ -81,7 +75,7 @@ namespace GQE
   }
 
   bool ConfigReader::GetBool(const std::string theSection,
-    const std::string theName, const bool theDefault) const
+      const std::string theName, const bool theDefault) const
   {
     bool anResult = theDefault;
 
@@ -107,35 +101,8 @@ namespace GQE
     return anResult;
   }
 
-  sf::Color ConfigReader::GetColor(const std::string theSection,
-    const std::string theName, const sf::Color theDefault) const
-  {
-    sf::Color anResult = theDefault;
-
-    // Check if theSection really exists
-    std::map<const std::string, typeNameValue*>::const_iterator iter;
-    iter = mSections.find(theSection);
-    if(iter != mSections.end())
-    {
-      // Try to obtain the name, value pair
-      typeNameValue* anMap = iter->second;
-      if(NULL != anMap)
-      {
-        typeNameValueIter iterNameValue;
-        iterNameValue = anMap->find(theName);
-        if(iterNameValue != anMap->end())
-        {
-          anResult = ParseColor(iterNameValue->second, theDefault);
-        }
-      }
-    }
-
-    // Return the result found or theDefault assigned above
-    return anResult;
-  }
-
   float ConfigReader::GetFloat(const std::string theSection,
-    const std::string theName, const float theDefault) const
+      const std::string theName, const float theDefault) const
   {
     float anResult = theDefault;
 
@@ -162,7 +129,7 @@ namespace GQE
   }
 
   std::string ConfigReader::GetString(const std::string theSection,
-    const std::string theName, const std::string theDefault) const
+      const std::string theName, const std::string theDefault) const
   {
     std::string anResult = theDefault;
 
@@ -187,12 +154,12 @@ namespace GQE
     // Return the result found or theDefault assigned above
     return anResult;
   }
- 
+
   Uint32 ConfigReader::GetUint32(const std::string theSection,
-    const std::string theName, const Uint32 theDefault) const
+      const std::string theName, const Uint32 theDefault) const
   {
     Uint32 anResult = theDefault;
- 
+
     // Check if theSection really exists
     std::map<const std::string, typeNameValue*>::const_iterator iter;
     iter = mSections.find(theSection);
@@ -215,7 +182,7 @@ namespace GQE
     return anResult;
   }
 
-  bool ConfigReader::Read(const std::string theFilename)
+  bool ConfigReader::LoadFromFile(const std::string theFilename)
   {
     bool anResult = false;
     char anLine[MAX_CHARS];
@@ -257,7 +224,7 @@ namespace GQE
 
       // Don't forget to close the file
       fclose(anFile);
-      
+
       // Set success result
       anResult = true;
     }
@@ -265,92 +232,25 @@ namespace GQE
     {
       ELOG() << "ConfigReader::Read(" << theFilename << ") error opening file" << std::endl;
     }
-    
+
     // Return anResult of true if successful, false otherwise
     return anResult;
   }
 
-  bool ConfigReader::ParseBool(const std::string theValue,
-    const bool theDefault) const
+  ConfigReader& ConfigReader::operator=(const ConfigReader& theRight)
   {
-    bool anResult = theDefault;
-    // Look for true results
-    if(GQE_STRICMP(theValue.c_str(),"true") == 0 ||
-       GQE_STRICMP(theValue.c_str(),"1") == 0 ||
-       GQE_STRICMP(theValue.c_str(),"on") == 0)
-       anResult = true;
-    // Look for false results
-    if(GQE_STRICMP(theValue.c_str(),"false") == 0 ||
-       GQE_STRICMP(theValue.c_str(),"0") == 0 ||
-       GQE_STRICMP(theValue.c_str(),"off") == 0)
-       anResult = false;
+    // Use copy constructor to duplicate theRight side
+    ConfigReader temp(theRight);
 
-    // Return the result found or theDefault assigned above
-    return anResult;
-  }
+    // Now swap my local copy with the copy from theRight
+    std::swap(mSections, temp.mSections);
 
-  sf::Color ConfigReader::ParseColor(const std::string theValue,
-    const sf::Color theDefault) const
-  {
-    sf::Color anResult = theDefault;
-
-    // Try to find the first value: Red
-    size_t anRedOffset = theValue.find_first_of(',');
-    if(anRedOffset != std::string::npos)
-    {
-      sf::Uint8 anRed = (sf::Uint8)atoi(theValue.substr(0,anRedOffset).c_str());
-      // Try to find the next value: Green
-      size_t anGreenOffset = theValue.find_first_of(',',anRedOffset+1);
-      if(anGreenOffset != std::string::npos)
-      {
-        sf::Uint8 anGreen = (sf::Uint8)atoi(theValue.substr(anRedOffset+1,anGreenOffset).c_str());
-        // Try to find the next value: Blue
-        size_t anBlueOffset = theValue.find_first_of(',',anGreenOffset+1);
-        if(anBlueOffset != std::string::npos)
-        {
-          sf::Uint8 anBlue = (sf::Uint8)atoi(theValue.substr(anGreenOffset+1,anBlueOffset).c_str());
-          sf::Uint8 anAlpha = (sf::Uint8)atoi(theValue.substr(anBlueOffset+1).c_str());
-          // Now that all 4 values have been parsed, return the color found
-          anResult.r = anRed;
-          anResult.g = anGreen;
-          anResult.b = anBlue;
-          anResult.a = anAlpha;
-        }
-      }
-    }
-
-    // Return the result found or theDefault assigned above
-    return anResult;
-  }
-
-  float ConfigReader::ParseFloat(const std::string theValue,
-    const float theDefault) const
-  {
-    float anResult = theDefault;
-    std::istringstream iss(theValue);
-
-    // Convert the string to an unsigned 32 bit integer
-    iss >> anResult;
-
-    // Return the result found or theDefault assigned above
-    return anResult;
-  }
- 
-  Uint32 ConfigReader::ParseUint32(const std::string theValue,
-      const Uint32 theDefault) const
-  {
-    Uint32 anResult = theDefault;
-    std::istringstream iss(theValue);
-
-    // Convert the string to an unsigned 32 bit integer
-    iss >> anResult;
-
-    // Return the result found or theDefault assigned above
-    return anResult;
+    // Return my pointer
+    return *this;
   }
 
   std::string ConfigReader::ParseLine(const char* theLine,
-    const unsigned long theCount, const std::string theSection)
+      const unsigned long theCount, const std::string theSection)
   {
     std::string anResult = theSection;
     size_t anLength = strlen(theLine);
@@ -416,11 +316,11 @@ namespace GQE
           // Retrieve the name and value while looking for the comment flags ';' or '#'
           size_t anNameIndex = 0;
           char anName[MAX_CHARS];
- 
+
           // First retrieve the name while looking for either the '=' or ':' delimiter
           while((anOffset+anNameIndex) < anLength &&
-            theLine[(anOffset+anNameIndex)] != '=' &&
-            theLine[(anOffset+anNameIndex)] != ':')
+              theLine[(anOffset+anNameIndex)] != '=' &&
+              theLine[(anOffset+anNameIndex)] != ':')
           {
             // Retrieve anName from theLine
             anName[anNameIndex] = theLine[anOffset+anNameIndex];
@@ -455,10 +355,10 @@ namespace GQE
             }
             // Next retrieve the value while looking for comments flags ';' or '#'
             while((anOffset + anValueIndex) < anLength &&
-              theLine[(anOffset+anValueIndex)] != '\r' &&
-              theLine[(anOffset+anValueIndex)] != '\n' &&
-              theLine[(anOffset+anValueIndex)] != ';' &&
-              theLine[(anOffset+anValueIndex)] != '#')
+                theLine[(anOffset+anValueIndex)] != '\r' &&
+                theLine[(anOffset+anValueIndex)] != '\n' &&
+                theLine[(anOffset+anValueIndex)] != ';' &&
+                theLine[(anOffset+anValueIndex)] != '#')
             {
               // Retrieve anValue from theLine
               anValue[anValueIndex] = theLine[anOffset+anValueIndex];
@@ -491,7 +391,7 @@ namespace GQE
   }
 
   void ConfigReader::StoreNameValue(const std::string theSection,
-    const std::string theName, const std::string theValue)
+      const std::string theName, const std::string theValue)
   {
     // Check if the name, value map already exists for theSection
     std::map<const std::string, typeNameValue*>::iterator iterSection;

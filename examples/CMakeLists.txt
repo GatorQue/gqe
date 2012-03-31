@@ -3,4 +3,5 @@
 remove_definitions(-DGQE_EXPORTS)
 
 # add each example
+add_subdirectory(spacedots)
 add_subdirectory(tictactoe)

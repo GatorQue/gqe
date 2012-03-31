@@ -1,3 +1,10 @@
+Version 0.17.0
+==============
+- Added gqe-entities
+- Added SpaceDots example program
+- Other SFML2 changes and bug fixes
+- Added logo graphics files for inclusion in programs made by GQE
+
 Version 0.16.0
 ==============
 - Support externally defined CMAKE_MODULE_PATH values

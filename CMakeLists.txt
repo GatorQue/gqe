@@ -27,6 +27,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 else(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   set_option(SFML_STATIC_LIBRARIES FALSE BOOL "Set to TRUE to statically link SFML libraries to GQE")
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+
 # setup version numbers
 set(GQE_VERSION_MAJOR 0)
 set(GQE_VERSION_MINOR 16)
@@ -59,7 +60,7 @@ if(INSTALL_DOC)
 endif()
 
 # Add all targets to the build-tree export set
-#export(TARGETS gqe-core
+#export(TARGETS gqe-core gqe-entities
 #  FILE "${PROJECT_BINARY_DIR}/GQE_LibraryDepends.cmake")
 
 # Export the package for use from the build-tree

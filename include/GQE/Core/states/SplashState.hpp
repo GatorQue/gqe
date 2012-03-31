@@ -11,6 +11,7 @@
  * @date 20110218 - Change to system include style
  * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
  * @date 20110627 - Removed extra ; from namespace
+ * @date 20110906 - Change mApp from a pointer to an address reference
  */
 #ifndef   CORE_SPLASH_STATE_HPP_INCLUDED
 #define   CORE_SPLASH_STATE_HPP_INCLUDED
@@ -24,67 +25,76 @@ namespace GQE
   /// Provides simple Splash screen game state
   class GQE_API SplashState : public IState
   {
-  public:
-    /**
-     * SplashState constructor
-     * @param[in] theApp is a pointer to the App class.
-     */
-    SplashState(App* theApp);
+    public:
+      /**
+       * SplashState constructor
+       * @param[in] theApp is the address to the App class.
+       */
+      SplashState(App& theApp, typeAssetID theSplashID,
+          const std::string theFilename = "resources/Splash.png", float theDelay = 10.0f);
 
-    /**
-     * SplashState deconstructor
-     */
-    virtual ~SplashState(void);
+      /**
+       * SplashState deconstructor
+       */
+      virtual ~SplashState(void);
 
-    /**
-     * DoInit is responsible for initializing this State
-     */
-    virtual void DoInit(void);
+      /**
+       * DoInit is responsible for initializing this State
+       */
+      virtual void DoInit(void);
 
-    /**
-     * ReInit is responsible for Reseting this state when the 
-     * StateManager::ResetActiveState() method is called.  This way a Game
-     * State can be restarted without unloading and reloading the game assets
-     */
-    virtual void ReInit(void);
+      /**
+       * ReInit is responsible for Reseting this state when the
+       * StateManager::ResetActiveState() method is called.  This way a Game
+       * State can be restarted without unloading and reloading the game assets
+       */
+      virtual void ReInit(void);
 
-    /**
-     * HandleEvents is responsible for handling input events for this
-     * State when it is the active State.
-     * @param[in] theEvent to process from the App class Loop method
-     */
-    virtual void HandleEvents(sf::Event theEvent);
+      /**
+       * HandleEvents is responsible for handling input events for this
+       * State when it is the active State.
+       * @param[in] theEvent to process from the App class Loop method
+       */
+      virtual void HandleEvents(sf::Event theEvent);
 
-    /**
-     * UpdateFixed is responsible for handling all State fixed update needs for
-     * this State when it is the active State.
-     */
-    virtual void UpdateFixed(void);
- 
-    /**
-     * UpdateVariable is responsible for handling all State variable update
-     * needs for this State when it is the active State.
-     * @param[in] theElapsedTime since the last Draw was called
-     */
-    virtual void UpdateVariable(float theElapsedTime);
+      /**
+       * UpdateFixed is responsible for handling all State fixed update needs for
+       * this State when it is the active State.
+       */
+      virtual void UpdateFixed(void);
 
-    /**
-     * Draw is responsible for handling all Drawing needs for this State
-     * when it is the Active State.
-     */
-    virtual void Draw(void);
+      /**
+       * UpdateVariable is responsible for handling all State variable update
+       * needs for this State when it is the active State.
+       * @param[in] theElapsedTime since the last Draw was called
+       */
+      virtual void UpdateVariable(float theElapsedTime);
 
-  protected:
-    /**
-     * Cleanup is responsible for performing any cleanup required before
-     * this State is removed.
-     */
-    virtual void Cleanup(void);
+      /**
+       * Draw is responsible for handling all Drawing needs for this State
+       * when it is the Active State.
+       */
+      virtual void Draw(void);
 
-  private:
-    // Variables
-    /////////////////////////////////////////////////////////////////////////
-    sf::Sprite*         mSplashSprite;
+    protected:
+      /**
+       * Cleanup is responsible for performing any cleanup required before
+       * this State is removed.
+       */
+      virtual void Cleanup(void);
+
+    private:
+      // Variables
+      /////////////////////////////////////////////////////////////////////////
+      /// The Asset ID to assign to the splash image
+      typeAssetID         mSplashID;
+      /// The filename of the splash image to load
+      std::string         mSplashFilename;
+      /// The time in seconds to wait before continuing to next game state
+      float               mSplashDelay;
+      /// The sprite to hold the splash image being displayed
+      sf::Sprite*         mSplashSprite;
+
   }; // class SplashState
 } // namespace GQE
 

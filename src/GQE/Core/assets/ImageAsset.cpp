@@ -13,29 +13,29 @@
  * @date 20110831 - Support new SFML2 snapshot changes
  * @date 20120322 - Support new SFML2 snapshot changes
  */
- 
+
 #include <assert.h>
 #include <stddef.h>
 #include <GQE/Core/loggers/Log_macros.hpp>
 #include <GQE/Core/assets/ImageAsset.hpp>
 #include <GQE/Core/classes/App.hpp>
- 
+
 namespace GQE
 {
   ImageAsset::ImageAsset(std::string theFilename, AssetLoadingStyle theStyle) :
 #if (SFML_VERSION_MAJOR < 2)
     TAsset<sf::Image>(theFilename, theStyle)
 #else
-    TAsset<sf::Texture>(theFilename, theStyle)
+      TAsset<sf::Texture>(theFilename, theStyle)
 #endif
-  {
-  }
- 
+      {
+      }
+
   ImageAsset::~ImageAsset()
   {
     UnloadAsset();
   }
- 
+
   void ImageAsset::LoadAsset(void)
   {
     // Only load the asset once if possible!
@@ -43,7 +43,7 @@ namespace GQE
     {
       // Make sure memory is not already allocated
       assert(NULL == mAsset && "ImageAsset::LoadAsset() memory already allocated!");
- 
+
       // Create the asset
 #if (SFML_VERSION_MAJOR < 2)
       mAsset = new(std::nothrow) sf::Image;
@@ -51,9 +51,9 @@ namespace GQE
       mAsset = new(std::nothrow) sf::Texture;
 #endif
       assert(NULL != mAsset && "ImageAsset::LoadAsset() unable to allocate memory");
- 
+
       ILOG() << "ImageAsset::LoadAsset(" << mFilename << ") loading..." << std::endl;
- 
+
 #if (SFML_VERSION_MAJOR < 2)
       // Attempt to load the asset from a file
       mLoaded = mAsset->LoadFromFile(mFilename);
@@ -72,7 +72,7 @@ namespace GQE
       }
     }
   }
- 
+
   void ImageAsset::UnloadAsset(void)
   {
     // Delete the asset, forcing it to be removed from memory
@@ -80,7 +80,7 @@ namespace GQE
     mAsset = NULL;
     mLoaded = false;
   }
- 
+
 } // namespace GQE
 
 /**

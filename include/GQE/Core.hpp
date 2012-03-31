@@ -8,10 +8,11 @@
  * @date 20110118 - Added ConfigReader and StateManager includes.
  * @date 20110127 - Changed name from GQE.hpp to Core.hpp and moved to include
  * @date 20110218 - Added ConfigAsset to Core includes
+ * @date 20110906 - Added new StringUtil include file
  */
 #ifndef   GQE_CORE_HPP_INCLUDED
 #define   GQE_CORE_HPP_INCLUDED
- 
+
 /////////////////////////////////////////////////////////////////////////////
 // Headers
 /////////////////////////////////////////////////////////////////////////////
@@ -39,6 +40,7 @@
 #include <GQE/Core/loggers/onullstream>
 #include <GQE/Core/states/MenuState.hpp>
 #include <GQE/Core/states/SplashState.hpp>
+#include <GQE/Core/utils/StringUtil.hpp>
 
 #endif // GQE_CORE_HPP_INCLUDED
 

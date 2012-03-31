@@ -3,6 +3,7 @@ set(CORE_HEADER ${INCROOT}/Core.hpp)
 
 # core library additional include files
 set(INC
+    ${INCROOT}/Core/Core_types.hpp
     ${INCROOT}/Core/assets/ConfigAsset.hpp
     ${INCROOT}/Core/assets/FontAsset.hpp
     ${INCROOT}/Core/assets/ImageAsset.hpp
@@ -13,6 +14,9 @@ set(INC
     ${INCROOT}/Core/classes/ConfigReader.hpp
     ${INCROOT}/Core/classes/StatManager.hpp
     ${INCROOT}/Core/classes/StateManager.hpp
+    ${INCROOT}/Core/interfaces/ILogger.hpp
+    ${INCROOT}/Core/interfaces/IState.hpp
+    ${INCROOT}/Core/interfaces/TAsset.hpp
     ${INCROOT}/Core/loggers/Log_macros.hpp
     ${INCROOT}/Core/loggers/FatalLogger.hpp
     ${INCROOT}/Core/loggers/FileLogger.hpp
@@ -21,14 +25,12 @@ set(INC
     ${INCROOT}/Core/loggers/onullstream
     ${INCROOT}/Core/states/MenuState.hpp
     ${INCROOT}/Core/states/SplashState.hpp
-    ${INCROOT}/Core/interfaces/ILogger.hpp
-    ${INCROOT}/Core/interfaces/IState.hpp
-    ${INCROOT}/Core/interfaces/TAsset.hpp
-    ${INCROOT}/Core/Core_types.hpp
+    ${INCROOT}/Core/utils/StringUtil.hpp
 )
 
 # core library source files
 set(SRC
+    ${SRCROOT}/Core/Core_types.cpp
     ${SRCROOT}/Core/assets/ConfigAsset.cpp
     ${SRCROOT}/Core/assets/FontAsset.cpp
     ${SRCROOT}/Core/assets/ImageAsset.cpp
@@ -39,13 +41,15 @@ set(SRC
     ${SRCROOT}/Core/classes/ConfigReader.cpp
     ${SRCROOT}/Core/classes/StatManager.cpp
     ${SRCROOT}/Core/classes/StateManager.cpp
+    ${SRCROOT}/Core/interfaces/ILogger.cpp
+    ${SRCROOT}/Core/interfaces/IState.cpp
     ${SRCROOT}/Core/loggers/FatalLogger.cpp
     ${SRCROOT}/Core/loggers/FileLogger.cpp
     ${SRCROOT}/Core/loggers/ScopeLogger.cpp
     ${SRCROOT}/Core/loggers/StringLogger.cpp
     ${SRCROOT}/Core/states/MenuState.cpp
     ${SRCROOT}/Core/states/SplashState.cpp
-    ${SRCROOT}/Core/Core_types.cpp
+    ${SRCROOT}/Core/utils/StringUtil.cpp
 )
 
 # add platform specific sources

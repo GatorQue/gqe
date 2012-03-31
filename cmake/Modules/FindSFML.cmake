@@ -100,7 +100,7 @@ foreach(FIND_SFML_COMPONENT ${SFML_FIND_COMPONENTS})
 
   # Define the SFML component name
   set(FIND_SFML_COMPONENT_NAME ${FIND_SFML_LIB_PREFIX}sfml-${FIND_SFML_COMPONENT_LOWER}${FIND_SFML_LIB_SUFFIX})
-  
+
   # no suffix for sfml-main, it is always a static library
   if(FIND_SFML_COMPONENT_LOWER STREQUAL "main")
       set(FIND_SFML_COMPONENT_NAME sfml-${FIND_SFML_COMPONENT_LOWER})

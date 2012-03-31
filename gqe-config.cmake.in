@@ -13,5 +13,5 @@ set(GQE_LIBRARY_DIRS "@GQE_LIB_DIR@")
 include("@GQE_CMAKE_DIR@/GQE_LibraryDepends.cmake")
  
 # These are IMPORTED targets created by GQE_LibraryDepends.cmake
-set(GQE_LIBRARIES gqe-core)
+set(GQE_LIBRARIES gqe-core gqe-entities)
 set(GQE_EXECUTABLE demo)

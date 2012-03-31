@@ -19,75 +19,75 @@ namespace GQE
   /// Provides file logging capabilities
   class GQE_API FileLogger : public ILogger
   {
-  public:
+    public:
 
-    /**
-     * FileLogger constructor
-     * @param[in] theFilename to open as log file
-     */
-    FileLogger(const char* theFilename);
+      /**
+       * FileLogger constructor
+       * @param[in] theFilename to open as log file
+       */
+      FileLogger(const char* theFilename);
 
-    /**
-     * FileLogger deconstructor
-     */
-    virtual ~FileLogger();
+      /**
+       * FileLogger deconstructor
+       */
+      virtual ~FileLogger();
 
-    /**
-     * GetStream is responsible for returning the ostream necessary to log the
-     * custom message that will follow without a prefix.
-     * @return the ostream to use for logging the message
-     */
-    virtual std::ostream& GetStream(void);
+      /**
+       * GetStream is responsible for returning the ostream necessary to log the
+       * custom message that will follow without a prefix.
+       * @return the ostream to use for logging the message
+       */
+      virtual std::ostream& GetStream(void);
 
-    /**
-     * GetStream is responsible for returning the ostream necessary to log the
-     * custom message that will follow and prefix the custom message with an
-     * appropriate timestamp and File:Line tag.
-     * @param[in] theSeverity for this message to be logged
-     * @param[in] theSourceFile where the Log macro was called from
-     * @param[in] theSourceLine number where the Log macro was called from
-     * @param[in] theExitCode value to use when FatalShutdown is called
-     * @return the ostream to use for logging the message
-     */
-    virtual std::ostream& GetStream(SeverityType theSeverity,
-      const char* theSourceFile, int theSourceLine, int theExitCode = StatusError);
+      /**
+       * GetStream is responsible for returning the ostream necessary to log the
+       * custom message that will follow and prefix the custom message with an
+       * appropriate timestamp and File:Line tag.
+       * @param[in] theSeverity for this message to be logged
+       * @param[in] theSourceFile where the Log macro was called from
+       * @param[in] theSourceLine number where the Log macro was called from
+       * @param[in] theExitCode value to use when FatalShutdown is called
+       * @return the ostream to use for logging the message
+       */
+      virtual std::ostream& GetStream(SeverityType theSeverity,
+          const char* theSourceFile, int theSourceLine, int theExitCode = StatusError);
 
-    /**
-     * LogMessage is responsible for logging the message provided using an
-     * appropriate timestamp and File:Line tag in front.
-     * @param[in] theMessage to log
-     */
-    virtual void LogMessage(const char* theMessage);
+      /**
+       * LogMessage is responsible for logging the message provided using an
+       * appropriate timestamp and File:Line tag in front.
+       * @param[in] theMessage to log
+       */
+      virtual void LogMessage(const char* theMessage);
 
-    /**
-     * LogMessage is responsible for logging the message provided using an
-     * appropriate timestamp and File:Line tag in front.
-     * @param[in] theSeverity for this message to be logged
-     * @param[in] theSourceFile where the Log macro was called from
-     * @param[in] theSourceLine number where the Log macro was called from
-     * @param[in] theMessage to log
-     */
-    virtual void LogMessage(SeverityType theSeverity,
-      const char* theSourceFile, int theSourceLine,
-      const char* theMessage);
+      /**
+       * LogMessage is responsible for logging the message provided using an
+       * appropriate timestamp and File:Line tag in front.
+       * @param[in] theSeverity for this message to be logged
+       * @param[in] theSourceFile where the Log macro was called from
+       * @param[in] theSourceLine number where the Log macro was called from
+       * @param[in] theMessage to log
+       */
+      virtual void LogMessage(SeverityType theSeverity,
+          const char* theSourceFile, int theSourceLine,
+          const char* theMessage);
 
-  protected:      
- 
-  private:
-    /// Output Logger file
-    std::ofstream     mFileStream;
+    protected:      
 
-    /**
-     * Copy constructor is private because we do not allow copies of
-     * our Singleton class
-     */
-    FileLogger(const FileLogger&);             // Intentionally undefined
+    private:
+      /// Output Logger file
+      std::ofstream     mFileStream;
 
-    /**
-     * Our assignment operator is private because we do not allow copies
-     * of our Singleton class
-     */
-    FileLogger& operator=(const FileLogger&);  // Intentionally undefined
+      /**
+       * Copy constructor is private because we do not allow copies of
+       * our Singleton class
+       */
+      FileLogger(const FileLogger&);             // Intentionally undefined
+
+      /**
+       * Our assignment operator is private because we do not allow copies
+       * of our Singleton class
+       */
+      FileLogger& operator=(const FileLogger&);  // Intentionally undefined
   }; // class FileLogger
 } // namespace GQE
 

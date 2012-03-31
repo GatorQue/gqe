@@ -52,12 +52,12 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
     mUpdateRate(1.0f / 100.0f) // in seconds
 #else
-    mUpdateRate((Uint32)(1000.0f / 100.0f)) // in milliseconds
+      mUpdateRate((Uint32)(1000.0f / 100.0f)) // in milliseconds
 #endif
-  {
-    // Save our global App pointer
-    gApp = this;
-  }
+      {
+        // Save our global App pointer
+        gApp = this;
+      }
 
   App::~App()
   {
@@ -130,7 +130,7 @@ namespace GQE
     else
       SLOGR(App_Run,SeverityInfo) << "exitCode=" << mExitCode << std::endl;
 
-     // Return the Exit Code specified by Quit or 0 of Quit was never called
+    // Return the Exit Code specified by Quit or 0 of Quit was never called
     return mExitCode;
   }
 
@@ -172,8 +172,7 @@ namespace GQE
     ConfigReader anConfig;       // For reading .INI style files
 
     // Use our default configuration file to obtain the initial window settings
-    anConfig.RegisterApp(this);  // For logging purposes, let ConfigReader know about us
-    anConfig.Read("resources/window.cfg"); // Read in our window settings
+    anConfig.LoadFromFile("resources/window.cfg"); // Read in our window settings
 
     // Are we in Fullscreen mode?
     if(anConfig.GetBool("window","fullscreen",true))
@@ -230,19 +229,19 @@ namespace GQE
     sf::Clock anUpdateClock;
 
 #if (SFML_VERSION_MAJOR < 2)
-	// Restart/Reset our Update clock
+    // Restart/Reset our Update clock
     anUpdateClock.Reset();
 
     // When do we need to update next (in seconds)?
     float anUpdateNext = anUpdateClock.GetElapsedTime();
 #else
-	// Clock used in calculating the time elapsed since the last frame
-	sf::Clock anFrameClock;
+    // Clock used in calculating the time elapsed since the last frame
+    sf::Clock anFrameClock;
 
-	// Restart/Reset our Update clock
+    // Restart/Reset our Update clock
     anUpdateClock.restart();
 
-	// When do we need to update next (in milliseconds)?
+    // When do we need to update next (in milliseconds)?
     Int32 anUpdateNext = anUpdateClock.getElapsedTime().asMilliseconds();
 #endif
 
@@ -257,89 +256,89 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
     while(IsRunning() && mWindow.IsOpened() && !mStateManager.IsEmpty())
 #else
-    while(IsRunning() && mWindow.isOpen() && !mStateManager.IsEmpty())
-#endif
-    {
-      // Get the currently active state
-      IState* anState = mStateManager.GetActiveState();
-
-      // Check for corrupt state returned by our StateManager
-      assert(NULL != anState && "App::Loop() received a bad pointer");
-
-      // Create a fixed rate Update loop
-#if (SFML_VERSION_MAJOR < 2)
-      while(anUpdateClock.GetElapsedTime() > anUpdateNext)
-#else
-      while(anUpdateClock.getElapsedTime().asMilliseconds() > anUpdateNext)
+      while(IsRunning() && mWindow.isOpen() && !mStateManager.IsEmpty())
 #endif
       {
-        // Handle some events and let the current active state handle the rest
-        sf::Event anEvent;
+        // Get the currently active state
+        IState* anState = mStateManager.GetActiveState();
+
+        // Check for corrupt state returned by our StateManager
+        assert(NULL != anState && "App::Loop() received a bad pointer");
+
+        // Create a fixed rate Update loop
 #if (SFML_VERSION_MAJOR < 2)
-        while(mWindow.GetEvent(anEvent))
+        while(anUpdateClock.GetElapsedTime() > anUpdateNext)
 #else
-        while(mWindow.pollEvent(anEvent))
-#endif
-        {
-#if (SFML_VERSION_MAJOR < 2)
-          // Switch on Event Type
-          switch(anEvent.Type)
-#else
-          // Switch on Event Type
-          switch(anEvent.type)
+          while(anUpdateClock.getElapsedTime().asMilliseconds() > anUpdateNext)
 #endif
           {
-          case sf::Event::Closed:       // Window closed
-            Quit(StatusAppOK);
-            break;
-          case sf::Event::GainedFocus:  // Window gained focus
-            anState->Resume();
-            break;
-          case sf::Event::LostFocus:    // Window lost focus
-            anState->Pause();
-            break;
-          case sf::Event::Resized:      // Window resized
-            break;
-          default:                      // Current active state will handle
-            anState->HandleEvents(anEvent);
-          } // switch(anEvent.Type)
-        } // while(mWindow.GetEvent(anEvent))
-
-        // Let the current active state perform fixed updates next
-        anState->UpdateFixed();
-
-        // Let the StatManager perfom its updates
-        mStatManager.UpdateFixed();
-
-        // Update our update next time
-        anUpdateNext += mUpdateRate;
-      } // while(anUpdateClock.GetElapsedTime() > anUpdateNext)
-
-      // Let the current active state perform its variable update
+            // Handle some events and let the current active state handle the rest
+            sf::Event anEvent;
 #if (SFML_VERSION_MAJOR < 2)
-      anState->UpdateVariable(mWindow.GetFrameTime());
+            while(mWindow.GetEvent(anEvent))
 #else
-      // Convert to floating point value of seconds for SFML 2.0
-      anState->UpdateVariable(anFrameClock.restart().asSeconds());
+              while(mWindow.pollEvent(anEvent))
+#endif
+              {
+#if (SFML_VERSION_MAJOR < 2)
+                // Switch on Event Type
+                switch(anEvent.Type)
+#else
+                  // Switch on Event Type
+                  switch(anEvent.type)
+#endif
+                  {
+                    case sf::Event::Closed:       // Window closed
+                      Quit(StatusAppOK);
+                      break;
+                    case sf::Event::GainedFocus:  // Window gained focus
+                      anState->Resume();
+                      break;
+                    case sf::Event::LostFocus:    // Window lost focus
+                      anState->Pause();
+                      break;
+                    case sf::Event::Resized:      // Window resized
+                      break;
+                    default:                      // Current active state will handle
+                      anState->HandleEvents(anEvent);
+                  } // switch(anEvent.Type)
+              } // while(mWindow.GetEvent(anEvent))
+
+            // Let the current active state perform fixed updates next
+            anState->UpdateFixed();
+
+            // Let the StatManager perfom its updates
+            mStatManager.UpdateFixed();
+
+            // Update our update next time
+            anUpdateNext += mUpdateRate;
+          } // while(anUpdateClock.GetElapsedTime() > anUpdateNext)
+
+        // Let the current active state perform its variable update
+#if (SFML_VERSION_MAJOR < 2)
+        anState->UpdateVariable(mWindow.GetFrameTime());
+#else
+        // Convert to floating point value of seconds for SFML 2.0
+        anState->UpdateVariable(anFrameClock.restart().asSeconds());
 #endif
 
-      // Let the current active state draw stuff
-      anState->Draw();
+        // Let the current active state draw stuff
+        anState->Draw();
 
-      // Let the StatManager perform its drawing
-      mStatManager.Draw();
+        // Let the StatManager perform its drawing
+        mStatManager.Draw();
 
 #if (SFML_VERSION_MAJOR < 2)
-      // Display Render window to the screen
-      mWindow.Display();
+        // Display Render window to the screen
+        mWindow.Display();
 #else
-      // Display Render window to the screen
-      mWindow.display();
+        // Display Render window to the screen
+        mWindow.display();
 #endif
 
-      // Handle Cleanup of any recently removed states at this point as needed
-      mStateManager.HandleCleanup(); 
-    } // while(IsRunning() && !mStates.empty())
+        // Handle Cleanup of any recently removed states at this point as needed
+        mStateManager.HandleCleanup(); 
+      } // while(IsRunning() && !mStates.empty())
   }
 
   void App::Cleanup(void)
@@ -353,23 +352,23 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
     if(mWindow.IsOpened())
 #else
-    if(mWindow.isOpen())
+      if(mWindow.isOpen())
 #endif
-    {
+      {
 #if (SFML_VERSION_MAJOR < 2)
-      // Show the Mouse cursor
-      mWindow.ShowMouseCursor(true);
+        // Show the Mouse cursor
+        mWindow.ShowMouseCursor(true);
 
-      // Close the Render window
-      mWindow.Close();
+        // Close the Render window
+        mWindow.Close();
 #else
-      // Show the Mouse cursor
-      mWindow.setMouseCursorVisible(true);
+        // Show the Mouse cursor
+        mWindow.setMouseCursorVisible(true);
 
-      // Close the Render window
-      mWindow.close();
+        // Close the Render window
+        mWindow.close();
 #endif
-    }
+      }
   }
 
 } // namespace GQE

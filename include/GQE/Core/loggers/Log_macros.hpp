@@ -17,7 +17,7 @@
  * Define GQE_STRIP_LOG to the minimum log level you wish to include when
  * compiling the GQE Libraries or GQE based game engines, all others will be
  * stripped by the compiler and not included in the library or executable.
- */ 
+ */
 #ifndef GQE_STRIP_LOG
 #define GQE_STRIP_LOG INFO_LEVEL
 #endif
@@ -65,7 +65,7 @@
   do { \
     if(GQE::gLogger) { \
       GQE::gLogger->LogMessage(GQE::SeverityInfo, __FILE__, __LINE__, \
-        theMessage); \
+          theMessage); \
     } \
   } while(false)
 /**
@@ -113,10 +113,10 @@
   do { \
     if(GQE::gLogger) { \
       GQE::gLogger->LogMessage(GQE::SeverityWarning, __FILE__, __LINE__, \
-        theMessage); \
+          theMessage); \
     } \
   } while(false)
- 
+
 /**
  * WLOG macro defines a simple macro that will log any << following the macro
  * at the GQE::SeverityWarn level to the global Logger (see GQE::gLogger).
@@ -165,7 +165,7 @@
   do { \
     if(GQE::gLogger) { \
       GQE::gLogger->LogMessage(GQE::SeverityError, __FILE__, __LINE__, \
-        theMessage); \
+          theMessage); \
     } \
   } while(false)
 

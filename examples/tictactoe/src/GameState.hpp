@@ -11,85 +11,87 @@
 
 #include <GQE/Core/Core_types.hpp>
 #include <GQE/Core/interfaces/IState.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/String.hpp>
 
 /// Provides the TicTacToe GameState example
 class GameState : public GQE::IState
 {
-public:
-  /**
-   * GameState constructor
-   * @param[in] theApp is a pointer to the App class.
-   */
-  GameState(GQE::App* theApp);
+  public:
+    /**
+     * GameState constructor
+     * @param[in] theApp is an address to the App class.
+     */
+    GameState(GQE::App& theApp);
 
-  /**
-   * GameState deconstructor
-   */
-  virtual ~GameState(void);
+    /**
+     * GameState deconstructor
+     */
+    virtual ~GameState(void);
 
-  /**
-   * DoInit is responsible for initializing this State
-   */
-  virtual void DoInit(void);
+    /**
+     * DoInit is responsible for initializing this State
+     */
+    virtual void DoInit(void);
 
-  /**
-   * ReInit is responsible for Reseting this state when the 
-   * StateManager::ResetActiveState() method is called.  This way a Game
-   * State can be restarted without unloading and reloading the game assets
-   */
-  virtual void ReInit(void);
+    /**
+     * ReInit is responsible for Reseting this state when the 
+     * StateManager::ResetActiveState() method is called.  This way a Game
+     * State can be restarted without unloading and reloading the game assets
+     */
+    virtual void ReInit(void);
 
-  /**
-   * HandleEvents is responsible for handling input events for this
-   * State when it is the active State.
-   * @param[in] theEvent to process from the App class Loop method
-   */
-  virtual void HandleEvents(sf::Event theEvent);
+    /**
+     * HandleEvents is responsible for handling input events for this
+     * State when it is the active State.
+     * @param[in] theEvent to process from the App class Loop method
+     */
+    virtual void HandleEvents(sf::Event theEvent);
 
-  /**
-   * UpdateFixed is responsible for handling all State fixed update needs for
-   * this State when it is the active State.
-   */
-  virtual void UpdateFixed(void);
+    /**
+     * UpdateFixed is responsible for handling all State fixed update needs for
+     * this State when it is the active State.
+     */
+    virtual void UpdateFixed(void);
 
-  /**
-   * UpdateVariable is responsible for handling all State variable update
-   * needs for this State when it is the active State.
-   * @param[in] theElapsedTime since the last Draw was called
-   */
-  virtual void UpdateVariable(float theElapsedTime);
+    /**
+     * UpdateVariable is responsible for handling all State variable update
+     * needs for this State when it is the active State.
+     * @param[in] theElapsedTime since the last Draw was called
+     */
+    virtual void UpdateVariable(float theElapsedTime);
 
-  /**
-   * Draw is responsible for handling all Drawing needs for this State
-   * when it is the Active State.
-   */
-  virtual void Draw(void);
+    /**
+     * Draw is responsible for handling all Drawing needs for this State
+     * when it is the Active State.
+     */
+    virtual void Draw(void);
 
-protected:
-  /**
-   * Cleanup is responsible for performing any cleanup required before
-   * this State is removed.
-   */
-  virtual void Cleanup(void);
+  protected:
+    /**
+     * Cleanup is responsible for performing any cleanup required before
+     * this State is removed.
+     */
+    virtual void Cleanup(void);
 
-private:
-  // Variables
-  /////////////////////////////////////////////////////////////////////////
-  GQE::ImageAsset* mBackground;
-  GQE::ImageAsset* mPlayer1;
-  GQE::ImageAsset* mPlayer2;
-  GQE::ImageAsset* mEmpty;
-  sf::Sprite       mBackgroundSprite;
-  sf::Sprite       mCursor;
-  sf::Sprite       mBoardSprite[3][3];
-  GQE::Uint8       mBoardPlayer[3][3];
-  GQE::Uint8       mCurrentPlayer;
+  private:
+    // Variables
+    /////////////////////////////////////////////////////////////////////////
+    GQE::ImageAsset* mBackground;
+    GQE::ImageAsset* mPlayer1;
+    GQE::ImageAsset* mPlayer2;
+    GQE::ImageAsset* mEmpty;
+    sf::Sprite       mBackgroundSprite;
+    sf::Sprite       mCursor;
+    sf::Sprite       mBoardSprite[3][3];
+    GQE::Uint8       mBoardPlayer[3][3];
+    GQE::Uint8       mCurrentPlayer;
 #if (SFML_VERSION_MAJOR < 2)
-  /// Winner string
-  sf::String       mWinnerText;
+    /// Winner string
+    sf::String       mWinnerText;
 #else
-  /// Winner string
-  sf::Text         mWinnerText;
+    /// Winner string
+    sf::Text         mWinnerText;
 #endif
 
 }; // class GameState

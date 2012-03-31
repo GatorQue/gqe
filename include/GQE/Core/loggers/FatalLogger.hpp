@@ -18,27 +18,27 @@ namespace GQE
   /// Provides the class used by the Fatal logging macros
   class GQE_API FatalLogger : public StringLogger
   {
-  public:
+    public:
 
-    /**
-     * FatalLogger constructor will write a tag line to the string log using
-     * the information provided.
-     * @param[in] theSeverity for this message to be logged
-     * @param[in] theSourceFile where the Log macro was called from
-     * @param[in] theSourceLine number where the Log macro was called from
-     * @param[in] theExitCode value to use when exiting the application
-     */
-    FatalLogger(SeverityType theSeverity,
-      const char* theSourceFile, int theSourceLine, int theExitCode);
+      /**
+       * FatalLogger constructor will write a tag line to the string log using
+       * the information provided.
+       * @param[in] theSeverity for this message to be logged
+       * @param[in] theSourceFile where the Log macro was called from
+       * @param[in] theSourceLine number where the Log macro was called from
+       * @param[in] theExitCode value to use when exiting the application
+       */
+      FatalLogger(SeverityType theSeverity,
+          const char* theSourceFile, int theSourceLine, int theExitCode);
 
-    /**
-     * FatalLogger deconstructor
-     */
-    virtual ~FatalLogger();
+      /**
+       * FatalLogger deconstructor
+       */
+      virtual ~FatalLogger();
 
-  protected:
+    protected:
 
-  private:
+    private:
   }; // class FatalLogger
 } // namespace GQE
 

@@ -14,11 +14,11 @@
  */
 #ifndef   CORE_IMAGE_ASSET_HPP_INCLUDED
 #define   CORE_IMAGE_ASSET_HPP_INCLUDED
- 
+
 #include <GQE/Core/interfaces/TAsset.hpp>
 #include <GQE/Core/Core_types.hpp>
 #include <SFML/Graphics.hpp>
- 
+
 namespace GQE
 {
   /// Provides the Image asset class
@@ -28,37 +28,37 @@ namespace GQE
   class GQE_API ImageAsset : public TAsset<sf::Texture>
 #endif
   {
-  public:
-    /**
-     * ImageAsset constructor
-     * @param[in] theFilename to use when loading this asset
-     * @param[in] theStyle to use when loading this asset
-     */
-    ImageAsset(std::string theFilename, AssetLoadingStyle theStyle = AssetLoadStyleBackground);
- 
-    /**
-     * ImageAsset deconstructor
-     */
-    virtual ~ImageAsset();
- 
-    /**
-     * LoadAsset is responsible for loading the Asset.
-     */
-    virtual void LoadAsset(void);
- 
-  protected:
-    /**
-     * UnloadAsset is responsible for destroying or unloading the Asset and
-     * is called by FreeAsset.
-     */
-    virtual void UnloadAsset(void);
- 
-  private:
-    // Variables
-    ///////////////////////////////////////////////////////////////////////////
+    public:
+      /**
+       * ImageAsset constructor
+       * @param[in] theFilename to use when loading this asset
+       * @param[in] theStyle to use when loading this asset
+       */
+      ImageAsset(std::string theFilename, AssetLoadingStyle theStyle = AssetLoadStyleBackground);
+
+      /**
+       * ImageAsset deconstructor
+       */
+      virtual ~ImageAsset();
+
+      /**
+       * LoadAsset is responsible for loading the Asset.
+       */
+      virtual void LoadAsset(void);
+
+    protected:
+      /**
+       * UnloadAsset is responsible for destroying or unloading the Asset and
+       * is called by FreeAsset.
+       */
+      virtual void UnloadAsset(void);
+
+    private:
+      // Variables
+      ///////////////////////////////////////////////////////////////////////////
   }; // class ImageAsset
 } // namespace GQE
- 
+
 #endif // CORE_IMAGE_ASSET_HPP_INCLUDED
 
 /**

@@ -17,7 +17,7 @@
  */
 #ifndef   CORE_APP_HPP_INCLUDED
 #define   CORE_APP_HPP_INCLUDED
- 
+
 #include <fstream>
 #include <stddef.h>
 #include <string.h>
@@ -28,153 +28,153 @@
 #include <GQE/Core/classes/StateManager.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
- 
+
 namespace GQE
 {
   /// Provides the core game loop algorithm for all game engines.
   class GQE_API App
   {
-  public:
-    // Constants
-    ///////////////////////////////////////////////////////////////////////////
-	/// Default Video Width to use if config file not found
-    static const unsigned int DEFAULT_VIDEO_WIDTH = 800;
-	/// Default Video Height to use if config file not found
-    static const unsigned int DEFAULT_VIDEO_HEIGHT = 600;
-	/// Default Video bits per pixel (color depth) if config file not found
-    static const unsigned int DEFAULT_VIDEO_BPP = 32;
+    public:
+      // Constants
+      ///////////////////////////////////////////////////////////////////////////
+      /// Default Video Width to use if config file not found
+      static const unsigned int DEFAULT_VIDEO_WIDTH = 800;
+      /// Default Video Height to use if config file not found
+      static const unsigned int DEFAULT_VIDEO_HEIGHT = 600;
+      /// Default Video bits per pixel (color depth) if config file not found
+      static const unsigned int DEFAULT_VIDEO_BPP = 32;
 
-    // Variables
-    ///////////////////////////////////////////////////////////////////////////
-    /// Title to use for Window
-    std::string               mTitle;
-    /// Video Mode to use (width, height, bpp)
-    sf::VideoMode             mVideoMode;
-    /// Render window to draw to
-    sf::RenderWindow          mWindow;
-    /// Window settings to use when creating Render window
+      // Variables
+      ///////////////////////////////////////////////////////////////////////////
+      /// Title to use for Window
+      std::string               mTitle;
+      /// Video Mode to use (width, height, bpp)
+      sf::VideoMode             mVideoMode;
+      /// Render window to draw to
+      sf::RenderWindow          mWindow;
+      /// Window settings to use when creating Render window
 #if (SFML_VERSION_MAJOR < 2)
-    sf::WindowSettings        mWindowSettings;
+      sf::WindowSettings        mWindowSettings;
 #else
-    sf::ContextSettings       mContextSettings;
+      sf::ContextSettings       mContextSettings;
 #endif
-    /// Window style to use when createing Render window
-    unsigned long             mWindowStyle;
-    /// Input manager for Render window above
+      /// Window style to use when createing Render window
+      unsigned long             mWindowStyle;
+      /// Input manager for Render window above
 #if (SFML_VERSION_MAJOR < 2)
-    const sf::Input&          mInput;
+      const sf::Input&          mInput;
 #endif
-    /// AssetManager for managing assets
-    AssetManager              mAssetManager;
-    /// StatManager for managing game statistics
-    StatManager               mStatManager;
-    /// StateManager for managing states
-    StateManager              mStateManager;
+      /// AssetManager for managing assets
+      AssetManager              mAssetManager;
+      /// StatManager for managing game statistics
+      StatManager               mStatManager;
+      /// StateManager for managing states
+      StateManager              mStateManager;
 
-    /**
-     * App constructor
-     * @param[in] theTitle is the title of the window
-     */
-    App(const std::string theTitle = "GQE Application");
+      /**
+       * App constructor
+       * @param[in] theTitle is the title of the window
+       */
+      App(const std::string theTitle = "GQE Application");
 
-    /**
-     * App deconstructor
-     */
-    virtual ~App();
+      /**
+       * App deconstructor
+       */
+      virtual ~App();
 
-    /**
-     * ProcessArguments is responsible for processing command line arguments
-     * provided to the application.
-     * @param[in] argc is the number of arguments
-     * @param[in] argv are the actual arguments
-     */
-    virtual void ProcessArguments(int argc, char* argv[]);
+      /**
+       * ProcessArguments is responsible for processing command line arguments
+       * provided to the application.
+       * @param[in] argc is the number of arguments
+       * @param[in] argv are the actual arguments
+       */
+      virtual void ProcessArguments(int argc, char* argv[]);
 
-    /**
-     * Run is called after the Application is created and will call the
-     * Init, Loop, and Cleanup methods that are defined by the derived
-     * class.
-	 * @return the value of mExitCode as set by the Quit method
-     */
-    int Run(void);
+      /**
+       * Run is called after the Application is created and will call the
+       * Init, Loop, and Cleanup methods that are defined by the derived
+       * class.
+       * @return the value of mExitCode as set by the Quit method
+       */
+      int Run(void);
 
-    /**
-     * IsRunning will return true if the Application is still running.
-     * @return true if Application is running, false otherwise
-     */
-    bool IsRunning(void) const;
+      /**
+       * IsRunning will return true if the Application is still running.
+       * @return true if Application is running, false otherwise
+       */
+      bool IsRunning(void) const;
 
-    /**
-     * GetUpdateRate will return the current game loop update rate being
-     * used.
-     * @return update rate in Hz (updates per second)
-     */
-    float GetUpdateRate(void) const;
+      /**
+       * GetUpdateRate will return the current game loop update rate being
+       * used.
+       * @return update rate in Hz (updates per second)
+       */
+      float GetUpdateRate(void) const;
 
-    /**
-     * SetUpdateRate will set the game loop update rate to theRate specified
-     * from 1 Hz to 1000 Hz.  Any other value outside this range will not be
-     * accepted.
-     * 
-     * @param[in] theRate in Hz (updates per second) range is [1,1000]
-     */
-    void SetUpdateRate(float theRate);
+      /**
+       * SetUpdateRate will set the game loop update rate to theRate specified
+       * from 1 Hz to 1000 Hz.  Any other value outside this range will not be
+       * accepted.
+       *
+       * @param[in] theRate in Hz (updates per second) range is [1,1000]
+       */
+      void SetUpdateRate(float theRate);
 
-    /**
-     * Quit will signal the Application to stop running.
-     * @param[in] theExitCode to use when the Run method returns
-     */
-    void Quit(int theExitCode = StatusAppOK);
+      /**
+       * Quit will signal the Application to stop running.
+       * @param[in] theExitCode to use when the Run method returns
+       */
+      void Quit(int theExitCode = StatusAppOK);
 
-  protected:
-    /**
-     * PreInit is responsible for getting things ready before the derived
-     * classes Init method is called.  This prevents problems that might occur
-     * with how the derived classes Init methods are written.
-     */
-    void PreInit(void);
+    protected:
+      /**
+       * PreInit is responsible for getting things ready before the derived
+       * classes Init method is called.  This prevents problems that might occur
+       * with how the derived classes Init methods are written.
+       */
+      void PreInit(void);
 
-    /**
-     * Init is responsible for initializing the Application.
-     */
-    virtual void Init(void) = 0;
+      /**
+       * Init is responsible for initializing the Application.
+       */
+      virtual void Init(void) = 0;
 
-    /**
-     * Loop is responsible for monitoring IsRunning and exiting when the
-     * Application is done.
-     */
-    virtual void Loop(void);
+      /**
+       * Loop is responsible for monitoring IsRunning and exiting when the
+       * Application is done.
+       */
+      virtual void Loop(void);
 
-    /**
-     * Cleanup is responsible for performing any last minute Application
-     * cleanup steps before exiting the Application.
-     */
-    virtual void Cleanup(void);
+      /**
+       * Cleanup is responsible for performing any last minute Application
+       * cleanup steps before exiting the Application.
+       */
+      virtual void Cleanup(void);
 
-  private:
-    /// The exit code value that will be returned by the program
-    int                       mExitCode;
-    /// True if the Application is currently running
-    bool                      mRunning;
+    private:
+      /// The exit code value that will be returned by the program
+      int                       mExitCode;
+      /// True if the Application is currently running
+      bool                      mRunning;
 #if (SFML_VERSION_MAJOR < 2)
-    /// Update rate in seconds to use for fixed update in game loop
-    float                     mUpdateRate;
+      /// Update rate in seconds to use for fixed update in game loop
+      float                     mUpdateRate;
 #else
-    /// Update rate in milliseconds to use for fixed update in game loop
-    Uint32                    mUpdateRate;
+      /// Update rate in milliseconds to use for fixed update in game loop
+      Uint32                    mUpdateRate;
 #endif
 
-    /**
-     * App copy constructor is private because we do not allow copies of
-     * our Singleton class
-     */
-    App(const App&);                 // Intentionally undefined
+      /**
+       * App copy constructor is private because we do not allow copies of
+       * our Singleton class
+       */
+      App(const App&);                 // Intentionally undefined
 
-    /**
-     * Our assignment operator is private because we do not allow copies
-     * of our Singleton class
-     */
-    App& operator=(const App&);      // Intentionally undefined
+      /**
+       * Our assignment operator is private because we do not allow copies
+       * of our Singleton class
+       */
+      App& operator=(const App&);      // Intentionally undefined
   }; // class App
 } // namespace GQE
 

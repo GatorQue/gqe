@@ -42,19 +42,19 @@ namespace GQE
     {
       // Retrieve the currently active state
       IState* anState = mStack.back();
- 
+
       // Pop the currently active state off the stack
       mStack.pop_back();
- 
+
       // Pause the currently active state
       anState->Pause();
- 
+
       // De-initialize the state
       anState->DeInit();
 
       // Handle the cleanup before we pop it off the stack
       anState->HandleCleanup();
- 
+
       // Just delete the state now
       delete anState;
 
@@ -67,26 +67,26 @@ namespace GQE
     {
       // Retrieve the currently active state
       IState* anState = mDead.back();
- 
+
       // Pop the currently active state off the stack
       mDead.pop_back();
- 
+
       // Pause the currently active state
       anState->Pause();
- 
+
       // De-initialize the state
       anState->DeInit();
- 
+
       // Handle the cleanup before we pop it off the stack
       anState->HandleCleanup();
- 
+
       // Just delete the state now
       delete anState;
 
       // Don't keep pointers around we don't need
       anState = NULL;
     }
- 
+
     // Clear pointers we don't need anymore
     mApp = NULL;
   }
@@ -113,7 +113,7 @@ namespace GQE
 
     // Log the adding of each state
     ILOG() << "StateManager::AddActiveState(" << theState->GetID() << ")" << std::endl;
- 
+
     // Is there a state currently running? then Pause it
     if(!mStack.empty())
     {
@@ -124,7 +124,7 @@ namespace GQE
 
     // Add the active state
     mStack.push_back(theState);
- 
+
     // Initialize the new active state
     mStack.back()->DoInit();
   }
@@ -153,19 +153,19 @@ namespace GQE
     {
       // Retrieve the currently active state
       IState* anState = mStack.back();
- 
+
       // Log the inactivating an active state
       ILOG() << "StateManager::InactivateActiveState(" << anState->GetID() << ")" << std::endl;
- 
+
       // Pause the currently active state
       anState->Pause();
 
       // Pop the currently active state off the stack
       mStack.pop_back();
- 
+
       // Move this now inactive state to the absolute back of our stack
       mStack.insert(mStack.begin(), anState);
- 
+
       // Don't keep pointers around we don't need anymore
       anState = NULL;
     }
@@ -178,7 +178,7 @@ namespace GQE
       }
       return;
     }
- 
+
     // Is there another state to activate? then call Resume to activate it
     if(!mStack.empty())
     {
@@ -222,13 +222,13 @@ namespace GQE
       // (HandleCleanup() will be called by IState::DoInit() method if this
       // state is ever set active again)
       anState->DeInit();
- 
+
       // Pop the currently active state off the stack
       mStack.pop_back();
- 
+
       // Move this now inactive state to the absolute back of our stack
       mStack.insert(mStack.begin(), anState);
- 
+
       // Don't keep pointers around we don't need anymore
       anState = NULL;
     }
@@ -274,19 +274,19 @@ namespace GQE
     {
       // Retrieve the currently active state
       IState* anState = mStack.back();
- 
+
       // Log the resetting of an active state
       ILOG() << "StateManager::ResetActiveState(" << anState->GetID() << ")" << std::endl;
- 
+
       // Pause the currently active state
       anState->Pause();
- 
+
       // Call the ReInit method to Reset the currently active state
       anState->ReInit();
- 
+
       // Resume the currently active state
       anState->Resume();
- 
+
       // Don't keep pointers around we don't need anymore
       anState = NULL;
     }
@@ -308,22 +308,22 @@ namespace GQE
     {
       // Retrieve the currently active state
       IState* anState = mStack.back();
- 
+
       // Log the removing of an active state
       ILOG() << "StateManager::RemoveActiveState(" << anState->GetID() << ")" << std::endl;
- 
+
       // Pause the currently active state
       anState->Pause();
- 
+
       // Cleanup the currently active state before we pop it off the stack
       anState->DeInit();
- 
+
       // Pop the currently active state off the stack
       mStack.pop_back();
- 
+
       // Move this state to our dropped stack
       mDead.push_back(anState);
- 
+
       // Don't keep pointers around we don't need anymore
       anState = NULL;
     }
@@ -336,7 +336,7 @@ namespace GQE
       }
       return;
     }
- 
+
     // Is there another state to activate? then call Resume to activate it
     if(!mStack.empty())
     {
@@ -361,11 +361,11 @@ namespace GQE
       }
     }
   }
- 
+
   void StateManager::SetActiveState(typeStateID theStateID)
   {
     std::vector<IState*>::iterator it;
- 
+
     // Find the state that matches theStateID
     for(it=mStack.begin(); it < mStack.end(); it++)
     {
@@ -375,13 +375,13 @@ namespace GQE
       {
         // Get a pointer to soon to be currently active state
         IState* anState = *it;
- 
+
         // Log the setting of a previously active state as the current active state
         ILOG() << "StateManager::SetActiveState(" << anState->GetID() << ")" << std::endl;
 
         // Erase it from the list of previously active states
         mStack.erase(it);
- 
+
         // Is there a state currently running? then Pause it
         if(!mStack.empty())
         {
@@ -392,7 +392,7 @@ namespace GQE
 
         // Add the new active state
         mStack.push_back(anState);
- 
+
         // Don't keep pointers we don't need around
         anState = NULL;
 
@@ -413,7 +413,7 @@ namespace GQE
       } // if((*it)->GetID() == theStateID)
     } // for(it=mStack.begin(); it < mStack.end(); it++)
   }
- 
+
   void StateManager::HandleCleanup(void)
   {
     // Remove one of our dead states
@@ -422,10 +422,10 @@ namespace GQE
       // Retrieve the dead state
       IState* anState = mDead.back();
       assert(NULL != anState && "StateManager::HandleCleanup() invalid dropped state pointer");
- 
+
       // Pop the dead state off the stack
       mDead.pop_back();
- 
+
       // Call the DeInit if it hasn't been called yet
       if(anState->IsInitComplete())
       {

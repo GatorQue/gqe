@@ -19,80 +19,80 @@ namespace GQE
   /// Provides a scope Entry/Result/Exit logging class
   class GQE_API ScopeLogger : public ILogger
   {
-  public:
+    public:
 
-    /**
-     * ScopeLogger constructor will log the Entry of this scope to the global
-     * logger using the information provided and keep this information around
-     * for logging the Exit of the scope (see ~ScopeLogger).
-     * @param[in] theSeverity for this message to be logged
-     * @param[in] theSourceFile where the Log macro was called from
-     * @param[in] theSourceLine number where the Log macro was called from
-     * @param[in] theScopeName to use to define this scope to log
-     * @param[in] theExitCode value to use when FatalShutdown is called
-     */
-    ScopeLogger(SeverityType theSeverity,
-      const char* theSourceFile, int theSourceLine,
-      const char* theScopeName = "", int theExitCode = StatusError);
+      /**
+       * ScopeLogger constructor will log the Entry of this scope to the global
+       * logger using the information provided and keep this information around
+       * for logging the Exit of the scope (see ~ScopeLogger).
+       * @param[in] theSeverity for this message to be logged
+       * @param[in] theSourceFile where the Log macro was called from
+       * @param[in] theSourceLine number where the Log macro was called from
+       * @param[in] theScopeName to use to define this scope to log
+       * @param[in] theExitCode value to use when FatalShutdown is called
+       */
+      ScopeLogger(SeverityType theSeverity,
+          const char* theSourceFile, int theSourceLine,
+          const char* theScopeName = "", int theExitCode = StatusError);
 
-    /**
-     * ScopeLogger deconstructor
-     */
-    virtual ~ScopeLogger();
+      /**
+       * ScopeLogger deconstructor
+       */
+      virtual ~ScopeLogger();
 
-    /**
-     * GetStream is responsible for returning the ostream necessary to log the
-     * custom message that will follow without a prefix.
-     * @return the ostream to use for logging the message
-     */
-    virtual std::ostream& GetStream(void);
+      /**
+       * GetStream is responsible for returning the ostream necessary to log the
+       * custom message that will follow without a prefix.
+       * @return the ostream to use for logging the message
+       */
+      virtual std::ostream& GetStream(void);
 
-    /**
-     * GetStream is responsible for returning the ostream necessary to log the
-     * custom message that will follow and prefix the custom message with an
-     * appropriate timestamp and File:Line tag.
-     * @param[in] theSeverity for this message to be logged
-     * @param[in] theSourceFile where the Log macro was called from
-     * @param[in] theSourceLine number where the Log macro was called from
-     * @param[in] theExitCode value to use when FatalShutdown is called
-     * @return the ostream to use for logging the message
-     */
-    virtual std::ostream& GetStream(SeverityType theSeverity,
-      const char* theSourceFile, int theSourceLine, int theExitCode = StatusError);
+      /**
+       * GetStream is responsible for returning the ostream necessary to log the
+       * custom message that will follow and prefix the custom message with an
+       * appropriate timestamp and File:Line tag.
+       * @param[in] theSeverity for this message to be logged
+       * @param[in] theSourceFile where the Log macro was called from
+       * @param[in] theSourceLine number where the Log macro was called from
+       * @param[in] theExitCode value to use when FatalShutdown is called
+       * @return the ostream to use for logging the message
+       */
+      virtual std::ostream& GetStream(SeverityType theSeverity,
+          const char* theSourceFile, int theSourceLine, int theExitCode = StatusError);
 
-    /**
-     * LogMessage is responsible for logging the message provided using an
-     * appropriate timestamp and File:Line tag in front.
-     * @param[in] theMessage to log
-     */
-    virtual void LogMessage(const char* theMessage);
+      /**
+       * LogMessage is responsible for logging the message provided using an
+       * appropriate timestamp and File:Line tag in front.
+       * @param[in] theMessage to log
+       */
+      virtual void LogMessage(const char* theMessage);
 
-    /**
-     * LogMessage is responsible for logging the message provided using an
-     * appropriate timestamp and File:Line tag in front.
-     * @param[in] theSeverity for this message to be logged
-     * @param[in] theSourceFile where the Log macro was called from
-     * @param[in] theSourceLine number where the Log macro was called from
-     * @param[in] theMessage to log
-     */
-    virtual void LogMessage(SeverityType theSeverity,
-      const char* theSourceFile, int theSourceLine,
-      const char* theMessage);
+      /**
+       * LogMessage is responsible for logging the message provided using an
+       * appropriate timestamp and File:Line tag in front.
+       * @param[in] theSeverity for this message to be logged
+       * @param[in] theSourceFile where the Log macro was called from
+       * @param[in] theSourceLine number where the Log macro was called from
+       * @param[in] theMessage to log
+       */
+      virtual void LogMessage(SeverityType theSeverity,
+          const char* theSourceFile, int theSourceLine,
+          const char* theMessage);
 
-  protected:
+    protected:
 
-  private:
-    /// The severity level defined at construction time or by the last call to
-    /// the GetStream() or LogMessage() methods (see SLOGR).
-    SeverityType mSeverity;
-    /// The source file defined at construction time or by the last call to the
-    /// GetStream() or LogMessage() methods (see SLOGR).
-    const char* mSourceFile;
-    /// The source line defined at construction time or by the last call to the
-    /// GetStream() or LogMessage() methods (see SLOGR).
-    int mSourceLine;
-    /// The scope name to use when logging Result (see SLOGR) or Exit messages
-    const char* mScopeName;
+    private:
+      /// The severity level defined at construction time or by the last call to
+      /// the GetStream() or LogMessage() methods (see SLOGR).
+      SeverityType mSeverity;
+      /// The source file defined at construction time or by the last call to the
+      /// GetStream() or LogMessage() methods (see SLOGR).
+      const char* mSourceFile;
+      /// The source line defined at construction time or by the last call to the
+      /// GetStream() or LogMessage() methods (see SLOGR).
+      int mSourceLine;
+      /// The scope name to use when logging Result (see SLOGR) or Exit messages
+      const char* mScopeName;
   }; // class ScopeLogger
 } // namespace GQE
 

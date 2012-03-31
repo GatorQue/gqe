@@ -16,13 +16,13 @@
  * @date 20120211 - Support new SFML2 snapshot changes
  * @date 20120322 - Support new SFML2 snapshot changes
  */
- 
+
 #include <assert.h>
 #include <sstream>
 #include <GQE/Core/loggers/Log_macros.hpp>
 #include <GQE/Core/classes/StatManager.hpp>
 #include <GQE/Core/classes/App.hpp>
- 
+
 namespace GQE
 {
   StatManager::StatManager() :
@@ -37,11 +37,11 @@ namespace GQE
   {
     ILOGM("StatManager::ctor()");
   }
- 
+
   StatManager::~StatManager()
   {
     ILOGM("StatManager::dtor()");
- 
+
     // Clear pointers we don't need anymore
     mApp = NULL;
   }
@@ -113,7 +113,7 @@ namespace GQE
   {
     // Check that our pointer is good
     assert(NULL != theApp && "StatManager::RegisterApp() theApp pointer provided is bad");
- 
+
     // Make a note of the pointer
     assert(NULL == mApp && "StatManager::RegisterApp() theApp pointer was already registered");
     mApp = theApp;
@@ -129,30 +129,30 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
     if(mUpdateClock.GetElapsedTime() > 1.0f)
 #else
-    if(mUpdateClock.getElapsedTime().asSeconds() > 1.0f)
+      if(mUpdateClock.getElapsedTime().asSeconds() > 1.0f)
 #endif
-    {
-      // Updates string stream
-      std::ostringstream updates;
+      {
+        // Updates string stream
+        std::ostringstream updates;
 
-      // Update our UPS string to be displayed
-      updates.precision(2);
-      updates.width(7);
-      updates << "UPS: " << std::fixed << mUpdates;
+        // Update our UPS string to be displayed
+        updates.precision(2);
+        updates.width(7);
+        updates << "UPS: " << std::fixed << mUpdates;
 #if (SFML_VERSION_MAJOR < 2)
-      mUPS.SetText(updates.str());
+        mUPS.SetText(updates.str());
 #else
-      mUPS.setString(updates.str());
+        mUPS.setString(updates.str());
 #endif
 
-      // Reset our Update clock and update counter
-      mUpdates = 0;
+        // Reset our Update clock and update counter
+        mUpdates = 0;
 #if (SFML_VERSION_MAJOR < 2)
-      mUpdateClock.Reset();
+        mUpdateClock.Reset();
 #else
-      mUpdateClock.restart();
+        mUpdateClock.restart();
 #endif
-    }
+      }
   }
 
   void StatManager::Draw(void)
@@ -165,30 +165,30 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
     if(mFrameClock.GetElapsedTime() > 1.0f)
 #else
-    if(mFrameClock.getElapsedTime().asSeconds() > 1.0f)
+      if(mFrameClock.getElapsedTime().asSeconds() > 1.0f)
 #endif
-    {
-      // Frames string stream
-      std::ostringstream frames;
+      {
+        // Frames string stream
+        std::ostringstream frames;
 
-      // Get our FramesPerSecond value
-      frames.precision(2);
-      frames.width(7);
-      frames << "FPS: " << std::fixed << mFrames;
+        // Get our FramesPerSecond value
+        frames.precision(2);
+        frames.width(7);
+        frames << "FPS: " << std::fixed << mFrames;
 #if (SFML_VERSION_MAJOR < 2)
-      mFPS.SetText(frames.str());
+        mFPS.SetText(frames.str());
 #else
-      mFPS.setString(frames.str());
+        mFPS.setString(frames.str());
 #endif
 
-      // Reset our Frames clock and frame counter
-      mFrames = 0;
+        // Reset our Frames clock and frame counter
+        mFrames = 0;
 #if (SFML_VERSION_MAJOR < 2)
-      mFrameClock.Reset();
+        mFrameClock.Reset();
 #else
-      mFrameClock.restart();
+        mFrameClock.restart();
 #endif
-    }
+      }
 
     // Are we showing the current statistics?
     if(mShow)

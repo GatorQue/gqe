@@ -12,6 +12,7 @@
  * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
  * @date 20110627 - Removed extra ; from namespace
  * @date 20110721 - Remove * from GetAsset() calls since it now returns TYPE&
+ * @date 20110906 - Change mApp from a pointer to an address reference
  * @date 20120322 - Support new SFML2 snapshot changes
  */
 #include <GQE/Core/assets/ImageAsset.hpp>
@@ -20,8 +21,12 @@
 
 namespace GQE
 {
-  SplashState::SplashState(App* theApp) :
-    IState("Splash",theApp),
+  SplashState::SplashState(App& theApp, typeAssetID theSplashID,
+      const std::string theFilename, float theDelay) :
+    IState("Splash", theApp),
+    mSplashID(theSplashID),
+    mSplashFilename(theFilename),
+    mSplashDelay(theDelay),
     mSplashSprite(NULL)
   {
   }
@@ -39,14 +44,11 @@ namespace GQE
     // First call our base class implementation
     IState::DoInit();
 
-    // Check our App pointer
-    assert(NULL != mApp && "SplashState::DoInit() bad app pointer");
-
     // Load our splash image
-    mApp->mAssetManager.AddImage("Splash", "SplashImage.png", AssetLoadStyleImmediate);
+    mApp.mAssetManager.AddImage(mSplashID, mSplashFilename, AssetLoadStyleImmediate);
 
     // Retrieve a sprite to the above image
-    mSplashSprite = mApp->mAssetManager.GetSprite("Splash");
+    mSplashSprite = mApp.mAssetManager.GetSprite(mSplashID);
   }
 
   void SplashState::ReInit(void)
@@ -56,33 +58,25 @@ namespace GQE
 
   void SplashState::UpdateFixed(void)
   {
-    // Check our App pointer
-    assert(NULL != mApp && "SplashState::UpdateFixed() bad app pointer, init must be called first");
-
     // Drop our state after 10 seconds have elapsed
-    if(false == IsPaused() && GetElapsedTime() > 10.0f)
+    if(false == IsPaused() && GetElapsedTime() > mSplashDelay)
     {
-      mApp->mStateManager.RemoveActiveState();
+      mApp.mStateManager.RemoveActiveState();
     }
   }
 
   void SplashState::UpdateVariable(float theElapsedTime)
   {
-    // Check our App pointer
-    assert(NULL != mApp && "SplashState::UpdateVariable() bad app pointer, init must be called first");
   }
 
   void SplashState::Draw(void)
   {
-    // Check our App pointer
-    assert(NULL != mApp && "SplashState::Draw() bad app pointer, init must be called first");
-
 #if (SFML_VERSION_MAJOR < 2)
     // Draw our Splash sprite
-    mApp->mWindow.Draw(*mSplashSprite);
+    mApp.mWindow.Draw(*mSplashSprite);
 #else
     // Draw our Splash sprite
-    mApp->mWindow.draw(*mSplashSprite);
+    mApp.mWindow.draw(*mSplashSprite);
 #endif
   }
 
@@ -93,7 +87,7 @@ namespace GQE
     mSplashSprite = NULL;
 
     // Unload our image since we don't need it anymore
-    mApp->mAssetManager.UnloadImage("Splash");
+    mApp.mAssetManager.UnloadImage(mSplashID);
 
     // Last of all, call our base class implementation
     IState::Cleanup();

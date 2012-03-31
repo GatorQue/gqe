@@ -20,5 +20,5 @@ include_directories(${SFML_INCLUDE_DIR})
 
 # define the demo target
 gqe_add_example(tictactoe GUI_APP
-                 SOURCES ${SRC}
-                 DEPENDS gqe-core)
+                SOURCES ${SRC}
+                DEPENDS gqe-core)

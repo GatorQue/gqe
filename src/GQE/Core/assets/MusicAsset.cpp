@@ -12,25 +12,25 @@
  * @date 20110627 - Removed extra ; from namespace
  * @date 20120322 - Support new SFML2 snapshot changes
  */
- 
+
 #include <assert.h>
 #include <stddef.h>
 #include <GQE/Core/loggers/Log_macros.hpp>
 #include <GQE/Core/assets/MusicAsset.hpp>
 #include <GQE/Core/classes/App.hpp>
- 
+
 namespace GQE
 {
   MusicAsset::MusicAsset(std::string theFilename, AssetLoadingStyle theStyle) :
     TAsset<sf::Music>(theFilename, theStyle)
   {
   }
- 
+
   MusicAsset::~MusicAsset()
   {
     UnloadAsset();
   }
- 
+
   void MusicAsset::LoadAsset(void)
   {
     // Only load the asset once if possible!
@@ -38,13 +38,13 @@ namespace GQE
     {
       // Make sure memory is not already allocated
       assert(NULL == mAsset && "MusicAsset::LoadAsset() memory already allocated!");
- 
+
       // Create the asset
       mAsset = new(std::nothrow) sf::Music;
       assert(NULL != mAsset && "MusicAsset::LoadAsset() unable to allocate memory");
- 
+
       ILOG() << "MusicAsset::LoadAsset(" << mFilename << ") loading..." << std::endl;
- 
+
 #if (SFML_VERSION_MAJOR < 2)
       // Attempt to load the asset from a file
       mLoaded = mAsset->OpenFromFile(mFilename);
@@ -52,7 +52,7 @@ namespace GQE
       // Attempt to load the asset from a file
       mLoaded = mAsset->openFromFile(mFilename);
 #endif
- 
+
       // If the asset did not load successfully, delete the memory
       if(false == mLoaded)
       {
@@ -60,27 +60,27 @@ namespace GQE
       }
     }
   }
- 
+
   void MusicAsset::UnloadAsset(void)
   {
     // If the music asset is currently loaded, make sure it is stopped
     if(true == mLoaded && NULL != mAsset)
     {
 #if (SFML_VERSION_MAJOR < 2)
-       // Always stop music from playing before removing from memory
-       mAsset->Stop();
+      // Always stop music from playing before removing from memory
+      mAsset->Stop();
 #else
-       // Always stop music from playing before removing from memory
-       mAsset->stop();
+      // Always stop music from playing before removing from memory
+      mAsset->stop();
 #endif
     }
- 
+
     // Delete the asset, forcing it to be removed from memory
     delete mAsset;
     mAsset = NULL;
     mLoaded = false;
   }
- 
+
 } // namespace GQE
 
 /**

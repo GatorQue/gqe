@@ -1,6 +1,6 @@
 /**
- * Provides the State class in the GQE namespace which is responsible for
- * providing the State interface used in the GQE core library.
+ * Provides the IState class in the GQE namespace which is responsible for
+ * providing the IState interface used in the GQE core library.
  *
  * @file include/GQE/Core/interfaces/IState.hpp
  * @author Ryan Lindeman
@@ -17,304 +17,165 @@
  * @date 20110611 - Convert logging to new Log macros
  * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
  * @date 20110627 - Removed extra ; from namespace
- * @date 20120211 - Support new SFML2 snapshot changes
- * @date 20120322 - Support new SFML2 snapshot changes
+ * @date 20110801 - Moved code to .cpp file due to circular dependencies
  */
 #ifndef   CORE_ISTATE_HPP_INCLUDED
 #define   CORE_ISTATE_HPP_INCLUDED
 
-#include <assert.h>
-#include <GQE/Core/loggers/Log_macros.hpp>
 #include <GQE/Core/Core_types.hpp>
-#include <GQE/Core/classes/App.hpp>
 #include <SFML/System.hpp>
+#include <SFML/Window.hpp>
 
 namespace GQE
 {
   /// Provides the base class interface for all game states
   class GQE_API IState
   {
-  public:
+    public:
+      /**
+       * IState constructor
+       * @param[in] theStateID to use for this State object
+       * @param[in] theApp is the address to the App derived class
+       */
+      IState(const typeStateID theStateID, App& theApp);
 
-    /**
-     * State deconstructor
-     */
-    virtual ~IState()
-    {
-      ILOG() << "IState::dtor(" << mID << ")" << std::endl;
+      /**
+       * IState deconstructor
+       */
+      virtual ~IState();
 
-      // Clear out pointers that we don't need anymore
-      mApp = NULL;
-    }
+      /**
+       * GetID will return the ID used to identify this State object
+       * @return GQE::typeStateID is the ID for this State object
+       */
+      const GQE::typeStateID GetID(void) const;
 
-    /**
-     * GetID will return the ID used to identify this State object
-     * @return GQE::typeStateID is the ID for this State object
-     */
-    const GQE::typeStateID GetID(void) const
-    {
-      return mID;
-    }
+      /**
+       * DoInit is responsible for initializing this State.  HandleCleanup will
+       * be called if mCleanup is true so Derived classes should always call
+       * IState::DoInit() first before initializing their assets.
+       */
+      virtual void DoInit(void);
 
-    /**
-     * DoInit is responsible for initializing this State.  HandleCleanup will
-     * be called if mCleanup is true so Derived classes should always call
-     * IState::DoInit() first before initializing their assets.
-     */
-    virtual void DoInit(void)
-    {
-      ILOG() << "IState::DoInit(" << mID << ")" << std::endl;
+      /**
+       * ReInit is responsible for Reseting this state when the
+       * StateManager::ResetActiveState() method is called.  This way a Game
+       * State can be restarted without unloading and reloading the game assets
+       */
+      virtual void ReInit(void) = 0;
 
-      // If Cleanup hasn't been called yet, call it now!
-      if(true == mCleanup)
-      {
-        HandleCleanup();
-      }
-      // Initialize if necessary
-      if(false == mInit)
-      {
-        mInit = true;
-        mPaused = false;
-        mElapsedTime = 0.0f;
-#if (SFML_VERSION_MAJOR < 2)
-        mElapsedClock.Reset();
-#else
-        mElapsedClock.restart();
-#endif
-        mPausedTime = 0.0f;
-#if (SFML_VERSION_MAJOR < 2)
-        mPausedClock.Reset();
-#else
-        mPausedClock.restart();
-#endif
-      }
-    }
+      /**
+       * DeInit is responsible for marking this state to be cleaned up
+       */
+      void DeInit(void);
 
-    /**
-     * ReInit is responsible for Reseting this state when the 
-     * StateManager::ResetActiveState() method is called.  This way a Game
-     * State can be restarted without unloading and reloading the game assets
-     */
-    virtual void ReInit(void) = 0;
+      /**
+       * IsInitComplete will return true if the DoInit method has been called
+       * for this state.
+       * @return true if DoInit has been called, false otherwise or if DeInit
+       *         was called
+       */
+      bool IsInitComplete(void);
 
-    /**
-     * DeInit is responsible for marking this state to be cleaned up
-     */
-    void DeInit(void)
-    {
-      ILOG() << "IState::DeInit(" << mID << ")" << std::endl;
+      /**
+       * IsPaused will return true if this state is not the currently active
+       * state.
+       * @return true if state is not current active state, false otherwise
+       */
+      bool IsPaused(void);
 
-      if(true == mInit)
-      {
-        mCleanup = true;
-        mInit = false;
-#if (SFML_VERSION_MAJOR < 2)
-        mElapsedTime += mElapsedClock.GetElapsedTime();
-#else
-        mElapsedTime += mElapsedClock.getElapsedTime().asSeconds();
-#endif
-        if(true == mPaused)
-        {
-#if (SFML_VERSION_MAJOR < 2)
-          mPausedTime += mPausedClock.GetElapsedTime();
-#else
-          mPausedTime += mPausedClock.getElapsedTime().asSeconds();
-#endif
-        }
-      }
-    }
+      /**
+       * Pause is responsible for pausing this State since the Application
+       * may have lost focus or another State has become activate.
+       */
+      virtual void Pause(void);
 
-    /**
-     * IsInitComplete will return true if the DoInit method has been called
-     * for this state.
-     * @return true if DoInit has been called, false otherwise or if DeInit
-     *         was called
-     */
-    bool IsInitComplete(void)
-    {
-      return mInit;
-    }
+      /**
+       * Resume is responsible for resuming this State since the Application
+       * may have gained focus or the previous State was removed.
+       */
+      virtual void Resume(void);
 
-    /**
-     * IsPaused will return true if this state is not the currently active
-     * state.
-     * @return true if state is not current active state, false otherwise
-     */
-    bool IsPaused(void)
-    {
-      return mPaused;
-    }
+      /**
+       * HandleEvents is responsible for handling input events for this
+       * State when it is the active State.
+       * @param[in] theEvent to process from the App class Loop method
+       */
+      virtual void HandleEvents(sf::Event theEvent) = 0;
 
-    /**
-     * Pause is responsible for pausing this State since the Application
-     * may have lost focus or another State has become activate.
-     */
-    virtual void Pause(void)
-    {
-      ILOG() << "IState::Pause(" << mID << ")" << std::endl;
+      /**
+       * UpdateFixed is responsible for handling all State fixed update needs for
+       * this State when it is the active State.
+       */
+      virtual void UpdateFixed(void) = 0;
 
-      if(false == mPaused)
-      {
-        mPaused = true;
+      /**
+       * UpdateVariable is responsible for handling all State variable update
+       * needs for this State when it is the active State.
+       * @param[in] theElapsedTime since the last Draw was called
+       */
+      virtual void UpdateVariable(float theElapsedTime) = 0;
 
-#if (SFML_VERSION_MAJOR < 2)
-        mPausedClock.Reset();
-#else
-        mPausedClock.restart();
-#endif
-      }
-    }
+      /**
+       * Draw is responsible for handling all Drawing needs for this State
+       * when it is the Active State.
+       */
+      virtual void Draw(void) = 0;
 
-    /**
-     * Resume is responsible for resuming this State since the Application
-     * may have gained focus or the previous State was removed.
-     */
-    virtual void Resume(void)
-    {
-      ILOG() << "IState::Resume(" << mID << ")" << std::endl;
+      /**
+       * HandleCleanup is responsible for calling Cleanup if this class has been
+       * flagged to be cleaned up after it completes the game loop.
+       */
+      void HandleCleanup(void);
 
-      if(true == mPaused)
-      {
-        mPaused = false;
-#if (SFML_VERSION_MAJOR < 2)
-        mPausedTime += mPausedClock.GetElapsedTime();
-#else
-        mPausedTime += mPausedClock.getElapsedTime().asSeconds();
-#endif
-      }
-    }
+      /**
+       * GetElapsedTime will return one of the following:
+       * 1) If this state is not paused: total elapsed time since DoInit was called
+       * 2) If this state is paused: total elapsed time since Pause was called
+       * 3) If this state is not initialized: total elapsed time from DoInit to DeInit
+       * @return total elapsed time as described above.
+       */
+      float GetElapsedTime(void) const;
 
-    /**
-     * HandleEvents is responsible for handling input events for this
-     * State when it is the active State.
-     * @param[in] theEvent to process from the App class Loop method
-     */
-    virtual void HandleEvents(sf::Event theEvent) = 0;
+    protected:
+      /// Address to the App class
+      App&                  mApp;
 
-    /**
-     * UpdateFixed is responsible for handling all State fixed update needs for
-     * this State when it is the active State.
-     */
-    virtual void UpdateFixed(void) = 0;
+      /**
+       * Cleanup is responsible for performing any cleanup required before
+       * this State is removed.
+       */
+      virtual void Cleanup(void);
 
-    /**
-     * UpdateVariable is responsible for handling all State variable update
-     * needs for this State when it is the active State.
-     * @param[in] theElapsedTime since the last Draw was called
-     */
-    virtual void UpdateVariable(float theElapsedTime) = 0;
+    private:
+      /// The State ID
+      const typeStateID     mStateID;
+      /// Boolean that indicates that DoInit has been called
+      bool                  mInit;
+      /// State is currently paused (not active)
+      bool                  mPaused;
+      /// State needs to be cleaned up at the end of the next game loop
+      bool                  mCleanup;
+      /// Clock will help us keep track of running and paused elapsed time
+      sf::Clock             mElapsedClock;
+      /// Total elapsed time since DoInit was called
+      float                 mElapsedTime;
+      /// Clock will help us keep track of time paused
+      sf::Clock             mPausedClock;
+      /// Total elapsed time paused since DoInit was called
+      float                 mPausedTime;
 
-    /**
-     * Draw is responsible for handling all Drawing needs for this State
-     * when it is the Active State.
-     */
-    virtual void Draw(void) = 0;
+      /**
+       * Our copy constructor is private because we do not allow copies of
+       * our Singleton class
+       */
+      IState(const IState&);  // Intentionally undefined
 
-    /**
-     * HandleCleanup is responsible for calling Cleanup if this class has been
-     * flagged to be cleaned up after it completes the game loop.
-     */
-    void HandleCleanup(void)
-    {
-      if(true == mCleanup)
-      {
-        // Call cleanup
-        Cleanup();
-
-        // Clear our cleanup flag
-        mCleanup = false;
-      }
-    }
-
-    /**
-     * GetElapsedTime will return one of the following:
-     * 1) If this state is not paused: total elapsed time since DoInit was called
-     * 2) If this state is paused: total elapsed time since Pause was called
-     * 3) If this state is not initialized: total elapsed time from DoInit to DeInit
-     * @return total elapsed time as described above.
-     */
-    float GetElapsedTime(void) const
-    {
-#if (SFML_VERSION_MAJOR < 2)
-      float result = mElapsedClock.GetElapsedTime();
-#else
-      float result = mElapsedClock.getElapsedTime().asSeconds();
-#endif
-
-      if(false == mInit)
-      {
-        result = mElapsedTime;
-      }
-
-      return result;
-    }
-
-  protected:
-    /// Pointer to the App class
-    App*                  mApp;
-
-    /**
-     * IState constructor is private because we do not allow copies of our
-     * Singleton class
-     * @param[in] theID to use for this State object
-     * @param[in] theApp is a pointer to the App derived class
-     */
-    IState(const typeStateID theID, App* theApp) :
-        mApp(theApp),
-        mID(theID),
-        mInit(false),
-        mPaused(false),
-        mCleanup(false),
-        mElapsedTime(0.0f),
-        mPausedTime(0.0f)
-    {
-      ILOG() << "IState::ctor(" << mID << ")" << std::endl;
-
-      // Check that our pointer is good
-      assert(NULL != theApp && "IState::IState() theApp pointer is bad");
-
-      // Keep a copy of our Application pointer
-      mApp = theApp;
-    }
-
-    /**
-     * Cleanup is responsible for performing any cleanup required before
-     * this State is removed.
-     */
-    virtual void Cleanup(void)
-    {
-      ILOG() << "IState::Cleanup(" << mID << ")" << std::endl;
-    }
-
-  private:
-    /// The State ID
-    const typeStateID     mID;
-    /// Boolean that indicates that DoInit has been called
-    bool                  mInit;
-    /// State is currently paused (not active)
-    bool                  mPaused;
-    /// State needs to be cleaned up at the end of the next game loop
-    bool                  mCleanup;
-    /// Clock will help us keep track of running and paused elapsed time
-    sf::Clock             mElapsedClock;
-    /// Total elapsed time since DoInit was called
-    float                 mElapsedTime;
-    /// Clock will help us keep track of time paused
-    sf::Clock             mPausedClock;
-    /// Total elapsed time paused since DoInit was called
-    float                 mPausedTime;
-
-    /**
-     * Our copy constructor is private because we do not allow copies of
-     * our Singleton class
-     */
-    IState(const IState&);  // Intentionally undefined
-
-    /**
-     * Our assignment operator is private because we do not allow copies
-     * of our Singleton class
-     */
-    IState& operator=(const IState&); // Intentionally undefined
+      /**
+       * Our assignment operator is private because we do not allow copies
+       * of our Singleton class
+       */
+      IState& operator=(const IState&); // Intentionally undefined
 
   }; // class IState
 } // namespace GQE
