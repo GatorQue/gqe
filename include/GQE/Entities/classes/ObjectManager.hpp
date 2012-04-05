@@ -7,94 +7,102 @@
  */
 #ifndef ENTITIES_OBJECT_MANAGER_HPP_INCLUDED
 #define ENTITIES_OBJECT_MANAGER_HPP_INCLUDED
-
 #include <GQE/Core/Core_types.hpp>
-#include <GQE/Entities/Entities_types.hpp>
 #include <queue>
+#include <list>
+#include <GQE/Entities/Entities_types.hpp>
 
 namespace GQE
 {
-  /// Provides the Object manager class for managing all IObject derived classes
-  class ObjectManager
-  {
-    public:
-      /**
-       * ObjectManager constructer.
-       */
-      ObjectManager();
+/// Provides the Object manager class for managing all IObject derived classes
+class ObjectManager
+{
+public:
+    /**
+     * ObjectManager constructer.
+     */
+    ObjectManager();
 
-      /**
-       * ObjectManager deconstructer
-       *
-       */
-      virtual ~ObjectManager();
+    /**
+     * ObjectManager deconstructer
+     *
+     */
+    virtual ~ObjectManager();
 
-      /**
-       * AddObject Adds a object to the general object list and calls that objects DoInit functions
-       * @param[in] theObject to be added
-       */
-      void AddObject(IObject* theObject);
+	/**
+     * AddObject Adds a object to the general object list and calls that objects DoInit functions
+     * @param[in] theObject to be added
+     */
+    void AddObject(IObject* theObject);
 
-      /**
-       * RemoveObjects adds the object to the remove object list and calls that objects Deinit functions
-       * @param[in] theObject to be removed
-       */
-      void RemoveObject(IObject* theObject);
+	/**
+     * AddObjectFromFile Reads an Object Data File, adds it to the object list and returns it as an object.
+     * @param[in] theFileName is the name and location of the data file.
+	 * @return A pointer to the loaded object.
+     */
+	IObject* AddObjectFromFile(std::string theFileName);
 
-      /**
-       * AddCollision Adds a object to the Collision object list.
-       */
-      void CheckAllCollision(void);
+    /**
+     * RemoveObjects adds the object to the remove object list and calls that objects Deinit functions
+     * @param[in] theObject to be removed
+     */
+    void RemoveObject(IObject* theObject);
 
-      /**
-       * CheckCollision will check the two collision polygon's provided to see
-       * if a collision has occurred.
-       * @param[in] theSourcePolygon to test with
-       * @param[in] theOtherPolygon to test against
-       * @return the collision result information
-       */
-      typeCollisionResult CheckCollision(CollisionPolygon* theSourcePolygon,
-          CollisionPolygon* theOtherPolygon);
+    /**
+     * AddCollision Adds a object to the Collision object list.
+     */
+    void CheckAllCollision(void);
 
-      /**
-       * UpdateVariable is responsible for handling all Object fixed update
-       * needs for all Objects.
-       */
-      void UpdateFixed(void);
+    /**
+     * PolygonCollision will check the two collision polygon's provided to see
+     * if a collision has occurred.
+     * @param[in] thePolygonA to test with
+     * @param[in] thePolygonB to test against
+	 * @param[in] theVelocity of the polygons
+     * @return the collision result information
+     */
+	typeCollisionResult RectIntersect(sf::FloatRect theSourceRect, sf::FloatRect theOtherRect);
 
-      /**
-       * UpdateVariable is responsible for handling all Object variable update
-       * needs for all Objects.
-       * @param[in] theElapsedTime since the last Draw was called
-       */
-      virtual void UpdateVariable(float theElapsedTime);
+    /**
+     * UpdateVariable is responsible for handling all Object fixed update
+     * needs for all Objects.
+     */
+    void UpdateFixed(void);
 
-      /**
-       * Clean clears and frees all the objects that are set to be removed. Also Adds objects in mAddlist.
-       */
-      void UpdateLists(void);
+    /**
+     * UpdateVariable is responsible for handling all Object variable update
+     * needs for all Objects.
+     * @param[in] theElapsedTime since the last Draw was called
+     */
+    virtual void UpdateVariable(float theElapsedTime);
 
-      /**
-       * Clear Sets all Objects to be removed and deleted.
-       */
-      void ClearObjects(void);
+    /**
+     * Clean clears and frees all the objects that are set to be removed. Also Adds objects in mAddlist.
+     */
+    void UpdateLists(void);
 
-      /**
-       * Draw calls all the Draw commands for all objects in mObjectList.
-       */
-      void Draw(void);
+    /**
+     * Clear Sets all Objects to be removed and deleted.
+     */
+    void ClearObjects(void);
+    /**
+    *RenderSort Sorts all Object by Z order.
+    **/
+    void RenderSort();
+    /**
+     * Draw calls all the Draw commands for all objects in mObjectList.
+     */
+    void Draw(void);
+private:
+	//The Main Object List.
+	std::list<IObject*> mObjectList;
+	//Add and Remove lists.
+	std::queue<IObject*> mAddList;
+	std::queue<IObject*> mRemoveList;
 
-    private:
-      //The Main Object List.
-      std::vector<IObject*> mObjectList;
-      //Add and Remove lists.
-      std::queue<IObject*> mAddList;
-      std::queue<IObject*> mRemoveList;
-
-      std::vector<IObject*> mCollisionList;
-      std::vector<IObject*> mRenderList;
-
-  };
+	std::list<IObject*> mCollisionList;
+	std::list<IObject*> mRenderList;
+};
 } // namespace GQE
 
 #endif // ENTITIES_OBJECT_MANAGER_HPP_INCLUDED

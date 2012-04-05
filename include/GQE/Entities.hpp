@@ -17,7 +17,6 @@
 // GQE Entities includes
 #include <GQE/Entities/interfaces/IObject.hpp>
 #include <GQE/Entities/classes/ObjectManager.hpp>
-#include <GQE/Entities/classes/CollisionPolygon.hpp>
 #endif // GQE_ENTITIES_HPP_INCLUDED
 
 /**

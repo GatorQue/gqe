@@ -8,223 +8,193 @@
 
 #include <float.h>
 #include <math.h>
+#include <limits>
 #include <iterator>
 #include <algorithm>
+#include <fstream>
+
+
 #include <GQE/Entities/classes/ObjectManager.hpp>
-#include <GQE/Entities/classes/CollisionPolygon.hpp>
 #include <GQE/Entities/interfaces/IObject.hpp>
 
 namespace GQE
 {
-  ObjectManager::ObjectManager()
-  {
-  }
+bool ZOrder (IObject* i,IObject* j) { return (i->GetPosition().z<j->GetPosition().z); }
 
-  ObjectManager::~ObjectManager()
-  {
-    ClearObjects();
-  }
+ObjectManager::ObjectManager()
+{
 
-  void ObjectManager::RemoveObject(IObject* theObject)
-  {
+}
+
+ObjectManager::~ObjectManager()
+{
+	ClearObjects();
+}
+
+void ObjectManager::RemoveObject(IObject* theObject)
+{
     mRemoveList.push(theObject);
-  }
+}
 
-  void ObjectManager::AddObject(IObject* theObject)
-  {
+void ObjectManager::AddObject(IObject* theObject)
+{
     if(theObject!=NULL)
     {
-      theObject->DoInit();
-      mAddList.push(theObject);
+        mAddList.push(theObject);
     }
-  }
-
-  void ObjectManager::CheckAllCollision(void)
-  {
+}
+IObject* ObjectManager::AddObjectFromFile(std::string theFileName)
+{
+	return NULL;
+}
+void ObjectManager::CheckAllCollision(void)
+{
     typeCollisionResult anCollisionResult,anOtherResult;
-    CollisionPolygon* anSourcePolygon;
-    CollisionPolygon* anOtherPolygon;
-    std::vector<IObject*>::iterator it;
-    std::vector<IObject*>::iterator it2;
-    for(it = mCollisionList.begin(); it != mCollisionList.end(); it++)
+    sf::FloatRect anSourceRect;
+    sf::FloatRect anOtherRect;
+	std::list<IObject*>::iterator anSourceObject;
+	std::list<IObject*>::iterator anOtherObject;
+	sf::Vector3f anSourceCenter, anOtherCenter;
+    for(anSourceObject = mCollisionList.begin(); anSourceObject != mCollisionList.end(); ++anSourceObject)
     {
-      anSourcePolygon=(*it)->GetCollisionPolygon();
-      for(it2 = mCollisionList.begin(); it2 != mCollisionList.end(); it2++)
-      {
-        if((*it)!=(*it2) && (it<it2))
+        anSourceRect=(*anSourceObject)->GetBoundingRect();
+        anOtherObject=anSourceObject;
+        for(++anOtherObject;anOtherObject != mCollisionList.end(); ++anOtherObject)
         {
-          anOtherPolygon=(*it2)->GetCollisionPolygon();
-          anCollisionResult=CheckCollision(anSourcePolygon, anOtherPolygon);
-          anOtherResult=CheckCollision(anOtherPolygon, anSourcePolygon);
-          if(anCollisionResult.Intersects && anOtherResult.Intersects)
-          {
-            (*it)->Collision((*it2),anCollisionResult);
-            (*it2)->Collision((*it),anCollisionResult);
-          }
+            anOtherRect=(*anOtherObject)->GetBoundingRect();
+            if(!(((*anSourceObject)->GetFlags() & ObjectStatic) && ((*anOtherObject)->GetFlags() & ObjectStatic)))
+            {
+                anCollisionResult=RectIntersect(anSourceRect, anOtherRect);
+                if(anCollisionResult.Intersect)
+                {
+                    (*anSourceObject)->Collision((*anOtherObject),anCollisionResult);
+                    (*anOtherObject)->Collision((*anSourceObject),anCollisionResult);
+                }
+            }
         }
-      }
     }
-  }
-
-  typeCollisionResult ObjectManager::CheckCollision(CollisionPolygon* theSourcePolygon,
-      CollisionPolygon* theOtherPolygon)
-  {
-    bool anReturn = true;
-
-    int anSourceFaces = theSourcePolygon->GetSides();
-    int anOtherFaces = theOtherPolygon->GetSides();
-
-    typeVectorList* anSourceVectorList=theSourcePolygon->GetVectorList();
-    typeVectorList* anOtherVectorList=theOtherPolygon->GetVectorList();
-
-    //float anMinTrans;
-    sf::Vector2f anTransAxis;
-
-    //For every face in c1
-    for(int i = 0; i < anSourceFaces; i++)
+}
+// Check if polygon A is going to collide with polygon B.
+// The last parameter is the *relative* velocity
+// of the polygons (i.e. velocityA - velocityB)
+typeCollisionResult ObjectManager::RectIntersect(sf::FloatRect theSourceRect, sf::FloatRect theOtherRect)
+{
+    typeCollisionResult anResult;
+    anResult.Intersect = false;
+    if(theSourceRect.Intersects(theOtherRect,&anResult.Overlap))
     {
-      //float anTrans;
-      //Grab a face (face x, face y)
-      float anFaceX = anSourceVectorList->at(i).x - anSourceVectorList->at((i + 1) % anSourceFaces).x;
-      float anFaceY = anSourceVectorList->at(i).y - anSourceVectorList->at((i + 1) % anSourceFaces).y;
-
-      //Create a perpendicular axis to project on (axis x, axis y)
-      float anAxisX = -anFaceX, anAxisY = anFaceY;
-
-      //Normalize the axis
-      float anLenV = sqrt(anAxisX * anAxisX + anAxisY * anAxisY);
-      anAxisX /= anLenV;
-      anAxisY /= anLenV;
-
-      //Carve out the min and max values
-      float anSourceMin = FLT_MAX, anSourceMax = -FLT_MAX;
-      float anOtherMin = FLT_MAX, anOtherMax = -FLT_MAX;
-
-      //Project every point in Source on the axis and store min and max
-      for(int j = 0; j < anSourceFaces; j++)
-      {
-        float anSourceProj = (anAxisX * (anSourceVectorList->at(j).x + theSourcePolygon->GetPosition().x) + anAxisY * (anSourceVectorList->at(j).y + theSourcePolygon->GetPosition().y)) / (anAxisX * anAxisX + anAxisY * anAxisY);
-        anSourceMin = std::min(anSourceProj, anSourceMin);
-        anSourceMax = std::max(anSourceProj, anSourceMax);
-      }
-
-      //Project every point in Other on the axis and store min and max
-      for(int j = 0; j < anOtherFaces; j++)
-      {
-        float anOtherProj = (anAxisX * (anOtherVectorList->at(j).x + theOtherPolygon->GetPosition().x) + anAxisY * (anOtherVectorList->at(j).y + theOtherPolygon->GetPosition().y)) / (anAxisX * anAxisX + anAxisY * anAxisY);
-        anOtherMin = std::min(anOtherProj, anOtherMin);
-        anOtherMax = std::max(anOtherProj, anOtherMax);
-      }
-
-      //Return if the projections do not overlap
-      if(!(anSourceMax >= anOtherMin && anSourceMin <= anOtherMax))
-      {
-        anReturn = false; //return false
-      }
+        anResult.Intersect=true;
     }
-    typeCollisionResult anCollisionreturn;
-    anCollisionreturn.Intersects=anReturn;
-    anCollisionreturn.Depth=anTransAxis;
-    return anCollisionreturn; //return true;
-  }
+    return anResult;
+}
 
-  void ObjectManager::UpdateFixed(void)
-  {
-    std::vector<IObject*>::iterator it;
+void ObjectManager::UpdateFixed(void)
+{
+    std::list<IObject*>::iterator it;
     for(it=mObjectList.begin(); it!=mObjectList.end(); it++)
     {
-      if((*it)!=NULL)
-      {
-        (*it)->UpdateFixed();
-      }
+        if((*it)!=NULL)
+        {
+            (*it)->UpdateFixed();
+        }
     }
-  }
+}
 
-  void ObjectManager::UpdateVariable(float theElapsedTime)
-  {
-    std::vector<IObject*>::iterator it;
+void ObjectManager::UpdateVariable(float theElapsedTime)
+{
+    std::list<IObject*>::iterator it;
     for(it=mObjectList.begin(); it!=mObjectList.end(); it++)
     {
-      if((*it)!=NULL)
-      {
-        (*it)->UpdateVariable(theElapsedTime);
-      }
-    }
-  }
-
-  void ObjectManager::UpdateLists(void)
-  {
-    IObject* anTempObject;
-    std::vector<IObject*>::iterator it;
-    while(!mAddList.empty())
-    {
-      anTempObject=mAddList.front();
-      mAddList.pop();
-      if(anTempObject!=NULL)
-      {
-        mObjectList.push_back(anTempObject);
-      }
-      if(anTempObject->GetFlags() & ObjectSolid)
-      {
-        mCollisionList.push_back(anTempObject);
-      }
-      if(anTempObject->GetFlags() & ObjectVisible)
-      {
-        mRenderList.push_back(anTempObject);
-      }
-    }
-    while(!mRemoveList.empty())
-    {
-      anTempObject=mRemoveList.front();
-      mRemoveList.pop();
-      if(anTempObject->GetFlags() & ObjectSolid)
-      {
-        it=std::find(mCollisionList.begin(),mCollisionList.end(),anTempObject);
-        if(it!=mCollisionList.end())
+        if((*it)!=NULL)
         {
-          mCollisionList.erase(it);
+            (*it)->UpdateVariable(theElapsedTime);
         }
-      }
-      if(anTempObject->GetFlags() & ObjectVisible)
-      {
-        it=std::find(mRenderList.begin(),mRenderList.end(),anTempObject);
-        if(it!=mRenderList.end())
-        {
-          mRenderList.erase(it);
-        }
-      }
-      it=std::find(mObjectList.begin(),mObjectList.end(),anTempObject);
-      if(it!=mObjectList.end())
-      {
-        mObjectList.erase(it);
-        delete anTempObject;
-      }
     }
-  }
+}
+
+void ObjectManager::UpdateLists(void)
+{
+	IObject* anTempObject;
+    std::list<IObject*>::iterator it;
+	while(!mAddList.empty())
+    {
+		anTempObject=mAddList.front();
+		mAddList.pop();
+        if(anTempObject!=NULL)
+        {
+            mObjectList.push_back(anTempObject);
+			anTempObject->DoInit();
+        }
+        if(anTempObject->GetFlags() & ObjectSolid)
+        {
+            mCollisionList.push_back(anTempObject);
+        }
+        if(anTempObject->GetFlags() & ObjectVisible)
+        {
+            mRenderList.push_back(anTempObject);
+        }
+    }
+	while(!mRemoveList.empty())
+	{
+		anTempObject=mRemoveList.front();
+		mRemoveList.pop();
+		if(anTempObject!=NULL)
+		{
+			if(anTempObject->GetFlags() & ObjectSolid)
+			{
+				it=std::find(mCollisionList.begin(),mCollisionList.end(),anTempObject);
+				if(it!=mCollisionList.end())
+				{
+					mCollisionList.erase(it);
+				}
+			}
+			if(anTempObject->GetFlags() & ObjectVisible)
+			{
+				it=std::find(mRenderList.begin(),mRenderList.end(),anTempObject);
+				if(it!=mRenderList.end())
+				{
+					mRenderList.erase(it);
+				}
+			}
+			it=std::find(mObjectList.begin(),mObjectList.end(),anTempObject);
+			if(it!=mObjectList.end())
+			{
+				(*it)->DeInit();
+				(*it)->HandleCleanup();
+				mObjectList.erase(it);
+				delete anTempObject;
+			}
+		}
+    }
+}
 
 
-  void ObjectManager::ClearObjects(void)
-  {
+void ObjectManager::ClearObjects(void)
+{
     //Clean to add objects waiting to be added.
-    UpdateLists();
+	UpdateLists();
     //Set All Objects to be removed.
-    std::vector<IObject*>::iterator it;
+    std::list<IObject*>::iterator it;
     for(it=mObjectList.begin(); it!=mObjectList.end(); it++)
     {
-      RemoveObject(*it);
+        RemoveObject(*it);
     }
     //Clean to remove all objects set to remove.
     UpdateLists();
-  }
-  void ObjectManager::Draw(void)
-  {
-    std::vector<IObject*>::iterator it;
-    for(it=mObjectList.begin(); it<mObjectList.end(); it++)
+}
+void ObjectManager::RenderSort()
+{
+    mRenderList.sort(ZOrder);
+}
+void ObjectManager::Draw(void)
+{
+    std::list<IObject*>::iterator it;
+    for(it=mRenderList.begin(); it != mRenderList.end(); it++)
     {
-      (*it)->Draw();
+        (*it)->Draw();
     }
 
-  }
+}
 } // namespace GQE
 /**
  * Copyright (c) 2011 Jacob Dix

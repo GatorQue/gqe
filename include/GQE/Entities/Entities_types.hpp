@@ -9,41 +9,61 @@
  */
 #ifndef ENTITIES_TYPES_HPP_INCLUDED
 #define ENTITIES_TYPES_HPP_INCLUDED
-
-#define PI 3.141592f
+#define PI 3.141592
 #include <string>
 #include <vector>
 #include <GQE/Config.hpp>
 #include <SFML/System.hpp>
-
+#include <SFML/Graphics.hpp>
 namespace GQE
 {
-  /// Enumeration of all object types
-  enum ObjectType
-  {
-    ObjectSolid   = 0x01,  ///< Solid object
-    ObjectVisible = 0x02   ///< Visible object
-  };
+// Forward declare GQE interfaces provided
+class IObject;
 
-  // Forward declare GQE entity interfaces provided
-  class IObject;
+// Forward declare GQE classes provided
+class ObjectManager;
 
-  // Forward declare GQE entity classes provided
-  class ObjectManager;
-  class CollisionPolygon;
+///Enums
+//Object Flags
+enum ObjectType
+{
+    ObjectSolid    = 0x01,
+    ObjectStatic     = 0x02,
+	ObjectVisible     = 0x04
+};
+enum FileType
+{
+	FileBin,
+	FileRaw
+};
+/// Declare Object ID typedef which is used for identifying objects
+typedef std::string typeObjectID;
 
-  /// Declare Object ID typedef which is used for identifying objects
-  typedef std::string typeObjectID;
+/// Declare VectorList typedef which is used for sf::Vector3f lists
+typedef std::vector<sf::Vector3f> typeVectorList;
 
-  /// Declare VectorList typedef which is used for sf::Vector2f lists
-  typedef std::vector<sf::Vector2f> typeVectorList;
+/// Declare CollisionResult typedef for Collision detection results
+typedef struct
+{
+    sf::FloatRect Overlap;
+    bool Intersect;
+} typeCollisionResult;
 
-  /// Declare CollisionResult typedef for Collision detection results
-  typedef struct
-  {
-    sf::Vector2f Depth;
-    bool Intersects;
-  } typeCollisionResult;
+/// Declare CollisionResult typedef for Collision detection results
+typedef struct
+{
+	char* Name;
+	unsigned char Flags;
+	float PosX,PosY,PosZ;
+	float VelX,VelY,VelZ;
+	float AccX,AccY,AccZ;
+	float RotX,RotY,RotZ;
+	float SclX,SclY,SclZ;
+	char* Sprite;
+	float COffX,COffY,COffZ;
+	std::vector<float> CX;
+	std::vector<float> CY;
+} ObjectData;
 
 } // namespace GQE
 #endif // ENTITIES_TYPES_HPP_INCLUDED
