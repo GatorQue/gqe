@@ -3,7 +3,6 @@ set(ENTITIES_HEADER ${INCROOT}/Entities.hpp)
 
 # entities library additional include files
 set(INC
-    ${INCROOT}/Entities/classes/CollisionPolygon.hpp
     ${INCROOT}/Entities/classes/ObjectManager.hpp
     ${INCROOT}/Entities/interfaces/IObject.hpp
     ${INCROOT}/Entities/Entities_types.hpp
@@ -11,7 +10,6 @@ set(INC
 
 # entities library source files
 set(SRC
-    ${SRCROOT}/Entities/classes/CollisionPolygon.cpp
     ${SRCROOT}/Entities/classes/ObjectManager.cpp
     ${SRCROOT}/Entities/interfaces/IObject.cpp
 )

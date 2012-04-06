@@ -125,10 +125,10 @@ void IObject::SetSprite(std::string theSpriteName)
 #if (SFML_VERSION_MAJOR < 2)
         mSprite->SetCenter(mSprite->GetSize().x/2,mSprite->GetSize().y/2);
 #else
-        mSprite->SetOrigin(mSprite->GetSize().x/2,mSprite->GetSize().y/2);
+        mSprite->setOrigin(mSprite->getGlobalBounds().width/2,mSprite->getGlobalBounds().height/2);
 #endif
-        mSprite->SetPosition(mPosition.x, mPosition.y);
-        mSprite->SetRotation(mRotation.z);
+        mSprite->setPosition(mPosition.x, mPosition.y);
+        mSprite->setRotation(mRotation.z);
     }
 }
 sf::Sprite* IObject::GetSprite()
@@ -150,7 +150,12 @@ void IObject::UpdateFixed(void)
     mOldPosition=mPosition;
     mPosition = mPosition+(mVelocity);
     mCurrentRect=mBoundRect;
+#if SFML_VERSION_MAJOR < 2
     mCurrentRect.Offset(mPosition.x,mPosition.y);
+#else
+    mCurrentRect.left=mPosition.x;
+    mCurrentRect.top=mPosition.y;
+#endif
 }
 
 void IObject::UpdateVariable(float theElapsedTime)
@@ -162,9 +167,16 @@ void IObject::Draw(void)
 {
 	if(NULL != mSprite)
     {
+#if SFML_VERSION_MAJOR < 2
         mSprite->SetPosition(mPosition.x, mPosition.y);
         mSprite->SetRotation(mRotation.z);
-		mApp->mWindow.Draw(*mSprite);
+        mApp->mWindow.Draw(*mSprite);
+#else
+        mSprite->setPosition(mPosition.x, mPosition.y);
+        mSprite->setRotation(mRotation.z);
+        mApp->mWindow.draw(*mSprite);
+#endif
+
     }
 
 }

@@ -81,7 +81,11 @@ typeCollisionResult ObjectManager::RectIntersect(sf::FloatRect theSourceRect, sf
 {
     typeCollisionResult anResult;
     anResult.Intersect = false;
-    if(theSourceRect.Intersects(theOtherRect,&anResult.Overlap))
+#if SFML_VERSION_MAJOR == 2
+    if(theSourceRect.intersects(theOtherRect,anResult.Overlap))
+#else
+    if(theSourceRect.Intersects(theOtherRect,anResult.Overlap))
+#endif
     {
         anResult.Intersect=true;
     }
