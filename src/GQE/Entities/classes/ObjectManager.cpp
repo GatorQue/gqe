@@ -19,182 +19,193 @@
 
 namespace GQE
 {
-bool ZOrder (IObject* i,IObject* j) { return (i->GetPosition().z<j->GetPosition().z); }
+  bool ZOrder (IObject* i,IObject* j)
+  {
+    return (i->GetPosition().z<j->GetPosition().z);
+  }
 
-ObjectManager::ObjectManager()
-{
+  ObjectManager::ObjectManager()
+  {
 
-}
+  }
 
-ObjectManager::~ObjectManager()
-{
-	ClearObjects();
-}
+  ObjectManager::~ObjectManager()
+  {
+    ClearObjects();
+  }
 
-void ObjectManager::RemoveObject(IObject* theObject)
-{
+  void ObjectManager::RemoveObject(IObject* theObject)
+  {
     mRemoveList.push(theObject);
-}
+  }
 
-void ObjectManager::AddObject(IObject* theObject)
-{
+  void ObjectManager::AddObject(IObject* theObject)
+  {
     if(theObject!=NULL)
     {
-        mAddList.push(theObject);
+      mAddList.push(theObject);
     }
-}
-IObject* ObjectManager::AddObjectFromFile(std::string theFileName)
-{
-	return NULL;
-}
-void ObjectManager::CheckAllCollision(void)
-{
+  }
+
+  IObject* ObjectManager::AddObjectFromFile(std::string theFileName)
+  {
+    return NULL;
+  }
+
+  void ObjectManager::CheckAllCollision(void)
+  {
     typeCollisionResult anCollisionResult,anOtherResult;
     sf::FloatRect anSourceRect;
     sf::FloatRect anOtherRect;
-	std::list<IObject*>::iterator anSourceObject;
-	std::list<IObject*>::iterator anOtherObject;
-	sf::Vector3f anSourceCenter, anOtherCenter;
+    std::list<IObject*>::iterator anSourceObject;
+    std::list<IObject*>::iterator anOtherObject;
+    sf::Vector3f anSourceCenter, anOtherCenter;
     for(anSourceObject = mCollisionList.begin(); anSourceObject != mCollisionList.end(); ++anSourceObject)
     {
-        anSourceRect=(*anSourceObject)->GetBoundingRect();
-        anOtherObject=anSourceObject;
-        for(++anOtherObject;anOtherObject != mCollisionList.end(); ++anOtherObject)
+      anSourceRect=(*anSourceObject)->GetBoundingRect();
+      anOtherObject=anSourceObject;
+      for(++anOtherObject;anOtherObject != mCollisionList.end(); ++anOtherObject)
+      {
+        anOtherRect=(*anOtherObject)->GetBoundingRect();
+        if(!(((*anSourceObject)->GetFlags() & ObjectStatic) && ((*anOtherObject)->GetFlags() & ObjectStatic)))
         {
-            anOtherRect=(*anOtherObject)->GetBoundingRect();
-            if(!(((*anSourceObject)->GetFlags() & ObjectStatic) && ((*anOtherObject)->GetFlags() & ObjectStatic)))
-            {
-                anCollisionResult=RectIntersect(anSourceRect, anOtherRect);
-                if(anCollisionResult.Intersect)
-                {
-                    (*anSourceObject)->Collision((*anOtherObject),anCollisionResult);
-                    (*anOtherObject)->Collision((*anSourceObject),anCollisionResult);
-                }
-            }
+          anCollisionResult=RectIntersect(anSourceRect, anOtherRect);
+          if(anCollisionResult.Intersect)
+          {
+            (*anSourceObject)->Collision((*anOtherObject),anCollisionResult);
+            (*anOtherObject)->Collision((*anSourceObject),anCollisionResult);
+          }
         }
+      }
     }
-}
-// Check if polygon A is going to collide with polygon B.
-// The last parameter is the *relative* velocity
-// of the polygons (i.e. velocityA - velocityB)
-typeCollisionResult ObjectManager::RectIntersect(sf::FloatRect theSourceRect, sf::FloatRect theOtherRect)
-{
+  }
+
+  // Check if polygon A is going to collide with polygon B.
+  // The last parameter is the *relative* velocity
+  // of the polygons (i.e. velocityA - velocityB)
+  typeCollisionResult ObjectManager::RectIntersect(sf::FloatRect theSourceRect, sf::FloatRect theOtherRect)
+  {
     typeCollisionResult anResult;
     anResult.Intersect = false;
-    if(theSourceRect.Intersects(theOtherRect,&anResult.Overlap))
+#if (SFML_VERSION_MAJOR < 2)
+    if(theSourceRect.Intersects(theOtherRect, &anResult.Overlap))
+#else
+    if(theSourceRect.intersects(theOtherRect, anResult.Overlap))
+#endif
     {
-        anResult.Intersect=true;
+      anResult.Intersect=true;
     }
     return anResult;
-}
+  }
 
-void ObjectManager::UpdateFixed(void)
-{
+  void ObjectManager::UpdateFixed(void)
+  {
     std::list<IObject*>::iterator it;
     for(it=mObjectList.begin(); it!=mObjectList.end(); it++)
     {
-        if((*it)!=NULL)
-        {
-            (*it)->UpdateFixed();
-        }
+      if((*it)!=NULL)
+      {
+        (*it)->UpdateFixed();
+      }
     }
-}
+  }
 
-void ObjectManager::UpdateVariable(float theElapsedTime)
-{
+  void ObjectManager::UpdateVariable(float theElapsedTime)
+  {
     std::list<IObject*>::iterator it;
     for(it=mObjectList.begin(); it!=mObjectList.end(); it++)
     {
-        if((*it)!=NULL)
-        {
-            (*it)->UpdateVariable(theElapsedTime);
-        }
+      if((*it)!=NULL)
+      {
+        (*it)->UpdateVariable(theElapsedTime);
+      }
     }
-}
+  }
 
-void ObjectManager::UpdateLists(void)
-{
-	IObject* anTempObject;
+  void ObjectManager::UpdateLists(void)
+  {
+    IObject* anTempObject;
     std::list<IObject*>::iterator it;
-	while(!mAddList.empty())
+    while(!mAddList.empty())
     {
-		anTempObject=mAddList.front();
-		mAddList.pop();
-        if(anTempObject!=NULL)
-        {
-            mObjectList.push_back(anTempObject);
-			anTempObject->DoInit();
-        }
+      anTempObject=mAddList.front();
+      mAddList.pop();
+      if(anTempObject!=NULL)
+      {
+        mObjectList.push_back(anTempObject);
+        anTempObject->DoInit();
+      }
+      if(anTempObject->GetFlags() & ObjectSolid)
+      {
+        mCollisionList.push_back(anTempObject);
+      }
+      if(anTempObject->GetFlags() & ObjectVisible)
+      {
+        mRenderList.push_back(anTempObject);
+      }
+    }
+    while(!mRemoveList.empty())
+    {
+      anTempObject=mRemoveList.front();
+      mRemoveList.pop();
+      if(anTempObject!=NULL)
+      {
         if(anTempObject->GetFlags() & ObjectSolid)
         {
-            mCollisionList.push_back(anTempObject);
+          it=std::find(mCollisionList.begin(),mCollisionList.end(),anTempObject);
+          if(it!=mCollisionList.end())
+          {
+            mCollisionList.erase(it);
+          }
         }
         if(anTempObject->GetFlags() & ObjectVisible)
         {
-            mRenderList.push_back(anTempObject);
+          it=std::find(mRenderList.begin(),mRenderList.end(),anTempObject);
+          if(it!=mRenderList.end())
+          {
+            mRenderList.erase(it);
+          }
         }
+        it=std::find(mObjectList.begin(),mObjectList.end(),anTempObject);
+        if(it!=mObjectList.end())
+        {
+          (*it)->DeInit();
+          (*it)->HandleCleanup();
+          mObjectList.erase(it);
+          delete anTempObject;
+        }
+      }
     }
-	while(!mRemoveList.empty())
-	{
-		anTempObject=mRemoveList.front();
-		mRemoveList.pop();
-		if(anTempObject!=NULL)
-		{
-			if(anTempObject->GetFlags() & ObjectSolid)
-			{
-				it=std::find(mCollisionList.begin(),mCollisionList.end(),anTempObject);
-				if(it!=mCollisionList.end())
-				{
-					mCollisionList.erase(it);
-				}
-			}
-			if(anTempObject->GetFlags() & ObjectVisible)
-			{
-				it=std::find(mRenderList.begin(),mRenderList.end(),anTempObject);
-				if(it!=mRenderList.end())
-				{
-					mRenderList.erase(it);
-				}
-			}
-			it=std::find(mObjectList.begin(),mObjectList.end(),anTempObject);
-			if(it!=mObjectList.end())
-			{
-				(*it)->DeInit();
-				(*it)->HandleCleanup();
-				mObjectList.erase(it);
-				delete anTempObject;
-			}
-		}
-    }
-}
+  }
 
-
-void ObjectManager::ClearObjects(void)
-{
+  void ObjectManager::ClearObjects(void)
+  {
     //Clean to add objects waiting to be added.
-	UpdateLists();
+    UpdateLists();
     //Set All Objects to be removed.
     std::list<IObject*>::iterator it;
     for(it=mObjectList.begin(); it!=mObjectList.end(); it++)
     {
-        RemoveObject(*it);
+      RemoveObject(*it);
     }
     //Clean to remove all objects set to remove.
     UpdateLists();
-}
-void ObjectManager::RenderSort()
-{
+  }
+
+  void ObjectManager::RenderSort()
+  {
     mRenderList.sort(ZOrder);
-}
-void ObjectManager::Draw(void)
-{
+  }
+
+  void ObjectManager::Draw(void)
+  {
     std::list<IObject*>::iterator it;
     for(it=mRenderList.begin(); it != mRenderList.end(); it++)
     {
-        (*it)->Draw();
+      (*it)->Draw();
     }
 
-}
+  }
 } // namespace GQE
 /**
  * Copyright (c) 2011 Jacob Dix

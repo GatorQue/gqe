@@ -1,16 +1,16 @@
 /**
- * Provides the Dots GameState example in the GQE library.
+ * Provides the SpaceDots GameState example in the GQE library.
  *
  * @file src/GameState.cpp
  * @author Ryan Lindeman
  * @date 20120323 - Initial Release
+ * @date 20120421 - Make sure SFML 2 doesn't use its default font since it will crash on exit
  */
 #include "GameState.hpp"
 #include <GQE/Core/assets/FontAsset.hpp>
 #include <GQE/Core/assets/ImageAsset.hpp>
 #include <GQE/Core/assets/SoundAsset.hpp>
 #include <GQE/Core/classes/App.hpp>
-#include <SFML/Graphics/Color.hpp>
 
 GameState::GameState(GQE::App& theApp) :
   GQE::IState("Game",theApp),
@@ -35,12 +35,17 @@ GameState::GameState(GQE::App& theApp) :
   mLightsaber(NULL),
   mSelectedCol(1),
   mSelectedRow(1),
-  mCurrentPlayer(0)
+  mCurrentPlayer(0),
+  mWinnerText(NULL)
 {
 }
 
 GameState::~GameState(void)
 {
+  delete mWinnerText;
+  mWinnerText = NULL;
+
+  mApp.mAssetManager.UnloadFont("WinFont");
 }
 
 void GameState::DoInit(void)
@@ -131,12 +136,12 @@ void GameState::DoInit(void)
 
 #if (SFML_VERSION_MAJOR < 2)
   // Setup winner text color as Yellow
-  mWinnerText.SetColor(sf::Color::Yellow);
-  mWinnerText.SetFont(mWinFont->GetAsset());
+  mWinnerText = new sf::String("", mWinFont->GetAsset(), 30);
+  mWinnerText->SetColor(sf::Color::Yellow);
 #else
   // Setup winner text color as Yellow
-  mWinnerText.setColor(sf::Color::Yellow);
-  mWinnerText.setFont(mWinFont->GetAsset());
+  mWinnerText = new sf::Text("", mWinFont->GetAsset(), 30);
+  mWinnerText->setColor(sf::Color::Yellow);
 #endif
 
   // Call ReInit to reset the board
@@ -222,9 +227,9 @@ void GameState::ReInit(void)
 
   // Reset our winner text
 #if (SFML_VERSION_MAJOR < 2)
-  mWinnerText.SetText("");
+  mWinnerText->SetText("");
 #else
-  mWinnerText.setString("");
+  mWinnerText->setString("");
 #endif
 }
 
@@ -581,15 +586,15 @@ void GameState::SelectEdge(void)
     }
 
 #if (SFML_VERSION_MAJOR < 2)
-    mWinnerText.SetText("Click button to play again!");
+    mWinnerText->SetText("Click button to play again!");
 
     // Setup winner text in middle of screen
-    mWinnerText.SetPosition(110.0f,540.0f);
+    mWinnerText->SetPosition(110.0f,540.0f);
 #else
-    mWinnerText.setString("Click button to play again!");
+    mWinnerText->setString("Click button to play again!");
 
     // Setup winner text in middle of screen
-    mWinnerText.setPosition(110.0f,540.0f);
+    mWinnerText->setPosition(110.0f,540.0f);
 #endif
 
     // Switch to no player (wait until mouse clicks to reset game)
@@ -640,10 +645,10 @@ void GameState::Draw(void)
 
 #if (SFML_VERSION_MAJOR < 2)
   // Draw winner text
-  mApp.mWindow.Draw(mWinnerText);
+  mApp.mWindow.Draw(*mWinnerText);
 #else
   // Draw winner text
-  mApp.mWindow.draw(mWinnerText);
+  mApp.mWindow.draw(*mWinnerText);
 #endif
 
 }

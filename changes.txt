@@ -1,3 +1,8 @@
+Version 0.18.0
+==============
+- Fixed SFML 2 issues and set_option CMake 2.8 issue (#21)
+- Use arial.ttf font until default font issue is fixed in SFML 2
+
 Version 0.17.0
 ==============
 - Added gqe-entities

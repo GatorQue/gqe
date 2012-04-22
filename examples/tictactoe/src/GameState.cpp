@@ -1,29 +1,37 @@
 /**
  * Provides the TicTacToe GameState example in the GQE library.
  *
- * @file examples/demo/GameState.cpp
+ * @file examples/tictactoe/src/GameState.cpp
  * @author Ryan Lindeman
  * @date 20110704 - Initial Release
  * @date 20110721 - Remove * from GetAsset() calls since it now returns TYPE&
  * @date 20110831 - Support new SFML2 snapshot changes
+ * @date 20120421 - Use arial.ttf font since SFML 2 crashes on exit when using default font
  */
 #include "GameState.hpp"
+#include <GQE/Core/assets/FontAsset.hpp>
 #include <GQE/Core/assets/ImageAsset.hpp>
 #include <GQE/Core/classes/App.hpp>
-#include <SFML/Graphics/Color.hpp>
 
 GameState::GameState(GQE::App& theApp) :
   GQE::IState("Game",theApp),
+  mWinFont(NULL),
   mBackground(NULL),
   mPlayer1(NULL),
   mPlayer2(NULL),
   mEmpty(NULL),
-  mCurrentPlayer(0)
+  mCurrentPlayer(0),
+  mWinnerText(NULL)
 {
 }
 
 GameState::~GameState(void)
 {
+  delete mWinnerText;
+  mWinnerText = NULL;
+
+  // Now release our WinFont
+  mApp.mAssetManager.UnloadFont("WinFont");
 }
 
 void GameState::DoInit(void)
@@ -53,12 +61,18 @@ void GameState::DoInit(void)
   mEmpty = mApp.mAssetManager.AddImage("Empty", "resources/Empty.png",
       GQE::AssetLoadStyleImmediate);
 
+  // Load our Win font
+  mWinFont = mApp.mAssetManager.AddFont("WinFont", "resources/arial.ttf",
+      GQE::AssetLoadStyleImmediate);
+
 #if (SFML_VERSION_MAJOR < 2)
   // Setup winner text color as White
-  mWinnerText.SetColor(sf::Color::White);
+  mWinnerText = new sf::String("", mWinFont->GetAsset(), 30.0f);
+  mWinnerText->SetColor(sf::Color::White);
 #else
   // Setup winner text color as White
-  mWinnerText.setColor(sf::Color::White);
+  mWinnerText = new sf::Text("", mWinFont->GetAsset(), 30);
+  mWinnerText->setColor(sf::Color::White);
 #endif
 
   // Call ReInit to reset the board
@@ -107,9 +121,9 @@ void GameState::ReInit(void)
 
   // Reset our winner text
 #if (SFML_VERSION_MAJOR < 2)
-  mWinnerText.SetText("");
+  mWinnerText->SetText("");
 #else
-  mWinnerText.setString("");
+  mWinnerText->setString("");
 #endif
 }
 
@@ -255,37 +269,37 @@ void GameState::UpdateFixed(void)
   if(anWinner == 1)
   {
 #if (SFML_VERSION_MAJOR < 2)
-    mWinnerText.SetText("Player 1 Wins!");
+    mWinnerText->SetText("X's Win!");
     // Setup winner text in middle of screen
-    mWinnerText.SetPosition(300.0f,280.0f);
+    mWinnerText->SetPosition(355.0f,280.0f);
 #else
-    mWinnerText.setString("Player 1 Wins!");
+    mWinnerText->setString("X's Win!");
     // Setup winner text in middle of screen
-    mWinnerText.setPosition(300.0f,280.0f);
+    mWinnerText->setPosition(355.0f,280.0f);
 #endif
   }
   else if(anWinner == 2)
   {
 #if (SFML_VERSION_MAJOR < 2)
-    mWinnerText.SetText("Player 2 Wins!");
+    mWinnerText->SetText("O's Win!");
     // Setup winner text in middle of screen
-    mWinnerText.SetPosition(300.0f,280.0f);
+    mWinnerText->SetPosition(355.0f,280.0f);
 #else
-    mWinnerText.setString("Player 2 Wins!");
+    mWinnerText->setString("O's Win!");
     // Setup winner text in middle of screen
-    mWinnerText.setPosition(300.0f,280.0f);
+    mWinnerText->setPosition(355.0f,280.0f);
 #endif
   }
   else if(anWinner == 3)
   {
 #if (SFML_VERSION_MAJOR < 2)
-    mWinnerText.SetText("Tie Game");
+    mWinnerText->SetText("Tie Game");
     // Setup winner text in middle of screen
-    mWinnerText.SetPosition(340.0f,280.0f);
+    mWinnerText->SetPosition(340.0f,280.0f);
 #else
-    mWinnerText.setString("Tie Game");
+    mWinnerText->setString("Tie Game");
     // Setup winner text in middle of screen
-    mWinnerText.setPosition(340.0f,280.0f);
+    mWinnerText->setPosition(340.0f,280.0f);
 #endif
   }
 
@@ -340,13 +354,13 @@ void GameState::Draw(void)
 
 #if (SFML_VERSION_MAJOR < 2)
   // Draw winner text
-  mApp.mWindow.Draw(mWinnerText);
+  mApp.mWindow.Draw(*mWinnerText);
 
   // Draw our cursor
   mApp.mWindow.Draw(mCursor);
 #else
   // Draw winner text
-  mApp.mWindow.draw(mWinnerText);
+  mApp.mWindow.draw(*mWinnerText);
 
   // Draw our cursor
   mApp.mWindow.draw(mCursor);

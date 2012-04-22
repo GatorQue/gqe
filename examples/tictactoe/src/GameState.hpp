@@ -1,9 +1,10 @@
 /**
  * Provides the TicTacToe GameState example in the GQE library.
  *
- * @file examples/demo/GameState.cpp
+ * @file example/tictactoe/src/GameState.cpp
  * @author Ryan Lindeman
  * @date 20110704 - Initial Release
+ * @date 20120421 - Use arial.ttf font since SFML 2 crashes on exit when using default font
  */
 
 #ifndef   GAME_STATE_HPP_INCLUDED
@@ -11,8 +12,7 @@
 
 #include <GQE/Core/Core_types.hpp>
 #include <GQE/Core/interfaces/IState.hpp>
-#include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/String.hpp>
+#include <SFML/Graphics.hpp>
 
 /// Provides the TicTacToe GameState example
 class GameState : public GQE::IState
@@ -77,6 +77,7 @@ class GameState : public GQE::IState
   private:
     // Variables
     /////////////////////////////////////////////////////////////////////////
+    GQE::FontAsset*  mWinFont;
     GQE::ImageAsset* mBackground;
     GQE::ImageAsset* mPlayer1;
     GQE::ImageAsset* mPlayer2;
@@ -88,10 +89,10 @@ class GameState : public GQE::IState
     GQE::Uint8       mCurrentPlayer;
 #if (SFML_VERSION_MAJOR < 2)
     /// Winner string
-    sf::String       mWinnerText;
+    sf::String*      mWinnerText;
 #else
     /// Winner string
-    sf::Text         mWinnerText;
+    sf::Text*        mWinnerText;
 #endif
 
 }; // class GameState

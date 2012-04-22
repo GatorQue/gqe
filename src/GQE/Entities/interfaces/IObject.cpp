@@ -15,7 +15,7 @@
 #include <fstream>
 namespace GQE
 {
-IObject::IObject(App* theApp, typeObjectID theObjectID, unsigned char theFlags) :
+  IObject::IObject(App* theApp, typeObjectID theObjectID, unsigned char theFlags) :
     mApp(theApp),
     mObjectID(theObjectID),
     mPosition(sf::Vector3f(0,0,0)),
@@ -25,181 +25,194 @@ IObject::IObject(App* theApp, typeObjectID theObjectID, unsigned char theFlags) 
     mRotation(sf::Vector3f(0,0,0)),
     mScale(sf::Vector3f(1,1,1)),
     mSprite(NULL),
-	mSpriteName(""),
+    mSpriteName(""),
     mInit(false),
     mCleanup(false),
     mFlags(theFlags)
-{
-}
+  {
+  }
 
-IObject::~IObject()
-{
-}
+  IObject::~IObject()
+  {
+  }
 
-void IObject::DoInit(void)
-{
+  void IObject::DoInit(void)
+  {
     mInit = true;
     mCleanup = false;
-}
+  }
 
-void IObject::DeInit(void)
-{
+  void IObject::DeInit(void)
+  {
     if(mInit)
     {
-        mInit = false;
-        mCleanup = true;
+      mInit = false;
+      mCleanup = true;
     }
-}
+  }
 
-void IObject::Rotate(float theX, float theY, float theZ)
-{
+  void IObject::Rotate(float theX, float theY, float theZ)
+  {
     mRotation.x += theX;
     mRotation.y += theY;
     mRotation.z += theZ;
-}
+  }
 
-typeObjectID IObject::GetID(void)
-{
+  typeObjectID IObject::GetID(void)
+  {
     return mObjectID;
-}
-unsigned char IObject::GetFlags()
-{
-	return mFlags;
-}
-sf::Vector3f IObject::GetPosition(void)
-{
+  }
+  unsigned char IObject::GetFlags()
+  {
+    return mFlags;
+  }
+  sf::Vector3f IObject::GetPosition(void)
+  {
     return mPosition;
-}
+  }
 
-sf::Vector3f IObject::GetRotation(void)
-{
+  sf::Vector3f IObject::GetRotation(void)
+  {
     return mRotation;
-}
+  }
 
-sf::Vector3f IObject::GetScale(void)
-{
+  sf::Vector3f IObject::GetScale(void)
+  {
     return mScale;
-}
+  }
 
-void IObject::SetPosition(float theX, float theY, float theZ)
-{
+  void IObject::SetPosition(float theX, float theY, float theZ)
+  {
     mPosition = sf::Vector3f(theX,theY,theZ);
-}
+  }
 
-void IObject::SetRotation(float theX, float theY, float theZ)
-{
+  void IObject::SetRotation(float theX, float theY, float theZ)
+  {
     mRotation = sf::Vector3f(theX,theY,theZ);
-}
+  }
 
-void IObject::SetScale(float theX, float theY, float theZ)
-{
+  void IObject::SetScale(float theX, float theY, float theZ)
+  {
     mScale = sf::Vector3f(theX,theY,theZ);
-}
+  }
 
-void IObject::SetVelocity(float theX, float theY, float theZ)
-{
+  void IObject::SetVelocity(float theX, float theY, float theZ)
+  {
     mVelocity = sf::Vector3f(theX,theY,theZ);
-}
+  }
 
-sf::Vector3f IObject::GetVelocity(void)
-{
+  sf::Vector3f IObject::GetVelocity(void)
+  {
     return mVelocity;
-}
+  }
 
-void IObject::SetAcceleration(float theX, float theY, float theZ)
-{
+  void IObject::SetAcceleration(float theX, float theY, float theZ)
+  {
     mAcceleration = sf::Vector3f(theX,theY,theZ);
-}
+  }
 
-sf::Vector3f IObject::GetAcceleration(void)
-{
+  sf::Vector3f IObject::GetAcceleration(void)
+  {
     return mAcceleration;
-}
+  }
 
-void IObject::SetSprite(std::string theSpriteName)
-{
-	mSpriteName=theSpriteName;
+  void IObject::SetSprite(std::string theSpriteName)
+  {
+    mSpriteName=theSpriteName;
     mSprite = mApp->mAssetManager.GetSprite(theSpriteName);
     if(NULL != mSprite)
     {
 #if (SFML_VERSION_MAJOR < 2)
-        mSprite->SetCenter(mSprite->GetSize().x/2,mSprite->GetSize().y/2);
+      mSprite->SetCenter(mSprite->GetSize().x/2,mSprite->GetSize().y/2);
+      mSprite->SetPosition(mPosition.x, mPosition.y);
+      mSprite->SetRotation(mRotation.z);
 #else
-        mSprite->SetOrigin(mSprite->GetSize().x/2,mSprite->GetSize().y/2);
+      mSprite->setOrigin(mSprite->getGlobalBounds().width/2, mSprite->getGlobalBounds().height/2);
+      mSprite->setPosition(mPosition.x, mPosition.y);
+      mSprite->setRotation(mRotation.z);
 #endif
-        mSprite->SetPosition(mPosition.x, mPosition.y);
-        mSprite->SetRotation(mRotation.z);
     }
-}
-sf::Sprite* IObject::GetSprite()
-{
-	return mSprite;
-}
-void IObject::HandleEvents(sf::Event theEvent)
-{
-}
+  }
+  sf::Sprite* IObject::GetSprite()
+  {
+    return mSprite;
+  }
+  void IObject::HandleEvents(sf::Event theEvent)
+  {
+  }
 
-void IObject::Collision(IObject* theOtherObject,
-                        typeCollisionResult theResult)
-{
-}
+  void IObject::Collision(IObject* theOtherObject,
+      typeCollisionResult theResult)
+  {
+  }
 
-void IObject::UpdateFixed(void)
-{
+  void IObject::UpdateFixed(void)
+  {
     mVelocity = mVelocity+mAcceleration;
     mOldPosition=mPosition;
     mPosition = mPosition+(mVelocity);
     mCurrentRect=mBoundRect;
+#if (SFML_VERSION_MAJOR < 2)
     mCurrentRect.Offset(mPosition.x,mPosition.y);
-}
+#else
+    mCurrentRect.left += mPosition.x;
+    mCurrentRect.top += mPosition.y;
+#endif
+  }
 
-void IObject::UpdateVariable(float theElapsedTime)
-{
+  void IObject::UpdateVariable(float theElapsedTime)
+  {
 
-}
+  }
 
-void IObject::Draw(void)
-{
-	if(NULL != mSprite)
+  void IObject::Draw(void)
+  {
+    if(NULL != mSprite)
     {
-        mSprite->SetPosition(mPosition.x, mPosition.y);
-        mSprite->SetRotation(mRotation.z);
-		mApp->mWindow.Draw(*mSprite);
+#if (SFML_VERSION_MAJOR < 2)
+      mSprite->SetPosition(mPosition.x, mPosition.y);
+      mSprite->SetRotation(mRotation.z);
+      mApp->mWindow.Draw(*mSprite);
+#else
+      mSprite->setPosition(mPosition.x, mPosition.y);
+      mSprite->setRotation(mRotation.z);
+      mApp->mWindow.draw(*mSprite);
+#endif
     }
 
-}
+  }
 
-void IObject::SetBoundingRect(sf::FloatRect theRect)
-{
+  void IObject::SetBoundingRect(sf::FloatRect theRect)
+  {
     mBoundRect=theRect;
-}
+  }
 
-sf::FloatRect IObject::GetBoundingRect(void)
-{
+  sf::FloatRect IObject::GetBoundingRect(void)
+  {
     return mCurrentRect;
-}
+  }
 
-/**
- * HandleCleanup is responsible for calling Cleanup if this class has been
- * flagged to be cleaned up after it completes the game loop.
- */
-void IObject::HandleCleanup(void)
-{
-	if(mSprite!=NULL)
-	{
-		delete mSprite;
-		mSprite=NULL;
-	}
+  /**
+   * HandleCleanup is responsible for calling Cleanup if this class has been
+   * flagged to be cleaned up after it completes the game loop.
+   */
+  void IObject::HandleCleanup(void)
+  {
+    if(mSprite!=NULL)
+    {
+      delete mSprite;
+      mSprite=NULL;
+    }
     Cleanup();
-}
+  }
 
-/**
- * Cleanup is responsible for performing any cleanup required before
- * this object is removed.
- */
-void IObject::Cleanup(void)
-{
-}
+  /**
+   * Cleanup is responsible for performing any cleanup required before
+   * this object is removed.
+   */
+  void IObject::Cleanup(void)
+  {
+  }
 } // namespace GQE
 /**
  * Copyright (c) 2011 Jacob Dix
