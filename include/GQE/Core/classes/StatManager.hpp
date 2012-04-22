@@ -13,6 +13,7 @@
  * @date 20110218 - Change to system include style
  * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
  * @date 20110627 - Removed extra ; from namespace
+ * @date 20120421 - Use arial.ttf font since SFML 2 crashes on exit when using default font
  */
 #ifndef   CORE_STAT_MANAGER_HPP_INCLUDED
 #define   CORE_STAT_MANAGER_HPP_INCLUDED
@@ -110,11 +111,13 @@ namespace GQE
       Uint32      mFrames;
       /// Frame clock for displaying Frames per second value
       sf::Clock   mFrameClock;
+      /// Default font for FPS and UPS
+      FontAsset*  mDefaultFont;
 #if (SFML_VERSION_MAJOR < 2)
       /// Debug string to display that shows the frames per second
-      sf::String  mFPS;
+      sf::String* mFPS;
 #else
-      sf::Text    mFPS;
+      sf::Text*   mFPS;
 #endif
 
       /// Total number of updates done since DoInit was called
@@ -123,9 +126,9 @@ namespace GQE
       sf::Clock   mUpdateClock;
 #if (SFML_VERSION_MAJOR < 2)
       /// Debug string to display that shows the updates per second
-      sf::String  mUPS;
+      sf::String* mUPS;
 #else
-      sf::Text    mUPS;
+      sf::Text*   mUPS;
 #endif
 
       /**
