@@ -30,6 +30,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 else(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   set_option(SFML_STATIC_LIBRARIES FALSE BOOL "Set to TRUE to statically link SFML libraries to GQE")
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+set_option(SFMLDIR ${PROJECT_SOURCE_DIR}/extlibs/headers PATH "SFML include directory")
 
 # setup version numbers
 set(GQE_VERSION_MAJOR 0)

@@ -1,3 +1,7 @@
+Version 0.18.1
+==============
+- Fix inability to find SFML when SFML files are in extlibs directory
+
 Version 0.18.0
 ==============
 - Fixed SFML 2 issues and set_option CMake 2.8 issue (#21)
