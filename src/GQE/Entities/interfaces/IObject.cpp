@@ -178,6 +178,7 @@ namespace GQE
       mSprite->setRotation(mRotation.z);
       mApp->mWindow.draw(*mSprite);
 #endif
+
     }
 
   }

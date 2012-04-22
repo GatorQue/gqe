@@ -410,11 +410,25 @@ void GameState::SelectEdge(void)
 #endif
     }
 
+#if (SFML_VERSION_MAJOR < 2)
     // Only play if not already playing a sound effect
     if(sf::Sound::Playing != mLightsaberSound.GetStatus())
+
     {
+
       mLightsaberSound.Play();
+
     }
+#else
+    // Only play if not already playing a sound effect
+    if(sf::Sound::Playing != mLightsaberSound.getStatus())
+
+    {
+      mLightsaberSound.play();
+
+    }
+#endif
+
   }
   // Row: Odd && Col: Even == Vertical Edge
   else if((mSelectedRow % 2) == 1 && (mSelectedCol % 2) == 0)
@@ -442,12 +456,23 @@ void GameState::SelectEdge(void)
           mRedVertical->GetAsset());
 #endif
     }
-
+#if (SFML_VERSION_MAJOR < 2)
     // Only play if not already playing a sound effect
     if(sf::Sound::Playing != mLightsaberSound.GetStatus())
     {
       mLightsaberSound.Play();
     }
+
+#else
+
+    // Only play if not already playing a sound effect
+    if(sf::Sound::Playing != mLightsaberSound.getStatus())
+    {
+      mLightsaberSound.play();
+    }
+
+#endif
+
   }
   else
   {
@@ -536,6 +561,7 @@ void GameState::SelectEdge(void)
     }
     else
     {
+#if SFML_VERSION_MAJOR<2
       // Play appropriate sound
       if(mCurrentPlayer == 1)
       {
@@ -553,6 +579,25 @@ void GameState::SelectEdge(void)
           mRedGainSound.Play();
         }
       }
+#else
+    // Play appropriate sound
+      if(mCurrentPlayer == 1)
+      {
+        // Only play if not currently playing this sound effect
+        if(sf::Sound::Playing != mBlueGainSound.getStatus())
+        {
+          mBlueGainSound.play();
+        }
+      }
+      else
+      {
+        // Only play if not currently playing this sound effect
+        if(sf::Sound::Playing != mRedGainSound.getStatus())
+        {
+          mRedGainSound.play();
+        }
+      }
+#endif
     }
   }
   else
@@ -560,26 +605,30 @@ void GameState::SelectEdge(void)
     // Determine which theme to play at end of game
     if(anScore[0] > anScore[1])
     {
-      mBlueWinSound.Play();
+
 
       // Set correct winner image to be displayed
 #if (SFML_VERSION_MAJOR < 2)
+      mBlueWinSound.Play();
       mWinnerSprite.SetImage(mBlueWinner->GetAsset());
       mWinnerSprite.SetPosition(0.0f,0.0f);
 #else
+      mBlueWinSound.play();
       mWinnerSprite.setTexture(mBlueWinner->GetAsset());
       mWinnerSprite.setPosition(0.0f,0.0f);
 #endif
     }
     else
     {
-      mRedWinSound.Play();
+
 
       // Set correct winner image to be displayed
 #if (SFML_VERSION_MAJOR < 2)
+      mRedWinSound.Play();
       mWinnerSprite.SetImage(mRedWinner->GetAsset());
       mWinnerSprite.SetPosition(0.0f,0.0f);
 #else
+      mRedWinSound.play();
       mWinnerSprite.setTexture(mRedWinner->GetAsset());
       mWinnerSprite.setPosition(0.0f,0.0f);
 #endif
