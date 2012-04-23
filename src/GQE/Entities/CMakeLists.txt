@@ -3,15 +3,18 @@ set(ENTITIES_HEADER ${INCROOT}/Entities.hpp)
 
 # entities library additional include files
 set(INC
-    ${INCROOT}/Entities/classes/ObjectManager.hpp
-    ${INCROOT}/Entities/interfaces/IObject.hpp
+    ${INCROOT}/Entities/classes/Entity.hpp
+    ${INCROOT}/Entities/interfaces/IComponent.hpp
+    ${INCROOT}/Entities/interfaces/AProperty.hpp
+    ${INCROOT}/Entities/interfaces/TProperty.hpp
     ${INCROOT}/Entities/Entities_types.hpp
 )
 
 # entities library source files
 set(SRC
-    ${SRCROOT}/Entities/classes/ObjectManager.cpp
-    ${SRCROOT}/Entities/interfaces/IObject.cpp
+    ${SRCROOT}/Entities/classes/Entity.cpp
+    ${SRCROOT}/Entities/interfaces/IComponent.cpp
+    ${SRCROOT}/Entities/Entities_types.cpp
 )
 
 # add platform specific sources
