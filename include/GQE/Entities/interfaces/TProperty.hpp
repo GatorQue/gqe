@@ -8,32 +8,36 @@
 */
 #ifndef TPROPERTY_HPP_INCLUDED
 #define TPROPERTY_HPP_INCLUDED
-#include "Entity_types.hpp"
-#include "interfaces/AProperty.hpp"
+#include "GQE/Entities/Entities_types.hpp"
+#include "GQE/Entities/interfaces/AProperty.hpp"
 #include <typeinfo>
-template<class TYPE=unsigned int>
-class TProperty : public AProperty
+
+namespace GQE
 {
-public:
-    TProperty():
-        AProperty(typeid(TProperty<TYPE>).name())
-    {
+	template<class TYPE=unsigned int>
+	class GQE_API TProperty : public AProperty
+	{
+	public:
+		TProperty():
+			AProperty(typeid(TProperty<TYPE>).name())
+		{
 
-    }
-    TProperty(std::string theLable):
-        AProperty(typeid(TYPE).name(),theLable)
-    {
+		}
+		TProperty(std::string theLable):
+			AProperty(typeid(TYPE).name(),theLable)
+		{
 
-    }
-    TYPE getValue()
-    {
-        return mValue;
-    }
-    void setValue(TYPE theValue)
-    {
-        mValue=theValue;
-    }
-private:
-    TYPE mValue;
-};
+		}
+		TYPE getValue()
+		{
+			return mValue;
+		}
+		void setValue(TYPE theValue)
+		{
+			mValue=theValue;
+		}
+	private:
+		TYPE mValue;
+	};
+}
 #endif

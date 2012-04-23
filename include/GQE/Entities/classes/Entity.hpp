@@ -7,47 +7,50 @@
 */
 #ifndef ENTITY_HPP_INCLUDED
 #define ENTITY_HPP_INCLUDED
-#include "interfaces/IComponent.hpp"
+#include "GQE/Entities/interfaces/IComponent.hpp"
 #include <map>
 #include <vector>
-class Entity
+namespace GQE
 {
-public:
-    Entity(typeEntityID theEntityID);
+	class GQE_API Entity
+	{
+	public:
+		Entity(typeEntityID theEntityID);
 
-    ~Entity();
+		~Entity();
 
-    std::string GetID();
+		std::string GetID();
 
-    AProperty* GetProperty(std::string theKey);
+		AProperty* GetProperty(std::string theKey);
 
-    void SetProperty(AProperty* theProperty);
+		void SetProperty(AProperty* theProperty);
 
-    void AttachComponent(IComponent* theComponent);
+		void AttachComponent(IComponent* theComponent);
 
-    void DetachComponent(typeComponentID theComponentID);
+		void DetachComponent(typeComponentID theComponentID);
 
-    //void HandleEvents(sf::Event theEvent);
+		//void HandleEvents(sf::Event theEvent);
 
-    void UpdateFixed();
+		void UpdateFixed();
 
-    void UpdateVariable(float theElapstedTime);
+		void UpdateVariable(float theElapstedTime);
 
-    void Draw();
+		void Draw();
 
-    void HandleCleanup();
+		void HandleCleanup();
 
-	//Static Manager Functions
-	static void AddEntity(typeEntityID theEntityID);
-	//static void AllHandleEvents(sf::Event theEvent);
-	static void AllUpdateFixed();
-	static void AllUpdateVariable(float theElapsedTime);
-	static void AllDraw();
-private:
-    std::map<std::string, AProperty*> mPropertyList;
-    std::map<std::string, IComponent*> mComponentList;
-    typeEntityID mEntityID;
-	static std::vector<Entity*> mEntityList;
-};
+		//Static Manager Functions
+		static void AddEntity(typeEntityID theEntityID);
+		//static void AllHandleEvents(sf::Event theEvent);
+		static void AllUpdateFixed();
+		static void AllUpdateVariable(float theElapsedTime);
+		static void AllDraw();
+	private:
+		std::map<std::string, AProperty*> mPropertyList;
+		std::map<std::string, IComponent*> mComponentList;
+		typeEntityID mEntityID;
+		static std::vector<Entity*> mEntityList;
+	};
+}
 
 #endif

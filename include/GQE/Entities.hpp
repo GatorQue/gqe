@@ -1,8 +1,7 @@
 #ifndef ENTITIES_HPP_INCLUDED
 #define ENTITIES_HPP_INCLUDED
 
-#include "interfaces/TProperty.hpp"
-#include "interfaces/IComponent.hpp"
-#include "classes/Entity.hpp"
-#include "Components/TestComponent.hpp"
+#include "GQE/Entities/interfaces/TProperty.hpp"
+#include "GQE/Entities/interfaces/IComponent.hpp"
+#include "GQE/Entities/classes/Entity.hpp"
 #endif
