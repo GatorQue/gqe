@@ -1,8 +1,9 @@
 #ifndef RENDER_COMPONENT_HPP_INCLUDED
 #define RENDER_COMPONENT_HPP_INCLUDED
 #include <SFML/Graphics.hpp>
+#include <SFML/System.hpp>
 #include <GQE/Entities/Entities_types.hpp>
-
+#include <GQE/Entities/interfaces/IComponent.hpp>
 namespace GQE
 {
 class RenderComponent : public IComponent

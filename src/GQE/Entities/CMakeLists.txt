@@ -7,6 +7,7 @@ set(INC
     ${INCROOT}/Entities/interfaces/IComponent.hpp
     ${INCROOT}/Entities/interfaces/AProperty.hpp
     ${INCROOT}/Entities/interfaces/TProperty.hpp
+    ${INCROOT}/Entities/Components/RenderComponent.hpp
     ${INCROOT}/Entities/Entities_types.hpp
 )
 
@@ -14,6 +15,7 @@ set(INC
 set(SRC
     ${SRCROOT}/Entities/classes/Entity.cpp
     ${SRCROOT}/Entities/interfaces/IComponent.cpp
+    ${SRCROOT}/Entities/Components/RenderComponent.cpp
     ${SRCROOT}/Entities/Entities_types.cpp
 )
 
