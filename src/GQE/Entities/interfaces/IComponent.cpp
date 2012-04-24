@@ -2,8 +2,8 @@
 #include "GQE/Entities/classes/Entity.hpp"
 namespace GQE
 {
-	IComponent::IComponent(const typeComponentID theComponentID /*, App& theApp*/) :
-//    mApp(theApp),
+	IComponent::IComponent(const typeComponentID theComponentID , App& theApp) :
+	mApp(theApp),
 mEntity(NULL),
 	mComponentID(theComponentID),
 	mInit(false),
@@ -14,7 +14,7 @@ mEntity(NULL),
 }
 IComponent::~IComponent()
 {
-	//	ILOG() << "IState::dtor(" << mStateID << ")" << std::endl;
+	//  ILOG() << "IComponent::dtor(" << mStateID << ")" << std::endl;
 }
 
 const typeComponentID IComponent::GetID(void) const
@@ -73,7 +73,7 @@ void IComponent::HandleCleanup(void)
 
 void IComponent::Cleanup(void)
 {
-	//	ILOG() << "IState::Cleanup(" << mComponentID << ")" << std::endl;
+	ILOG() << "IComponent::Cleanup(" << mComponentID << ")" << std::endl;
 }
 
 }

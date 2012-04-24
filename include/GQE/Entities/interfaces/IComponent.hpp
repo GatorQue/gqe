@@ -19,7 +19,7 @@ namespace GQE
 		* @param[in] theComponentID to use for this component object
 		* @param[in] theApp is the address to the App derived class
 		*/
-		IComponent(const typeComponentID theComponentID /*,App& theApp*/);
+		IComponent(const typeComponentID theComponentID ,App& theApp);
 
 		/**
 		* IComponent deconstructor
@@ -92,7 +92,7 @@ namespace GQE
 		void HandleCleanup(void);
 	protected:
 		/// Address to the App class
-		//App&                  mApp;
+		App&                  mApp;
 		//pointer to the attached entity.
 		Entity* mEntity;
 		/**
