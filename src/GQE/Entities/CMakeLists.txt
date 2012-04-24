@@ -27,6 +27,7 @@ find_package(SFML REQUIRED graphics window system)
 # add include paths of external libraries
 include_directories(${SFML_INCLUDE_DIR})
 
+
 if(BUILD_SHARED_LIBS)
   # define the gqe-entities target
   gqe_add_library(gqe-entities

@@ -11,7 +11,7 @@
 #include "GQE/Entities/Entities_types.hpp"
 namespace GQE
 {
-	class AProperty
+	class GQE_API AProperty
 	{
 	public:
 

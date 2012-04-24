@@ -1,5 +1,7 @@
+#include <assert.h>
 #include "GQE/Entities/interfaces/IComponent.hpp"
 #include "GQE/Entities/classes/Entity.hpp"
+#include <GQE/Core/loggers/Log_macros.hpp>
 namespace GQE
 {
 	IComponent::IComponent(const typeComponentID theComponentID , App& theApp) :
@@ -10,11 +12,11 @@ mEntity(NULL),
 	mCleanup(false),
 	mRemove(false)
 {
-	//  ILOG() << "IComponent::ctor(" << mComponentID << ")" << std::endl;
+	ILOG() << "IComponent::ctor(" << mComponentID << ")" << std::endl;
 }
 IComponent::~IComponent()
 {
-	//  ILOG() << "IComponent::dtor(" << mStateID << ")" << std::endl;
+	ILOG() << "IComponent::dtor(" << mComponentID << ")" << std::endl;
 }
 
 const typeComponentID IComponent::GetID(void) const
@@ -39,7 +41,7 @@ void IComponent::DoInit(Entity* theEntity)
 
 void IComponent::DeInit(void)
 {
-	//	ILOG() << "IState::DeInit(" << mComponentID << ")" << std::endl;
+	ILOG() << "IState::DeInit(" << mComponentID << ")" << std::endl;
 
 	if(true == mInit)
 	{
