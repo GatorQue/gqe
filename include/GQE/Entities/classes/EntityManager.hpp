@@ -7,7 +7,7 @@
 */
 #ifndef ENTITY_MANAGER_HPP_INCLUDED
 #define ENTITY_MANAGER_HPP_INCLUDED
-#include "GQE/Entities/interfaces/Entity.hpp"
+#include "GQE/Entities/classes/Entity.hpp"
 #include <map>
 #include <vector>
 namespace GQE
@@ -16,29 +16,31 @@ namespace GQE
 	{
 	public:
 		//Manager Functions
-		static void AddEntity(typeEntityID theEntityID, int theNumber=1);
+		void AddEntity(typeEntityID theEntityID, int theNumber=1);
 
-		static AProperty* GetProperty(typeEntityID theEntityID, std::string theLable);
+		AProperty* GetProperty(typeEntityID theEntityID, std::string theLable);
 
-		static void SetProperty(typeEntityID theEntityID, AProperty* theProperty);
+		void SetProperty(typeEntityID theEntityID, AProperty* theProperty);
 
-		static void AttachComponent(typeEntityID theEntityID, IComponent* theComponent);
+		void AttachComponent(typeEntityID theEntityID, IComponent* theComponent);
 
-		static void DetachComponent(typeEntityID theEntityID, typeComponentID theComponentID);
+		void DetachComponent(typeEntityID theEntityID, typeComponentID theComponentID);
 
-		static void HandleEvents(sf::Event theEvent);
+		void HandleEvents(sf::Event theEvent);
 
-		static void UpdateFixed();
+		void UpdateFixed();
 
-		static void UpdateVariable(float theElapstedTime);
+		void UpdateVariable(float theElapstedTime);
 
-		static void Draw();
+		void Draw();
 
-		static void HandleCleanup();
+		void HandleCleanup();
 
-
+	protected:
+		Entity* GetEntity(typeEntityID);
 	private:
-		static std::vector<Entity*> mEntityList;
+		std::vector<Entity*> mEntityList;
+
 	};
 }
 

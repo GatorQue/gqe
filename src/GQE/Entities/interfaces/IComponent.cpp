@@ -12,11 +12,11 @@ mEntity(NULL),
 	mCleanup(false),
 	mRemove(false)
 {
-	ILOG() << "IComponent::ctor(" << mComponentID << ")" << std::endl;
+	//ILOG() << "IComponent::ctor(" << mComponentID << ")" << std::endl;
 }
 IComponent::~IComponent()
 {
-	ILOG() << "IComponent::dtor(" << mComponentID << ")" << std::endl;
+	//ILOG() << "IComponent::dtor(" << mComponentID << ")" << std::endl;
 }
 
 const typeComponentID IComponent::GetID(void) const
@@ -75,7 +75,7 @@ void IComponent::HandleCleanup(void)
 
 void IComponent::Cleanup(void)
 {
-	ILOG() << "IComponent::Cleanup(" << mComponentID << ")" << std::endl;
+	//ILOG() << "IComponent::Cleanup(" << mComponentID << ")" << std::endl;
 }
 
 }

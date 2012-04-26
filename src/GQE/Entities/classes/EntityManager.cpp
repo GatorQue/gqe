@@ -1,6 +1,6 @@
 #include <GQE/Entities/classes/EntityManager.hpp>
-///Static Manager Funtions
-std::vector<Entity*> EntityManager::mEntityList;
+namespace GQE
+{
 void EntityManager::AddEntity(typeEntityID theEntityID,int theNumber)
 {
     if(theEntityID=="")
@@ -58,58 +58,59 @@ void EntityManager::Draw()
         (*it)->Draw();
     }
 }
-AProperty* EntityManager::GetProperty(std::string theKey)
+AProperty* EntityManager::GetProperty(typeEntityID theEntityID,std::string theLable)
 {
-    if(theKey=="")
+    if(theEntityID=="")
         return NULL;
-    while(mPropertyList.find(theKey)!=mPropertyList.end())
-        return NULL;
-
-    return mPropertyList[theKey];
-}
-
-void EntityManager::SetProperty(AProperty* theProperty)
-{
-    if(theProperty->getLable()=="")
-        return;
-    if(mPropertyList.find(theProperty->getLable())!=mPropertyList.end())
+    std::vector<Entity*>::iterator it;
+    for(it=mEntityList.begin(); it!=mEntityList.end(); ++it)
     {
-        if(mPropertyList[theProperty->getLable()]->getType()==theProperty->getType())
-        {
-            AProperty* anProperty=mPropertyList[theProperty->getLable()];
-            delete anProperty;
-        }
-        else
-        {
-            //Log Error.
-            return;
-        }
+		if(theEntityID==(*it)->GetID())
+		{
+			return (*it)->GetProperty(theLable);
+		}
     }
-    mPropertyList[theProperty->getLable()]=theProperty;
+	return NULL;
 }
 
-void EntityManager::AttachComponent(IComponent* theComponent)
+void EntityManager::SetProperty(typeEntityID theEntityID, AProperty* theProperty)
 {
-    if(theComponent==NULL)
+    if(theEntityID=="")
         return;
-    if(theComponent->GetID()=="")
-        return;
-    if(mComponentList.find(theComponent->GetID())!=mComponentList.end())
+    std::vector<Entity*>::iterator it;
+    for(it=mEntityList.begin(); it!=mEntityList.end(); ++it)
     {
-        //log error
-        return;
+		if(theEntityID==(*it)->GetID())
+		{
+			(*it)->SetProperty(theProperty);
+		}
     }
-    mComponentList[theComponent->GetID()]=theComponent;
-    theComponent->DoInit(this);
-}
-void EntityManager::DetachComponent(typeComponentID theComponetID)
-{
-    if(theComponetID=="")
-        return;
-    if(mComponentList.find(theComponetID)==mComponentList.end())
-        return;
-    IComponent* anComponent=mComponentList[theComponetID];
-    anComponent->DeInit();
-}
 }
 
+void EntityManager::AttachComponent(typeEntityID theEntityID, IComponent* theComponent)
+{
+    if(theEntityID=="")
+        return;
+    std::vector<Entity*>::iterator it;
+    for(it=mEntityList.begin(); it!=mEntityList.end(); ++it)
+    {
+		if(theEntityID==(*it)->GetID())
+		{
+			(*it)->AttachComponent(theComponent);
+		}
+    }
+}
+void EntityManager::DetachComponent(typeEntityID theEntityID,typeComponentID theComponetID)
+{
+    if(theEntityID=="")
+        return;
+    std::vector<Entity*>::iterator it;
+    for(it=mEntityList.begin(); it!=mEntityList.end(); ++it)
+    {
+		if(theEntityID==(*it)->GetID())
+		{
+			(*it)->DetachComponent(theComponetID);
+		}
+    }
+}
+}
