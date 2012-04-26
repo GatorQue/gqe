@@ -4,6 +4,7 @@ set(ENTITIES_HEADER ${INCROOT}/Entities.hpp)
 # entities library additional include files
 set(INC
     ${INCROOT}/Entities/classes/Entity.hpp
+    ${INCROOT}/Entities/classes/EntityManager.hpp
     ${INCROOT}/Entities/interfaces/IComponent.hpp
     ${INCROOT}/Entities/interfaces/AProperty.hpp
     ${INCROOT}/Entities/interfaces/TProperty.hpp
@@ -14,6 +15,7 @@ set(INC
 # entities library source files
 set(SRC
     ${SRCROOT}/Entities/classes/Entity.cpp
+    ${SRCROOT}/Entities/classes/EntityManager.cpp
     ${SRCROOT}/Entities/interfaces/IComponent.cpp
     ${SRCROOT}/Entities/Components/RenderComponent.cpp
     ${SRCROOT}/Entities/Entities_types.cpp

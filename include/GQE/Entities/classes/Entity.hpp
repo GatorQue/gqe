@@ -19,9 +19,8 @@ namespace GQE
 
 		~Entity();
 
-		std::string GetID();
-
-		AProperty* GetProperty(std::string theKey);
+        typeEntityID GetID();
+		AProperty* GetProperty(std::string theLable);
 
 		void SetProperty(AProperty* theProperty);
 
@@ -29,7 +28,7 @@ namespace GQE
 
 		void DetachComponent(typeComponentID theComponentID);
 
-		//void HandleEvents(sf::Event theEvent);
+		void HandleEvents(sf::Event theEvent);
 
 		void UpdateFixed();
 
@@ -38,18 +37,10 @@ namespace GQE
 		void Draw();
 
 		void HandleCleanup();
-
-		//Static Manager Functions
-		static void AddEntity(typeEntityID theEntityID);
-		//static void AllHandleEvents(sf::Event theEvent);
-		static void AllUpdateFixed();
-		static void AllUpdateVariable(float theElapsedTime);
-		static void AllDraw();
 	private:
 		std::map<std::string, AProperty*> mPropertyList;
 		std::map<std::string, IComponent*> mComponentList;
 		typeEntityID mEntityID;
-		static std::vector<Entity*> mEntityList;
 	};
 }
 
