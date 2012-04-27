@@ -17,6 +17,9 @@ endif(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
 # project name
 project(GQE)
 
+# Include the macros file for this project
+include(${PROJECT_SOURCE_DIR}/cmake/Macros.cmake)
+
 # project options
 set_option(BUILD_STATIC_STD_LIBS FALSE BOOL "Set to TRUE to statically link to the standard libraries, FALSE to use them as DLLs")
 set_option(BUILD_SHARED_LIBS FALSE BOOL "Set to FALSE to build static libraries")
