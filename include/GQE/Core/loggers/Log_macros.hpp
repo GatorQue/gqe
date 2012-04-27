@@ -5,6 +5,7 @@
  * @file include/GQE/Core/loggers/Log_macros.hpp
  * @author Ryan Lindeman
  * @date 20110610 - Initial Release
+ * @date 20120426 - Change to ILogger::GetLogger call instead of gLogger
  */
 #ifndef   GQE_LOG_MACROS_HPP_INCLUDED
 #define   GQE_LOG_MACROS_HPP_INCLUDED
@@ -32,8 +33,8 @@
 #if GQE_STRIP_LOG <= FATAL_LEVEL
 #define LOG_ON() \
   do { \
-    if(GQE::gLogger) { \
-      GQE::gLogger->SetActive(true); \
+    if(GQE::ILogger::GetLogger()) { \
+      GQE::ILogger::GetLogger()->SetActive(true); \
     } \
   } while(false)
 #else
@@ -47,8 +48,8 @@
 #if GQE_STRIP_LOG <= FATAL_LEVEL
 #define LOG_OFF() \
   do { \
-    if(GQE::gLogger) { \
-      GQE::gLogger->SetActive(false); \
+    if(GQE::ILogger::GetLogger()) { \
+      GQE::ILogger::GetLogger()->SetActive(false); \
     } \
   } while(false)
 #else
@@ -63,8 +64,8 @@
  */
 #define ILOGM(theMessage) \
   do { \
-    if(GQE::gLogger) { \
-      GQE::gLogger->LogMessage(GQE::SeverityInfo, __FILE__, __LINE__, \
+    if(GQE::ILogger::GetLogger()) { \
+      GQE::ILogger::GetLogger()->LogMessage(GQE::SeverityInfo, __FILE__, __LINE__, \
           theMessage); \
     } \
   } while(false)
@@ -73,10 +74,10 @@
  * at the GQE::SeverityInfo level to the global Logger (see GQE::gLogger).
  */
 #define ILOG() \
-  if(!GQE::gLogger) { \
+  if(!GQE::ILogger::GetLogger()) { \
     /* Empty */ \
   } else \
-    GQE::gLogger->GetStream(GQE::SeverityInfo, __FILE__, __LINE__)
+    GQE::ILogger::GetLogger()->GetStream(GQE::SeverityInfo, __FILE__, __LINE__)
 /**
  * ILOGM_IF macro defines a simple macro that will log theMessage provided if
  * theCondition is met at the GQE::SeverityInfo level to the global Logger
@@ -111,8 +112,8 @@
  */
 #define WLOGM(theMessage) \
   do { \
-    if(GQE::gLogger) { \
-      GQE::gLogger->LogMessage(GQE::SeverityWarning, __FILE__, __LINE__, \
+    if(GQE::ILogger::GetLogger()) { \
+      GQE::ILogger::GetLogger()->LogMessage(GQE::SeverityWarning, __FILE__, __LINE__, \
           theMessage); \
     } \
   } while(false)
@@ -122,10 +123,10 @@
  * at the GQE::SeverityWarn level to the global Logger (see GQE::gLogger).
  */
 #define WLOG() \
-  if(!GQE::gLogger) { \
+  if(!GQE::ILogger::GetLogger()) { \
     /* Empty */ \
   } else \
-    GQE::gLogger->GetStream(GQE::SeverityWarning, __FILE__, __LINE__)
+    GQE::ILogger::GetLogger()->GetStream(GQE::SeverityWarning, __FILE__, __LINE__)
 
 /**
  * WLOGM_IF macro defines a simple macro that will log theMessage provided if
@@ -163,8 +164,8 @@
  */
 #define ELOGM(theMessage) \
   do { \
-    if(GQE::gLogger) { \
-      GQE::gLogger->LogMessage(GQE::SeverityError, __FILE__, __LINE__, \
+    if(GQE::ILogger::GetLogger()) { \
+      GQE::ILogger::GetLogger()->LogMessage(GQE::SeverityError, __FILE__, __LINE__, \
           theMessage); \
     } \
   } while(false)
@@ -174,10 +175,10 @@
  * at the GQE::SeverityError level to the global Logger (see GQE::gLogger).
  */
 #define ELOG() \
-  if(!GQE::gLogger) { \
+  if(!GQE::ILogger::GetLogger()) { \
     /* Empty */ \
   } else \
-    GQE::gLogger->GetStream(GQE::SeverityError, __FILE__, __LINE__)
+    GQE::ILogger::GetLogger()->GetStream(GQE::SeverityError, __FILE__, __LINE__)
 
 /**
  * ELOGM_IF macro defines a simple macro that will log theMessage provided if
@@ -232,7 +233,7 @@
  * @param[in] theExitCode value to use when exiting the application
  */
 #define FLOG(theExitCode) \
-  if(!GQE::gLogger) { \
+  if(!GQE::ILogger::GetLogger()) { \
     /* Empty */ \
   } else \
     GQE::FatalLogger(GQE::SeverityFatal, __FILE__, __LINE__, theExitCode) \
@@ -324,7 +325,7 @@
  * @param[in] theSeverity to use when logging Entry and Exit of scope
  */
 #define SLOGR(theScopeName, theSeverity) \
-  if(!GQE::gLogger) { \
+  if(!GQE::ILogger::GetLogger()) { \
     /* Empty */ \
   } else \
     _gql_##theScopeName.GetStream(theSeverity, __FILE__, __LINE__)
@@ -346,7 +347,7 @@
  * @param[in] theExitCode value to use when exiting the application
  */
 #define SLOGRE(theScopeName, theSeverity, theExitCode) \
-  if(!GQE::gLogger) { \
+  if(!GQE::ILogger::GetLogger()) { \
     /* Empty */ \
   } else \
     _gql_##theScopeName.GetStream(theSeverity, __FILE__, __LINE__, theExitCode)

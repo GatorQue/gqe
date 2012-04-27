@@ -5,6 +5,7 @@
  * @file src/GQE/Core/interfaces/ILogger.cpp
  * @author Ryan Lindeman
  * @date 20110801 - Initial Release
+ * @date 20120426 - Change to ILogger::GetLogger call instead of gLogger
  */
 #include <ctime>
 #include <ostream>
@@ -14,10 +15,17 @@
 
 namespace GQE
 {
+
+  /// Single instance of the most recently created ILogger class
+  ILogger* ILogger::gInstance = NULL;
+
   ILogger::ILogger(int theExitCode) :
     mActive(false),
     mExitCode(StatusError)
   {
+    // Make note of the current instance of the ILogger interface
+    gInstance = this;
+
     SetActive(true);
   }
 
@@ -27,6 +35,11 @@ namespace GQE
     {
       SetActive(false);
     }
+  }
+
+  ILogger* ILogger::GetLogger(void)
+  {
+    return gInstance;
   }
 
   bool ILogger::IsActive(void)

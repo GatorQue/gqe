@@ -7,6 +7,7 @@
  * @date 20110524 - Initial Release
  * @date 20110627 - Added docs and remove extra ;
  * @date 20110801 - Moved code to .cpp file due to circular dependencies
+ * @date 20120426 - Change to ILogger::GetLogger call instead of gLogger
  */
 #ifndef   CORE_ILOGGER_HPP_INCLUDED
 #define   CORE_ILOGGER_HPP_INCLUDED
@@ -23,6 +24,13 @@ namespace GQE
        * ILogger deconstructor
        */
       virtual ~ILogger();
+
+      /**
+       * GetInstance will return the most recent ILogger based class that was created
+       * so it can be used to log messages or NULL if none has been created yet.
+       * @return pointer to ILogger based class or NULL if none is available
+       */
+      static ILogger* GetLogger(void);
 
       /**
        * IsActive will return true if this logger is currently active
@@ -105,6 +113,9 @@ namespace GQE
       void FatalShutdown(void);
 
     private:
+      /// Instance variable assigned at construction time
+      static ILogger* gInstance;
+
       /// Logger is currently active
       bool  mActive;
       /// The Exit value to use when FatalShutdown method is called

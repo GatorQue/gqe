@@ -6,6 +6,7 @@
  * @file src/GQE/Core/loggers/FatalLogger.cpp
  * @author Ryan Lindeman
  * @date 20110610 - Initial Release
+ * @date 20120426 - Change to ILogger::GetLogger call instead of gLogger
  */
 
 #include <GQE/Core/loggers/FatalLogger.hpp>
@@ -23,10 +24,10 @@ namespace GQE
   FatalLogger::~FatalLogger()
   {
     // Make sure our global logger is defined before using it
-    if(GQE::gLogger)
+    if(GQE::ILogger::GetLogger())
     {
       // Log the Fatal message string stream created
-      GQE::gLogger->LogMessage(GetString().c_str());
+      GQE::ILogger::GetLogger()->LogMessage(GetString().c_str());
     }
 
     // Call the FatalShutdown method defined in ILogger

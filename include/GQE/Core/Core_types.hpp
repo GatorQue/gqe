@@ -11,6 +11,7 @@
  * @date 20110523 - Readded NameValue types
  * @date 20110611 - Add new logging classes and new Log macros
  * @date 20110627 - Removed extra , from enum and ; from namespace
+ * @date 20120426 - Remove gLogger variable (moved to ILogger::gInstance)
  */
 #ifndef   GQE_CORE_TYPES_HPP_INCLUDED
 #define   GQE_CORE_TYPES_HPP_INCLUDED
@@ -111,8 +112,6 @@ namespace GQE
   // Internal Core global variables
   /// Pointer to App class used by Logger to gracefully shutdown App.
   extern GQE_API App*             gApp;
-  /// Pointer to Logger tool, usually created in main().
-  extern GQE_API ILogger*         gLogger;
   /// Null stream for Logger macros if not active or severity level is disabled
   extern GQE_API std::onullstream gNullStream;
 } // namespace GQE

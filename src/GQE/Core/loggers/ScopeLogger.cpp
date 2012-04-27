@@ -7,6 +7,7 @@
  * @file src/GQE/Core/loggers/ScopeLogger.cpp
  * @author Ryan Lindeman
  * @date 20110610 - Initial Release
+ * @date 20120426 - Change to ILogger::GetLogger call instead of gLogger
  */
 
 #include <GQE/Core/loggers/ScopeLogger.hpp>
@@ -23,11 +24,11 @@ namespace GQE
     mScopeName(theScopeName)
   {
     // Make sure our global logger is defined before using it
-    if(GQE::gLogger)
+    if(GQE::ILogger::GetLogger())
     {
       // Log the scope Entry with theScopeName provided to the
       // global logger (see GQE::gLogger).
-      GQE::gLogger->GetStream(mSeverity, mSourceFile, mSourceLine,
+      GQE::ILogger::GetLogger()->GetStream(mSeverity, mSourceFile, mSourceLine,
           theExitCode) << "Enter(" << theScopeName << ") ";
     }
   }
@@ -35,11 +36,11 @@ namespace GQE
   ScopeLogger::~ScopeLogger()
   {
     // Make sure our global logger is defined before using it
-    if(GQE::gLogger)
+    if(GQE::ILogger::GetLogger())
     {
       // Log the scope Exit with mScopeName provided at construction time to
       // the global logger (see GQE::gLogger).
-      GQE::gLogger->GetStream(mSeverity, mSourceFile, mSourceLine)
+      GQE::ILogger::GetLogger()->GetStream(mSeverity, mSourceFile, mSourceLine)
         << "Exit(" << mScopeName << ")" << std::endl;
     }
 
@@ -53,10 +54,10 @@ namespace GQE
   std::ostream& ScopeLogger::GetStream(void)
   {
     // Make sure our global logger is defined before using it
-    if(GQE::gLogger)
+    if(GQE::ILogger::GetLogger())
     {
       // Just return whatever the global logger returns for GetStream()
-      return GQE::gLogger->GetStream();
+      return GQE::ILogger::GetLogger()->GetStream();
     }
     else
     {
@@ -76,10 +77,10 @@ namespace GQE
     mSourceLine = theSourceLine;
 
     // Make sure our global logger is defined before using it
-    if(GQE::gLogger)
+    if(GQE::ILogger::GetLogger())
     {
       // Just return whatever the global logger returns for GetStream()
-      return GQE::gLogger->GetStream(theSeverity, theSourceFile,
+      return GQE::ILogger::GetLogger()->GetStream(theSeverity, theSourceFile,
           theSourceLine, theExitCode) << "Result(" << mScopeName << ") ";
     }
     else
@@ -92,10 +93,10 @@ namespace GQE
   void ScopeLogger::LogMessage(const char* theMessage)
   {
     // Make sure our global logger is defined before using it
-    if(GQE::gLogger)
+    if(GQE::ILogger::GetLogger())
     {
       // Use the global logger to log theMessage provided
-      GQE::gLogger->LogMessage(theMessage);
+      GQE::ILogger::GetLogger()->LogMessage(theMessage);
     }
   }
 
@@ -111,10 +112,10 @@ namespace GQE
     mSourceLine = theSourceLine;
 
     // Make sure our global logger is defined before using it
-    if(GQE::gLogger)
+    if(GQE::ILogger::GetLogger())
     {
       // Use the global logger to log theMessage and other info provided
-      GQE::gLogger->LogMessage(theSeverity, theSourceFile, theSourceLine,
+      GQE::ILogger::GetLogger()->LogMessage(theSeverity, theSourceFile, theSourceLine,
           theMessage);
     }
   }
