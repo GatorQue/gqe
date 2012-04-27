@@ -1,9 +1,10 @@
 /**
- * Provides the Dots GameState example in the GQE library.
+ * Provides the SpaceDots GameState example in the GQE library.
  *
  * @file src/GameState.cpp
  * @author Ryan Lindeman
  * @date 20120323 - Initial Release
+ * @date 20120421 - Make sure SFML 2 doesn't use its default font since it will crash on exit
  */
 
 #ifndef   GAME_STATE_HPP_INCLUDED
@@ -11,10 +12,8 @@
 
 #include <GQE/Core/Core_types.hpp>
 #include <GQE/Core/interfaces/IState.hpp>
-#include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/String.hpp>
 #include <SFML/Audio/Sound.hpp>
-
+#include <SFML/Graphics.hpp>
 /// Provides the TicTacToe GameState example
 class GameState : public GQE::IState
 {
@@ -36,7 +35,7 @@ class GameState : public GQE::IState
     virtual void DoInit(void);
 
     /**
-     * ReInit is responsible for Reseting this state when the 
+     * ReInit is responsible for Reseting this state when the
      * StateManager::ResetActiveState() method is called.  This way a Game
      * State can be restarted without unloading and reloading the game assets
      */
@@ -125,10 +124,10 @@ class GameState : public GQE::IState
     GQE::Uint8       mCurrentPlayer;
 #if (SFML_VERSION_MAJOR < 2)
     /// Winner string
-    sf::String       mWinnerText;
+    sf::String*      mWinnerText;
 #else
     /// Winner string
-    sf::Text         mWinnerText;
+    sf::Text*        mWinnerText;
 #endif
 
 }; // class GameState

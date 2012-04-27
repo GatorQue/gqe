@@ -52,12 +52,12 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
     mUpdateRate(1.0f / 100.0f) // in seconds
 #else
-      mUpdateRate((Uint32)(1000.0f / 100.0f)) // in milliseconds
+    mUpdateRate((Uint32)(1000.0f / 100.0f)) // in milliseconds
 #endif
-      {
-        // Save our global App pointer
-        gApp = this;
-      }
+  {
+    // Save our global App pointer
+    gApp = this;
+  }
 
   App::~App()
   {
@@ -352,23 +352,23 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
     if(mWindow.IsOpened())
 #else
-      if(mWindow.isOpen())
+    if(mWindow.isOpen())
 #endif
-      {
+    {
 #if (SFML_VERSION_MAJOR < 2)
-        // Show the Mouse cursor
-        mWindow.ShowMouseCursor(true);
+      // Show the Mouse cursor
+      mWindow.ShowMouseCursor(true);
 
-        // Close the Render window
-        mWindow.Close();
+      // Close the Render window
+      mWindow.Close();
 #else
-        // Show the Mouse cursor
-        mWindow.setMouseCursorVisible(true);
+      // Show the Mouse cursor
+      mWindow.setMouseCursorVisible(true);
 
-        // Close the Render window
-        mWindow.close();
+      // Close the Render window
+      mWindow.close();
 #endif
-      }
+    }
   }
 
 } // namespace GQE

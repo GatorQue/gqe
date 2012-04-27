@@ -1,16 +1,16 @@
 /**
- * Provides the Dots GameState example in the GQE library.
+ * Provides the SpaceDots GameState example in the GQE library.
  *
  * @file src/GameState.cpp
  * @author Ryan Lindeman
  * @date 20120323 - Initial Release
+ * @date 20120421 - Make sure SFML 2 doesn't use its default font since it will crash on exit
  */
 #include "GameState.hpp"
 #include <GQE/Core/assets/FontAsset.hpp>
 #include <GQE/Core/assets/ImageAsset.hpp>
 #include <GQE/Core/assets/SoundAsset.hpp>
 #include <GQE/Core/classes/App.hpp>
-#include <SFML/Graphics/Color.hpp>
 
 GameState::GameState(GQE::App& theApp) :
   GQE::IState("Game",theApp),
@@ -35,12 +35,17 @@ GameState::GameState(GQE::App& theApp) :
   mLightsaber(NULL),
   mSelectedCol(1),
   mSelectedRow(1),
-  mCurrentPlayer(0)
+  mCurrentPlayer(0),
+  mWinnerText(NULL)
 {
 }
 
 GameState::~GameState(void)
 {
+  delete mWinnerText;
+  mWinnerText = NULL;
+
+  mApp.mAssetManager.UnloadFont("WinFont");
 }
 
 void GameState::DoInit(void)
@@ -131,12 +136,12 @@ void GameState::DoInit(void)
 
 #if (SFML_VERSION_MAJOR < 2)
   // Setup winner text color as Yellow
-  mWinnerText.SetColor(sf::Color::Yellow);
-  mWinnerText.SetFont(mWinFont->GetAsset());
+  mWinnerText = new sf::String("", mWinFont->GetAsset(), 30);
+  mWinnerText->SetColor(sf::Color::Yellow);
 #else
   // Setup winner text color as Yellow
-  mWinnerText.setColor(sf::Color::Yellow);
-  mWinnerText.setFont(mWinFont->GetAsset());
+  mWinnerText = new sf::Text("", mWinFont->GetAsset(), 30);
+  mWinnerText->setColor(sf::Color::Yellow);
 #endif
 
   // Call ReInit to reset the board
@@ -222,9 +227,9 @@ void GameState::ReInit(void)
 
   // Reset our winner text
 #if (SFML_VERSION_MAJOR < 2)
-  mWinnerText.SetText("");
+  mWinnerText->SetText("");
 #else
-  mWinnerText.setString("");
+  mWinnerText->setString("");
 #endif
 }
 
@@ -405,11 +410,25 @@ void GameState::SelectEdge(void)
 #endif
     }
 
+#if (SFML_VERSION_MAJOR < 2)
     // Only play if not already playing a sound effect
     if(sf::Sound::Playing != mLightsaberSound.GetStatus())
+
     {
+
       mLightsaberSound.Play();
+
     }
+#else
+    // Only play if not already playing a sound effect
+    if(sf::Sound::Playing != mLightsaberSound.getStatus())
+
+    {
+      mLightsaberSound.play();
+
+    }
+#endif
+
   }
   // Row: Odd && Col: Even == Vertical Edge
   else if((mSelectedRow % 2) == 1 && (mSelectedCol % 2) == 0)
@@ -437,12 +456,23 @@ void GameState::SelectEdge(void)
           mRedVertical->GetAsset());
 #endif
     }
-
+#if (SFML_VERSION_MAJOR < 2)
     // Only play if not already playing a sound effect
     if(sf::Sound::Playing != mLightsaberSound.GetStatus())
     {
       mLightsaberSound.Play();
     }
+
+#else
+
+    // Only play if not already playing a sound effect
+    if(sf::Sound::Playing != mLightsaberSound.getStatus())
+    {
+      mLightsaberSound.play();
+    }
+
+#endif
+
   }
   else
   {
@@ -531,6 +561,7 @@ void GameState::SelectEdge(void)
     }
     else
     {
+#if SFML_VERSION_MAJOR<2
       // Play appropriate sound
       if(mCurrentPlayer == 1)
       {
@@ -548,6 +579,25 @@ void GameState::SelectEdge(void)
           mRedGainSound.Play();
         }
       }
+#else
+    // Play appropriate sound
+      if(mCurrentPlayer == 1)
+      {
+        // Only play if not currently playing this sound effect
+        if(sf::Sound::Playing != mBlueGainSound.getStatus())
+        {
+          mBlueGainSound.play();
+        }
+      }
+      else
+      {
+        // Only play if not currently playing this sound effect
+        if(sf::Sound::Playing != mRedGainSound.getStatus())
+        {
+          mRedGainSound.play();
+        }
+      }
+#endif
     }
   }
   else
@@ -555,41 +605,45 @@ void GameState::SelectEdge(void)
     // Determine which theme to play at end of game
     if(anScore[0] > anScore[1])
     {
-      mBlueWinSound.Play();
+
 
       // Set correct winner image to be displayed
 #if (SFML_VERSION_MAJOR < 2)
+      mBlueWinSound.Play();
       mWinnerSprite.SetImage(mBlueWinner->GetAsset());
       mWinnerSprite.SetPosition(0.0f,0.0f);
 #else
+      mBlueWinSound.play();
       mWinnerSprite.setTexture(mBlueWinner->GetAsset());
       mWinnerSprite.setPosition(0.0f,0.0f);
 #endif
     }
     else
     {
-      mRedWinSound.Play();
+
 
       // Set correct winner image to be displayed
 #if (SFML_VERSION_MAJOR < 2)
+      mRedWinSound.Play();
       mWinnerSprite.SetImage(mRedWinner->GetAsset());
       mWinnerSprite.SetPosition(0.0f,0.0f);
 #else
+      mRedWinSound.play();
       mWinnerSprite.setTexture(mRedWinner->GetAsset());
       mWinnerSprite.setPosition(0.0f,0.0f);
 #endif
     }
 
 #if (SFML_VERSION_MAJOR < 2)
-    mWinnerText.SetText("Click button to play again!");
+    mWinnerText->SetText("Click button to play again!");
 
     // Setup winner text in middle of screen
-    mWinnerText.SetPosition(110.0f,540.0f);
+    mWinnerText->SetPosition(110.0f,540.0f);
 #else
-    mWinnerText.setString("Click button to play again!");
+    mWinnerText->setString("Click button to play again!");
 
     // Setup winner text in middle of screen
-    mWinnerText.setPosition(110.0f,540.0f);
+    mWinnerText->setPosition(110.0f,540.0f);
 #endif
 
     // Switch to no player (wait until mouse clicks to reset game)
@@ -640,10 +694,10 @@ void GameState::Draw(void)
 
 #if (SFML_VERSION_MAJOR < 2)
   // Draw winner text
-  mApp.mWindow.Draw(mWinnerText);
+  mApp.mWindow.Draw(*mWinnerText);
 #else
   // Draw winner text
-  mApp.mWindow.draw(mWinnerText);
+  mApp.mWindow.draw(*mWinnerText);
 #endif
 
 }

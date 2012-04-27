@@ -15,10 +15,12 @@
  * @date 20110704 - Changed Move to SetPosition
  * @date 20120211 - Support new SFML2 snapshot changes
  * @date 20120322 - Support new SFML2 snapshot changes
+ * @date 20120421 - Use arial.ttf font since SFML 2 crashes on exit when using default font
  */
 
 #include <assert.h>
 #include <sstream>
+#include <GQE/Core/assets/FontAsset.hpp>
 #include <GQE/Core/loggers/Log_macros.hpp>
 #include <GQE/Core/classes/StatManager.hpp>
 #include <GQE/Core/classes/App.hpp>
@@ -30,10 +32,11 @@ namespace GQE
     mShow(false),
     mFrames(0),
     mFrameClock(),
-    mFPS(),
+    mDefaultFont(NULL),
+    mFPS(NULL),
     mUpdates(0),
     mUpdateClock(),
-    mUPS()
+    mUPS(NULL)
   {
     ILOGM("StatManager::ctor()");
   }
@@ -54,39 +57,52 @@ namespace GQE
     mFrames = 0;
     mUpdates = 0;
 
+    // Get our Default Font asset
+    mDefaultFont = mApp->mAssetManager.AddFont("DefaultFont", "resources/arial.ttf",
+      GQE::AssetLoadStyleImmediate);
+
     // Reset our clocks
 #if (SFML_VERSION_MAJOR < 2)
     mFrameClock.Reset();
     mUpdateClock.Reset();
 
     // Position and color for the FPS/UPS string
-    mFPS.SetColor(sf::Color(255,255,255,128));
-    mFPS.SetPosition(0,0);
-    mUPS.SetColor(sf::Color(255,255,255,128));
-    mUPS.SetPosition(0,30);
-
-    // Default strings to display for Frames/Updates per second
-    mFPS.SetText("");
-    mUPS.SetText("");
+    mFPS = new sf::String("", mDefaultFont->GetAsset(), 30.0F);
+    mFPS->SetColor(sf::Color(255,255,255,128));
+    mFPS->SetPosition(0,0);
+    
+    mUPS = new sf::String("", mDefaultFont->GetAsset(), 30.0F);
+    mUPS->SetColor(sf::Color(255,255,255,128));
+    mUPS->SetPosition(0,30);
 #else
     mFrameClock.restart();
     mUpdateClock.restart();
 
     // Position and color for the FPS/UPS string
-    mFPS.setColor(sf::Color(255,255,255,128));
-    mFPS.setPosition(0,0);
-    mUPS.setColor(sf::Color(255,255,255,128));
-    mUPS.setPosition(0,30);
+    mFPS = new sf::Text("", mDefaultFont->GetAsset(), 30);
+    mFPS->setColor(sf::Color(255,255,255,128));
+    mFPS->setPosition(0,0);
 
-    // Default strings to display for Frames/Updates per second
-    mFPS.setString("");
-    mUPS.setString("");
+    mUPS = new sf::Text("", mDefaultFont->GetAsset(), 30);
+    mUPS->setColor(sf::Color(255,255,255,128));
+    mUPS->setPosition(0,30);
 #endif
   }
 
   void StatManager::DeInit(void)
   {
     ILOGM("StatManager::DeInit()");
+
+    // Delete our FPS string
+    delete mFPS;
+    mFPS = NULL;
+
+    // Delete our UPS string
+    delete mUPS;
+    mUPS = NULL;
+
+    // Unload our DefaultFont asset
+    mApp->mAssetManager.UnloadFont("DefaultFont");
   }
 
   bool StatManager::IsShowing(void) const
@@ -140,9 +156,9 @@ namespace GQE
         updates.width(7);
         updates << "UPS: " << std::fixed << mUpdates;
 #if (SFML_VERSION_MAJOR < 2)
-        mUPS.SetText(updates.str());
+        mUPS->SetText(updates.str());
 #else
-        mUPS.setString(updates.str());
+        mUPS->setString(updates.str());
 #endif
 
         // Reset our Update clock and update counter
@@ -176,9 +192,9 @@ namespace GQE
         frames.width(7);
         frames << "FPS: " << std::fixed << mFrames;
 #if (SFML_VERSION_MAJOR < 2)
-        mFPS.SetText(frames.str());
+        mFPS->SetText(frames.str());
 #else
-        mFPS.setString(frames.str());
+        mFPS->setString(frames.str());
 #endif
 
         // Reset our Frames clock and frame counter
@@ -195,16 +211,16 @@ namespace GQE
     {
 #if (SFML_VERSION_MAJOR < 2)
       // Draw the Frames Per Second debug value on the screen
-      mApp->mWindow.Draw(mFPS);
+      mApp->mWindow.Draw(*mFPS);
 
       // Draw the Updates Per Second debug value on the screen
-      mApp->mWindow.Draw(mUPS);
+      mApp->mWindow.Draw(*mUPS);
 #else
       // Draw the Frames Per Second debug value on the screen
-      mApp->mWindow.draw(mFPS);
+      mApp->mWindow.draw(*mFPS);
 
       // Draw the Updates Per Second debug value on the screen
-      mApp->mWindow.draw(mUPS);
+      mApp->mWindow.draw(*mUPS);
 #endif
     }
   }
