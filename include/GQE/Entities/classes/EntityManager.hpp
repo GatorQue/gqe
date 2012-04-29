@@ -16,7 +16,9 @@ namespace GQE
 	{
 	public:
 		//Manager Functions
-		void AddEntity(typeEntityID theEntityID, int theNumber=1);
+		void AddEntity(typeEntityID theEntityID);
+
+		void AddEntity(Entity* theEntity);
 
 		AProperty* GetProperty(typeEntityID theEntityID, std::string theLable);
 

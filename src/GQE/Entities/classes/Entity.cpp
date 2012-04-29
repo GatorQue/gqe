@@ -45,12 +45,12 @@ void Entity::SetProperty(AProperty* theProperty)
 {
     if(theProperty->getLable()=="")
         return;
-    if(mPropertyList.find(theProperty->getLable())!=mPropertyList.end())
+    std::map<std::string,AProperty*>::iterator aniter=mPropertyList.find(theProperty->getLable());
+    if(aniter!=mPropertyList.end())
     {
-        if(mPropertyList[theProperty->getLable()]->getType()==theProperty->getType())
+        if((aniter)->second->getType()==theProperty->getType())
         {
-            AProperty* anProperty=mPropertyList[theProperty->getLable()];
-            delete anProperty;
+            delete ((aniter)->second);
         }
         else
         {

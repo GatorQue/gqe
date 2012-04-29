@@ -1,14 +1,17 @@
 #include <GQE/Entities/classes/EntityManager.hpp>
 namespace GQE
 {
-void EntityManager::AddEntity(typeEntityID theEntityID,int theNumber)
+void EntityManager::AddEntity(typeEntityID theEntityID)
 {
     if(theEntityID=="")
         return;
-    for(int n=0;n<theNumber;n++)
-    {
-        mEntityList.push_back(new Entity(theEntityID));
-    }
+    mEntityList.push_back(new Entity(theEntityID));
+}
+void EntityManager::AddEntity(Entity* theEntity)
+{
+    if(theEntity==NULL)
+        return;
+    mEntityList.push_back(theEntity);
 }
 Entity* EntityManager::GetEntity(typeEntityID theEntityID)
 {
@@ -31,7 +34,7 @@ void EntityManager::HandleEvents(sf::Event theEvent)
     std::vector<Entity*>::iterator it;
     for(it=mEntityList.begin(); it!=mEntityList.end(); ++it)
     {
-        (*it)->UpdateFixed();
+        (*it)->HandleEvents(theEvent);
     }
 }
 void EntityManager::UpdateFixed()
