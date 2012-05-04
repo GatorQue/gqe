@@ -14,23 +14,27 @@
 
 namespace GQE
 {
-  // Forward declare GQE Entities interfaces provided
-  class IComponent;
+// Forward declare GQE Entities interfaces provided
+class IComponent;
 
-  // Forward declare GQE Entities classes provided
-  class Entity;
+// Forward declare GQE Entities classes provided
+class Entity;
 
-  /// Declare Component ID typedef which is used for identifying Component objects
-  typedef std::string typeComponentID;
+class EntityManager;
+/// Declare Component ID typedef which is used for identifying Component objects
+typedef std::string typeComponentID;
 
-  /// Declare Entity ID typedef which is used for identifying Entity objects
-  typedef std::string typeEntityID;
+/// Declare Prototype ID typedef which is used for identifying Entity Prototype objects
+typedef std::string typePrototypeID;
+/// Declare Entity ID typedef which is used for identifying Entity objects
+typedef Uint32 typeEntityID;
 
-  //Helper Funtions
-  void setInt(Entity* theEntity, std::string theLable, int theValue);
-  int getInt(Entity* theEntity, std::string theLable, int theDefault);
 
-  void setString(Entity* theEntity, std::string theLable, std::string theValue);
-  std::string getString(Entity* theEntity, std::string theLable, std::string theDefault);
+//Helper Funtions
+void setInt(Entity* theEntity, std::string theLable, int theValue);
+int getInt(Entity* theEntity, std::string theLable, int theDefault);
+
+void setString(Entity* theEntity, std::string theLable, std::string theValue);
+std::string getString(Entity* theEntity, std::string theLable, std::string theDefault);
 }
 #endif
