@@ -8,7 +8,7 @@
 
 namespace GQE
 {
-  class RenderComponent : public IComponent
+  class GQE_API RenderComponent : public IComponent
   {
     public:
       /**

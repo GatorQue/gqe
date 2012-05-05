@@ -32,10 +32,10 @@ typedef Uint32 typeInstanceID;
 
 
 //Helper Funtions
-void setInt(Entity* theEntity, std::string theLable, int theValue);
-int getInt(Entity* theEntity, std::string theLable, int theDefault);
+void GQE_API setInt(Entity* theEntity, std::string theLable, int theValue);
+int GQE_API getInt(Entity* theEntity, std::string theLable, int theDefault);
 
-void setString(Entity* theEntity, std::string theLable, std::string theValue);
-std::string getString(Entity* theEntity, std::string theLable, std::string theDefault);
+void GQE_API setString(Entity* theEntity, std::string theLable, std::string theValue);
+std::string GQE_API getString(Entity* theEntity, std::string theLable, std::string theDefault);
 }
 #endif

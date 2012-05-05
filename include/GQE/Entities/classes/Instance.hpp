@@ -3,7 +3,7 @@
 #include "GQE/Entities/classes/Entity.hpp"
 namespace GQE
 {
-	class Instance : public Entity
+	class GQE_API Instance : public Entity
 	{
 	public:
 		Instance(typeInstanceID theInstanceID, Prototype* thePrototype);
