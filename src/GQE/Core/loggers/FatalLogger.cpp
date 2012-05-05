@@ -7,6 +7,7 @@
  * @author Ryan Lindeman
  * @date 20110610 - Initial Release
  * @date 20120426 - Change to ILogger::GetLogger call instead of gLogger
+ * @date 20120504 - Fix segfault caused by SLOG taking over gInstance
  */
 
 #include <GQE/Core/loggers/FatalLogger.hpp>
@@ -15,7 +16,7 @@ namespace GQE
 {
   FatalLogger::FatalLogger(SeverityType theSeverity,
       const char* theSourceFile, int theSourceLine, int theExitCode) :
-    StringLogger(theExitCode)
+    StringLogger(false, theExitCode)
   {
     // Create a tag for this fatal log message in our string stream
     WriteTag(GetStream(), theSeverity, theSourceFile, theSourceLine);

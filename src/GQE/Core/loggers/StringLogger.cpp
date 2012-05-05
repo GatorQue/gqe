@@ -5,14 +5,15 @@
  * @file src/GQE/Core/loggers/StringLogger.cpp
  * @author Ryan Lindeman
  * @date 20110607 - Initial Release
+ * @date 20120504 - Fix segfault caused by SLOG taking over gInstance
  */
 
 #include <GQE/Core/loggers/StringLogger.hpp>
 
 namespace GQE
 {
-  StringLogger::StringLogger(int theExitCode) :
-    ILogger(theExitCode)
+  StringLogger::StringLogger(bool theDefault, int theExitCode) :
+    ILogger(theDefault, theExitCode)
   {
   }
 

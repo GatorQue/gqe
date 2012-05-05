@@ -6,6 +6,7 @@
  * @author Ryan Lindeman
  * @date 20110801 - Initial Release
  * @date 20120426 - Change to ILogger::GetLogger call instead of gLogger
+ * @date 20120504 - Fix segfault caused by SLOG taking over gInstance
  */
 #include <ctime>
 #include <ostream>
@@ -19,12 +20,16 @@ namespace GQE
   /// Single instance of the most recently created ILogger class
   ILogger* ILogger::gInstance = NULL;
 
-  ILogger::ILogger(int theExitCode) :
+  ILogger::ILogger(bool theDefault, int theExitCode) :
     mActive(false),
     mExitCode(StatusError)
   {
-    // Make note of the current instance of the ILogger interface
-    gInstance = this;
+    // Make this the default logger?
+    if(theDefault)
+    {
+      // Make note of the current instance of the ILogger interface
+      gInstance = this;
+    }
 
     SetActive(true);
   }
@@ -34,6 +39,12 @@ namespace GQE
     if(mActive)
     {
       SetActive(false);
+    }
+
+    // Clear us as the default if going out of scope now
+    if(this == gInstance)
+    {
+      gInstance = NULL;
     }
   }
 

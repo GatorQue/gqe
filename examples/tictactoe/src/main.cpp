@@ -6,6 +6,7 @@
  * @file main.cpp
  * @author Ryan Lindeman
  * @date 20100707 - Initial Release
+ * @date 20120504 - Fix missing gLogger variable issue
  */
 
 #include <assert.h>
@@ -18,8 +19,8 @@ int main(int argc, char* argv[])
   // Default anExitCode to a specific value
   int anExitCode = GQE::StatusNoError;
 
-  // Create our Logger first before creating our application
-  GQE::gLogger = new(std::nothrow) GQE::FileLogger("output.txt");
+  // Create a FileLogger and make it the default logger before creating our App
+  GQE::FileLogger anLogger("output.txt", true);
 
   // Create our action application.
   GQE::App* anApp = new(std::nothrow) TicTacToeApp();
@@ -40,12 +41,6 @@ int main(int argc, char* argv[])
 
   // Don't keep pointers to objects we have just deleted
   anApp = NULL;
-
-  // Delete our Logger last before exiting
-  delete GQE::gLogger;
-
-  // Don't keep pointers to objects we have just deleted
-  GQE::gLogger = NULL;
 
   // return our exit code
   return anExitCode;
