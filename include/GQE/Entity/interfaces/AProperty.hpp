@@ -8,7 +8,7 @@
 */
 #ifndef APROPERTY_HPP_INCLUDED
 #define APROPERTY_HPP_INCLUDED
-#include "GQE/Entities/Entities_types.hpp"
+#include "GQE/Entity/Entity_types.hpp"
 namespace GQE
 {
 	class GQE_API AProperty
@@ -26,10 +26,9 @@ namespace GQE
 				return mName;
 			};
 		};
-		AProperty(std::string theType, AProperty* theParent=NULL, std::string theLable=""):
+		AProperty(std::string theType, std::string theLable=""):
 		mLable(theLable),
-			mType(theType),
-			mParent(theParent)
+			mType(theType)
 		{
 
 		}
@@ -52,11 +51,10 @@ namespace GQE
 		{
 			mType=Type_t(theType);
 		}
-		AProperty* mParent;//Used in prototyping. 
 	private:
 		std::string mLable;
 		Type_t mType;
-		
+
 	};
 }
 #endif

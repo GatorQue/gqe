@@ -1,9 +1,9 @@
-#include <GQE/Entities/Components/RenderComponent.hpp>
-#include <GQE/Entities/classes/Entity.hpp>
+#include <GQE/Entity/Components/RenderComponent.hpp>
+#include <GQE/Entity/classes/Entity.hpp>
 namespace GQE
 {
 	RenderComponent::RenderComponent(App& theApp) :
-IComponent("Render",theApp),
+IComponent("RenderComponent",theApp),
 	mSprite(NULL)
 {
 
@@ -16,13 +16,10 @@ RenderComponent::~RenderComponent()
 void RenderComponent::DoInit(Entity* theEntity)
 {
 	IComponent::DoInit(theEntity);
-	TProperty<sf::Vector2f>* anPosition=new TProperty<sf::Vector2f>(NULL,"Position");
-	anPosition->setValue(sf::Vector2f(0.0f,0.0f));
-	mEntity->SetProperty(anPosition);
-	std::string anSpriteName=getString(mEntity,"SpriteName","");
-	if(anSpriteName!="")
+	theEntity->AddProperty<std::string>("SpriteName","");
+	theEntity->AddProperty<sf::Vector2f>("Position",sf::Vector2f(0,0));
+	if(mSprite!=NULL)
 	{
-		mSprite=mApp.mAssetManager.GetSprite(anSpriteName);
 #if (SFML_VERSION_MAJOR < 2)
 		mSprite->SetPosition(0,0);
 #else
@@ -43,16 +40,20 @@ void RenderComponent::HandleEvents(sf::Event theEvent)
 
 void RenderComponent::UpdateFixed()
 {
-	AProperty* anPosition;
-	anPosition=mEntity->GetProperty("Position");
-	if(anPosition->getType()->Name()==typeid(TProperty<sf::Vector2f>).name())
+	sf::Vector2f anPosition;
+	std::string anSpriteName="";
+	anPosition=mEntity->GetProperty<sf::Vector2f>("Position");
+	if(mSprite==NULL)
 	{
-#if (SFML_VERSION_MAJOR < 2)
-		mSprite->SetPosition(static_cast<TProperty<sf::Vector2f>*>(anPosition)->getValue());
-#else
-		mSprite->setPosition(static_cast<TProperty<sf::Vector2f>*>(anPosition)->getValue());
-#endif
+		anSpriteName=mEntity->GetProperty<std::string>("SpriteName");
+		if(anSpriteName!="")
+			mSprite=mApp.mAssetManager.GetSprite(anSpriteName);
 	}
+#if (SFML_VERSION_MAJOR < 2)
+			mSprite->SetPosition((anPosition));
+#else
+			mSprite->setPosition((anPosition));
+#endif
 }
 
 void RenderComponent::UpdateVariable(float theElapstedTime)
