@@ -1,26 +1,25 @@
-#ifndef RENDER_COMPONENT_HPP_INCLUDED
-#define RENDER_COMPONENT_HPP_INCLUDED
+#ifndef COORD_COMPONENT_HPP_INCLUDED
+#define COORD_COMPONENT_HPP_INCLUDED
 
-#include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <GQE/Entity/Entity_types.hpp>
 #include <GQE/Entity/interfaces/IComponent.hpp>
 
 namespace GQE
 {
-	class GQE_API RenderComponent : public IComponent
+	class GQE_API CoordComponent : public IComponent
 	{
 	public:
 		/**
 		* RenderComponent constructor
 		* @param[in] theApp is the address to the App derived class
 		*/
-		RenderComponent(App& theApp);
+		CoordComponent(App& theApp);
 
 		/**
 		* RenderComponent deconstructor
 		*/
-		virtual ~RenderComponent();
+		virtual ~CoordComponent();
 		/**
 		* DoInit is responsible for initializing this component.  HandleCleanup will
 		* be called if mCleanup is true so Derived classes should always call
@@ -63,18 +62,17 @@ namespace GQE
 		*/
 		virtual void Cleanup(void);
 	private:
-		sf::Sprite* mSprite;
 		/**
 		* Our copy constructor is private because we do not allow copies of
 		* our Singleton class
 		*/
-		RenderComponent(const RenderComponent&);  // Intentionally undefined
+		CoordComponent(const CoordComponent&);  // Intentionally undefined
 
 		/**
 		* Our assignment operator is private because we do not allow copies
 		* of our Singleton class
 		*/
-		RenderComponent& operator=(const RenderComponent&); // Intentionally undefined
+		CoordComponent& operator=(const CoordComponent&); // Intentionally undefined
 	};
 }
 

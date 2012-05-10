@@ -55,7 +55,7 @@ void EntityManager::HandleEvents(sf::Event theEvent)
 	for(it=mInstanceList.begin(); it!=mInstanceList.end(); ++it)
 	{
 		(*it)->UpdateInfo();
-		(*it)->UpdateFixed();
+		(*it)->HandleEvents(theEvent);
 	}
 }
 void EntityManager::UpdateFixed()

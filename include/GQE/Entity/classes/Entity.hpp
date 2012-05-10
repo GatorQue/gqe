@@ -32,7 +32,7 @@ namespace GQE
 						return static_cast<TProperty<TYPE>*>(mPropertyList[theLable])->getValue();
 				}
 			}
-			TYPE anReturn;
+			TYPE anReturn=TYPE();
 			return anReturn;
 		}
 		template<class TYPE>

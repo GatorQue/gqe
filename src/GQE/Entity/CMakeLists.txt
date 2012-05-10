@@ -11,6 +11,8 @@ set(INC
     ${INCROOT}/Entity/interfaces/AProperty.hpp
     ${INCROOT}/Entity/interfaces/TProperty.hpp
     ${INCROOT}/Entity/Components/RenderComponent.hpp
+    ${INCROOT}/Entity/Components/DynamicComponent.hpp
+    ${INCROOT}/Entity/Components/CoordComponent.hpp
     ${INCROOT}/Entity/Entity_types.hpp
 )
 
@@ -22,6 +24,8 @@ set(SRC
     ${SRCROOT}/Entity/classes/EntityManager.cpp
     ${SRCROOT}/Entity/interfaces/IComponent.cpp
     ${SRCROOT}/Entity/Components/RenderComponent.cpp
+    ${SRCROOT}/Entity/Components/DynamicComponent.cpp
+    ${SRCROOT}/Entity/Components/CoordComponent.cpp
     ${SRCROOT}/Entity/Entity_types.cpp
 )
 
