@@ -15,7 +15,7 @@ DynamicComponent::~DynamicComponent()
 void DynamicComponent::DoInit(GQE::Entity* theEntity)
 {
 	IComponent::DoInit(theEntity);
-    theEntity->AddProperty<sf::Vector2f>("Velocity",sf::Vector2f(0,0));
+	theEntity->AddProperty<sf::Vector2f>("Velocity",sf::Vector2f(0,0));
 	theEntity->AddProperty<sf::Vector2f>("Acceleration",sf::Vector2f(0,0));
 }
 
@@ -34,10 +34,10 @@ void DynamicComponent::UpdateFixed()
 	sf::Vector2f anPosition=mEntity->GetProperty<sf::Vector2f>("Position");
 	sf::Vector2f anVelocity=mEntity->GetProperty<sf::Vector2f>("Velocity");
 	sf::Vector2f anAccelleration=mEntity->GetProperty<sf::Vector2f>("Accelleration");
-    anVelocity+=anAccelleration;
-    anPosition+=anVelocity;
-    mEntity->SetProperty<sf::Vector2f>("Velocity",anVelocity);
-    mEntity->SetProperty<sf::Vector2f>("Position",anPosition);
+	anVelocity+=anAccelleration;
+	anPosition+=anVelocity;
+	mEntity->SetProperty<sf::Vector2f>("Velocity",anVelocity);
+	mEntity->SetProperty<sf::Vector2f>("Position",anPosition);
 
 }
 

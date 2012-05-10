@@ -31,9 +31,10 @@ void RenderComponent::HandleEvents(sf::Event theEvent)
 
 void RenderComponent::UpdateFixed()
 {
-	sf::Vector2f anPosition;
 	std::string anSpriteName="";
-	anPosition=mEntity->GetProperty<sf::Vector2f>("Position");
+	sf::Vector2f anPosition=mEntity->GetProperty<sf::Vector2f>("Position");
+	float anRotation=mEntity->GetProperty<float>("Rotation");
+	sf::Vector2f anScale=mEntity->GetProperty<sf::Vector2f>("Scale");
 	if(mSprite==NULL)
 	{
 		anSpriteName=mEntity->GetProperty<std::string>("SpriteName");
@@ -42,8 +43,12 @@ void RenderComponent::UpdateFixed()
 	}
 #if (SFML_VERSION_MAJOR < 2)
 			mSprite->SetPosition(anPosition);
+			mSprite->SetRotation(anRotation);
+			mSprite->SetScale(anScale);
 #else
 			mSprite->setPosition(anPosition);
+			mSprite->setRotation(anRotation);
+			mSprite->setScale(anScale);
 #endif
 }
 
@@ -54,13 +59,14 @@ void RenderComponent::UpdateVariable(float theElapstedTime)
 
 void RenderComponent::Draw()
 {
-	if(mSprite==NULL)
-		return;
+	if(mSprite!=NULL)
+	{
 #if (SFML_VERSION_MAJOR < 2)
 	mApp.mWindow.Draw(*mSprite);
 #else
 	mApp.mWindow.draw(*mSprite);
 #endif
+	}
 }
 
 void RenderComponent::Cleanup(void)

@@ -7,7 +7,7 @@
 #include <GQE/Entity/interfaces/IComponent.hpp>
 namespace GQE
 {
-class DynamicComponent : public GQE::IComponent
+class GQE_API DynamicComponent : public GQE::IComponent
 {
 public:
     /**

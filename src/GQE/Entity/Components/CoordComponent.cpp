@@ -16,8 +16,8 @@ void CoordComponent::DoInit(Entity* theEntity)
 {
 	IComponent::DoInit(theEntity);
 	theEntity->AddProperty<sf::Vector2f>("Position",sf::Vector2f(0,0));
-	theEntity->AddProperty<sf::Vector2f>("Rotation",sf::Vector2f(0,0));
-	theEntity->AddProperty<sf::Vector2f>("Scale",sf::Vector2f(0,0));
+	theEntity->AddProperty<float>("Rotation",0);
+	theEntity->AddProperty<sf::Vector2f>("Scale",sf::Vector2f(1,1));
 }
 
 void CoordComponent::ReInit()
