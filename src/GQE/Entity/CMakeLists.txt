@@ -13,6 +13,7 @@ set(INC
     ${INCROOT}/Entity/Components/RenderComponent.hpp
     ${INCROOT}/Entity/Components/DynamicComponent.hpp
     ${INCROOT}/Entity/Components/CoordComponent.hpp
+    ${INCROOT}/Entity/Components/SolidComponent.hpp
     ${INCROOT}/Entity/Entity_types.hpp
 )
 
@@ -26,6 +27,7 @@ set(SRC
     ${SRCROOT}/Entity/Components/RenderComponent.cpp
     ${SRCROOT}/Entity/Components/DynamicComponent.cpp
     ${SRCROOT}/Entity/Components/CoordComponent.cpp
+    ${SRCROOT}/Entity/Components/SolidComponent.cpp
     ${SRCROOT}/Entity/Entity_types.cpp
 )
 

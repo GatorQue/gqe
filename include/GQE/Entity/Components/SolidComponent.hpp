@@ -1,5 +1,5 @@
-#ifndef RENDER_COMPONENT_HPP_INCLUDED
-#define RENDER_COMPONENT_HPP_INCLUDED
+#ifndef SOLID_COMPONENT_HPP_INCLUDED
+#define SOLID_COMPONENT_HPP_INCLUDED
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
@@ -8,23 +8,23 @@
 
 namespace GQE
 {
-	class GQE_API RenderComponent : public IComponent
+	class GQE_API SolidComponent : public IComponent
 	{
 	public:
 		/**
-		* RenderComponent constructor
+		* SolidComponent constructor
 		* @param[in] theApp is the address to the App derived class
 		*/
-		RenderComponent(App& theApp,EntityManager* theEntityManager);
+		SolidComponent(App& theApp,EntityManager* theEntityManager);
 
 		/**
-		* RenderComponent deconstructor
+		* SolidComponent deconstructor
 		*/
-		virtual ~RenderComponent();
+		virtual ~SolidComponent();
 		/**
 		* DoInit is responsible for initializing this component.  HandleCleanup will
 		* be called if mCleanup is true so Derived classes should always call
-		* RenderComponent::DoInit() first before initializing their assets.
+		* SolidComponent::DoInit() first before initializing their assets.
 		*/
 		virtual void DoInit(Entity* theEntity);
 		/**
@@ -63,18 +63,19 @@ namespace GQE
 		*/
 		virtual void Cleanup(void);
 	private:
-		sf::Sprite* mSprite;
+		///Variables
+		static std::vector<Entity*> mEntities;
 		/**
 		* Our copy constructor is private because we do not allow copies of
 		* our Singleton class
 		*/
-		RenderComponent(const RenderComponent&);  // Intentionally undefined
+		SolidComponent(const SolidComponent&);  // Intentionally undefined
 
 		/**
 		* Our assignment operator is private because we do not allow copies
 		* of our Singleton class
 		*/
-		RenderComponent& operator=(const RenderComponent&); // Intentionally undefined
+		SolidComponent& operator=(const SolidComponent&); // Intentionally undefined
 	};
 }
 

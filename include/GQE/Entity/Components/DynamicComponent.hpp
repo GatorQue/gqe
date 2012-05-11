@@ -14,7 +14,7 @@ public:
     * DynamicComponent constructor
     * @param[in] theApp is the address to the App derived class
     */
-    DynamicComponent(GQE::App& theApp);
+    DynamicComponent(GQE::App& theApp,EntityManager* theEntityManager);
 
     /**
     * DynamicComponent deconstructor

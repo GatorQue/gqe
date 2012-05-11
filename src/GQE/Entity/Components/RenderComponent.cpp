@@ -2,8 +2,8 @@
 #include <GQE/Entity/classes/Entity.hpp>
 namespace GQE
 {
-	RenderComponent::RenderComponent(App& theApp) :
-IComponent("RenderComponent",theApp),
+	RenderComponent::RenderComponent(App& theApp,EntityManager* theEntityManager) :
+IComponent("RenderComponent",theApp,theEntityManager),
 	mSprite(NULL)
 {
 
@@ -40,6 +40,8 @@ void RenderComponent::UpdateFixed()
 		anSpriteName=mEntity->GetProperty<std::string>("SpriteName");
 		if(anSpriteName!="")
 			mSprite=mApp.mAssetManager.GetSprite(anSpriteName);
+		if(mSprite!=NULL)
+			mSprite->setOrigin(mSprite->getTexture()->getSize().x/2,mSprite->getTexture()->getSize().y/2);
 	}
 #if (SFML_VERSION_MAJOR < 2)
 			mSprite->SetPosition(anPosition);
@@ -71,10 +73,10 @@ void RenderComponent::Draw()
 
 void RenderComponent::Cleanup(void)
 {
-
+	IComponent::Cleanup();
 }
 IComponent* RenderComponent::MakeClone()
 {
-	return (new RenderComponent(mApp));
+	return (new RenderComponent(mApp,mEntityManager));
 }
 }

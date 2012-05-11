@@ -2,8 +2,8 @@
 #include <GQE/Entity/classes/Entity.hpp>
 namespace GQE
 {
-	CoordComponent::CoordComponent(App& theApp) :
-IComponent("CoordComponent",theApp)
+	CoordComponent::CoordComponent(App& theApp,EntityManager* theEntityManager) :
+IComponent("CoordComponent",theApp, theEntityManager)
 {
 
 }
@@ -47,10 +47,10 @@ void CoordComponent::Draw()
 
 void CoordComponent::Cleanup(void)
 {
-
+	IComponent::Cleanup();
 }
 IComponent* CoordComponent::MakeClone()
 {
-	return (new CoordComponent(mApp));
+	return (new CoordComponent(mApp,mEntityManager));
 }
 }
