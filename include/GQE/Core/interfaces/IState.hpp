@@ -35,9 +35,9 @@ namespace GQE
       /**
        * IState constructor
        * @param[in] theStateID to use for this State object
-       * @param[in] theApp is the address to the App derived class
+       * @param[in] theApp is the address to the IApp derived class
        */
-      IState(const typeStateID theStateID, App& theApp);
+      IState(const typeStateID theStateID, IApp& theApp);
 
       /**
        * IState deconstructor
@@ -139,7 +139,7 @@ namespace GQE
 
     protected:
       /// Address to the App class
-      App&                  mApp;
+      IApp&                 mApp;
 
       /**
        * Cleanup is responsible for performing any cleanup required before
@@ -190,7 +190,7 @@ namespace GQE
  * class, the StateManager class, the StatManager class, and other classes.
  * This is what allows game states to interact with each other.
  *
- * Copyright (c) 2010-2011 Ryan Lindeman
+ * Copyright (c) 2010-2012 Ryan Lindeman
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights

@@ -5,14 +5,39 @@
  * @author Ryan Lindeman
  * @date 20110608 - Initial Release
  * @date 20120426 - Remove gLogger variable (moved to ILogger::gInstance)
+ * @date 20120512 - Remove gApp variable (moved to IApp::gApp)
+ * @date 20120512 - Force compiler to create TAsset<xyz> base classes
  */
+#include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
+#include <GQE/Core/classes/ConfigReader.hpp>
+#include <GQE/Core/interfaces/TAsset.hpp>
 #include <GQE/Core/Core_types.hpp>
 #include <GQE/Core/loggers/onullstream>
 
 namespace GQE
 {
+  /// Force instance of ConfigReader TAsset template class
+  template TAsset<ConfigReader>;
+
+  /// Force instance of sf::Font TAsset template class
+  template TAsset<sf::Font>;
+
+#if (SFML_VERSION_MAJOR < 2)
+  /// Force instance of sf::Image TAsset template class
+  template TAsset<sf::Image>;
+#else
+  /// Force instance of sf::Texture TAsset template class
+  template TAsset<sf::Texture>;
+#endif
+
+  /// Force instance of sf::Music TAsset template class
+  template TAsset<sf::Music>;
+
+  /// Force instance of sf::SoundBuffer TAsset template class
+  template TAsset<sf::SoundBuffer>;
+
   // Internal Core global variables
-  GQE_API App*             gApp = NULL;
   GQE_API std::onullstream gNullStream;
 } // namespace GQE
 

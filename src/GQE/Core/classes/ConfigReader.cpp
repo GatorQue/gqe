@@ -18,12 +18,13 @@
  * @date 20110820 - Moved private Parse methods to StringUtil.hpp/cpp
  * @date 20110820 - Changed Read to LoadFromFile to match SFML style
  * @date 20110820 - Removed GetColor, use GetString and ParseColor instead
+ * @date 20120512 - Renamed App to IApp since it really is just an interface
  */
 
 #include <cstdio>
 #include <cstring>
 #include <GQE/Core/classes/ConfigReader.hpp>
-#include <GQE/Core/classes/App.hpp>
+#include <GQE/Core/interfaces/IApp.hpp>
 #include <GQE/Core/loggers/Log_macros.hpp>
 #include <GQE/Core/utils/StringUtil.hpp>
 

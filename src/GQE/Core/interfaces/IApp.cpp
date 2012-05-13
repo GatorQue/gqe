@@ -21,17 +21,31 @@
  * @date 20110831 - Support new SFML2 snapshot changes
  * @date 20120211 - Support new SFML2 snapshot changes
  * @date 20120322 - Support new SFML2 snapshot changes
+ * @date 20120426 - Convert from pointer to address for anState in Loop method.
+ * @date 20120512 - Add new Init hooks for derived classes and changed name to IApp
  */
 
 #include <assert.h>
-#include <GQE/Core/loggers/Log_macros.hpp>
-#include <GQE/Core/classes/App.hpp>
+#include <GQE/Core/assets/ConfigAsset.hpp>
+#include <GQE/Core/assets/ConfigHandler.hpp>
+#include <GQE/Core/assets/FontHandler.hpp>
+#include <GQE/Core/assets/ImageHandler.hpp>
+#include <GQE/Core/assets/MusicHandler.hpp>
+#include <GQE/Core/assets/SoundHandler.hpp>
 #include <GQE/Core/classes/ConfigReader.hpp>
+#include <GQE/Core/interfaces/IApp.hpp>
 #include <GQE/Core/interfaces/IState.hpp>
+#include <GQE/Core/loggers/Log_macros.hpp>
 
 namespace GQE
 {
-  App::App(const std::string theTitle) :
+  /// Default application wide settings file string
+  const char* IApp::APP_SETTINGS = "resources/settings.cfg";
+
+  /// Single instance of the most recently created App class
+  IApp* IApp::gApp = NULL;
+
+  IApp::IApp(const std::string theTitle) :
     mTitle(theTitle),
     mVideoMode(DEFAULT_VIDEO_WIDTH, DEFAULT_VIDEO_HEIGHT, DEFAULT_VIDEO_BPP),
     mWindow(),
@@ -59,26 +73,34 @@ namespace GQE
     gApp = this;
   }
 
-  App::~App()
+  IApp::~IApp()
   {
     // Make sure our running flag is false
     mRunning = false;
 
-    // Remove our global App pointer
-    gApp = NULL;
+    // Are we going out of scope? then remove our static pointer
+    if(gApp == this)
+    {
+      gApp = NULL;
+    }
   }
 
-  void App::ProcessArguments(int argc, char* argv[])
+  IApp* IApp::GetApp(void)
+  {
+    return gApp;
+  }
+
+  void IApp::ProcessArguments(int argc, char* argv[])
   {
     // Handle command line arguments
     // TODO: Add handling of command line arguments
     if(argc == 1)
     {
-      ILOG() << "App::ProcessArguments(" << argv[0] << ") command line: (none)" << std::endl;
+      ILOG() << "IApp::ProcessArguments(" << argv[0] << ") command line: (none)" << std::endl;
     }
     else
     {
-      ILOG() << "App::ProcessArguments(" << argv[0] << ") command line:" << std::endl;
+      ILOG() << "IApp::ProcessArguments(" << argv[0] << ") command line:" << std::endl;
       for(int iloop = 1; iloop<argc; iloop++)
       {
         ILOG() << "Argument" << iloop << "=(" << argv[iloop] << ")" << std::endl;
@@ -86,15 +108,12 @@ namespace GQE
     }
   }
 
-  int App::Run(void)
+  int IApp::Run(void)
   {
     SLOG(App_Run,SeverityInfo) << std::endl;
 
     // First set our Running flag to true
     mRunning = true;
-
-    // Register our App pointer with our AssetManager
-    mAssetManager.RegisterApp(this);
 
     // Register our App pointer with our StatManager
     mStatManager.RegisterApp(this);
@@ -102,10 +121,27 @@ namespace GQE
     // Register our App pointer with our StateManager
     mStateManager.RegisterApp(this);
 
-    // Pre-init is responsible for the following:
-    // 1) Opening our configuration file
-    // 2) Setting up our render window
-    PreInit();
+    // First register the IAssetHandler derived classes in the GQE Core library
+    mAssetManager.RegisterHandler(new(std::nothrow) ConfigHandler());
+    mAssetManager.RegisterHandler(new(std::nothrow) FontHandler());
+    mAssetManager.RegisterHandler(new(std::nothrow) ImageHandler());
+    mAssetManager.RegisterHandler(new(std::nothrow) MusicHandler());
+    mAssetManager.RegisterHandler(new(std::nothrow) SoundHandler());
+
+    // Give derived class a time to register custom IAssetHandler classes
+    InitAssetHandlers();
+
+    // Attempt to open the application wide settings.cfg file as a ConfigAsset
+    // registered under the ID of "resources/settings.cfg"
+    InitSettingsConfig();
+
+    // Try to open the Renderer window to display graphics
+    InitRenderer();
+
+    // Give the derived application a chance to register a IScreenFactory class
+    // to provide IScreen derived classes (previously known as IState derived
+    // classes) as requested.
+    InitScreenFactory();
 
     // Give the StatManager a chance to initialize
     mStatManager.DoInit();
@@ -113,13 +149,13 @@ namespace GQE
     // Show statistics: Frames per second (FPS) and Updates per second (UPS)
     mStatManager.SetShow(false);
 
-    // Initialize our application which might set our Running flag to false
-    Init();
-
-    // Loop if Running flag is still true
-    Loop();
+    // GameLoop if Running flag is still true
+    GameLoop();
 
     // Cleanup our application
+    HandleCleanup();
+
+    // Perform our own internal Cleanup
     Cleanup();
 
     // Make sure our Running flag is set to false before exiting
@@ -134,12 +170,12 @@ namespace GQE
     return mExitCode;
   }
 
-  bool App::IsRunning(void) const
+  bool IApp::IsRunning(void) const
   {
     return mRunning;
   }
 
-  float App::GetUpdateRate(void) const
+  float IApp::GetUpdateRate(void) const
   {
 #if (SFML_VERSION_MAJOR < 2)
     return (1.0f / mUpdateRate);
@@ -148,7 +184,7 @@ namespace GQE
 #endif
   }
 
-  void App::SetUpdateRate(float theRate)
+  void IApp::SetUpdateRate(float theRate)
   {
     if(1000.0f >= theRate && 1.0f <= theRate)
     {
@@ -160,31 +196,37 @@ namespace GQE
     }
   }
 
-  void App::Quit(int theExitCode)
+  void IApp::Quit(int theExitCode)
   {
     mExitCode = theExitCode;
     mRunning = false;
   }
 
-  void App::PreInit(void)
+  void IApp::InitSettingsConfig(void)
   {
-    SLOG(App_PreInit, SeverityInfo) << std::endl;
-    ConfigReader anConfig;       // For reading .INI style files
+    SLOG(App_InitSettingsConfig, SeverityInfo) << std::endl;
+    ConfigAsset anSettingsConfig(IApp::APP_SETTINGS, true);
+  }
 
-    // Use our default configuration file to obtain the initial window settings
-    anConfig.LoadFromFile("resources/window.cfg"); // Read in our window settings
+  void IApp::InitRenderer(void)
+  {
+    SLOG(App_InitRenderer, SeverityInfo) << std::endl;
+    ConfigAsset anSettingsConfig(IApp::APP_SETTINGS, true);
 
     // Are we in Fullscreen mode?
-    if(anConfig.GetBool("window","fullscreen",true))
+    if(anSettingsConfig.GetAsset().GetBool("window","fullscreen",true))
     {
       mWindowStyle = sf::Style::Fullscreen;
     }
 
 #if (SFML_VERSION_MAJOR < 2)
     // What size window does the user want?
-    mVideoMode.Width = anConfig.GetUint32("window","width",DEFAULT_VIDEO_WIDTH);
-    mVideoMode.Height = anConfig.GetUint32("window","height",DEFAULT_VIDEO_HEIGHT);
-    mVideoMode.BitsPerPixel = anConfig.GetUint32("window","depth",DEFAULT_VIDEO_BPP);
+    mVideoMode.Width =
+      anSettingsConfig.GetAsset().GetUint32("window","width",DEFAULT_VIDEO_WIDTH);
+    mVideoMode.Height =
+      anSettingsConfig.GetAsset().GetUint32("window","height",DEFAULT_VIDEO_HEIGHT);
+    mVideoMode.BitsPerPixel =
+ anSettingsConfig.GetAsset().GetUint32("window","depth",DEFAULT_VIDEO_BPP);
 
     // For Fullscreen, verify valid VideoMode, otherwise revert to defaults for Fullscreen
     if(sf::Style::Fullscreen == mWindowStyle && false == mVideoMode.IsValid())
@@ -201,9 +243,12 @@ namespace GQE
     mWindow.UseVerticalSync(true);
 #else
     // What size window does the user want?
-    mVideoMode.width = anConfig.GetUint32("window","width",DEFAULT_VIDEO_WIDTH);
-    mVideoMode.height = anConfig.GetUint32("window","height",DEFAULT_VIDEO_HEIGHT);
-    mVideoMode.bitsPerPixel = anConfig.GetUint32("window","depth",DEFAULT_VIDEO_BPP);
+    mVideoMode.width =
+      anSettingsConfig.GetAsset().GetUint32("window","width",DEFAULT_VIDEO_WIDTH);
+    mVideoMode.height =
+      anSettingsConfig.GetAsset().GetUint32("window","height",DEFAULT_VIDEO_HEIGHT);
+    mVideoMode.bitsPerPixel =
+      anSettingsConfig.GetAsset().GetUint32("window","depth",DEFAULT_VIDEO_BPP);
 
     // For Fullscreen, verify valid VideoMode, otherwise revert to defaults for Fullscreen
     if(sf::Style::Fullscreen == mWindowStyle && false == mVideoMode.isValid())
@@ -221,9 +266,9 @@ namespace GQE
 #endif
   }
 
-  void App::Loop(void)
+  void IApp::GameLoop(void)
   {
-    SLOG(App_Loop, SeverityInfo) << std::endl;
+    SLOG(App_GameLoop, SeverityInfo) << std::endl;
 
     // Clock used in restricting Update loop to a fixed rate
     sf::Clock anUpdateClock;
@@ -260,10 +305,7 @@ namespace GQE
 #endif
     {
       // Get the currently active state
-      IState* anState = mStateManager.GetActiveState();
-
-      // Check for corrupt state returned by our StateManager
-      assert(NULL != anState && "App::Loop() received a bad pointer");
+      IState& anState = mStateManager.GetActiveState();
 
       // Create a fixed rate Update loop
 #if (SFML_VERSION_MAJOR < 2)
@@ -292,20 +334,20 @@ namespace GQE
               Quit(StatusAppOK);
               break;
             case sf::Event::GainedFocus:  // Window gained focus
-              anState->Resume();
+              anState.Resume();
               break;
             case sf::Event::LostFocus:    // Window lost focus
-              anState->Pause();
+              anState.Pause();
               break;
             case sf::Event::Resized:      // Window resized
               break;
             default:                      // Current active state will handle
-              anState->HandleEvents(anEvent);
+              anState.HandleEvents(anEvent);
           } // switch(anEvent.Type)
         } // while(mWindow.GetEvent(anEvent))
 
         // Let the current active state perform fixed updates next
-        anState->UpdateFixed();
+        anState.UpdateFixed();
 
         // Let the StatManager perfom its updates
         mStatManager.UpdateFixed();
@@ -316,14 +358,14 @@ namespace GQE
 
       // Let the current active state perform its variable update
 #if (SFML_VERSION_MAJOR < 2)
-      anState->UpdateVariable(mWindow.GetFrameTime());
+      anState.UpdateVariable(mWindow.GetFrameTime());
 #else
       // Convert to floating point value of seconds for SFML 2.0
-      anState->UpdateVariable(anFrameClock.restart().asSeconds());
+      anState.UpdateVariable(anFrameClock.restart().asSeconds());
 #endif
 
       // Let the current active state draw stuff
-      anState->Draw();
+      anState.Draw();
 
       // Let the StatManager perform its drawing
       mStatManager.Draw();
@@ -341,7 +383,7 @@ namespace GQE
     } // while(IsRunning() && !mStates.empty())
   }
 
-  void App::Cleanup(void)
+  void IApp::Cleanup(void)
   {
     SLOG(App_Cleanup, SeverityInfo) << std::endl;
 

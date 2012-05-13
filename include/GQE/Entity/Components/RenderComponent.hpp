@@ -15,7 +15,7 @@ namespace GQE
 		* RenderComponent constructor
 		* @param[in] theApp is the address to the App derived class
 		*/
-		RenderComponent(App& theApp,EntityManager* theEntityManager);
+		RenderComponent(IApp& theApp, EntityManager* theEntityManager);
 
 		/**
 		* RenderComponent deconstructor

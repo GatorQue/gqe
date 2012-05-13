@@ -16,13 +16,16 @@
  * @date 20110218 - Change to system include style
  * @date 20110611 - Convert logging to new Log macros
  * @date 20110627 - Removed extra ; from namespace
+ * @date 20110810 - Return address not pointer from GetActiveState.
+ * @date 20120426 - Add another sanity check in HandleCleanup for active state
+ * @date 20120512 - Renamed App to IApp since it really is just an interface
  */
 
 #include <assert.h>
 #include <stddef.h>
 #include <GQE/Core/loggers/Log_macros.hpp>
 #include <GQE/Core/classes/StateManager.hpp>
-#include <GQE/Core/classes/App.hpp>
+#include <GQE/Core/interfaces/IApp.hpp>
 #include <GQE/Core/interfaces/IState.hpp>
 
 namespace GQE
@@ -42,7 +45,7 @@ namespace GQE
     {
       // Retrieve the currently active state
       IState* anState = mStack.back();
-
+ 
       // Pop the currently active state off the stack
       mStack.pop_back();
 
@@ -91,7 +94,7 @@ namespace GQE
     mApp = NULL;
   }
 
-  void StateManager::RegisterApp(App* theApp)
+  void StateManager::RegisterApp(IApp* theApp)
   {
     // Check that our pointer is good
     assert(NULL != theApp && "StateManager::RegisterApp() theApp pointer provided is bad");
@@ -141,9 +144,9 @@ namespace GQE
     mStack.insert(mStack.begin(), theState);
   }
 
-  IState* StateManager::GetActiveState(void)
+  IState& StateManager::GetActiveState(void)
   {
-    return mStack.back();
+    return *mStack.back();
   }
 
   void StateManager::InactivateActivateState(void)
@@ -314,8 +317,8 @@ namespace GQE
 
       // Pause the currently active state
       anState->Pause();
-
-      // Cleanup the currently active state before we pop it off the stack
+ 
+      // Deinitialize the currently active state before we pop it off the stack
       anState->DeInit();
 
       // Pop the currently active state off the stack
@@ -440,6 +443,16 @@ namespace GQE
 
       // Don't keep pointers around we don't need
       anState = NULL;
+    }
+
+    // Make sure we still have an active state
+    if(NULL == mStack.back())
+    {
+      // There are no states on the stack, exit the program
+      if(NULL != mApp)
+      {
+        mApp->Quit(StatusAppOK);
+      }
     }
   }
 

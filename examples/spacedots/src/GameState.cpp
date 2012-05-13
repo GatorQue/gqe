@@ -5,34 +5,35 @@
  * @author Ryan Lindeman
  * @date 20120323 - Initial Release
  * @date 20120421 - Make sure SFML 2 doesn't use its default font since it will crash on exit
+ * @date 20120512 - Use new RAII Asset style
  */
 #include "GameState.hpp"
 #include <GQE/Core/assets/FontAsset.hpp>
 #include <GQE/Core/assets/ImageAsset.hpp>
 #include <GQE/Core/assets/SoundAsset.hpp>
-#include <GQE/Core/classes/App.hpp>
+#include <GQE/Core/interfaces/IApp.hpp>
 
-GameState::GameState(GQE::App& theApp) :
+GameState::GameState(GQE::IApp& theApp) :
   GQE::IState("Game",theApp),
-  mWinFont(NULL),
-  mBackground(NULL),
-  mEmptyHorizontal(NULL),
-  mEmptyVertical(NULL),
-  mEmptySquare(NULL),
-  mBlueHorizontal(NULL),
-  mBlueVertical(NULL),
-  mBlueSquare(NULL),
-  mBlueWinner(NULL),
-  mRedHorizontal(NULL),
-  mRedVertical(NULL),
-  mRedSquare(NULL),
-  mRedWinner(NULL),
-  mCorner(NULL),
-  mRedGain(NULL),
-  mRedWin(NULL),
-  mBlueGain(NULL),
-  mBlueWin(NULL),
-  mLightsaber(NULL),
+  mWinFont("resources/WinFont.ttf", true),
+  mBackground("resources/Background.png", true),
+  mEmptyHorizontal("resources/EmptyHorizontal.png", true),
+  mEmptyVertical("resources/EmptyVertical.png", true),
+  mEmptySquare("resources/EmptySquare.png", true),
+  mBlueHorizontal("resources/BlueHorizontal.png", true),
+  mBlueVertical("resources/BlueVertical.png", true),
+  mBlueSquare("resources/BlueSquare.png", true),
+  mBlueWinner("resources/BlueWinner.png", true),
+  mRedHorizontal("resources/RedHorizontal.png", true),
+  mRedVertical("resources/RedVertical.png", true),
+  mRedSquare("resources/RedSquare.png", true),
+  mRedWinner("resources/RedWinner.png", true),
+  mCorner("resources/Corner.png", true),
+  mRedGain("resources/RedGain.ogg", true),
+  mRedWin("resources/RedWin.ogg", true),
+  mBlueGain("resources/BlueGain.ogg", true),
+  mBlueWin("resources/BlueWin.ogg", true),
+  mLightsaber("resources/Lightsaber.ogg", true),
   mSelectedCol(1),
   mSelectedRow(1),
   mCurrentPlayer(0),
@@ -44,8 +45,6 @@ GameState::~GameState(void)
 {
   delete mWinnerText;
   mWinnerText = NULL;
-
-  mApp.mAssetManager.UnloadFont("WinFont");
 }
 
 void GameState::DoInit(void)
@@ -53,94 +52,40 @@ void GameState::DoInit(void)
   // First call our base class implementation
   IState::DoInit();
 
-  // Load our background image
-  mBackground = mApp.mAssetManager.AddImage("Background",
-      "resources/Background.png", GQE::AssetLoadStyleImmediate);
-
   // Assign our background image sprite texture
 #if (SFML_VERSION_MAJOR < 2)
-  mBackgroundSprite.SetImage(mBackground->GetAsset());
+  mBackgroundSprite.SetImage(mBackground.GetAsset());
 #else
-  mBackgroundSprite.setTexture(mBackground->GetAsset());
+  mBackgroundSprite.setTexture(mBackground.GetAsset());
 #endif
 
-  // Load our edge images which will be used when edge is not selected
-  mEmptyHorizontal = mApp.mAssetManager.AddImage("EmptyHorizontal",
-      "resources/EmptyHorizontal.png", GQE::AssetLoadStyleImmediate);
-  mEmptyVertical = mApp.mAssetManager.AddImage("EmptyVertical",
-      "resources/EmptyVertical.png", GQE::AssetLoadStyleImmediate);
-  mEmptySquare = mApp.mAssetManager.AddImage("EmptySquare",
-      "resources/EmptySquare.png", GQE::AssetLoadStyleImmediate);
-
-  // Load our edge images which will be used for blue players turn
-  mBlueHorizontal = mApp.mAssetManager.AddImage("BlueHorizontal",
-      "resources/BlueHorizontal.png", GQE::AssetLoadStyleImmediate);
-  mBlueVertical = mApp.mAssetManager.AddImage("BlueVertical",
-      "resources/BlueVertical.png", GQE::AssetLoadStyleImmediate);
-  mBlueSquare = mApp.mAssetManager.AddImage("BlueSquare",
-      "resources/BlueSquare.png", GQE::AssetLoadStyleImmediate);
-  mBlueWinner = mApp.mAssetManager.AddImage("BlueWinner",
-      "resources/BlueWinner.png", GQE::AssetLoadStyleImmediate);
-
-  // Load our edge image which will be used for red players turn
-  mRedHorizontal = mApp.mAssetManager.AddImage("RedHorizontal",
-      "resources/RedHorizontal.png", GQE::AssetLoadStyleImmediate);
-  mRedVertical = mApp.mAssetManager.AddImage("RedVertical",
-      "resources/RedVertical.png", GQE::AssetLoadStyleImmediate);
-  mRedSquare = mApp.mAssetManager.AddImage("RedSquare",
-      "resources/RedSquare.png", GQE::AssetLoadStyleImmediate);
-  mRedWinner = mApp.mAssetManager.AddImage("RedWinner",
-      "resources/RedWinner.png", GQE::AssetLoadStyleImmediate);
-
-  // Load our Corner image which will be used in between edges
-  mCorner = mApp.mAssetManager.AddImage("Corner", "resources/Corner.png",
-      GQE::AssetLoadStyleImmediate);
-
-  // Load our gain a square sound effects for each player
-  mRedGain = mApp.mAssetManager.AddSound("RedGain", "resources/RedGain.ogg",
-      GQE::AssetLoadStyleImmediate);
-  mRedWin = mApp.mAssetManager.AddSound("RedWin", "resources/RedWin.ogg",
-      GQE::AssetLoadStyleImmediate);
-  mBlueGain = mApp.mAssetManager.AddSound("BlueGain", "resources/BlueGain.ogg",
-      GQE::AssetLoadStyleImmediate);
-  mBlueWin = mApp.mAssetManager.AddSound("BlueWin", "resources/BlueWin.ogg",
-      GQE::AssetLoadStyleImmediate);
-
-  // Load our Lightsaber sound effect
-  mLightsaber = mApp.mAssetManager.AddSound("Lightsaber", "resources/Lightsaber.ogg",
-      GQE::AssetLoadStyleImmediate);
-
 #if (SFML_VERSION_MAJOR < 2)
-  mRedGainSound.SetBuffer(mRedGain->GetAsset());
+  mRedGainSound.SetBuffer(mRedGain.GetAsset());
   mRedGainSound.SetVolume(25.0f);
-  mRedWinSound.SetBuffer(mRedWin->GetAsset());
-  mBlueGainSound.SetBuffer(mBlueGain->GetAsset());
+  mRedWinSound.SetBuffer(mRedWin.GetAsset());
+  mBlueGainSound.SetBuffer(mBlueGain.GetAsset());
   mBlueGainSound.SetVolume(25.0f);
-  mBlueWinSound.SetBuffer(mBlueWin->GetAsset());
-  mLightsaberSound.SetBuffer(mLightsaber->GetAsset());
+  mBlueWinSound.SetBuffer(mBlueWin.GetAsset());
+  mLightsaberSound.SetBuffer(mLightsaber.GetAsset());
   mLightsaberSound.SetVolume(10.0f);
 #else
-  mRedGainSound.setBuffer(mRedGain->GetAsset());
+  mRedGainSound.setBuffer(mRedGain.GetAsset());
   mRedGainSound.setVolume(25.0f);
-  mRedWinSound.setBuffer(mRedWin->GetAsset());
-  mBlueGainSound.setBuffer(mBlueGain->GetAsset());
+  mRedWinSound.setBuffer(mRedWin.GetAsset());
+  mBlueGainSound.setBuffer(mBlueGain.GetAsset());
   mBlueGainSound.setVolume(25.0f);
-  mBlueWinSound.setBuffer(mBlueWin->GetAsset());
-  mLightsaberSound.setBuffer(mLightsaber->GetAsset());
+  mBlueWinSound.setBuffer(mBlueWin.GetAsset());
+  mLightsaberSound.setBuffer(mLightsaber.GetAsset());
   mLightsaberSound.setVolume(10.0f);
 #endif
 
-  // Load our win text font
-  mWinFont = mApp.mAssetManager.AddFont("WinFont", "resources/WinFont.ttf",
-      GQE::AssetLoadStyleImmediate);
-
 #if (SFML_VERSION_MAJOR < 2)
   // Setup winner text color as Yellow
-  mWinnerText = new sf::String("", mWinFont->GetAsset(), 30);
+  mWinnerText = new sf::String("", mWinFont.GetAsset(), 30);
   mWinnerText->SetColor(sf::Color::Yellow);
 #else
   // Setup winner text color as Yellow
-  mWinnerText = new sf::Text("", mWinFont->GetAsset(), 30);
+  mWinnerText = new sf::Text("", mWinFont.GetAsset(), 30);
   mWinnerText->setColor(sf::Color::Yellow);
 #endif
 
@@ -165,11 +110,11 @@ void GameState::ReInit(void)
       if((row % 2) == 0 && (col % 2) == 0)
       {
 #if (SFML_VERSION_MAJOR < 2)
-        mBoardSprites[row][col].SetImage(mCorner->GetAsset());
+        mBoardSprites[row][col].SetImage(mCorner.GetAsset());
         mBoardSprites[row][col].SetPosition(2.0f+(col/2.0f)*(12.0f+75.0f),
             2.0f+(row/2.0f)*(9.0f+56.0f));
 #else
-        mBoardSprites[row][col].setTexture(mCorner->GetAsset());
+        mBoardSprites[row][col].setTexture(mCorner.GetAsset());
         mBoardSprites[row][col].setPosition(2.0f+(col/2.0f)*(12.0f+75.0f),
             2.0f+(row/2.0f)*(9.0f+56.0f));
 #endif
@@ -180,11 +125,11 @@ void GameState::ReInit(void)
       else if((row % 2) == 1 && (col % 2) == 1)
       {
 #if (SFML_VERSION_MAJOR < 2)
-        mBoardSprites[row][col].SetImage(mEmptySquare->GetAsset());
+        mBoardSprites[row][col].SetImage(mEmptySquare.GetAsset());
         mBoardSprites[row][col].SetPosition(2.0f+12.0f+((col-1)/2.0f)*(12.0f+75.0f),
             2.0f+9.0f+((row-1)/2.0f)*(9.0f+56.0f));
 #else
-        mBoardSprites[row][col].setTexture(mEmptySquare->GetAsset());
+        mBoardSprites[row][col].setTexture(mEmptySquare.GetAsset());
         mBoardSprites[row][col].setPosition(2.0f+12.0f+((col-1)/2.0f)*(12.0f+75.0f),
             2.0f+9.0f+((row-1)/2.0f)*(9.0f+56.0f));
 #endif
@@ -193,11 +138,11 @@ void GameState::ReInit(void)
       else if((row % 2) == 0 && (col % 2) == 1)
       {
 #if (SFML_VERSION_MAJOR < 2)
-        mBoardSprites[row][col].SetImage(mEmptyHorizontal->GetAsset());
+        mBoardSprites[row][col].SetImage(mEmptyHorizontal.GetAsset());
         mBoardSprites[row][col].SetPosition(2.0f+12.0f+((col-1)/2.0f)*(12.0f+75.0f),
             2.0f+(row/2.0f)*(9.0f+56.0f));
 #else
-        mBoardSprites[row][col].setTexture(mEmptyHorizontal->GetAsset());
+        mBoardSprites[row][col].setTexture(mEmptyHorizontal.GetAsset());
         mBoardSprites[row][col].setPosition(2.0f+12.0f+((col-1)/2.0f)*(12.0f+75.0f),
             2.0f+(row/2.0f)*(9.0f+56.0f));
 #endif
@@ -206,11 +151,11 @@ void GameState::ReInit(void)
       else if((row % 2) == 1 && (col % 2) == 0)
       {
 #if (SFML_VERSION_MAJOR < 2)
-        mBoardSprites[row][col].SetImage(mEmptyVertical->GetAsset());
+        mBoardSprites[row][col].SetImage(mEmptyVertical.GetAsset());
         mBoardSprites[row][col].SetPosition(2.0f+(col/2.0f)*(12.0f+75.0f),
             2.0f+9.0f+((row-1)/2.0f)*(9.0f+56.0f));
 #else
-        mBoardSprites[row][col].setTexture(mEmptyVertical->GetAsset());
+        mBoardSprites[row][col].setTexture(mEmptyVertical.GetAsset());
         mBoardSprites[row][col].setPosition(2.0f+(col/2.0f)*(12.0f+75.0f),
             2.0f+9.0f+((row-1)/2.0f)*(9.0f+56.0f));
 #endif
@@ -299,10 +244,10 @@ void GameState::UpdateSelected(sf::Event theEvent)
     {
 #if (SFML_VERSION_MAJOR < 2)
       mBoardSprites[mSelectedRow][mSelectedCol].SetImage(
-          mEmptyHorizontal->GetAsset());
+          mEmptyHorizontal.GetAsset());
 #else
       mBoardSprites[mSelectedRow][mSelectedCol].setTexture(
-          mEmptyHorizontal->GetAsset());
+          mEmptyHorizontal.GetAsset());
 #endif
     }
     // Row: Odd && Col: Even == Vertical Edge
@@ -310,10 +255,10 @@ void GameState::UpdateSelected(sf::Event theEvent)
     {
 #if (SFML_VERSION_MAJOR < 2)
       mBoardSprites[mSelectedRow][mSelectedCol].SetImage(
-          mEmptyVertical->GetAsset());
+          mEmptyVertical.GetAsset());
 #else
       mBoardSprites[mSelectedRow][mSelectedCol].setTexture(
-          mEmptyVertical->GetAsset());
+          mEmptyVertical.GetAsset());
 #endif
     }
     else
@@ -329,20 +274,20 @@ void GameState::UpdateSelected(sf::Event theEvent)
       {
 #if (SFML_VERSION_MAJOR < 2)
         mBoardSprites[row][col].SetImage(
-            mBlueHorizontal->GetAsset());
+            mBlueHorizontal.GetAsset());
 #else
         mBoardSprites[row][col].setTexture(
-            mBlueHorizontal->GetAsset());
+            mBlueHorizontal.GetAsset());
 #endif
       }
       else
       {
 #if (SFML_VERSION_MAJOR < 2)
         mBoardSprites[row][col].SetImage(
-            mRedHorizontal->GetAsset());
+            mRedHorizontal.GetAsset());
 #else
         mBoardSprites[row][col].setTexture(
-            mRedHorizontal->GetAsset());
+            mRedHorizontal.GetAsset());
 #endif
       }
     }
@@ -353,20 +298,20 @@ void GameState::UpdateSelected(sf::Event theEvent)
       {
 #if (SFML_VERSION_MAJOR < 2)
         mBoardSprites[row][col].SetImage(
-            mBlueVertical->GetAsset());
+            mBlueVertical.GetAsset());
 #else
         mBoardSprites[row][col].setTexture(
-            mBlueVertical->GetAsset());
+            mBlueVertical.GetAsset());
 #endif
       }
       else
       {
 #if (SFML_VERSION_MAJOR < 2)
         mBoardSprites[row][col].SetImage(
-            mRedVertical->GetAsset());
+            mRedVertical.GetAsset());
 #else
         mBoardSprites[row][col].setTexture(
-            mRedVertical->GetAsset());
+            mRedVertical.GetAsset());
 #endif
       }
     }
@@ -393,20 +338,20 @@ void GameState::SelectEdge(void)
     {
 #if (SFML_VERSION_MAJOR < 2)
       mBoardSprites[mSelectedRow][mSelectedCol].SetImage(
-          mBlueHorizontal->GetAsset());
+          mBlueHorizontal.GetAsset());
 #else
       mBoardSprites[mSelectedRow][mSelectedCol].setTexture(
-          mBlueHorizontal->GetAsset());
+          mBlueHorizontal.GetAsset());
 #endif
     }
     else
     {
 #if (SFML_VERSION_MAJOR < 2)
       mBoardSprites[mSelectedRow][mSelectedCol].SetImage(
-          mRedHorizontal->GetAsset());
+          mRedHorizontal.GetAsset());
 #else
       mBoardSprites[mSelectedRow][mSelectedCol].setTexture(
-          mRedHorizontal->GetAsset());
+          mRedHorizontal.GetAsset());
 #endif
     }
 
@@ -440,20 +385,20 @@ void GameState::SelectEdge(void)
     {
 #if (SFML_VERSION_MAJOR < 2)
       mBoardSprites[mSelectedRow][mSelectedCol].SetImage(
-          mBlueVertical->GetAsset());
+          mBlueVertical.GetAsset());
 #else
       mBoardSprites[mSelectedRow][mSelectedCol].setTexture(
-          mBlueVertical->GetAsset());
+          mBlueVertical.GetAsset());
 #endif
     }
     else
     {
 #if (SFML_VERSION_MAJOR < 2)
       mBoardSprites[mSelectedRow][mSelectedCol].SetImage(
-          mRedVertical->GetAsset());
+          mRedVertical.GetAsset());
 #else
       mBoardSprites[mSelectedRow][mSelectedCol].setTexture(
-          mRedVertical->GetAsset());
+          mRedVertical.GetAsset());
 #endif
     }
 #if (SFML_VERSION_MAJOR < 2)
@@ -500,20 +445,20 @@ void GameState::SelectEdge(void)
           {
 #if (SFML_VERSION_MAJOR < 2)
             mBoardSprites[row][col].SetImage(
-                mBlueSquare->GetAsset());
+                mBlueSquare.GetAsset());
 #else
             mBoardSprites[row][col].setTexture(
-                mBlueSquare->GetAsset());
+                mBlueSquare.GetAsset());
 #endif
           }
           else
           {
 #if (SFML_VERSION_MAJOR < 2)
             mBoardSprites[row][col].SetImage(
-                mRedSquare->GetAsset());
+                mRedSquare.GetAsset());
 #else
             mBoardSprites[row][col].setTexture(
-                mRedSquare->GetAsset());
+                mRedSquare.GetAsset());
 #endif
           }
 
@@ -610,11 +555,11 @@ void GameState::SelectEdge(void)
       // Set correct winner image to be displayed
 #if (SFML_VERSION_MAJOR < 2)
       mBlueWinSound.Play();
-      mWinnerSprite.SetImage(mBlueWinner->GetAsset());
+      mWinnerSprite.SetImage(mBlueWinner.GetAsset());
       mWinnerSprite.SetPosition(0.0f,0.0f);
 #else
       mBlueWinSound.play();
-      mWinnerSprite.setTexture(mBlueWinner->GetAsset());
+      mWinnerSprite.setTexture(mBlueWinner.GetAsset());
       mWinnerSprite.setPosition(0.0f,0.0f);
 #endif
     }
@@ -625,11 +570,11 @@ void GameState::SelectEdge(void)
       // Set correct winner image to be displayed
 #if (SFML_VERSION_MAJOR < 2)
       mRedWinSound.Play();
-      mWinnerSprite.SetImage(mRedWinner->GetAsset());
+      mWinnerSprite.SetImage(mRedWinner.GetAsset());
       mWinnerSprite.SetPosition(0.0f,0.0f);
 #else
       mRedWinSound.play();
-      mWinnerSprite.setTexture(mRedWinner->GetAsset());
+      mWinnerSprite.setTexture(mRedWinner.GetAsset());
       mWinnerSprite.setPosition(0.0f,0.0f);
 #endif
     }
@@ -704,18 +649,6 @@ void GameState::Draw(void)
 
 void GameState::Cleanup(void)
 {
-  // Unload our images since we don't need them anymore
-  mApp.mAssetManager.UnloadImage("EmptyVertical");
-  mApp.mAssetManager.UnloadImage("EmptyHorizontal");
-  mApp.mAssetManager.UnloadImage("EmptySquare");
-  mApp.mAssetManager.UnloadImage("BlueVertical");
-  mApp.mAssetManager.UnloadImage("BlueHorizontal");
-  mApp.mAssetManager.UnloadImage("BlueSquare");
-  mApp.mAssetManager.UnloadImage("RedVertical");
-  mApp.mAssetManager.UnloadImage("RedHorizontal");
-  mApp.mAssetManager.UnloadImage("RedSquare");
-  mApp.mAssetManager.UnloadImage("Corner");
-
   // Last of all, call our base class implementation
   IState::Cleanup();
 }

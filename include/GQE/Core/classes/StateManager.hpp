@@ -16,6 +16,7 @@
  * @date 20110218 - Added InactivateActiveState and ResetActiveState methods
  * @date 20110218 - Change to system include style
  * @date 20110627 - Removed extra ; from namespace
+ * @date 20110810 - Return address not pointer for GetActiveState method
  */
 #ifndef   CORE_STATE_MANAGER_HPP_INCLUDED
 #define   CORE_STATE_MANAGER_HPP_INCLUDED
@@ -45,7 +46,7 @@ namespace GQE
        * by the StateManager for error handling and log reporting.
        * @param[in] theApp is a pointer to the App (or App derived) class
        */
-      void RegisterApp(App* theApp);
+      void RegisterApp(IApp* theApp);
 
       /**
        * IsEmpty will return true if there are no active states on the stack.
@@ -70,7 +71,7 @@ namespace GQE
        * GetActiveState will return the current active state on the stack.
        * @return pointer to the current active state on the stack
        */
-      IState* GetActiveState(void);
+      IState& GetActiveState(void);
 
       /**
        * InactivateActiveState will cause the current active state to
@@ -124,7 +125,7 @@ namespace GQE
       // Variables
       ///////////////////////////////////////////////////////////////////////////
       /// Pointer to the App class for error handling and logging
-      App*                  mApp;
+      IApp*                 mApp;
       /// Stack to store the current and previously active states
       std::vector<IState*>  mStack;
       /// Stack to store the dead states until they properly cleaned up

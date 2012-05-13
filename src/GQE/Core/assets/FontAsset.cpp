@@ -11,62 +11,27 @@
  * @date 20110611 - Convert logging to new Log macros
  * @date 20110627 - Removed extra ; from namespace
  * @date 20120322 - Support new SFML2 snapshot changes
+ * @date 20120512 - Use new RAII Asset and Asset Handler management style
  */
 
 #include <assert.h>
 #include <stddef.h>
 #include <GQE/Core/loggers/Log_macros.hpp>
 #include <GQE/Core/assets/FontAsset.hpp>
-#include <GQE/Core/classes/App.hpp>
+#include <GQE/Core/assets/FontHandler.hpp>
+#include <GQE/Core/interfaces/IApp.hpp>
 
 namespace GQE
 {
-  FontAsset::FontAsset(std::string theFilename, AssetLoadingStyle theStyle) :
-    TAsset<sf::Font>(theFilename, theStyle)
+  FontAsset::FontAsset(std::string theFilename, bool theLoadFlag) :
+    TAsset<sf::Font>(
+      IApp::GetApp()->mAssetManager.GetHandler(FontHandler::DEFAULT_ID),
+      theFilename, theLoadFlag)
   {
   }
 
   FontAsset::~FontAsset()
   {
-    UnloadAsset();
-  }
-
-  void FontAsset::LoadAsset(void)
-  {
-    // Only load the asset once if possible!
-    if(false == mLoaded)
-    {
-      // Make sure memory is not already allocated
-      assert(NULL == mAsset && "FontAsset::LoadAsset() memory already allocated!");
-
-      // Create the asset
-      mAsset = new(std::nothrow) sf::Font;
-      assert(NULL != mAsset && "FontAsset::LoadAsset() unable to allocate memory");
-
-      ILOG() << "FontAsset::LoadAsset(" << mFilename << ") loading..." << std::endl;
-
-#if (SFML_VERSION_MAJOR < 2)
-      // Attempt to load the asset from a file
-      mLoaded = mAsset->LoadFromFile(mFilename);
-#else
-      // Attempt to load the asset from a file
-      mLoaded = mAsset->loadFromFile(mFilename);
-#endif
-
-      // If the asset did not load successfully, delete the memory
-      if(false == mLoaded)
-      {
-        FLOG(StatusAppMissingAsset) << "FontAsset::LoadAsset(" << mFilename << ") is missing" << std::endl;
-      }
-    }
-  }
-
-  void FontAsset::UnloadAsset(void)
-  {
-    // Delete the asset, forcing it to be removed from memory
-    delete mAsset;
-    mAsset = NULL;
-    mLoaded = false;
   }
 
 } // namespace GQE

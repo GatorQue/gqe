@@ -17,6 +17,8 @@
 #define   CORE_MENU_STATE_HPP_INCLUDED
 
 #include <GQE/Core/Core_types.hpp>
+#include <GQE/Core/assets/FontAsset.hpp>
+#include <GQE/Core/assets/ImageAsset.hpp>
 #include <GQE/Core/interfaces/IState.hpp>
 #include <SFML/System.hpp>
 
@@ -30,7 +32,7 @@ namespace GQE
        * MenuState constructor
        * @param[in] theApp is the address to the App class.
        */
-      MenuState(App& theApp);
+      MenuState(IApp& theApp);
 
       /**
        * MenuState deconstructor
@@ -84,13 +86,15 @@ namespace GQE
     private:
       // Variables
       /////////////////////////////////////////////////////////////////////////
-      sf::Sprite*         mMenuSprite;
+      FontAsset   mDefaultFont;
+      ImageAsset  mMenuImage;
+      sf::Sprite* mMenuSprite;
 #if (SFML_VERSION_MAJOR < 2)
-      sf::String*         mMenuString1;
-      sf::String*         mMenuString2;
+      sf::String* mMenuString1;
+      sf::String* mMenuString2;
 #else
-      sf::Text*           mMenuString1;
-      sf::Text*           mMenuString2;
+      sf::Text*   mMenuString1;
+      sf::Text*   mMenuString2;
 #endif
   }; // class MenuState
 } // namespace GQE

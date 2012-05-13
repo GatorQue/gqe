@@ -11,13 +11,14 @@
  * @date 20110218 - Change to system include style
  * @date 20110627 - Removed extra ; from namespace
  * @date 20110831 - Support new SFML2 snapshot changes
+ * @date 20120512 - Use new RAII Asset and Asset Handler management style
  */
 #ifndef   CORE_IMAGE_ASSET_HPP_INCLUDED
 #define   CORE_IMAGE_ASSET_HPP_INCLUDED
 
+#include <SFML/Graphics.hpp>
 #include <GQE/Core/interfaces/TAsset.hpp>
 #include <GQE/Core/Core_types.hpp>
-#include <SFML/Graphics.hpp>
 
 namespace GQE
 {
@@ -32,26 +33,16 @@ namespace GQE
       /**
        * ImageAsset constructor
        * @param[in] theFilename to use when loading this asset
-       * @param[in] theStyle to use when loading this asset
+       * @param[in] theLoadFlag indicating immediate loading of asset
        */
-      ImageAsset(std::string theFilename, AssetLoadingStyle theStyle = AssetLoadStyleBackground);
+      ImageAsset(std::string theFilename, bool theLoadFlag = false);
 
       /**
        * ImageAsset deconstructor
        */
       virtual ~ImageAsset();
 
-      /**
-       * LoadAsset is responsible for loading the Asset.
-       */
-      virtual void LoadAsset(void);
-
     protected:
-      /**
-       * UnloadAsset is responsible for destroying or unloading the Asset and
-       * is called by FreeAsset.
-       */
-      virtual void UnloadAsset(void);
 
     private:
       // Variables

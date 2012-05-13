@@ -5,15 +5,22 @@ set(CORE_HEADER ${INCROOT}/Core.hpp)
 set(INC
     ${INCROOT}/Core/Core_types.hpp
     ${INCROOT}/Core/assets/ConfigAsset.hpp
+    ${INCROOT}/Core/assets/ConfigHandler.hpp
+    ${INCROOT}/Core/assets/DummyHandler.hpp
     ${INCROOT}/Core/assets/FontAsset.hpp
+    ${INCROOT}/Core/assets/FontHandler.hpp
     ${INCROOT}/Core/assets/ImageAsset.hpp
+    ${INCROOT}/Core/assets/ImageHandler.hpp
     ${INCROOT}/Core/assets/MusicAsset.hpp
+    ${INCROOT}/Core/assets/MusicHandler.hpp
     ${INCROOT}/Core/assets/SoundAsset.hpp
-    ${INCROOT}/Core/classes/App.hpp
+    ${INCROOT}/Core/assets/SoundHandler.hpp
     ${INCROOT}/Core/classes/AssetManager.hpp
     ${INCROOT}/Core/classes/ConfigReader.hpp
     ${INCROOT}/Core/classes/StatManager.hpp
     ${INCROOT}/Core/classes/StateManager.hpp
+    ${INCROOT}/Core/interfaces/IApp.hpp
+    ${INCROOT}/Core/interfaces/IAssetHandler.hpp
     ${INCROOT}/Core/interfaces/ILogger.hpp
     ${INCROOT}/Core/interfaces/IState.hpp
     ${INCROOT}/Core/interfaces/TAsset.hpp
@@ -32,15 +39,22 @@ set(INC
 set(SRC
     ${SRCROOT}/Core/Core_types.cpp
     ${SRCROOT}/Core/assets/ConfigAsset.cpp
+    ${SRCROOT}/Core/assets/ConfigHandler.cpp
+    ${SRCROOT}/Core/assets/DummyHandler.cpp
     ${SRCROOT}/Core/assets/FontAsset.cpp
+    ${SRCROOT}/Core/assets/FontHandler.cpp
     ${SRCROOT}/Core/assets/ImageAsset.cpp
+    ${SRCROOT}/Core/assets/ImageHandler.cpp
     ${SRCROOT}/Core/assets/MusicAsset.cpp
+    ${SRCROOT}/Core/assets/MusicHandler.cpp
     ${SRCROOT}/Core/assets/SoundAsset.cpp
-    ${SRCROOT}/Core/classes/App.cpp
+    ${SRCROOT}/Core/assets/SoundHandler.cpp
     ${SRCROOT}/Core/classes/AssetManager.cpp
     ${SRCROOT}/Core/classes/ConfigReader.cpp
     ${SRCROOT}/Core/classes/StatManager.cpp
     ${SRCROOT}/Core/classes/StateManager.cpp
+    ${SRCROOT}/Core/interfaces/IApp.cpp
+    ${SRCROOT}/Core/interfaces/IAssetHandler.cpp
     ${SRCROOT}/Core/interfaces/ILogger.cpp
     ${SRCROOT}/Core/interfaces/IState.cpp
     ${SRCROOT}/Core/loggers/FatalLogger.cpp

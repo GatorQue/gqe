@@ -19,6 +19,7 @@
 #define   CORE_STAT_MANAGER_HPP_INCLUDED
 
 #include <GQE/Core/Core_types.hpp>
+#include <GQE/Core/assets/FontAsset.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 
@@ -83,7 +84,7 @@ namespace GQE
        * by the StatManager for error handling and log reporting.
        * @param[in] theApp is a pointer to the App (or App derived) class
        */
-      void RegisterApp(App* theApp);
+      void RegisterApp(IApp* theApp);
 
       /**
        * UpdateFixed is responsible for updating game loop statistics like
@@ -104,7 +105,7 @@ namespace GQE
       // Variables
       ///////////////////////////////////////////////////////////////////////////
       /// Pointer to the App class for error handling and logging
-      App*        mApp;
+      IApp*       mApp;
       /// Allow the current statistics to be displayed?
       bool        mShow;
       /// Total number of frames drawn since DoInit was called
@@ -112,7 +113,7 @@ namespace GQE
       /// Frame clock for displaying Frames per second value
       sf::Clock   mFrameClock;
       /// Default font for FPS and UPS
-      FontAsset*  mDefaultFont;
+      FontAsset   mDefaultFont;
 #if (SFML_VERSION_MAJOR < 2)
       /// Debug string to display that shows the frames per second
       sf::String* mFPS;

@@ -16,6 +16,7 @@
  * @date 20120211 - Support new SFML2 snapshot changes
  * @date 20120322 - Support new SFML2 snapshot changes
  * @date 20120421 - Use arial.ttf font since SFML 2 crashes on exit when using default font
+ * @date 20120512 - Renamed App to IApp since it really is just an interface
  */
 
 #include <assert.h>
@@ -23,7 +24,7 @@
 #include <GQE/Core/assets/FontAsset.hpp>
 #include <GQE/Core/loggers/Log_macros.hpp>
 #include <GQE/Core/classes/StatManager.hpp>
-#include <GQE/Core/classes/App.hpp>
+#include <GQE/Core/interfaces/IApp.hpp>
 
 namespace GQE
 {
@@ -32,7 +33,7 @@ namespace GQE
     mShow(false),
     mFrames(0),
     mFrameClock(),
-    mDefaultFont(NULL),
+    mDefaultFont("resources/arial.ttf", true),
     mFPS(NULL),
     mUpdates(0),
     mUpdateClock(),
@@ -57,21 +58,17 @@ namespace GQE
     mFrames = 0;
     mUpdates = 0;
 
-    // Get our Default Font asset
-    mDefaultFont = mApp->mAssetManager.AddFont("DefaultFont", "resources/arial.ttf",
-      GQE::AssetLoadStyleImmediate);
-
     // Reset our clocks
 #if (SFML_VERSION_MAJOR < 2)
     mFrameClock.Reset();
     mUpdateClock.Reset();
 
     // Position and color for the FPS/UPS string
-    mFPS = new sf::String("", mDefaultFont->GetAsset(), 30.0F);
+    mFPS = new sf::String("", mDefaultFont.GetAsset(), 30.0F);
     mFPS->SetColor(sf::Color(255,255,255,128));
     mFPS->SetPosition(0,0);
     
-    mUPS = new sf::String("", mDefaultFont->GetAsset(), 30.0F);
+    mUPS = new sf::String("", mDefaultFont.GetAsset(), 30.0F);
     mUPS->SetColor(sf::Color(255,255,255,128));
     mUPS->SetPosition(0,30);
 #else
@@ -79,11 +76,11 @@ namespace GQE
     mUpdateClock.restart();
 
     // Position and color for the FPS/UPS string
-    mFPS = new sf::Text("", mDefaultFont->GetAsset(), 30);
+    mFPS = new sf::Text("", mDefaultFont.GetAsset(), 30);
     mFPS->setColor(sf::Color(255,255,255,128));
     mFPS->setPosition(0,0);
 
-    mUPS = new sf::Text("", mDefaultFont->GetAsset(), 30);
+    mUPS = new sf::Text("", mDefaultFont.GetAsset(), 30);
     mUPS->setColor(sf::Color(255,255,255,128));
     mUPS->setPosition(0,30);
 #endif
@@ -100,9 +97,6 @@ namespace GQE
     // Delete our UPS string
     delete mUPS;
     mUPS = NULL;
-
-    // Unload our DefaultFont asset
-    mApp->mAssetManager.UnloadFont("DefaultFont");
   }
 
   bool StatManager::IsShowing(void) const
@@ -125,7 +119,7 @@ namespace GQE
     return mFrames;
   }
 
-  void StatManager::RegisterApp(App* theApp)
+  void StatManager::RegisterApp(IApp* theApp)
   {
     // Check that our pointer is good
     assert(NULL != theApp && "StatManager::RegisterApp() theApp pointer provided is bad");

@@ -7,19 +7,20 @@
  * @date 20110721 - Remove * from GetAsset() calls since it now returns TYPE&
  * @date 20110831 - Support new SFML2 snapshot changes
  * @date 20120421 - Use arial.ttf font since SFML 2 crashes on exit when using default font
+ * @date 20120512 - Use new RAII Asset style
  */
 #include "GameState.hpp"
 #include <GQE/Core/assets/FontAsset.hpp>
 #include <GQE/Core/assets/ImageAsset.hpp>
-#include <GQE/Core/classes/App.hpp>
+#include <GQE/Core/interfaces/IApp.hpp>
 
-GameState::GameState(GQE::App& theApp) :
+GameState::GameState(GQE::IApp& theApp) :
   GQE::IState("Game",theApp),
-  mWinFont(NULL),
-  mBackground(NULL),
-  mPlayer1(NULL),
-  mPlayer2(NULL),
-  mEmpty(NULL),
+  mWinFont("resources/arial.ttf", true),
+  mBackground("resources/Board.png", true),
+  mPlayer1("resources/Player1.png", true),
+  mPlayer2("resources/Player2.png", true),
+  mEmpty("resources/Empty.png", true),
   mCurrentPlayer(0),
   mWinnerText(NULL)
 {
@@ -29,9 +30,6 @@ GameState::~GameState(void)
 {
   delete mWinnerText;
   mWinnerText = NULL;
-
-  // Now release our WinFont
-  mApp.mAssetManager.UnloadFont("WinFont");
 }
 
 void GameState::DoInit(void)
@@ -40,38 +38,19 @@ void GameState::DoInit(void)
   IState::DoInit();
 
   // Load our Background image which will show the TicTacToe game board
-  mBackground = mApp.mAssetManager.AddImage("Board", "resources/Board.png",
-      GQE::AssetLoadStyleImmediate);
-  if(NULL != mBackground)
-  {
 #if (SFML_VERSION_MAJOR < 2)
-    mBackgroundSprite.SetImage(mBackground->GetAsset());
+  mBackgroundSprite.SetImage(mBackground.GetAsset());
 #else
-    mBackgroundSprite.setTexture(mBackground->GetAsset());
+  mBackgroundSprite.setTexture(mBackground.GetAsset());
 #endif
-  }
-
-  // Load our Player 1 and Player 2 images which will show an X and O pieces
-  mPlayer1 = mApp.mAssetManager.AddImage("Player1", "resources/Player1.png",
-      GQE::AssetLoadStyleImmediate);
-  mPlayer2 = mApp.mAssetManager.AddImage("Player2", "resources/Player2.png",
-      GQE::AssetLoadStyleImmediate);
-
-  // Load our Empty square image which will be used when there is nothing to show
-  mEmpty = mApp.mAssetManager.AddImage("Empty", "resources/Empty.png",
-      GQE::AssetLoadStyleImmediate);
-
-  // Load our Win font
-  mWinFont = mApp.mAssetManager.AddFont("WinFont", "resources/arial.ttf",
-      GQE::AssetLoadStyleImmediate);
 
 #if (SFML_VERSION_MAJOR < 2)
   // Setup winner text color as White
-  mWinnerText = new sf::String("", mWinFont->GetAsset(), 30.0f);
+  mWinnerText = new sf::String("", mWinFont.GetAsset(), 30.0f);
   mWinnerText->SetColor(sf::Color::White);
 #else
   // Setup winner text color as White
-  mWinnerText = new sf::Text("", mWinFont->GetAsset(), 30);
+  mWinnerText = new sf::Text("", mWinFont.GetAsset(), 30);
   mWinnerText->setColor(sf::Color::White);
 #endif
 
@@ -91,10 +70,10 @@ void GameState::ReInit(void)
     {
       // Reset the sprite for this square to empty
 #if (SFML_VERSION_MAJOR < 2)
-      mBoardSprite[row][col].SetImage(mEmpty->GetAsset());
+      mBoardSprite[row][col].SetImage(mEmpty.GetAsset());
       mBoardSprite[row][col].SetPosition((col*270.0f), (row*202.0f));
 #else
-      mBoardSprite[row][col].setTexture(mEmpty->GetAsset());
+      mBoardSprite[row][col].setTexture(mEmpty.GetAsset());
       mBoardSprite[row][col].setPosition((col*270.0f), (row*202.0f));
 #endif
 
@@ -105,12 +84,12 @@ void GameState::ReInit(void)
 
   // Set Cursor to Player 1 image
 #if (SFML_VERSION_MAJOR < 2)
-  mCursor.SetImage(mPlayer1->GetAsset());
+  mCursor.SetImage(mPlayer1.GetAsset());
 
   // Set Cursor scale to be 25% of original image
   mCursor.SetScale(0.25f, 0.25f);
 #else
-  mCursor.setTexture(mPlayer1->GetAsset());
+  mCursor.setTexture(mPlayer1.GetAsset());
 
   // Set Cursor scale to be 25% of original image
   mCursor.setScale(0.25f, 0.25f);
@@ -166,16 +145,16 @@ void GameState::HandleEvents(sf::Event theEvent)
           case 1:
             // Set Player 1 image for this square
 #if (SFML_VERSION_MAJOR < 2)
-            mBoardSprite[row][col].SetImage(mPlayer1->GetAsset());
+            mBoardSprite[row][col].SetImage(mPlayer1.GetAsset());
 #else
-            mBoardSprite[row][col].setTexture(mPlayer1->GetAsset());
+            mBoardSprite[row][col].setTexture(mPlayer1.GetAsset());
 #endif
 
             // Set Cursor to Player 2 image
 #if (SFML_VERSION_MAJOR < 2)
-            mCursor.SetImage(mPlayer2->GetAsset());
+            mCursor.SetImage(mPlayer2.GetAsset());
 #else
-            mCursor.setTexture(mPlayer2->GetAsset());
+            mCursor.setTexture(mPlayer2.GetAsset());
 #endif
 
             // Switch to Player 2
@@ -184,16 +163,16 @@ void GameState::HandleEvents(sf::Event theEvent)
           case 2:
             // Set Player 2 image for this square
 #if (SFML_VERSION_MAJOR < 2)
-            mBoardSprite[row][col].SetImage(mPlayer2->GetAsset());
+            mBoardSprite[row][col].SetImage(mPlayer2.GetAsset());
 #else
-            mBoardSprite[row][col].setTexture(mPlayer2->GetAsset());
+            mBoardSprite[row][col].setTexture(mPlayer2.GetAsset());
 #endif
 
             // Set Cursor to Player 1 image
 #if (SFML_VERSION_MAJOR < 2)
-            mCursor.SetImage(mPlayer1->GetAsset());
+            mCursor.SetImage(mPlayer1.GetAsset());
 #else
-            mCursor.setTexture(mPlayer1->GetAsset());
+            mCursor.setTexture(mPlayer1.GetAsset());
 #endif
 
             // Switch to Player 1
@@ -308,9 +287,9 @@ void GameState::UpdateFixed(void)
   {
     // Set Cursor to Player 1 image
 #if (SFML_VERSION_MAJOR < 2)
-    mCursor.SetImage(mEmpty->GetAsset());
+    mCursor.SetImage(mEmpty.GetAsset());
 #else
-    mCursor.setTexture(mEmpty->GetAsset());
+    mCursor.setTexture(mEmpty.GetAsset());
 #endif
 
     // Switch to empty (no player)
@@ -369,12 +348,6 @@ void GameState::Draw(void)
 
 void GameState::Cleanup(void)
 {
-  // Unload our images since we don't need them anymore
-  mApp.mAssetManager.UnloadImage("Board");
-  mApp.mAssetManager.UnloadImage("Player1");
-  mApp.mAssetManager.UnloadImage("Player2");
-  mApp.mAssetManager.UnloadImage("Empty");
-
   // Last of all, call our base class implementation
   IState::Cleanup();
 }

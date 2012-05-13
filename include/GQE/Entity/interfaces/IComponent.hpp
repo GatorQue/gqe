@@ -8,7 +8,7 @@
 #ifndef ICOMPONENT_HPP_INCLUDED
 #define ICOMPONENT_HPP_INCLUDED
 
-#include <GQE/Core/classes/App.hpp>
+#include <GQE/Core/interfaces/IApp.hpp>
 #include <GQE/Entity/Entity_types.hpp>
 #include <GQE/Entity/interfaces/TProperty.hpp>
 
@@ -22,7 +22,7 @@ namespace GQE
 		* @param[in] theComponentID to use for this component object
 		* @param[in] theApp is the address to the App derived class
 		*/
-		IComponent(const typeComponentID theComponentID, App& theApp,EntityManager* theEntityManager);
+		IComponent(const typeComponentID theComponentID, IApp& theApp, EntityManager* theEntityManager);
 
 		/**
 		* IComponent deconstructor
@@ -97,7 +97,7 @@ namespace GQE
 		virtual IComponent* MakeClone()=0;
 	protected:
 		/// Address to the App class
-		App&                  mApp;
+                IApp&          mApp;
 		//pointer to the attached entity.
 		Entity* mEntity;
 		//pointer to active entity manager.

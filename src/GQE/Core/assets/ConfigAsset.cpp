@@ -9,57 +9,27 @@
  * @date 20110218 - Change to system include style
  * @date 20110611 - Convert logging to new Log macros
  * @date 20110627 - Removed extra ; from namespace
+ * @date 20120512 - Use new RAII Asset and Asset Handler management style
  */
 
 #include <assert.h>
 #include <stddef.h>
 #include <GQE/Core/loggers/Log_macros.hpp>
 #include <GQE/Core/assets/ConfigAsset.hpp>
-#include <GQE/Core/classes/App.hpp>
+#include <GQE/Core/assets/ConfigHandler.hpp>
+#include <GQE/Core/interfaces/IApp.hpp>
 
 namespace GQE
 {
-  ConfigAsset::ConfigAsset(std::string theFilename, AssetLoadingStyle theStyle) :
-    TAsset<ConfigReader>(theFilename, theStyle)
+  ConfigAsset::ConfigAsset(std::string theFilename, bool theLoadFlag) :
+    TAsset<ConfigReader>(
+      IApp::GetApp()->mAssetManager.GetHandler(ConfigHandler::DEFAULT_ID),
+      theFilename, theLoadFlag)
   {
   }
 
   ConfigAsset::~ConfigAsset()
   {
-    UnloadAsset();
-  }
-
-  void ConfigAsset::LoadAsset(void)
-  {
-    // Only load the asset once if possible!
-    if(false == mLoaded)
-    {
-      // Make sure memory is not already allocated
-      assert(NULL == mAsset && "ConfigAsset::LoadAsset() memory already allocated!");
-
-      // Create the asset
-      mAsset = new (std::nothrow) ConfigReader;
-      assert(NULL != mAsset && "ConfigAsset::LoadAsset() unable to allocate memory");
-
-      ILOG() << "ConfigAsset::LoadAsset(" << mFilename << ") loading..." << std::endl;
-
-      // Attempt to load the asset from a file
-      mLoaded = mAsset->LoadFromFile(mFilename);
-
-      // If the asset did not load successfully, delete the memory
-      if(false == mLoaded)
-      {
-        FLOG(StatusAppMissingAsset) << "ConfigAsset::LoadAsset(" << mFilename << ") is missing" << std::endl;
-      }
-    }
-  }
-
-  void ConfigAsset::UnloadAsset(void)
-  {
-    // Delete the asset, forcing it to be removed from memory
-    delete mAsset;
-    mAsset = NULL;
-    mLoaded = false;
   }
 
 } // namespace GQE

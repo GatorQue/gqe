@@ -12,73 +12,33 @@
  * @date 20110627 - Removed extra ; from namespace
  * @date 20110831 - Support new SFML2 snapshot changes
  * @date 20120322 - Support new SFML2 snapshot changes
+ * @date 20120512 - Use new RAII Asset and Asset Handler management style
  */
 
 #include <assert.h>
 #include <stddef.h>
 #include <GQE/Core/loggers/Log_macros.hpp>
 #include <GQE/Core/assets/ImageAsset.hpp>
-#include <GQE/Core/classes/App.hpp>
+#include <GQE/Core/assets/ImageHandler.hpp>
+#include <GQE/Core/interfaces/IApp.hpp>
 
 namespace GQE
 {
-  ImageAsset::ImageAsset(std::string theFilename, AssetLoadingStyle theStyle) :
+  ImageAsset::ImageAsset(std::string theFilename, bool theLoadFlag) :
 #if (SFML_VERSION_MAJOR < 2)
-    TAsset<sf::Image>(theFilename, theStyle)
+    TAsset<sf::Image>(
+      IApp::GetApp()->mAssetManager.GetHandler(ImageHandler::DEFAULT_ID),
+      theFilename, theLoadFlag)
 #else
-      TAsset<sf::Texture>(theFilename, theStyle)
+    TAsset<sf::Texture>(
+      IApp::GetApp()->mAssetManager.GetHandler(ImageHandler::DEFAULT_ID),
+      theFilename, theLoadFlag)
 #endif
-      {
-      }
+  {
+  }
 
   ImageAsset::~ImageAsset()
   {
-    UnloadAsset();
-  }
-
-  void ImageAsset::LoadAsset(void)
-  {
-    // Only load the asset once if possible!
-    if(false == mLoaded)
-    {
-      // Make sure memory is not already allocated
-      assert(NULL == mAsset && "ImageAsset::LoadAsset() memory already allocated!");
-
-      // Create the asset
-#if (SFML_VERSION_MAJOR < 2)
-      mAsset = new(std::nothrow) sf::Image;
-#else
-      mAsset = new(std::nothrow) sf::Texture;
-#endif
-      assert(NULL != mAsset && "ImageAsset::LoadAsset() unable to allocate memory");
-
-      ILOG() << "ImageAsset::LoadAsset(" << mFilename << ") loading..." << std::endl;
-
-#if (SFML_VERSION_MAJOR < 2)
-      // Attempt to load the asset from a file
-      mLoaded = mAsset->LoadFromFile(mFilename);
-
-      // Disable smoothing on all images
-      mAsset->SetSmooth(false);
-#else
-      // Attempt to load the asset from a file
-      mLoaded = mAsset->loadFromFile(mFilename);
-#endif
-
-      // If the asset did not load successfully, delete the memory
-      if(false == mLoaded)
-      {
-        FLOG(StatusAppMissingAsset) << "ImageAsset::LoadAsset(" << mFilename << ") is missing" << std::endl;
-      }
-    }
-  }
-
-  void ImageAsset::UnloadAsset(void)
-  {
-    // Delete the asset, forcing it to be removed from memory
-    delete mAsset;
-    mAsset = NULL;
-    mLoaded = false;
   }
 
 } // namespace GQE

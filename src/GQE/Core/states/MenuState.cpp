@@ -14,15 +14,19 @@
  * @date 20110831 - Support new SFML2 snapshot changes
  * @date 20110906 - Change mApp from a pointer to an address reference
  * @date 20120322 - Support new SFML2 snapshot changes
+ * @date 20120512 - Renamed App to IApp since it really is just an interface
  */
-#include <GQE/Core/classes/App.hpp>
+#include <assert.h>
+#include <GQE/Core/interfaces/IApp.hpp>
 #include <GQE/Core/states/MenuState.hpp>
 #include <GQE/Core/assets/FontAsset.hpp>
 
 namespace GQE
 {
-  MenuState::MenuState(App& theApp) :
+  MenuState::MenuState(IApp& theApp) :
     IState("Menu", theApp),
+    mDefaultFont("resources/arial.ttf", true),
+    mMenuImage("resources/menu.png", true),
     mMenuSprite(NULL),
     mMenuString1(NULL),
     mMenuString2(NULL)
@@ -40,20 +44,16 @@ namespace GQE
 
     // Create our String
 #if (SFML_VERSION_MAJOR < 2)
-    mMenuString1 = new sf::String("Play Game",
-        mApp.mAssetManager.AddFont("arial", "arial.ttf", AssetLoadStyleImmediate)->GetAsset());
+    mMenuString1 = new sf::String("Play Game", mDefaultFont.GetAsset());
 #else
-    mMenuString1 = new sf::Text("Play Game",
-        mApp.mAssetManager.AddFont("arial", "arial.ttf", AssetLoadStyleImmediate)->GetAsset());
+    mMenuString1 = new sf::Text("Play Game", mDefaultFont.GetAsset());
 #endif
     assert(NULL != mMenuString1 && "MenuState::DoInit() can't allocate memory for string");
 
 #if (SFML_VERSION_MAJOR < 2)
-    mMenuString2 = new sf::String("Exit",
-        mApp.mAssetManager.AddFont("arial", "arial.ttf", AssetLoadStyleImmediate)->GetAsset());
+    mMenuString2 = new sf::String("Exit", mDefaultFont.GetAsset());
 #else
-    mMenuString2 = new sf::Text("Exit",
-        mApp.mAssetManager.AddFont("arial", "arial.ttf", AssetLoadStyleImmediate)->GetAsset());
+    mMenuString2 = new sf::Text("Exit", mDefaultFont.GetAsset());
 #endif
     assert(NULL != mMenuString2 && "MenuState::DoInit() can't allocate memory for string");
 
@@ -73,11 +73,8 @@ namespace GQE
     mMenuString2->move(400.f, 400.f);
 #endif
 
-    // Load our splash image
-    mApp.mAssetManager.AddImage("Menu", "MenuImage.png", AssetLoadStyleImmediate);
-
-    // Retrieve a sprite to the above image
-    mMenuSprite = mApp.mAssetManager.GetSprite("Menu");
+    // Show the menu image using the Menu sprite
+    mMenuSprite = new sf::Sprite(mMenuImage.GetAsset());
   }
 
   void MenuState::ReInit(void)
@@ -134,12 +131,6 @@ namespace GQE
     mMenuString1 = NULL;
     delete mMenuString2;
     mMenuString2 = NULL;
-
-    // Unload our font since we don't need it anymore
-    mApp.mAssetManager.UnloadFont("arial");
-
-    // Unload our image since we don't need it anymore
-    mApp.mAssetManager.UnloadImage("Menu");
 
     // Last of all, call our base class implementation
     IState::Cleanup();

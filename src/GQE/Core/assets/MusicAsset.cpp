@@ -11,74 +11,27 @@
  * @date 20110611 - Convert logging to new Log macros
  * @date 20110627 - Removed extra ; from namespace
  * @date 20120322 - Support new SFML2 snapshot changes
+ * @date 20120512 - Use new RAII Asset and Asset Handler management style
  */
 
 #include <assert.h>
 #include <stddef.h>
 #include <GQE/Core/loggers/Log_macros.hpp>
 #include <GQE/Core/assets/MusicAsset.hpp>
-#include <GQE/Core/classes/App.hpp>
+#include <GQE/Core/assets/MusicHandler.hpp>
+#include <GQE/Core/interfaces/IApp.hpp>
 
 namespace GQE
 {
-  MusicAsset::MusicAsset(std::string theFilename, AssetLoadingStyle theStyle) :
-    TAsset<sf::Music>(theFilename, theStyle)
+  MusicAsset::MusicAsset(std::string theFilename, bool theLoadFlag) :
+    TAsset<sf::Music>(
+      IApp::GetApp()->mAssetManager.GetHandler(MusicHandler::DEFAULT_ID),
+      theFilename, theLoadFlag)
   {
   }
 
   MusicAsset::~MusicAsset()
   {
-    UnloadAsset();
-  }
-
-  void MusicAsset::LoadAsset(void)
-  {
-    // Only load the asset once if possible!
-    if(false == mLoaded)
-    {
-      // Make sure memory is not already allocated
-      assert(NULL == mAsset && "MusicAsset::LoadAsset() memory already allocated!");
-
-      // Create the asset
-      mAsset = new(std::nothrow) sf::Music;
-      assert(NULL != mAsset && "MusicAsset::LoadAsset() unable to allocate memory");
-
-      ILOG() << "MusicAsset::LoadAsset(" << mFilename << ") loading..." << std::endl;
-
-#if (SFML_VERSION_MAJOR < 2)
-      // Attempt to load the asset from a file
-      mLoaded = mAsset->OpenFromFile(mFilename);
-#else
-      // Attempt to load the asset from a file
-      mLoaded = mAsset->openFromFile(mFilename);
-#endif
-
-      // If the asset did not load successfully, delete the memory
-      if(false == mLoaded)
-      {
-        FLOG(StatusAppMissingAsset) << "MusicAsset::LoadAsset(" << mFilename << ") is missing" << std::endl;
-      }
-    }
-  }
-
-  void MusicAsset::UnloadAsset(void)
-  {
-    // If the music asset is currently loaded, make sure it is stopped
-    if(true == mLoaded && NULL != mAsset)
-    {
-#if (SFML_VERSION_MAJOR < 2)
-      // Always stop music from playing before removing from memory
-      mAsset->Stop();
-#else
-      // Always stop music from playing before removing from memory
-      mAsset->stop();
-#endif
-    }
-
-    // Delete the asset, forcing it to be removed from memory
-    delete mAsset;
-    mAsset = NULL;
-    mLoaded = false;
   }
 
 } // namespace GQE

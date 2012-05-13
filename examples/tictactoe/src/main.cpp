@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
   GQE::FileLogger anLogger("output.txt", true);
 
   // Create our action application.
-  GQE::App* anApp = new(std::nothrow) TicTacToeApp();
+  GQE::IApp* anApp = new(std::nothrow) TicTacToeApp();
   assert(NULL != anApp && "main() Can't create Application");
 
   // Process command line arguments

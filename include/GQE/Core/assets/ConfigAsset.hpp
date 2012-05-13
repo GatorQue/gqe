@@ -9,43 +9,34 @@
  * @date 20110218 - Change to system include style
  * @date 20110611 - Add abreviated comment for Docs
  * @date 20110627 - Removed extra ; from namespace
+ * @date 20120512 - Use new RAII Asset and Asset Handler management style
  */
 #ifndef   CORE_CONFIG_ASSET_HPP_INCLUDED
 #define   CORE_CONFIG_ASSET_HPP_INCLUDED
 
+#include <GQE/Core/classes/ConfigReader.hpp>
 #include <GQE/Core/interfaces/TAsset.hpp>
 #include <GQE/Core/Core_types.hpp>
-#include <GQE/Core/classes/ConfigReader.hpp>
 
 namespace GQE
 {
   /// Provides the ConfigReader asset class
-  class ConfigAsset : public TAsset<ConfigReader>
+  class GQE_API ConfigAsset : public TAsset<ConfigReader>
   {
     public:
       /**
        * ConfigAsset constructor
        * @param[in] theFilename to use when loading this asset
-       * @param[in] theStyle to use when loading this asset
+       * @param[in] theLoadFlag indicating immediate loading of asset
        */
-      ConfigAsset(std::string theFilename, AssetLoadingStyle theStyle = AssetLoadStyleBackground);
+      ConfigAsset(std::string theFilename, bool theLoadFlag = false);
 
       /**
        * ConfigAsset deconstructor
        */
       virtual ~ConfigAsset();
 
-      /**
-       * LoadAsset is responsible for loading the Asset.
-       */
-      virtual void LoadAsset(void);
-
     protected:
-      /**
-       * UnloadAsset is responsible for destroying or unloading the Asset and
-       * is called by FreeAsset.
-       */
-      virtual void UnloadAsset(void);
 
     private:
       // Variables

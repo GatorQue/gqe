@@ -5,15 +5,20 @@
  * @author Ryan Lindeman
  * @date 20120323 - Initial Release
  * @date 20120421 - Make sure SFML 2 doesn't use its default font since it will crash on exit
+ * @date 20120512 - Use new RAII Asset style
  */
 
 #ifndef   GAME_STATE_HPP_INCLUDED
 #define   GAME_STATE_HPP_INCLUDED
 
+#include <SFML/Audio.hpp>
+#include <SFML/Graphics.hpp>
+#include <GQE/Core/assets/FontAsset.hpp>
+#include <GQE/Core/assets/ImageAsset.hpp>
+#include <GQE/Core/assets/SoundAsset.hpp>
 #include <GQE/Core/Core_types.hpp>
 #include <GQE/Core/interfaces/IState.hpp>
-#include <SFML/Audio/Sound.hpp>
-#include <SFML/Graphics.hpp>
+
 /// Provides the TicTacToe GameState example
 class GameState : public GQE::IState
 {
@@ -22,7 +27,7 @@ class GameState : public GQE::IState
      * GameState constructor
      * @param[in] theApp is a pointer to the App class.
      */
-    GameState(GQE::App& theApp);
+    GameState(GQE::IApp& theApp);
 
     /**
      * GameState deconstructor
@@ -91,43 +96,43 @@ class GameState : public GQE::IState
   private:
     // Variables
     /////////////////////////////////////////////////////////////////////////
-    GQE::FontAsset*  mWinFont;
-    GQE::ImageAsset* mBackground;
-    GQE::ImageAsset* mEmptyHorizontal;
-    GQE::ImageAsset* mEmptyVertical;
-    GQE::ImageAsset* mEmptySquare;
-    GQE::ImageAsset* mBlueHorizontal;
-    GQE::ImageAsset* mBlueVertical;
-    GQE::ImageAsset* mBlueSquare;
-    GQE::ImageAsset* mBlueWinner;
-    GQE::ImageAsset* mRedHorizontal;
-    GQE::ImageAsset* mRedVertical;
-    GQE::ImageAsset* mRedSquare;
-    GQE::ImageAsset* mRedWinner;
-    GQE::ImageAsset* mCorner;
-    GQE::SoundAsset* mRedGain;
-    GQE::SoundAsset* mRedWin;
-    GQE::SoundAsset* mBlueGain;
-    GQE::SoundAsset* mBlueWin;
-    GQE::SoundAsset* mLightsaber;
-    sf::Sound        mRedGainSound;
-    sf::Sound        mRedWinSound;
-    sf::Sound        mBlueGainSound;
-    sf::Sound        mBlueWinSound;
-    sf::Sound        mLightsaberSound;
-    sf::Sprite       mBackgroundSprite;
-    sf::Sprite       mWinnerSprite;
-    sf::Sprite       mBoardSprites[20][20];
-    GQE::Uint8       mBoardPlayer[20][20];
-    GQE::Uint16      mSelectedCol;
-    GQE::Uint16      mSelectedRow;
-    GQE::Uint8       mCurrentPlayer;
+    GQE::FontAsset  mWinFont;
+    GQE::ImageAsset mBackground;
+    GQE::ImageAsset mEmptyHorizontal;
+    GQE::ImageAsset mEmptyVertical;
+    GQE::ImageAsset mEmptySquare;
+    GQE::ImageAsset mBlueHorizontal;
+    GQE::ImageAsset mBlueVertical;
+    GQE::ImageAsset mBlueSquare;
+    GQE::ImageAsset mBlueWinner;
+    GQE::ImageAsset mRedHorizontal;
+    GQE::ImageAsset mRedVertical;
+    GQE::ImageAsset mRedSquare;
+    GQE::ImageAsset mRedWinner;
+    GQE::ImageAsset mCorner;
+    GQE::SoundAsset mRedGain;
+    GQE::SoundAsset mRedWin;
+    GQE::SoundAsset mBlueGain;
+    GQE::SoundAsset mBlueWin;
+    GQE::SoundAsset mLightsaber;
+    sf::Sound       mRedGainSound;
+    sf::Sound       mRedWinSound;
+    sf::Sound       mBlueGainSound;
+    sf::Sound       mBlueWinSound;
+    sf::Sound       mLightsaberSound;
+    sf::Sprite      mBackgroundSprite;
+    sf::Sprite      mWinnerSprite;
+    sf::Sprite      mBoardSprites[20][20];
+    GQE::Uint8      mBoardPlayer[20][20];
+    GQE::Uint16     mSelectedCol;
+    GQE::Uint16     mSelectedRow;
+    GQE::Uint8      mCurrentPlayer;
 #if (SFML_VERSION_MAJOR < 2)
     /// Winner string
-    sf::String*      mWinnerText;
+    sf::String*     mWinnerText;
 #else
     /// Winner string
-    sf::Text*        mWinnerText;
+    sf::Text*       mWinnerText;
 #endif
 
 }; // class GameState

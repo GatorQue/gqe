@@ -7,16 +7,17 @@
  * @date 20110801 - Initial Release
  * @date 20120211 - Support new SFML2 snapshot changes
  * @date 20120322 - Support new SFML2 snapshot changes
+ * @date 20120512 - Renamed App to IApp since it really is just an interface
  */
 
 #include <assert.h>
 #include <GQE/Core/interfaces/IState.hpp>
 #include <GQE/Core/loggers/Log_macros.hpp>
-#include <GQE/Core/classes/App.hpp>
+#include <GQE/Core/interfaces/IApp.hpp>
 
 namespace GQE
 {
-  IState::IState(const typeStateID theStateID, App& theApp) :
+  IState::IState(const typeStateID theStateID, IApp& theApp) :
     mApp(theApp),
     mStateID(theStateID),
     mInit(false),
@@ -167,7 +168,7 @@ namespace GQE
 } // namespace GQE
 
 /**
- * Copyright (c) 2010-2011 Ryan Lindeman
+ * Copyright (c) 2010-2012 Ryan Lindeman
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights

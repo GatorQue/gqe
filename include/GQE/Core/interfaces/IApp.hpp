@@ -14,6 +14,7 @@
  * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
  * @date 20110704 - Changed Init to pure virtual function and defaults to 800x600
  * @date 20110831 - Support new SFML2 snapshot changes
+ * @date 20120512 - Add new Init hooks for derived classes and changed name to IApp
  */
 #ifndef   CORE_APP_HPP_INCLUDED
 #define   CORE_APP_HPP_INCLUDED
@@ -32,7 +33,7 @@
 namespace GQE
 {
   /// Provides the core game loop algorithm for all game engines.
-  class GQE_API App
+  class GQE_API IApp
   {
     public:
       // Constants
@@ -43,6 +44,8 @@ namespace GQE
       static const unsigned int DEFAULT_VIDEO_HEIGHT = 600;
       /// Default Video bits per pixel (color depth) if config file not found
       static const unsigned int DEFAULT_VIDEO_BPP = 32;
+      /// Default application wide settings file string
+      static const char* APP_SETTINGS;
 
       // Variables
       ///////////////////////////////////////////////////////////////////////////
@@ -72,15 +75,16 @@ namespace GQE
       StateManager              mStateManager;
 
       /**
-       * App constructor
-       * @param[in] theTitle is the title of the window
+       * IApp deconstructor
        */
-      App(const std::string theTitle = "GQE Application");
+      virtual ~IApp();
 
       /**
-       * App deconstructor
+       * GetApp will return the most recent App based class that was created so
+       * it can be used to access the App interface for retrieving assets,
+       * exiting the program, etc. NULL will be returned if none is available
        */
-      virtual ~App();
+      static IApp* GetApp(void);
 
       /**
        * ProcessArguments is responsible for processing command line arguments
@@ -128,53 +132,82 @@ namespace GQE
 
     protected:
       /**
-       * PreInit is responsible for getting things ready before the derived
-       * classes Init method is called.  This prevents problems that might occur
-       * with how the derived classes Init methods are written.
+       * App constructor
+       * @param[in] theTitle is the title of the window
        */
-      void PreInit(void);
+      IApp(const std::string theTitle = "GQE Application");
 
       /**
-       * Init is responsible for initializing the Application.
+       * InitAssetHandlers is responsible for registering custom IAssetHandler
+       * derived classes for a specific game application.
        */
-      virtual void Init(void) = 0;
+      virtual void InitAssetHandlers(void) = 0;
 
       /**
-       * Loop is responsible for monitoring IsRunning and exiting when the
+       * InitScreenFactory is responsible for initializing any IScreen derived
+       * classes with the ScreenManager class that will be used to create new
+       * IScreen derived classes as requested.
+       */
+      virtual void InitScreenFactory(void) = 0;
+
+      /**
+       * GameLoop is responsible for monitoring IsRunning and exiting when the
        * Application is done.
        */
-      virtual void Loop(void);
+      virtual void GameLoop(void);
+
+      /**
+       * HandleCleanup is responsible for performing any custom last minute
+       * Application cleanup steps before exiting the Application.
+       */
+      virtual void HandleCleanup(void) = 0;
+
+    private:
+      /// Instance variable assigned at construction time
+      static IApp* gApp;
+
+      /// The exit code value that will be returned by the program
+      int          mExitCode;
+      /// True if the Application is currently running
+      bool         mRunning;
+#if (SFML_VERSION_MAJOR < 2)
+      /// Update rate in seconds to use for fixed update in game loop
+      float        mUpdateRate;
+#else
+      /// Update rate in milliseconds to use for fixed update in game loop
+      Uint32       mUpdateRate;
+#endif
+
+      /**
+       * InitApplication is responsible for registering and loading the
+       * application wide configuration file (resources/settings.cfg) found in
+       * the resources directory from the current working directory.
+       */
+      void InitSettingsConfig(void);
+
+      /**
+       * InitRenderer is responsible for initializing the Rendering window that
+       * will be used to display the games graphics.
+       */
+      void InitRenderer(void);
 
       /**
        * Cleanup is responsible for performing any last minute Application
        * cleanup steps before exiting the Application.
        */
-      virtual void Cleanup(void);
-
-    private:
-      /// The exit code value that will be returned by the program
-      int                       mExitCode;
-      /// True if the Application is currently running
-      bool                      mRunning;
-#if (SFML_VERSION_MAJOR < 2)
-      /// Update rate in seconds to use for fixed update in game loop
-      float                     mUpdateRate;
-#else
-      /// Update rate in milliseconds to use for fixed update in game loop
-      Uint32                    mUpdateRate;
-#endif
+      void Cleanup(void);
 
       /**
        * App copy constructor is private because we do not allow copies of
        * our Singleton class
        */
-      App(const App&);                 // Intentionally undefined
+      IApp(const IApp&);               // Intentionally undefined
 
       /**
        * Our assignment operator is private because we do not allow copies
        * of our Singleton class
        */
-      App& operator=(const App&);      // Intentionally undefined
+      IApp& operator=(const IApp&);    // Intentionally undefined
   }; // class App
 } // namespace GQE
 

@@ -12,6 +12,7 @@
  * @date 20110611 - Add new logging classes and new Log macros
  * @date 20110627 - Removed extra , from enum and ; from namespace
  * @date 20120426 - Remove gLogger variable (moved to ILogger::gInstance)
+ * @date 20120428 - Added new IAsset and IAssetHandler types
  */
 #ifndef   GQE_CORE_TYPES_HPP_INCLUDED
 #define   GQE_CORE_TYPES_HPP_INCLUDED
@@ -31,14 +32,14 @@
 namespace GQE
 {
   /// Enumeration of all Asset loading styles
-  enum AssetLoadingStyle
-  {
-    AssetLoadStyleFirst      = 0,  ///< First Loading Style
-    AssetLoadStyleBackground = 1,  ///< Background thread loading style
-    AssetLoadStyleForeground = 2,  ///< Foreground thread loading style
-    AssetLoadStyleImmediate  = 3,  ///< Immediate loading style
-    AssetLoadStyleLast             ///< Last Loading Style
-  };
+  //enum AssetLoadingStyle
+  //{
+  //  AssetLoadStyleFirst      = 0,  ///< First Loading Style
+  //  AssetLoadStyleBackground = 1,  ///< Background thread loading style
+  //  AssetLoadStyleForeground = 2,  ///< Foreground thread loading style
+  //  AssetLoadStyleImmediate  = 3,  ///< Immediate loading style
+  //  AssetLoadStyleLast             ///< Last Loading Style
+  //};
 
   /// Enumeration of all Logging severity types
   enum SeverityType
@@ -68,21 +69,28 @@ namespace GQE
   };
 
   // Forward declare GQE core interfaces provided
+  class IApp;
+  class IAssetHandler;
   class ILogger;
   class IState;
 
   // Forward declare GQE core classes provided
-  class App;
   class AssetManager;
   class ConfigReader;
   class StateManager;
 
   // Forward declare GQE core assets provided
   class ConfigAsset;
+  class ConfigHandler;
+  class DummyHandler;
   class FontAsset;
+  class FontHandler;
   class ImageAsset;
+  class ImageHandler;
   class MusicAsset;
+  class MusicHandler;
   class SoundAsset;
+  class SoundHandler;
 
   // Forward declare GQE core loggers provided
   class FatalLogger;
@@ -100,6 +108,9 @@ namespace GQE
   /// Declare Asset ID typedef which is used for identifying Asset objects
   typedef std::string typeAssetID;
 
+  /// Declare Asset Handler ID typedef which is used for identifying Asset Handler objects
+  typedef std::string typeAssetHandlerID;
+
   /// Declare State ID typedef which is used for identifying State objects
   typedef std::string typeStateID;
 
@@ -110,15 +121,13 @@ namespace GQE
   typedef std::map<const std::string, const std::string>::iterator typeNameValueIter;
 
   // Internal Core global variables
-  /// Pointer to App class used by Logger to gracefully shutdown App.
-  extern GQE_API App*             gApp;
   /// Null stream for Logger macros if not active or severity level is disabled
   extern GQE_API std::onullstream gNullStream;
 } // namespace GQE
 #endif // GQE_CORE_TYPES_HPP_INCLUDED
 
 /**
- * Copyright (c) 2010-2011 Ryan Lindeman
+ * Copyright (c) 2010-2012 Ryan Lindeman
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights

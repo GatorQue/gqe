@@ -5,7 +5,7 @@
 
 namespace GQE
 {
-	IComponent::IComponent(const typeComponentID theComponentID , App& theApp,EntityManager* theEntityManager) :
+	IComponent::IComponent(const typeComponentID theComponentID , IApp& theApp, EntityManager* theEntityManager) :
 mApp(theApp),
 	mEntity(NULL),
 	mEntityManager(theEntityManager),

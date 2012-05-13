@@ -1,8 +1,7 @@
 /**
  * Provides the TAsset template class for managing a single Asset and is used
- * by the AssetManager in the GQE namespace which is responsible for providing
- * the Asset management facilities for the App base class used in the GQE core
- * library.
+ * by the IAssetHandler in the GQE namespace which is responsible for providing
+ * the Asset management facilities for each asset type.
  *
  * @file include/GQE/Core/interfaces/TAsset.hpp
  * @author Ryan Lindeman
@@ -14,173 +13,139 @@
  * @date 20110627 - Removed extra ; from namespace
  * @date 20110721 - Make GetAsset method return TYPE& because that is usually
  *                  what SFML is expecting.
+ * @date 20120503 - Rewrote TAsset to use RAII technique and more flexible
+ *                  handling of Assets using the new IAssetHandler classes.
  */
 #ifndef   CORE_TASSET_HPP_INCLUDED
 #define   CORE_TASSET_HPP_INCLUDED
 
-#include <assert.h>
 #include <string>
-#include <stddef.h>
+#include <GQE/Core/interfaces/IAssetHandler.hpp>
 #include <GQE/Core/Core_types.hpp>
 
 namespace GQE
 {
   /// Provides base template class for all game assets
   template<class TYPE>
-    class GQE_API TAsset
-    {
-      public:
-        /**
-         * TAsset constructor
-         * @param[in] theFilename to use when loading this asset
-         * @param[in] theStyle to use when loading this asset
-         */
-        TAsset(std::string theFilename,
-            AssetLoadingStyle theStyle = AssetLoadStyleBackground) :
-          mApp(NULL),
-          mFilename(theFilename),
-          mStyle(theStyle),
-          mAsset(NULL),
-          mLoaded(false),
-          mReferences(0)
+  class GQE_API TAsset
+  {
+    protected:
+      // Variables
+      ///////////////////////////////////////////////////////////////////////////
+      /// Asset Handler class that will manage this asset
+      IAssetHandler& mAssetHandler;
+      /// Pointer to the loaded asset
+      TYPE*          mAsset;
+      /// Asset ID specified for this asset
+      typeAssetID    mAssetID;
+
+    public:
+      /**
+        * TAsset default constructor is used for TAsset classes whose ID's are
+        * not available at construction time.  ID's can be specified after
+        * construction time using the SetID method.  A dummy Asset will be
+        * provided by the AssetManager using theAssetHandlerID provided until
+        * a proper ID can be obtained.
+        * @param[in] theAssetHandler to use for retrieving asset references
+        */
+      TAsset(IAssetHandler& theAssetHandler) :
+        mAssetHandler(theAssetHandler),
+        mAsset(static_cast<TYPE*>(mAssetHandler.GetReference()))
       {
-        assert(AssetLoadStyleFirst < theStyle && AssetLoadStyleLast > theStyle &&
-            "TAsset::TAsset() invalid style provided");
       }
 
-        /**
-         * TAsset deconstructor
-         */
-        virtual ~TAsset() {
-          if(0 != mReferences)
-          {
-            // Log an error, since not all of our assets have had their FreeAsset
-            // method called!
-          }
-        }
+      /**
+        * TAsset constructor that should be used most frequently since it
+        * allows theAssetManager to provide the asset at construction time.
+        * @param[in] theAssetHandler to use for retrieving asset references
+        * @param[in] theAssetID to use for this asset
+        * @param[in] theLoadFlag indicating immediate loading of asset
+        */
+      TAsset(IAssetHandler& theAssetHandler, const typeAssetID theAssetID,
+        bool theLoadFlag = false) :
+        mAssetHandler(theAssetHandler),
+        mAsset(static_cast<TYPE*>(mAssetHandler.GetReference(theAssetID, theLoadFlag))),
+        mAssetID(theAssetID)
+      {
+      }
 
-        /**
-         * RegisterApp will register a pointer to the App class so it can be used
-         * by the TAsset derived classes for error handling and log reporting.
-         * @param[in] theApp is a pointer to the App (or App derived) class
-         */
-        void RegisterApp(App* theApp) {
-          // Check that our pointer is good
-          assert(NULL != theApp && "TAsset::RegisterApp() theApp pointer provided is bad");
+      /**
+        * TAsset copy constructor will allow for copying of assets by
+        * incrementing the reference counter for this asset through the
+        * Asset Handler provided at construction time.
+        */
+      TAsset(const TAsset<TYPE>& theCopy) :
+        mAssetHandler(theCopy.mAssetHandler),
+        mAssetID(theCopy.mAssetID)
+      {
+        // Increment reference count to this asset
+        mAsset = static_cast<TYPE*>(mAssetHandler.GetReference(mAssetID));
+      }
 
-          // Make a note of the pointer
-          assert(NULL == mApp && "TAsset::RegisterApp() theApp pointer was already registered");
-          mApp = theApp;
-        }
+      /**
+        * TAsset deconstructor
+        */
+      virtual ~TAsset()
+      {
+        // Drop reference to this asset
+        mAssetHandler.DropReference(mAssetID);
+      }
 
-        /**
-         * IsLoaded will return true if the Asset has been loaded.
-         * @return true if loaded, false otherwise
-         */
-        bool IsLoaded(void) const {
-          return mLoaded;
-        }
+      /**
+        * IsLoaded will return true if the Asset has been loaded.
+        * @return true if loaded, false otherwise
+        */
+      bool IsLoaded(void) const
+      {
+        return mAssetHandler.IsLoaded(mAssetID);
+      }
 
-        /**
-         * GetLoadingStyle will return the Loading Style for this asset.
-         * @return LoadingStyle enumeration for this asset
-         */
-        AssetLoadingStyle GetLoadingStyle(void) const {
-          return mStyle;
-        }
+      /**
+        * SetID will set the ID for this asset and get a reference to the
+        * asset.
+        * @param[in] theAssetID to use for this asset
+        * @param[in] theLoadFlag indicating immediate loading of asset
+        */
+      void SetID(const typeAssetID theAssetID, bool theLoadFlag = false)
+      {
+        // Make note of the new Asset ID
+        mAssetID = theAssetID;
 
-        /**
-         * SetLoadingStyle will set the Loading Style for this asset.
-         * @param[in] theStyle to use when Loading this asset
-         */
-        void SetLoadingStyle(AssetLoadingStyle theStyle) {
-          assert(AssetLoadStyleFirst < theStyle && AssetLoadStyleLast > theStyle &&
-              "TAsset::SetLoadingStyle() invalid style provided");
+        // Try to obtain a reference to the new Asset from Handler
+        mAsset = static_cast<TYPE*>(mAssetHandler.GetReference(mAssetID, theLoadFlag));
+      }
 
-          mStyle = theStyle;
-        }
+      /**
+        * GetAsset will return the Asset if it is available.
+        * @return pointer to the Asset or NULL if not available yet.
+        */
+      TYPE& GetAsset(void) const
+      {
+        return *mAsset;
+      }
 
-        /**
-         * AddReference will increment the reference count.
-         */
-        void AddReference(void)
-        {
-          mReferences++;
-        }
+      /**
+        * TAsset assignment operator will allow for copying of assets by
+        * incrementing the reference count for this asset.
+        * @param[in] theRight hand side of the = operation
+        */
+      TAsset<TYPE>& operator=(const TAsset<TYPE>& theRight)
+      {
+        // Use copy constructor to duplicate theRight side
+        //TAsset anCopy(theRight);
 
-        /**
-         * GetReferences will return the reference count.
-         * @return number of entities referencing this Asset
-         */
-        const Uint16 GetReferences(void) const {
-          return mReferences;
-        }
+        // Now swap my local copy with anCopy made above
+        //std::swap(mAssetHandler, anCopy.mAssetHandler);
+        //std::swap(mAsset, anCopy.mAsset);
+        //std::swap(mAssetID, anCopy.mAssetID);
 
-        /**
-         * DropReference will decrement the reference count.
-         * @param[in] theRemoveFlag indicates the asset should be removed when the
-         *            number of references for this asset reaches 0.
-         */
-        void DropReference(bool theRemoveFlag = true) {
-          assert(0 != mReferences && "TAsset::DropReference() called more than AddReference()");
-          mReferences--;
+        // Increment the reference count to this Asset
+        //mAssetHandler.GetReference(mAssetID);
 
-          // Delete asset for zero references and theRemoveFlag is set
-          if(true == theRemoveFlag && 0 == mReferences)
-          {
-            UnloadAsset();
-          }
-        }
-
-        /**
-         * GetAsset will return the Asset if it is available.
-         * @return pointer to the Asset or NULL if not available yet.
-         */
-        TYPE& GetAsset(void) const {
-          return *mAsset;
-        }
-
-        /**
-         * LoadAsset is responsible for loading the Asset.
-         */
-        virtual void LoadAsset(void) = 0;
-
-      protected:
-        // Variables
-        ///////////////////////////////////////////////////////////////////////////
-        /// Pointer to the App class for error handling and logging
-        App*                mApp;
-        /// The filename associated with this asset
-        const std::string   mFilename;
-        /// The loading style to use with this asset
-        AssetLoadingStyle   mStyle;
-        /// Pointer to the loaded asset
-        TYPE*               mAsset;
-        /// True if the asset has been loaded or provided
-        bool                mLoaded;
-
-        /**
-         * UnloadAsset is responsible for destroying or unloading the Asset and
-         * is called by FreeAsset.
-         */
-        virtual void UnloadAsset(void) = 0;
-
-      private:
-        /// A counter for every time this asset is referenced
-        Uint16    mReferences;
-
-        /**
-         * Our copy constructor is private because we do not allow copies of our
-         * class
-         */
-        TAsset(const TAsset&);  // Intentionally undefined
-
-        /**
-         * Our assignment operator is private because we do not allow copies of our
-         * class
-         */
-        TAsset& operator=(const TAsset&); // Intentionally undefined
-    }; // class TAsset
+        // Return my pointer
+        return *this;
+      }
+  }; // class TAsset
 } // namespace GQE
 
 #endif // CORE_TASSET_HPP_INCLUDED
@@ -188,11 +153,11 @@ namespace GQE
 /**
  * @class GQE::TAsset
  * @ingroup Core
- * The TAsset template class is the template used to create a new
- * asset to be managed by the AssetManager class and provides reference
- * counting for each Asset being tracked.
+ * The TAsset template class is the template used to create a new asset type
+ * reference.  It provides indirect reference counting and dummy asset
+ * references if no Asset ID is provided (see IAssetHandler).
  *
- * Copyright (c) 2010-2011 Ryan Lindeman
+ * Copyright (c) 2010-2012 Ryan Lindeman
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights

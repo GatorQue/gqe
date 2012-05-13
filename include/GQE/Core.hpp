@@ -9,6 +9,7 @@
  * @date 20110127 - Changed name from GQE.hpp to Core.hpp and moved to include
  * @date 20110218 - Added ConfigAsset to Core includes
  * @date 20110906 - Added new StringUtil include file
+ * @date 20120512 - Add new Asset Handler classes
  */
 #ifndef   GQE_CORE_HPP_INCLUDED
 #define   GQE_CORE_HPP_INCLUDED
@@ -20,15 +21,21 @@
 
 // GQE Core includes
 #include <GQE/Core/assets/ConfigAsset.hpp>
+#include <GQE/Core/assets/ConfigHandler.hpp>
 #include <GQE/Core/assets/FontAsset.hpp>
+#include <GQE/Core/assets/FontHandler.hpp>
 #include <GQE/Core/assets/ImageAsset.hpp>
+#include <GQE/Core/assets/ImageHandler.hpp>
 #include <GQE/Core/assets/MusicAsset.hpp>
+#include <GQE/Core/assets/MusicHandler.hpp>
 #include <GQE/Core/assets/SoundAsset.hpp>
-#include <GQE/Core/classes/App.hpp>
+#include <GQE/Core/assets/SoundHandler.hpp>
 #include <GQE/Core/classes/AssetManager.hpp>
 #include <GQE/Core/classes/ConfigReader.hpp>
 #include <GQE/Core/classes/StatManager.hpp>
 #include <GQE/Core/classes/StateManager.hpp>
+#include <GQE/Core/interfaces/IApp.hpp>
+#include <GQE/Core/interfaces/IAssetHandler.hpp>
 #include <GQE/Core/interfaces/ILogger.hpp>
 #include <GQE/Core/interfaces/IState.hpp>
 #include <GQE/Core/interfaces/TAsset.hpp>

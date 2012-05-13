@@ -14,19 +14,21 @@
  * @date 20110721 - Remove * from GetAsset() calls since it now returns TYPE&
  * @date 20110906 - Change mApp from a pointer to an address reference
  * @date 20120322 - Support new SFML2 snapshot changes
+ * @date 20120512 - Renamed App to IApp since it really is just an interface
  */
 #include <GQE/Core/assets/ImageAsset.hpp>
-#include <GQE/Core/classes/App.hpp>
+#include <GQE/Core/interfaces/IApp.hpp>
 #include <GQE/Core/states/SplashState.hpp>
 
 namespace GQE
 {
-  SplashState::SplashState(App& theApp, typeAssetID theSplashID,
+  SplashState::SplashState(IApp& theApp, typeAssetID theSplashID,
       const std::string theFilename, float theDelay) :
     IState("Splash", theApp),
     mSplashID(theSplashID),
     mSplashFilename(theFilename),
     mSplashDelay(theDelay),
+    mSplashImage(theFilename, true),
     mSplashSprite(NULL)
   {
   }
@@ -44,11 +46,8 @@ namespace GQE
     // First call our base class implementation
     IState::DoInit();
 
-    // Load our splash image
-    mApp.mAssetManager.AddImage(mSplashID, mSplashFilename, AssetLoadStyleImmediate);
-
     // Retrieve a sprite to the above image
-    mSplashSprite = mApp.mAssetManager.GetSprite(mSplashID);
+    mSplashSprite = new sf::Sprite(mSplashImage.GetAsset());
   }
 
   void SplashState::ReInit(void)
@@ -85,9 +84,6 @@ namespace GQE
     // Delete our sprite
     delete mSplashSprite;
     mSplashSprite = NULL;
-
-    // Unload our image since we don't need it anymore
-    mApp.mAssetManager.UnloadImage(mSplashID);
 
     // Last of all, call our base class implementation
     IState::Cleanup();

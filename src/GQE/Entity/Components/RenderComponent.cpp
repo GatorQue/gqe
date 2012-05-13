@@ -2,7 +2,7 @@
 #include <GQE/Entity/classes/Entity.hpp>
 namespace GQE
 {
-	RenderComponent::RenderComponent(App& theApp,EntityManager* theEntityManager) :
+	RenderComponent::RenderComponent(IApp& theApp, EntityManager* theEntityManager) :
 IComponent("RenderComponent",theApp,theEntityManager),
 	mSprite(NULL)
 {

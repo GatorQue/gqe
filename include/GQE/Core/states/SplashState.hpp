@@ -16,9 +16,10 @@
 #ifndef   CORE_SPLASH_STATE_HPP_INCLUDED
 #define   CORE_SPLASH_STATE_HPP_INCLUDED
 
+#include <SFML/Graphics.hpp>
+#include <GQE/Core/assets/ImageAsset.hpp>
 #include <GQE/Core/Core_types.hpp>
 #include <GQE/Core/interfaces/IState.hpp>
-#include <SFML/Graphics.hpp>
 
 namespace GQE
 {
@@ -30,7 +31,7 @@ namespace GQE
        * SplashState constructor
        * @param[in] theApp is the address to the App class.
        */
-      SplashState(App& theApp, typeAssetID theSplashID,
+      SplashState(IApp& theApp, typeAssetID theSplashID,
           const std::string theFilename = "resources/Splash.png", float theDelay = 10.0f);
 
       /**
@@ -92,9 +93,10 @@ namespace GQE
       std::string         mSplashFilename;
       /// The time in seconds to wait before continuing to next game state
       float               mSplashDelay;
+      /// Splash ImageAsset to load
+      ImageAsset          mSplashImage;
       /// The sprite to hold the splash image being displayed
       sf::Sprite*         mSplashSprite;
-
   }; // class SplashState
 } // namespace GQE
 

@@ -5,15 +5,17 @@
  * @author Ryan Lindeman
  * @date 20110704 - Initial Release
  * @date 20120421 - Use arial.ttf font since SFML 2 crashes on exit when using default font
+ * @date 20120512 - Use new RAII Asset style
  */
 
 #ifndef   GAME_STATE_HPP_INCLUDED
 #define   GAME_STATE_HPP_INCLUDED
 
+#include <SFML/Graphics.hpp>
+#include <GQE/Core/assets/FontAsset.hpp>
+#include <GQE/Core/assets/ImageAsset.hpp>
 #include <GQE/Core/Core_types.hpp>
 #include <GQE/Core/interfaces/IState.hpp>
-#include <SFML/Graphics.hpp>
-#include <SFML/Graphics/Text.hpp>
 
 /// Provides the TicTacToe GameState example
 class GameState : public GQE::IState
@@ -23,7 +25,7 @@ class GameState : public GQE::IState
      * GameState constructor
      * @param[in] theApp is an address to the App class.
      */
-    GameState(GQE::App& theApp);
+    GameState(GQE::IApp& theApp);
 
     /**
      * GameState deconstructor
@@ -78,22 +80,22 @@ class GameState : public GQE::IState
   private:
     // Variables
     /////////////////////////////////////////////////////////////////////////
-    GQE::FontAsset*  mWinFont;
-    GQE::ImageAsset* mBackground;
-    GQE::ImageAsset* mPlayer1;
-    GQE::ImageAsset* mPlayer2;
-    GQE::ImageAsset* mEmpty;
-    sf::Sprite       mBackgroundSprite;
-    sf::Sprite       mCursor;
-    sf::Sprite       mBoardSprite[3][3];
-    GQE::Uint8       mBoardPlayer[3][3];
-    GQE::Uint8       mCurrentPlayer;
+    GQE::FontAsset  mWinFont;
+    GQE::ImageAsset mBackground;
+    GQE::ImageAsset mPlayer1;
+    GQE::ImageAsset mPlayer2;
+    GQE::ImageAsset mEmpty;
+    sf::Sprite      mBackgroundSprite;
+    sf::Sprite      mCursor;
+    sf::Sprite      mBoardSprite[3][3];
+    GQE::Uint8      mBoardPlayer[3][3];
+    GQE::Uint8      mCurrentPlayer;
 #if (SFML_VERSION_MAJOR < 2)
     /// Winner string
-    sf::String*      mWinnerText;
+    sf::String*     mWinnerText;
 #else
     /// Winner string
-    sf::Text*        mWinnerText;
+    sf::Text*       mWinnerText;
 #endif
 
 }; // class GameState
