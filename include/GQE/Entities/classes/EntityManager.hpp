@@ -14,36 +14,33 @@
 
 namespace GQE
 {
-  class GQE_API EntityManager
-  {
-    public:
-      //Manager Functions
-      void AddEntity(typeEntityID theEntityID, int theNumber=1);
+class GQE_API EntityManager
+{
+public:
+    ///Manager Functions
+    Entity* AddPrototype(typePrototypeID theEntityID);
+    Entity* AddEntity(Entity* thePrototype);
 
-      AProperty* GetProperty(typeEntityID theEntityID, std::string theLable);
+    Entity* GetEntity(typeEntityID theEntityID);
+    Entity* GetPrototype(typePrototypeID theEntityID);
 
-      void SetProperty(typeEntityID theEntityID, AProperty* theProperty);
+    void HandleEvents(sf::Event theEvent);
 
-      void AttachComponent(typeEntityID theEntityID, IComponent* theComponent);
+    void UpdateFixed();
 
-      void DetachComponent(typeEntityID theEntityID, typeComponentID theComponentID);
+    void UpdateVariable(float theElapstedTime);
 
-      void HandleEvents(sf::Event theEvent);
+    void Draw();
 
-      void UpdateFixed();
+    void HandleCleanup();
 
-      void UpdateVariable(float theElapstedTime);
+protected:
 
-      void Draw();
-
-      void HandleCleanup();
-
-    protected:
-      Entity* GetEntity(typeEntityID);
-    private:
-      std::vector<Entity*> mEntityList;
-
-  };
+private:
+    std::vector<Entity*> mEntityList;
+    std::vector<Entity*> mPrototypeList;
+    Uint32 mEntityCount;
+};
 }
 
 #endif

@@ -5,6 +5,7 @@
  * @file include/GQE/Core/loggers/FileLogger.hpp
  * @author Ryan Lindeman
  * @date 20110524 - Initial Release
+ * @date 20120504 - Fix segment fault caused by SLOG taking over gInstance
  */
 #ifndef   CORE_FILE_LOGGER_HPP_INCLUDED
 #define   CORE_FILE_LOGGER_HPP_INCLUDED
@@ -24,8 +25,9 @@ namespace GQE
       /**
        * FileLogger constructor
        * @param[in] theFilename to open as log file
+       * @param[in] theDefault flag meaning this should be the default logger
        */
-      FileLogger(const char* theFilename);
+      FileLogger(const char* theFilename, bool theDefault = false);
 
       /**
        * FileLogger deconstructor

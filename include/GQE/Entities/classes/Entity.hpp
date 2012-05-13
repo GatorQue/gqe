@@ -14,36 +14,39 @@
 
 namespace GQE
 {
-  class GQE_API Entity
-  {
-    public:
-      Entity(typeEntityID theEntityID);
+class GQE_API Entity
+{
+public:
+    Entity(typeEntityID theEntityID);
+    Entity(typePrototypeID thePrototypeID);
 
-      ~Entity();
+    ~Entity();
+    Entity* MakeCopy(typeEntityID theEntityID);
+    typeEntityID GetEntityID();
+    typePrototypeID GetPrototypeID();
+    AProperty* GetProperty(std::string theLable);
 
-      typeEntityID GetID();
-      AProperty* GetProperty(std::string theLable);
+    void SetProperty(AProperty* theProperty);
 
-      void SetProperty(AProperty* theProperty);
+    void AttachComponent(IComponent* theComponent);
 
-      void AttachComponent(IComponent* theComponent);
+    void DetachComponent(typeComponentID theComponentID);
 
-      void DetachComponent(typeComponentID theComponentID);
+    void HandleEvents(sf::Event theEvent);
 
-      void HandleEvents(sf::Event theEvent);
+    void UpdateFixed();
 
-      void UpdateFixed();
+    void UpdateVariable(float theElapstedTime);
 
-      void UpdateVariable(float theElapstedTime);
+    void Draw();
 
-      void Draw();
-
-      void HandleCleanup();
-    private:
-      std::map<std::string, AProperty*> mPropertyList;
-      std::map<std::string, IComponent*> mComponentList;
-      typeEntityID mEntityID;
-  };
+    void HandleCleanup();
+private:
+    std::map<std::string, AProperty*> mPropertyList;
+    std::map<std::string, IComponent*> mComponentList;
+    typeEntityID mEntityID;
+    typePrototypeID mPrototypeID;
+};
 }
 
 #endif

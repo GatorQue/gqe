@@ -8,6 +8,8 @@
  * @author Ryan Lindeman
  * @date 20110610 - Initial Release
  * @date 20120426 - Change to ILogger::GetLogger call instead of gLogger
+ * @date 20120504 - Fix segfault caused by SLOG taking over gInstance
+ * @date 20120504 - Fix segfault caused by SLOG taking over gInstance
  */
 
 #include <GQE/Core/loggers/ScopeLogger.hpp>
@@ -17,7 +19,7 @@ namespace GQE
   ScopeLogger::ScopeLogger(SeverityType theSeverity,
       const char* theSourceFile, int theSourceLine,
       const char* theScopeName, int theExitCode) :
-    ILogger(theExitCode),
+    ILogger(false, theExitCode),
     mSeverity(theSeverity),
     mSourceFile(theSourceFile),
     mSourceLine(theSourceLine),

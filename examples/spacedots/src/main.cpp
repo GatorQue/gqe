@@ -6,6 +6,7 @@
  * @file src/main.cpp
  * @author Ryan Lindeman
  * @date 20100707 - Initial Release
+ * @date 20120504 - Fix missing gLogger variable issue
  */
 
 #include <assert.h>
@@ -24,8 +25,8 @@ int main(int argc, char* argv[])
   // Default anExitCode to a specific value
   int anExitCode = GQE::StatusNoError;
 
-  // Create our Logger first before creating our application
-  GQE::FileLogger anLogger("output.txt");
+  // Create a FileLogger and make it the default logger before creating our App
+  GQE::FileLogger anLogger("output.txt", true);
 
   // Create our action application.
   GQE::IApp* anApp = new(std::nothrow) SpaceDotsApp();

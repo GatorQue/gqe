@@ -5,13 +5,15 @@
  * @file src/GQE/Core/loggers/FileLogger.cpp
  * @author Ryan Lindeman
  * @date 20110524 - Initial Release
+ * @date 20120504 - Fix segfault caused by SLOG taking over gInstance
  */
 
 #include <GQE/Core/loggers/FileLogger.hpp>
 
 namespace GQE
 {
-  FileLogger::FileLogger(const char* theFilename)
+  FileLogger::FileLogger(const char* theFilename, bool theDefault) :
+    ILogger(theDefault)
   {
     mFileStream.open(theFilename);
   }

@@ -5,6 +5,7 @@
  * @file include/GQE/Core/loggers/StringLogger.hpp
  * @author Ryan Lindeman
  * @date 20110607 - Initial Release
+ * @date 20120504 - Fix segfault caused by SLOG taking over gInstance
  */
 #ifndef   CORE_STRING_LOGGER_HPP_INCLUDED
 #define   CORE_STRING_LOGGER_HPP_INCLUDED
@@ -25,7 +26,7 @@ namespace GQE
        * StringLogger constructor
        * @param[in] theExitCode value to use when FatalShutdown is called
        */
-      StringLogger(int theExitCode = StatusError);
+      StringLogger(bool theDefault = false, int theExitCode = StatusError);
 
       /**
        * StringLogger deconstructor

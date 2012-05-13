@@ -8,6 +8,7 @@
  * @date 20110627 - Added docs and remove extra ;
  * @date 20110801 - Moved code to .cpp file due to circular dependencies
  * @date 20120426 - Change to ILogger::GetLogger call instead of gLogger
+ * @date 20120504 - Fix segfault caused by SLOG taking over gInstance
  */
 #ifndef   CORE_ILOGGER_HPP_INCLUDED
 #define   CORE_ILOGGER_HPP_INCLUDED
@@ -90,7 +91,7 @@ namespace GQE
        * Singleton class except to those who derive from us.
        * @param[in] theExitCode to use if FatalShutdown is called
        */
-      ILogger(int theExitCode = StatusError);
+      ILogger(bool theDefault = false, int theExitCode = StatusError);
 
       /**
        * WriteTag will write an appropriate timestamp and File:Line tag in the
