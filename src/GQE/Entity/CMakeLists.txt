@@ -8,7 +8,7 @@ set(INC
     ${INCROOT}/Entity/classes/Instance.hpp
     ${INCROOT}/Entity/classes/EntityManager.hpp
     ${INCROOT}/Entity/interfaces/IComponent.hpp
-    ${INCROOT}/Entity/interfaces/AProperty.hpp
+    ${INCROOT}/Entity/interfaces/IProperty.hpp
     ${INCROOT}/Entity/interfaces/TProperty.hpp
     ${INCROOT}/Entity/Components/RenderComponent.hpp
     ${INCROOT}/Entity/Components/DynamicComponent.hpp
@@ -23,6 +23,7 @@ set(SRC
     ${SRCROOT}/Entity/classes/Prototype.cpp
     ${SRCROOT}/Entity/classes/Instance.cpp
     ${SRCROOT}/Entity/classes/EntityManager.cpp
+    ${SRCROOT}/Entity/interfaces/IProperty.cpp
     ${SRCROOT}/Entity/interfaces/IComponent.cpp
     ${SRCROOT}/Entity/Components/RenderComponent.cpp
     ${SRCROOT}/Entity/Components/DynamicComponent.cpp

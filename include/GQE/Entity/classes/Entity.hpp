@@ -11,7 +11,10 @@
 
 #include <map>
 #include <vector>
-#include <GQE/Entity/interfaces/IComponent.hpp>
+#include <SFML/Window/Event.hpp>
+#include <GQE/Core/loggers/Log_macros.hpp>
+#include <GQE/Entity/Entity_types.hpp>
+#include <GQE/Entity/interfaces/IProperty.hpp>
 
 namespace GQE
 {
@@ -21,66 +24,57 @@ namespace GQE
 		Entity();
 
 		~Entity();
+
 		template<class TYPE>
-		TYPE GetProperty(std::string theLable)
+		TYPE GetProperty(const typePropertyID thePropertyID)
 		{
-			if(theLable!="")
+      if(mPropertyList.find(thePropertyID)!=mPropertyList.end())
 			{
-				if(mPropertyList.find(theLable)!=mPropertyList.end())
-				{
-					if(mPropertyList.at(theLable)->getType()->Name()==typeid(TYPE).name())
-						return static_cast<TProperty<TYPE>*>(mPropertyList[theLable])->getValue();
-				}
+				if(mPropertyList.at(thePropertyID)->getType()->Name()==typeid(TYPE).name())
+					return static_cast<TProperty<TYPE>*>(mPropertyList[thePropertyID])->getValue();
 			}
+      else
+      {
+        WLOG() << "Entity:GetProperty() returning blank property(" << thePropertyID << ") type" << std::endl;
+      }
 			TYPE anReturn=TYPE();
 			return anReturn;
 		}
+
 		template<class TYPE>
-		void SetProperty(std::string theLable, TYPE theValue)
+		void SetProperty(const typePropertyID thePropertyID, TYPE theValue)
 		{
-			if(theLable!="")
+			if(mPropertyList.find(thePropertyID)!=mPropertyList.end())
 			{
-				if(mPropertyList.find(theLable)!=mPropertyList.end())
-				{
-					if(mPropertyList.at(theLable)->getType()->Name()==typeid(TYPE).name())
-						static_cast<TProperty<TYPE>*>(mPropertyList[theLable])->setValue(theValue);
-				}
+				if(mPropertyList.at(thePropertyID)->getType()->Name()==typeid(TYPE).name())
+        {
+					static_cast<TProperty<TYPE>*>(mPropertyList[thePropertyID])->setValue(theValue);
+        }
 			}
+      else
+      {
+        ELOG() << "Entity:SetProperty() unable to find property(" << thePropertyID << ")" << std::endl;
+      }
 		}
+
 		template<class TYPE>
-		void AddProperty(std::string theLable, TYPE theValue)
+		void AddProperty(const typePropertyID thePropertyID, TYPE theValue)
 		{
-			if(theLable=="")
+			if(mPropertyList.find(thePropertyID)!=mPropertyList.end())
 			{
-				//Log Error
+        ELOG() << "Entity:AddProperty() label(" << thePropertyID << ") not found!" << std::endl;
 				return;
 			}
-			if(mPropertyList.find(theLable)!=mPropertyList.end())
-			{
-				//Log Error
-				return;
-			}
-			TProperty<TYPE>* anProperty=new TProperty<TYPE>(theLable);
+			TProperty<TYPE>* anProperty=new TProperty<TYPE>(thePropertyID);
 			anProperty->setValue(theValue);
-			mPropertyList[anProperty->getLable()]=anProperty;
+			mPropertyList[anProperty->GetID()]=anProperty;
 		}
-		void AddProperty(AProperty* theProperty)
-		{
-			if(theProperty->getLable()=="")
-			{
-				//Log Error
-				return;
-			}
-			if(mPropertyList.find(theProperty->getLable())!=mPropertyList.end())
-			{
-				//Log Error
-				return;
-			}
-			mPropertyList[theProperty->getLable()]=theProperty;
-		}
+
+		void AddProperty(IProperty* theProperty);
+
 		void AttachComponent(IComponent* theComponent);
 
-		void DetachComponent(typeComponentID theComponentID);
+		void DetachComponent(const typeComponentID theComponentID);
 
 		void HandleEvents(sf::Event theEvent);
 
@@ -92,8 +86,8 @@ namespace GQE
 
 		void HandleCleanup();
 	protected:
-		std::map<std::string, AProperty*> mPropertyList;
-		std::map<std::string, IComponent*> mComponentList;
+		std::map<const typePropertyID, IProperty*>   mPropertyList;
+		std::map<const typeComponentID, IComponent*> mComponentList;
 	};
 }
 

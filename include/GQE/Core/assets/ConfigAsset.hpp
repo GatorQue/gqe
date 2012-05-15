@@ -10,6 +10,7 @@
  * @date 20110611 - Add abreviated comment for Docs
  * @date 20110627 - Removed extra ; from namespace
  * @date 20120512 - Use new RAII Asset and Asset Handler management style
+ * @date 20120514 - Add default constructor for missing Asset ID at construction
  */
 #ifndef   CORE_CONFIG_ASSET_HPP_INCLUDED
 #define   CORE_CONFIG_ASSET_HPP_INCLUDED
@@ -24,6 +25,12 @@ namespace GQE
   class GQE_API ConfigAsset : public TAsset<ConfigReader>
   {
     public:
+      /**
+       * ConfigAsset default constructor is used when you don't know the asset
+       * filename until later.
+       */
+      ConfigAsset();
+
       /**
        * ConfigAsset constructor
        * @param[in] theFilename to use when loading this asset

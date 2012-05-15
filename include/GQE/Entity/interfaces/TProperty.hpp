@@ -10,22 +10,22 @@
 #define TPROPERTY_HPP_INCLUDED
 
 #include <GQE/Entity/Entity_types.hpp>
-#include <GQE/Entity/interfaces/AProperty.hpp>
+#include <GQE/Entity/interfaces/IProperty.hpp>
 #include <typeinfo>
 
 namespace GQE
 {
 	template<class TYPE=unsigned int>
-	class GQE_API TProperty : public AProperty
+	class GQE_API TProperty : public IProperty
 	{
 	public:
 		TProperty():
-				AProperty(typeid(TProperty<TYPE>).name())
+				IProperty(typeid(TProperty<TYPE>).name())
 				{
 
 				}
 				TProperty(std::string theLable):
-				AProperty(typeid(TYPE).name(),theLable)
+				IProperty(typeid(TYPE).name(),theLable)
 				{
 
 				}
@@ -41,9 +41,9 @@ namespace GQE
 				{
 
 				}
-				AProperty* MakeChild()
+				IProperty* MakeChild()
 				{
-					TProperty<TYPE>* anProperty=new TProperty<TYPE>(getLable());
+					TProperty<TYPE>* anProperty=new TProperty<TYPE>(GetID());
 					anProperty->setValue(mValue);
 					return anProperty;
 				}

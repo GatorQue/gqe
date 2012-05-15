@@ -17,13 +17,17 @@ namespace GQE
 	class GQE_API EntityManager
 	{
 	public:
+
 		EntityManager();
+
 		///Manager Functions
 		void AddPrototype(Prototype* thePrototype);
-		typeInstanceID AddInstance(typePrototypeID thePrototypeID);
 
-		Instance* GetInstance(typeInstanceID theInstanceID);
-		Prototype* GetPrototype(typePrototypeID thePrototypeID);
+		typeInstanceID AddInstance(const typePrototypeID thePrototypeID);
+
+		Instance* GetInstance(const typeInstanceID theInstanceID);
+
+		Prototype* GetPrototype(const typePrototypeID thePrototypeID);
 
 		void HandleEvents(sf::Event theEvent);
 
@@ -39,7 +43,7 @@ namespace GQE
 
 	private:
 		std::vector<Instance*> mInstanceList;
-		std::map<typePrototypeID,Prototype*> mPrototypeList;
+		std::map<const typePrototypeID, Prototype*> mPrototypeList;
 		typeInstanceID mNextID;
 	};
 }

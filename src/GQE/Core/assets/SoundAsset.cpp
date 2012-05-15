@@ -12,6 +12,7 @@
  * @date 20110627 - Removed extra ; from namespace
  * @date 20120322 - Support new SFML2 snapshot changes
  * @date 20120512 - Use new RAII Asset and Asset Handler management style
+ * @date 20120514 - Add default constructor for missing Asset ID at construction
  */
 
 #include <assert.h>
@@ -23,6 +24,12 @@
 
 namespace GQE
 {
+  SoundAsset::SoundAsset() :
+    TAsset<sf::SoundBuffer>(
+      IApp::GetApp()->mAssetManager.GetHandler(SoundHandler::DEFAULT_ID))
+  {
+  }
+
   SoundAsset::SoundAsset(std::string theFilename, bool theLoadFlag) :
     TAsset<sf::SoundBuffer>(
       IApp::GetApp()->mAssetManager.GetHandler(SoundHandler::DEFAULT_ID),

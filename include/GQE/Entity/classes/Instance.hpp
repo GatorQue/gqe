@@ -6,13 +6,13 @@ namespace GQE
 	class GQE_API Instance : public Entity
 	{
 	public:
-		Instance(typeInstanceID theInstanceID, Prototype* thePrototype);
-		~Instance();
-		typeInstanceID GetID();
+		Instance(const typeInstanceID theInstanceID, Prototype* thePrototype);
+		virtual ~Instance();
+		const typeInstanceID GetID() const;
 		Prototype* GetPrototype();
 		void UpdateInfo();
 	private:
-		typeInstanceID mID;
+		const typeInstanceID mID;
 		Prototype* mPrototype;
 	};
 }

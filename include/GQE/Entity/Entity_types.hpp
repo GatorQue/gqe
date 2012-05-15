@@ -10,24 +10,29 @@
 
 #include <string>
 #include <GQE/Config.hpp>
-//#include <GQE/Core.hpp>
+#include <GQE/Core.hpp>
 
 namespace GQE
 {
-	// Forward declare GQE Entities interfaces provided
-	class IComponent;
+  // Forward declare GQE Entity interfaces provided
+  class IComponent;
 
-	// Forward declare GQE Entities classes provided
-	class Entity;
-	class Prototype;
-	class Instance;
-	class EntityManager;
-	/// Declare Component ID typedef which is used for identifying Component objects
-	typedef std::string typeComponentID;
+  // Forward declare GQE Entity classes provided
+  class Entity;
+  class Prototype;
+  class Instance;
+  class EntityManager;
 
-	/// Declare Prototype ID typedef which is used for identifying Entity Prototype objects
-	typedef std::string typePrototypeID;
-	/// Declare Entity ID typedef which is used for identifying Entity objects
-	typedef Uint32 typeInstanceID;
+  /// Declare Property ID typedef which is used for identifying Properties
+  typedef std::string typePropertyID;
+
+  /// Declare Component ID typedef which is used for identifying Component objects
+  typedef std::string typeComponentID;
+
+  /// Declare Prototype ID typedef which is used for identifying Entity Prototype objects
+  typedef std::string typePrototypeID;
+
+  /// Declare Entity ID typedef which is used for identifying Entity objects
+  typedef Uint32 typeInstanceID;
 }
 #endif

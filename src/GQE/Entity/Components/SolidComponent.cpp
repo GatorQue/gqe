@@ -4,11 +4,12 @@ namespace GQE
 {
 	std::vector<Entity*> SolidComponent::mEntities;
 
-	SolidComponent::SolidComponent(App& theApp, EntityManager* theEntityManager) :
-	IComponent("SolidComponent",theApp,theEntityManager)
+	SolidComponent::SolidComponent(IApp& theApp, EntityManager* theEntityManager) :
+	  IComponent("SolidComponent",theApp,theEntityManager)
 	{
 
 	}
+
 	SolidComponent::~SolidComponent()
 	{
 
@@ -35,7 +36,8 @@ namespace GQE
 	{
 		std::vector<Entity*>::iterator it;
 		std::vector<Entity*>::iterator it2;
-		Entity* anEntity, anOtherEntity;
+		Entity* anEntity;
+    Entity* anOtherEntity;
 		for(it=mEntities.begin();it!=mEntities.end();++it)
 		{
 			for(it2=it+1;it2!=mEntities.end();++it2)
@@ -44,7 +46,6 @@ namespace GQE
 				sf::Vector2f anPosA=(*it)->GetProperty<sf::Vector2f>("Position");
 				sf::FloatRect anRectB=(*it2)->GetProperty<sf::FloatRect>("BoundingBox");
 				sf::Vector2f anPosB=(*it2)->GetProperty<sf::Vector2f>("Position");
-
 			}
 		}
 	}
@@ -63,8 +64,9 @@ namespace GQE
 	{
 		IComponent::Cleanup();
 	}
+
 	IComponent* SolidComponent::MakeClone()
 	{
-		return (new SolidComponent(mApp,mEntityManager));
+		return (new(std::nothrow) SolidComponent(mApp,mEntityManager));
 	}
 }

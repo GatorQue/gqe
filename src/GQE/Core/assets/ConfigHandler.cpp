@@ -5,6 +5,7 @@
  * @file src/GQE/Core/assets/ConfigHandler.cpp
  * @author Ryan Lindeman
  * @date 20120428 - Initial Release
+ * @date 20120514 - Don't throw exception on new
  */
  
 #include <GQE/Core/assets/ConfigHandler.hpp>
@@ -31,7 +32,7 @@ namespace GQE
   {
     ILOG() << "ConfigHandler(" << GetID() << "):AcquireAsset("
       << theAssetID << ") Creating asset" << std::endl;
-    return new ConfigReader();
+    return new(std::nothrow) ConfigReader();
   }
       
   void* ConfigHandler::GetDummyAsset(void)

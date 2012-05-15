@@ -28,6 +28,7 @@ namespace GQE
 		* IComponent deconstructor
 		*/
 		virtual ~IComponent();
+
 		/**
 		* GetID will return the ID used to identify this component object.
 		* @return GQE::typeCompomentID is the ID for this component object.
@@ -40,6 +41,7 @@ namespace GQE
 		* IComponent::DoInit() first before initializing their assets.
 		*/
 		virtual void DoInit(Entity* theEntity);
+
 		/**
 		* ReInit is responsible for Reseting this component.
 		*/
@@ -63,6 +65,7 @@ namespace GQE
 		* @return true if the componet has been cleaned.
 		*/
 		bool CanRemove(void);
+
 		/**
 		* HandleEvents is responsible for handling input events for this
 		* component when it is the active State.
@@ -97,11 +100,14 @@ namespace GQE
 		virtual IComponent* MakeClone()=0;
 	protected:
 		/// Address to the App class
-                IApp&          mApp;
+    IApp&   mApp;
+
 		//pointer to the attached entity.
 		Entity* mEntity;
-		//pointer to active entity manager.
+
+    //pointer to active entity manager.
 		EntityManager* mEntityManager;
+
 		/**
 		* Cleanup is responsible for performing any cleanup required before
 		* this component is removed.
@@ -116,6 +122,7 @@ namespace GQE
 		bool                  mCleanup;
 		///component is cleaned and ready to be removed;
 		bool mRemove;
+
 		/**
 		* Our copy constructor is private because we do not allow copies of
 		* our Singleton class

@@ -400,7 +400,7 @@ namespace GQE
     if(iterSection == mSections.end())
     {
       // First try to create a new name, value pair map for this new section
-      typeNameValue* anMap = new (std::nothrow) typeNameValue;
+      typeNameValue* anMap = new(std::nothrow) typeNameValue;
 
       // Make sure we were able to create the map ok
       if(NULL != anMap)

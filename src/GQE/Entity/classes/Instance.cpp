@@ -2,27 +2,31 @@
 #include "GQE/Entity/classes/Instance.hpp"
 namespace GQE
 {
-	Instance::Instance(typeInstanceID theInstanceID, Prototype* thePrototype):
-Entity(),
-	mID(theInstanceID),
-	mPrototype(thePrototype)
-{
+  Instance::Instance(const typeInstanceID theInstanceID, Prototype* thePrototype):
+    Entity(),
+	  mID(theInstanceID),
+	  mPrototype(thePrototype)
+  {
 
-}
-Instance::~Instance()
-{
+  }
 
-}
-typeInstanceID Instance::GetID()
-{
-	return mID;
-}
-Prototype* Instance::GetPrototype()
-{
-	return mPrototype;
-}
-void Instance::UpdateInfo()
-{
+  Instance::~Instance()
+  {
 
-}
+  }
+
+  const typeInstanceID Instance::GetID() const
+  {
+	  return mID;
+  }
+
+  Prototype* Instance::GetPrototype()
+  {
+	  return mPrototype;
+  }
+
+  void Instance::UpdateInfo()
+  {
+
+  }
 }

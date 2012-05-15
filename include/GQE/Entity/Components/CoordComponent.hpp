@@ -14,22 +14,25 @@ namespace GQE
 		* RenderComponent constructor
 		* @param[in] theApp is the address to the App derived class
 		*/
-		CoordComponent(App& theApp,EntityManager* theEntityManager);
+		CoordComponent(IApp& theApp, EntityManager* theEntityManager);
 
 		/**
 		* RenderComponent deconstructor
 		*/
 		virtual ~CoordComponent();
+
 		/**
 		* DoInit is responsible for initializing this component.  HandleCleanup will
 		* be called if mCleanup is true so Derived classes should always call
 		* RenderComponent::DoInit() first before initializing their assets.
 		*/
 		virtual void DoInit(Entity* theEntity);
+
 		/**
 		* ReInit is responsible for Reseting this component.
 		*/
 		virtual void ReInit(void);
+
 		/**
 		* HandleEvents is responsible for handling input events for this
 		* component when it is the active State.
@@ -54,6 +57,7 @@ namespace GQE
 		* Draw is responsible for handling all Drawing needs for this component
 		*/
 		virtual void Draw(void);
+
 		IComponent* MakeClone();
 	protected:
 		/**
@@ -61,6 +65,7 @@ namespace GQE
 		* this component is removed.
 		*/
 		virtual void Cleanup(void);
+
 	private:
 		/**
 		* Our copy constructor is private because we do not allow copies of

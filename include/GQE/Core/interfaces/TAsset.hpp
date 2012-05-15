@@ -15,6 +15,7 @@
  *                  what SFML is expecting.
  * @date 20120503 - Rewrote TAsset to use RAII technique and more flexible
  *                  handling of Assets using the new IAssetHandler classes.
+ * @date 20120514 - Fix comment whitespace and added GetID method call
  */
 #ifndef   CORE_TASSET_HPP_INCLUDED
 #define   CORE_TASSET_HPP_INCLUDED
@@ -83,8 +84,8 @@ namespace GQE
       }
 
       /**
-        * TAsset deconstructor
-        */
+       * TAsset deconstructor
+       */
       virtual ~TAsset()
       {
         // Drop reference to this asset
@@ -92,20 +93,29 @@ namespace GQE
       }
 
       /**
-        * IsLoaded will return true if the Asset has been loaded.
-        * @return true if loaded, false otherwise
-        */
+       * IsLoaded will return true if the Asset has been loaded.
+       * @return true if loaded, false otherwise
+       */
       bool IsLoaded(void) const
       {
         return mAssetHandler.IsLoaded(mAssetID);
       }
 
       /**
-        * SetID will set the ID for this asset and get a reference to the
-        * asset.
-        * @param[in] theAssetID to use for this asset
-        * @param[in] theLoadFlag indicating immediate loading of asset
-        */
+       * GetID will return the ID being used for this asset.
+       * @return the Asset ID assigned to this asset
+       */
+      const typeAssetID GetID(void) const
+      {
+        return mAssetID;
+      }
+
+      /**
+       * SetID will set the ID for this asset and get a reference to the
+       * asset.
+       * @param[in] theAssetID to use for this asset
+       * @param[in] theLoadFlag indicating immediate loading of asset
+       */
       void SetID(const typeAssetID theAssetID, bool theLoadFlag = false)
       {
         // Make note of the new Asset ID
@@ -116,19 +126,19 @@ namespace GQE
       }
 
       /**
-        * GetAsset will return the Asset if it is available.
-        * @return pointer to the Asset or NULL if not available yet.
-        */
+       * GetAsset will return the Asset if it is available.
+       * @return pointer to the Asset or NULL if not available yet.
+       */
       TYPE& GetAsset(void) const
       {
         return *mAsset;
       }
 
       /**
-        * TAsset assignment operator will allow for copying of assets by
-        * incrementing the reference count for this asset.
-        * @param[in] theRight hand side of the = operation
-        */
+       * TAsset assignment operator will allow for copying of assets by
+       * incrementing the reference count for this asset.
+       * @param[in] theRight hand side of the = operation
+       */
       TAsset<TYPE>& operator=(const TAsset<TYPE>& theRight)
       {
         // Use copy constructor to duplicate theRight side

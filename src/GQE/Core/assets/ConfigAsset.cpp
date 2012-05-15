@@ -10,6 +10,7 @@
  * @date 20110611 - Convert logging to new Log macros
  * @date 20110627 - Removed extra ; from namespace
  * @date 20120512 - Use new RAII Asset and Asset Handler management style
+ * @date 20120514 - Add default constructor for missing Asset ID at construction
  */
 
 #include <assert.h>
@@ -21,6 +22,12 @@
 
 namespace GQE
 {
+  ConfigAsset::ConfigAsset() :
+    TAsset<ConfigReader>(
+      IApp::GetApp()->mAssetManager.GetHandler(ConfigHandler::DEFAULT_ID))
+  {
+  }
+
   ConfigAsset::ConfigAsset(std::string theFilename, bool theLoadFlag) :
     TAsset<ConfigReader>(
       IApp::GetApp()->mAssetManager.GetHandler(ConfigHandler::DEFAULT_ID),

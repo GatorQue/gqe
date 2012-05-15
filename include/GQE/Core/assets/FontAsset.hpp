@@ -11,6 +11,7 @@
  * @date 20110218 - Change to system include style
  * @date 20110627 - Removed extra ; from namespace
  * @date 20120512 - Use new RAII Asset and Asset Handler management style
+ * @date 20120514 - Add default constructor for missing Asset ID at construction
  */
 #ifndef   CORE_FONT_ASSET_HPP_INCLUDED
 #define   CORE_FONT_ASSET_HPP_INCLUDED
@@ -25,6 +26,12 @@ namespace GQE
   class GQE_API FontAsset : public TAsset<sf::Font>
   {
     public:
+      /**
+       * FontAsset default constructor is used when you don't know the asset
+       * filename until later.
+       */
+      FontAsset();
+
       /**
        * FontAsset constructor
        * @param[in] theFilename to use when loading this asset
