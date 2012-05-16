@@ -11,10 +11,12 @@
 
 #include <map>
 #include <vector>
+#include <typeinfo>
 #include <SFML/Window/Event.hpp>
 #include <GQE/Core/loggers/Log_macros.hpp>
 #include <GQE/Entity/Entity_types.hpp>
 #include <GQE/Entity/interfaces/IProperty.hpp>
+#include <GQE/Entity/interfaces/TProperty.hpp>
 
 namespace GQE
 {
