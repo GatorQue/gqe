@@ -50,13 +50,13 @@ namespace GQE
     }
   }
 
-  IAssetHandler& AssetManager::GetHandler(const typeAssetHandlerID theAssetHandlerID)
+  IAssetHandler& AssetManager::GetHandler(const typeAssetHandlerID theAssetHandlerID) const
   {
     // The IAssetHandler derived class that will be returned
-    IAssetHandler* result = NULL;
+    IAssetHandler* anResult = NULL;
 
     // Iterator to the asset if found
-    std::map<const typeAssetHandlerID, IAssetHandler*>::iterator iter;
+    std::map<const typeAssetHandlerID, IAssetHandler*>::const_iterator iter;
 
     // Try to find the asset using theAssetID as the key
     iter = mHandlers.find(theAssetHandlerID);
@@ -64,19 +64,19 @@ namespace GQE
     // Found asset? increment the count and return the reference
     if(iter != mHandlers.end())
     {
-      // Return the IAsset address found
-      result = iter->second;
+      // Return the IAssetHandler address found
+      anResult = iter->second;
     }
 
-    // If result is NULL by this point then return the Dummy Handler instead
-    if(NULL == result)
+    // Make sure we aren't returning NULL at this point
+    if(anResult == NULL)
     {
-      // Return the DummyHandler pointer instead
-      result = &mDummyHandler;
+      FLOG(StatusAppMissingAsset) << "AssetManager::GetHandler("
+        << theAssetHandlerID << ") not found!" << std::endl;
     }
 
     // Return the addres to some IAssetHandler class or the DummyHandler instead
-    return *result;
+    return *anResult;
   }
 
   void AssetManager::RegisterHandler(IAssetHandler* theAssetHandler)
@@ -113,6 +113,31 @@ namespace GQE
         << std::endl;
     }
   }
+
+  bool AssetManager::LoadAllAssets(void)
+  {
+    // Return true if all assets load successfully
+    bool anResult = true;
+    
+    // Iterator for each IAssetHandler registered
+    std::map<const typeAssetHandlerID, IAssetHandler*>::iterator iter;
+
+    // Loop through each asset handler and tell it to load its assets
+    iter = mHandlers.begin();
+    while(iter != mHandlers.end())
+    {
+      // Call this IAssetHandler and tell it to load all unloaded assets
+      anResult &= iter->second->LoadAllAssets();
+
+      // Move to the next registered IAssetHandler derived class
+      iter++;
+    }
+
+    // Return anResult which will still be true if all LoadAllAssets returned
+    // true or there are no registered IAssetHandlers, false otherwise
+    return anResult;
+  }
+
 } // namespace GQE
 
 /**

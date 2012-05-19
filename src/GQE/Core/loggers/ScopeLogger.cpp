@@ -64,7 +64,7 @@ namespace GQE
     else
     {
       // If global logger doesn't exist, gNullStream will so return that
-      return GQE::gNullStream;
+      return GQE::ILogger::gNullStream;
     }
   }
 
@@ -88,7 +88,7 @@ namespace GQE
     else
     {
       // If global logger doesn't exist, gNullStream will so return that
-      return GQE::gNullStream;
+      return GQE::ILogger::gNullStream;
     }
   }
 

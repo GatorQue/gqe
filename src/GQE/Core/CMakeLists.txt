@@ -6,7 +6,6 @@ set(INC
     ${INCROOT}/Core/Core_types.hpp
     ${INCROOT}/Core/assets/ConfigAsset.hpp
     ${INCROOT}/Core/assets/ConfigHandler.hpp
-    ${INCROOT}/Core/assets/DummyHandler.hpp
     ${INCROOT}/Core/assets/FontAsset.hpp
     ${INCROOT}/Core/assets/FontHandler.hpp
     ${INCROOT}/Core/assets/ImageAsset.hpp
@@ -24,13 +23,13 @@ set(INC
     ${INCROOT}/Core/interfaces/ILogger.hpp
     ${INCROOT}/Core/interfaces/IState.hpp
     ${INCROOT}/Core/interfaces/TAsset.hpp
+    ${INCROOT}/Core/interfaces/TAssetHandler.hpp
     ${INCROOT}/Core/loggers/Log_macros.hpp
     ${INCROOT}/Core/loggers/FatalLogger.hpp
     ${INCROOT}/Core/loggers/FileLogger.hpp
     ${INCROOT}/Core/loggers/ScopeLogger.hpp
     ${INCROOT}/Core/loggers/StringLogger.hpp
     ${INCROOT}/Core/loggers/onullstream
-    ${INCROOT}/Core/states/MenuState.hpp
     ${INCROOT}/Core/states/SplashState.hpp
     ${INCROOT}/Core/utils/StringUtil.hpp
 )
@@ -40,7 +39,6 @@ set(SRC
     ${SRCROOT}/Core/Core_types.cpp
     ${SRCROOT}/Core/assets/ConfigAsset.cpp
     ${SRCROOT}/Core/assets/ConfigHandler.cpp
-    ${SRCROOT}/Core/assets/DummyHandler.cpp
     ${SRCROOT}/Core/assets/FontAsset.cpp
     ${SRCROOT}/Core/assets/FontHandler.cpp
     ${SRCROOT}/Core/assets/ImageAsset.cpp
@@ -61,7 +59,6 @@ set(SRC
     ${SRCROOT}/Core/loggers/FileLogger.cpp
     ${SRCROOT}/Core/loggers/ScopeLogger.cpp
     ${SRCROOT}/Core/loggers/StringLogger.cpp
-    ${SRCROOT}/Core/states/MenuState.cpp
     ${SRCROOT}/Core/states/SplashState.cpp
     ${SRCROOT}/Core/utils/StringUtil.cpp
 )

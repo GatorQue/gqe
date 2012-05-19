@@ -39,10 +39,15 @@ namespace GQE
 
       /**
        * ImageAsset constructor
-       * @param[in] theFilename to use when loading this asset
-       * @param[in] theLoadFlag indicating immediate loading of asset
+       * @param[in] theAssetID to uniquely identify this asset
+       * @param[in] theLoadTime (Now, Later) of when to load this asset
+       * @param[in] theLoadStyle (File, Mem, Network) to use when loading this asset
+       * @param[in] theDropTime at (Zero, Exit) for when to unload this asset
        */
-      ImageAsset(std::string theFilename, bool theLoadFlag = false);
+      ImageAsset(const typeAssetID theAssetID,
+        AssetLoadTime theLoadTime = AssetLoadLater,
+        AssetLoadStyle theLoadStyle = AssetLoadFromFile,
+        AssetDropTime theDropTime = AssetDropAtZero);
 
       /**
        * ImageAsset deconstructor

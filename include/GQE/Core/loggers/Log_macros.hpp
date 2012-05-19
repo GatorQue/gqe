@@ -97,7 +97,7 @@
   !(theCondition) ? (void) 0 : ILOG()
 #else
 #define ILOGM(theMessage) do {} while(false)
-#define ILOG() if(true) { /* Empty */ } else GQE::gNullStream
+#define ILOG() if(true) { /* Empty */ } else GQE::ILogger::gNullStream
 #define ILOGM_IF(theMessage, theCondition) \
   !(theCondition) ? (void) 0 : ILOGM(theMessage)
 #define ILOG_IF(condition) \
@@ -149,7 +149,7 @@
 
 #else
 #define WLOGM(theMessage) do {} while(false)
-#define WLOG() if(true) { /* Empty */ } else GQE::gNullStream
+#define WLOG() if(true) { /* Empty */ } else GQE::ILogger::gNullStream
 #define WLOGM_IF(theMessage, theCondition) \
   !(theCondition) ? (void) 0 : WLOGM(theMessage)
 #define WLOG_IF(condition) \
@@ -201,7 +201,7 @@
 
 #else
 #define ELOGM(theMessage) do {} while(false)
-#define ELOG() if(true) { /* Empty */ } else GQE::gNullStream
+#define ELOG() if(true) { /* Empty */ } else GQE::ILogger::gNullStream
 #define ELOGM_IF(theMessage, theCondition) \
   !(theCondition) ? (void) 0 : ELOGM(theMessage)
 #define ELOG_IF(condition) \
@@ -266,7 +266,7 @@
 
 #else
 #define FLOGM(theMessage, theExitCode) do {} while(false)
-#define FLOG() if(true) { /* Empty */ } else GQE::gNullStream
+#define FLOG() if(true) { /* Empty */ } else GQE::ILogger::gNullStream
 #define FLOGM_IF(theMessage, theCondition, theExitCode) \
   !(theCondition) ? (void) 0 : FLOGM(theMessage, theExitCode)
 #define FLOG_IF(theCondition, theExitCode) \
@@ -354,13 +354,13 @@
 
 #else
 #define SLOG(theScopeName, theSeverity) \
-  if(true) { /* Empty */ } else GQE::gNullStream
+  if(true) { /* Empty */ } else GQE::ILogger::gNullStream
 #define SLOGE(theScopeName, theSeverity, theExitCode) \
-  if(true) { /* Empty */ } else GQE::gNullStream
+  if(true) { /* Empty */ } else GQE::ILogger::gNullStream
 #define SLOGR(theScopeName, theSeverity) \
-  if(true) { /* Empty */ } else GQE::gNullStream
+  if(true) { /* Empty */ } else GQE::ILogger::gNullStream
 #define SLOGRE(theScopeName, theSeverity, theExitCode) \
-  if(true) { /* Empty */ } else GQE::gNullStream
+  if(true) { /* Empty */ } else GQE::ILogger::gNullStream
 #endif
 
 #endif // GQE_LOG_MACROS_HPP_INCLUDED

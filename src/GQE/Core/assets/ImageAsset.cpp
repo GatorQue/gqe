@@ -18,33 +18,18 @@
 
 #include <assert.h>
 #include <stddef.h>
-#include <GQE/Core/loggers/Log_macros.hpp>
 #include <GQE/Core/assets/ImageAsset.hpp>
-#include <GQE/Core/assets/ImageHandler.hpp>
-#include <GQE/Core/interfaces/IApp.hpp>
+#include <GQE/Core/loggers/Log_macros.hpp>
 
 namespace GQE
 {
-  ImageAsset::ImageAsset() :
+  ImageAsset::ImageAsset(const typeAssetID theAssetID,
+     AssetLoadTime theLoadTime, AssetLoadStyle theLoadStyle,
+     AssetDropTime theDropTime) :
 #if (SFML_VERSION_MAJOR < 2)
-    TAsset<sf::Image>(
-      IApp::GetApp()->mAssetManager.GetHandler(ImageHandler::DEFAULT_ID))
+    TAsset<sf::Image>(theAssetID, theLoadTime, theLoadStyle, theDropTime)
 #else
-    TAsset<sf::Texture>(
-      IApp::GetApp()->mAssetManager.GetHandler(ImageHandler::DEFAULT_ID))
-#endif
-  {
-  }
-
-  ImageAsset::ImageAsset(std::string theFilename, bool theLoadFlag) :
-#if (SFML_VERSION_MAJOR < 2)
-    TAsset<sf::Image>(
-      IApp::GetApp()->mAssetManager.GetHandler(ImageHandler::DEFAULT_ID),
-      theFilename, theLoadFlag)
-#else
-    TAsset<sf::Texture>(
-      IApp::GetApp()->mAssetManager.GetHandler(ImageHandler::DEFAULT_ID),
-      theFilename, theLoadFlag)
+    TAsset<sf::Texture>(theAssetID, theLoadTime, theLoadStyle, theDropTime)
 #endif
   {
   }

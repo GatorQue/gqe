@@ -30,16 +30,6 @@ namespace GQE
       virtual ~IAssetHandler();
 
       /**
-       * DropReference will decrement the reference counter for theAssetID
-       * specified and optionally call the ReleaseAsset virtual function to
-       * perform any cleanup operations before the IAsset derived pointer is
-       * deleted if theRemoveFlag is set to true (default).
-       * @param[in] theAssetID to drop the reference for
-       * @param[in] theRemoveFlag indicates the asset should be removed when count=0
-       */
-      void DropReference(const typeAssetID theAssetID, bool theRemoveFlag = true);
-
-      /**
        * GetID will return the Asset Handler ID used to identify this
        * IAssetHandler object.
        * @return GQE::typeAssetHandlerID is the ID for this IAssetHandler object
@@ -47,22 +37,15 @@ namespace GQE
       const GQE::typeAssetHandlerID GetID(void) const;
 
       /**
-       * GetReference will return the dummy asset reference address since no
-       * ID was provided to find. This enables system stability since all
-       * Assets will have valid addresses
+       * DropReference will decrement the reference counter for theAssetID
+       * specified and optionally call the ReleaseAsset virtual function to
+       * perform any cleanup operations before the IAsset derived pointer is
+       * deleted if theRemoveFlag is set to true (default).
+       * @param[in] theAssetID to drop the reference for
+       * @param[in] theDropTime indicates if asset is dropped when count = 0 or exit
        */
-      void* GetReference(void);
-
-      /**
-       * GetReference will retrieve the asset registered under theAssetID and
-       * increment the reference counter for this asset or call the
-       * AcquireAsset pure virtual function to obtain it if it hasn't yet been
-       * created.
-       * @param[in] theAssetID to lookup for the reference
-       * @param[in] theLoadFlag indicates the asset should be loaded immediately
-       * @return the asset found or a newly acquired asset if not found
-       */
-      void* GetReference(const typeAssetID theAssetID, bool theLoadFlag = false);
+      virtual void DropReference(const typeAssetID theAssetID,
+        AssetDropTime theDropTime = AssetDropUnspecified) = 0;
 
       /**
        * IsLoaded will return true if the Resource specified by theResourceID
@@ -70,65 +53,81 @@ namespace GQE
        * @param[in] theAssetID to the Resource to determine loaded state
        * @return true if loaded, false otherwise
        */
-      bool IsLoaded(const typeAssetID theAssetID) const;
+      virtual bool IsLoaded(const typeAssetID theAssetID) const = 0;
 
       /**
-       * LoadAsset will find and load theAssetID provided if it exists and has
-       * not been previously loaded.
-       * @param[in] theAssetID to lookup and load
-       * @return true if the asset was loaded successfully, false otherwise
+       * GetFilename is responsible for retrieving the filename to use when
+       * loading theAssetID specified.
+       * @param[in] theAssetID to set filename for
+       * @param[in] theFilename to use when loading this asset from a file
        */
-      bool LoadAsset(const typeAssetID theAssetID);
+      virtual const std::string GetFilename(const typeAssetID theAssetID) const = 0;
+
+      /**
+       * SetFilename is responsible for noting the filename to use when loading
+       * theAssetID specified.
+       * @param[in] theAssetID to set filename for
+       * @param[in] theFilename to use when loading this asset from a file
+       */
+      virtual void SetFilename(const typeAssetID theAssetID, std::string theFilename) = 0;
+
+      /**
+       * GetLoadStyle allows someone to find out the loading style of
+       * theAssetID provided.
+       * @param[in] theAssetID of the asset to find loading style for
+       * @return the loading style for the asset or LoadFromUnknown otherwise
+       */
+      virtual AssetLoadStyle GetLoadStyle(const typeAssetID theAssetID) const = 0;
+
+      /**
+       * SetLoadStyle allows someone to change the loading style of theAssetID
+       * provided. A warning will be printed of the loading style is changed
+       * after an asset has already been loaded.
+       * @param[in] theAssetID of the asset to change loading style
+       * @param[in] theLoadStyle (File,Mem,Network) to use when loading this asset
+       */
+      virtual void SetLoadStyle(const typeAssetID theAssetID, AssetLoadStyle theLoadStyle) = 0;
+
+      /**
+       * GetLoadTime allows someone to find out the loading time of
+       * theAssetID provided.
+       * @param[in] theAssetID of the asset to find loading time for
+       * @return the loading style for the asset or LoadFromUnknown otherwise
+       */
+      virtual AssetLoadTime GetLoadTime(const typeAssetID theAssetID) const = 0;
+
+      /**
+       * SetLoadTime allows someone to change the loading time of theAssetID
+       * provided. A warning will be printed of the loading time is changed
+       * after an asset has already been loaded.
+       * @param[in] theAssetID of the asset to change loading time
+       * @param[in] theLoadTime (Now,Later) of when to load this asset
+       */
+      virtual void SetLoadTime(const typeAssetID theAssetID, AssetLoadTime theLoadTime) = 0;
+
+      /**
+       * LoadAsset is responsible for loading the asset specified by theAssetID
+       * provided according to the previously registered style (see
+       * GetReference and SetLoadStyle).
+       * @param[in] theAssetID of the asset to load
+       */
+      virtual bool LoadAsset(const typeAssetID theAssetID) = 0;
+
+      /**
+       * LoadAllAssets is responsible for loading all unloaded assets that are
+       * currently registered with this IAssetHandler derived class.
+       * @return true if all assets were successfully loaded, false otherwise
+       */
+      virtual bool LoadAllAssets(void) = 0;
 
     protected:
-      /// Structure holding information about each Resource
-      struct typeAssetData
-      {
-        void*  asset;  ///< The asset being shared
-        Uint32 count;  ///< Number of people referencing this Asset
-        bool   loaded; ///< Is the Asset currently loaded?
-      };
 
+    private:
       // Variables
       ///////////////////////////////////////////////////////////////////////////
       /// ID specified for this IAssetHandler
       const typeAssetHandlerID mAssetHandlerID;
-      /// Map that associates asset ID's with their appropriate TAssetData
-      std::map<const typeAssetID, typeAssetData> mAssets;
 
-      /**
-       * AcquireAsset is responsible for creating an IAsset derived asset and
-       * returning it to the caller.
-       * @param[in] theAssetID of the asset to acquire
-       * @return a pointer to the newly created asset
-       */
-      virtual void* AcquireAsset(const typeAssetID theAssetID) = 0;
-      
-      /**
-       * GetDummyAsset is responsible for returning a pointer to a Dummy asset
-       * which will be returned if AcquireAsset fails to create an asset or
-       * GetReference() is called. This makes the system more stable since all
-       * assets will have a valid reference pointer
-       * @return pointer to a dummy asset
-       */
-      virtual void* GetDummyAsset(void) = 0;
-
-      /**
-       * LoadAsset is responsible for loading theAsset returned by AcquireAsset
-       * and must provide a default implementation for all loading style types.
-       * @param[in] theAsset pointer to load
-       * @return true if the asset was successfully loaded, false otherwise
-       */
-      virtual bool LoadAsset(const typeAssetID theAssetID, void* theAsset) = 0;
-
-      /**
-       * ReleaseAsset is responsible for doing any cleanup on the IAsset
-       * derived asset before the IAsset pointer is deleted from memory.
-       * @param[in] theAsset pointer release/unload before it is deleted
-       */
-      virtual void ReleaseAsset(const typeAssetID theAssetID, void* theAsset);
-
-    private:
       /**
        * Our copy constructor is private because we do not allow copies of our
        * class

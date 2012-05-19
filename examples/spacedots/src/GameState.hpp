@@ -16,8 +16,8 @@
 #include <GQE/Core/assets/FontAsset.hpp>
 #include <GQE/Core/assets/ImageAsset.hpp>
 #include <GQE/Core/assets/SoundAsset.hpp>
-#include <GQE/Core/Core_types.hpp>
 #include <GQE/Core/interfaces/IState.hpp>
+#include <GQE/Core/Core_types.hpp>
 
 /// Provides the TicTacToe GameState example
 class GameState : public GQE::IState

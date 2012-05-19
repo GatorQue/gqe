@@ -14,9 +14,16 @@ namespace GQE
 		/**
 		 * RenderComponent constructor
 		 * @param[in] theApp is the address to the App derived class
+     * @param[in] theEntityManager to use for managing entities
+     * @param[in] theAssetID to use for the Image for this component
+     * @param[in] theLoadStyle (File,Mem,Network) to use when loading this asset
+     * @param[in] theLoadTime (Now,Later) of when to load this asset
 		 */
 		RenderComponent(IApp& theApp, EntityManager* theEntityManager,
-      const typeAssetID theAssetID, bool theLoadFlag = false);
+      const typeAssetID theAssetID,
+      AssetLoadTime theLoadTime = AssetLoadLater,
+      AssetLoadStyle theLoadStyle = AssetLoadFromFile,
+      AssetDropTime theDropTime = AssetDropAtZero);
 
 		/**
 		 * RenderComponent deconstructor
@@ -72,7 +79,6 @@ namespace GQE
 	private:
     ImageAsset mImage;
 		sf::Sprite mSprite;
-    bool mLoadFlag;
 
     /**
 		 * Our copy constructor is private because we do not allow copies of

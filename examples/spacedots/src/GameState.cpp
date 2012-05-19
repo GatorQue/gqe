@@ -8,32 +8,29 @@
  * @date 20120512 - Use new RAII Asset style
  */
 #include "GameState.hpp"
-#include <GQE/Core/assets/FontAsset.hpp>
-#include <GQE/Core/assets/ImageAsset.hpp>
-#include <GQE/Core/assets/SoundAsset.hpp>
 #include <GQE/Core/interfaces/IApp.hpp>
 
 GameState::GameState(GQE::IApp& theApp) :
   GQE::IState("Game",theApp),
-  mWinFont("resources/WinFont.ttf", true),
-  mBackground("resources/Background.png", true),
-  mEmptyHorizontal("resources/EmptyHorizontal.png", true),
-  mEmptyVertical("resources/EmptyVertical.png", true),
-  mEmptySquare("resources/EmptySquare.png", true),
-  mBlueHorizontal("resources/BlueHorizontal.png", true),
-  mBlueVertical("resources/BlueVertical.png", true),
-  mBlueSquare("resources/BlueSquare.png", true),
-  mBlueWinner("resources/BlueWinner.png", true),
-  mRedHorizontal("resources/RedHorizontal.png", true),
-  mRedVertical("resources/RedVertical.png", true),
-  mRedSquare("resources/RedSquare.png", true),
-  mRedWinner("resources/RedWinner.png", true),
-  mCorner("resources/Corner.png", true),
-  mRedGain("resources/RedGain.ogg", true),
-  mRedWin("resources/RedWin.ogg", true),
-  mBlueGain("resources/BlueGain.ogg", true),
-  mBlueWin("resources/BlueWin.ogg", true),
-  mLightsaber("resources/Lightsaber.ogg", true),
+  mWinFont("resources/WinFont.ttf"),
+  mBackground("resources/Background.png"),
+  mEmptyHorizontal("resources/EmptyHorizontal.png"),
+  mEmptyVertical("resources/EmptyVertical.png"),
+  mEmptySquare("resources/EmptySquare.png"),
+  mBlueHorizontal("resources/BlueHorizontal.png"),
+  mBlueVertical("resources/BlueVertical.png"),
+  mBlueSquare("resources/BlueSquare.png"),
+  mBlueWinner("resources/BlueWinner.png"),
+  mRedHorizontal("resources/RedHorizontal.png"),
+  mRedVertical("resources/RedVertical.png"),
+  mRedSquare("resources/RedSquare.png"),
+  mRedWinner("resources/RedWinner.png"),
+  mCorner("resources/Corner.png"),
+  mRedGain("resources/RedGain.ogg"),
+  mRedWin("resources/RedWin.ogg"),
+  mBlueGain("resources/BlueGain.ogg"),
+  mBlueWin("resources/BlueWin.ogg"),
+  mLightsaber("resources/Lightsaber.ogg"),
   mSelectedCol(1),
   mSelectedRow(1),
   mCurrentPlayer(0),
@@ -51,6 +48,9 @@ void GameState::DoInit(void)
 {
   // First call our base class implementation
   IState::DoInit();
+
+  // Load all assets now
+  mApp.mAssetManager.LoadAllAssets();
 
   // Assign our background image sprite texture
 #if (SFML_VERSION_MAJOR < 2)

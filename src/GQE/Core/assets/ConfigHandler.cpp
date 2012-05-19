@@ -9,16 +9,12 @@
  */
  
 #include <GQE/Core/assets/ConfigHandler.hpp>
-#include <GQE/Core/interfaces/IApp.hpp>
 #include <GQE/Core/loggers/Log_macros.hpp>
  
 namespace GQE
 {
-  /// Default Asset Handler ID for this Asset Handler
-  const char* ConfigHandler::DEFAULT_ID = "configs";
-
   ConfigHandler::ConfigHandler() :
-    IAssetHandler(ConfigHandler::DEFAULT_ID)
+    TAssetHandler<ConfigReader>()
   {
     ILOG() << "ConfigHandler::ctor()" << std::endl;
   }
@@ -27,53 +23,50 @@ namespace GQE
   {
     ILOG() << "ConfigHandler::dtor()" << std::endl;
   }
- 
-  void* ConfigHandler::AcquireAsset(const typeAssetID theAssetID)
-  {
-    ILOG() << "ConfigHandler(" << GetID() << "):AcquireAsset("
-      << theAssetID << ") Creating asset" << std::endl;
-    return new(std::nothrow) ConfigReader();
-  }
-      
-  void* ConfigHandler::GetDummyAsset(void)
-  {
-    ILOG() << "ConfigHandler(" << GetID()
-      << "):GetDummyAsset() Returning Dummy Asset." << std::endl;
-    return &mDummyAsset;
-  }
 
-  bool ConfigHandler::LoadAsset(const typeAssetID theAssetID, void* theAsset)
+  bool ConfigHandler::LoadFromFile(const typeAssetID theAssetID, ConfigReader& theAsset)
   {
-    // Default to NOT loaded
+    // Start with a return result of false
     bool anResult = false;
-    ConfigReader* anAsset = static_cast<ConfigReader*>(theAsset);
 
-    if(NULL != anAsset)
+    // Retrieve the filename for this asset
+    std::string anFilename = GetFilename(theAssetID);
+
+    // Was a valid filename found? then attempt to load the asset from anFilename
+    if(anFilename.length() > 0)
     {
-      // Get filename for this asset from AppSettings file in App
-      std::string anFilename = theAssetID; // gApp->mAppSettings.GetString("Images", theAssetID);
-
-      ILOG() << "ConfigHandler::LoadAsset(" << theAssetID
-        << ") Loading asset from file(" << anFilename << ") ..." << std::endl;
- 
-      // Attempt to load the asset from a file
-      anResult = anAsset->LoadFromFile(anFilename);
- 
-      // If the asset did not load successfully, log a fatal error
-      if(false == anResult)
-      {
-        FLOG(StatusAppMissingAsset) << "ConfigHandler::LoadAsset(" << theAssetID
-          << ") Unable to load from file(" << anFilename << ")!" << std::endl;
-      }
+      // Load the asset from a file
+      anResult = theAsset.LoadFromFile(anFilename);
     }
     else
     {
-      // Log fatal error if our static cast failed!
-      FLOG(StatusAppMissingAsset) << "ConfigHandler::LoadAsset(" << theAssetID
-        << ") Bad static cast!" << std::endl;
+      ELOG() << "ConfigHandler::LoadFromFile(" << theAssetID
+        << ") No filename provided!" << std::endl;
     }
 
-    // Return anResult determined above or false for NOT loaded
+    // Return anResult of true if successful, false otherwise
+    return anResult;
+  }
+
+  bool ConfigHandler::LoadFromMemory(const typeAssetID theAssetID, ConfigReader& theAsset)
+  {
+    // Start with a return result of false
+    bool anResult = false;
+
+    // TODO: Add LoadFromMemory support to ConfigReader
+
+    // Return anResult of true if successful, false otherwise
+    return anResult;
+  }
+
+  bool ConfigHandler::LoadFromNetwork(const typeAssetID theAssetID, ConfigReader& theAsset)
+  {
+    // Start with a return result of false
+    bool anResult = false;
+
+    // TODO: Add load from network for this asset
+
+    // Return anResult of true if successful, false otherwise
     return anResult;
   }
 } // namespace GQE

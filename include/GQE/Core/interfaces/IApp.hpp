@@ -23,12 +23,12 @@
 #include <stddef.h>
 #include <string.h>
 #include <vector>
-#include <GQE/Core/Core_types.hpp>
+#include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
 #include <GQE/Core/classes/AssetManager.hpp>
 #include <GQE/Core/classes/StatManager.hpp>
 #include <GQE/Core/classes/StateManager.hpp>
-#include <SFML/Window.hpp>
-#include <SFML/Graphics.hpp>
+#include <GQE/Core/Core_types.hpp>
 
 namespace GQE
 {

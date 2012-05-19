@@ -10,17 +10,15 @@
  * @date 20120512 - Use new RAII Asset style
  */
 #include "GameState.hpp"
-#include <GQE/Core/assets/FontAsset.hpp>
-#include <GQE/Core/assets/ImageAsset.hpp>
 #include <GQE/Core/interfaces/IApp.hpp>
 
 GameState::GameState(GQE::IApp& theApp) :
   GQE::IState("Game",theApp),
-  mWinFont("resources/arial.ttf", true),
-  mBackground("resources/Board.png", true),
-  mPlayer1("resources/Player1.png", true),
-  mPlayer2("resources/Player2.png", true),
-  mEmpty("resources/Empty.png", true),
+  mWinFont("resources/arial.ttf", GQE::AssetLoadNow),
+  mBackground("resources/Board.png", GQE::AssetLoadNow),
+  mPlayer1("resources/Player1.png", GQE::AssetLoadNow),
+  mPlayer2("resources/Player2.png", GQE::AssetLoadNow),
+  mEmpty("resources/Empty.png", GQE::AssetLoadNow),
   mCurrentPlayer(0),
   mWinnerText(NULL)
 {

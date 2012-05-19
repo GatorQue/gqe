@@ -20,6 +20,7 @@ namespace GQE
 
   /// Single instance of the most recently created ILogger class
   ILogger* ILogger::gInstance = NULL;
+  std::onullstream ILogger::gNullStream;
 
   ILogger::ILogger(bool theDefault, int theExitCode) :
     mActive(false),

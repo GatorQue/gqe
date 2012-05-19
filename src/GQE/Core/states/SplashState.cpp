@@ -16,7 +16,6 @@
  * @date 20120322 - Support new SFML2 snapshot changes
  * @date 20120512 - Renamed App to IApp since it really is just an interface
  */
-#include <GQE/Core/assets/ImageAsset.hpp>
 #include <GQE/Core/interfaces/IApp.hpp>
 #include <GQE/Core/states/SplashState.hpp>
 
@@ -28,8 +27,8 @@ namespace GQE
     mSplashID(theSplashID),
     mSplashFilename(theFilename),
     mSplashDelay(theDelay),
-    mSplashImage(theFilename, true),
-    mSplashSprite(NULL)
+    mSplashImage(theFilename, AssetLoadNow, AssetLoadFromFile, AssetDropAtZero),
+    mSplashSprite(mSplashImage.GetAsset())
   {
   }
 
@@ -45,9 +44,6 @@ namespace GQE
   {
     // First call our base class implementation
     IState::DoInit();
-
-    // Retrieve a sprite to the above image
-    mSplashSprite = new sf::Sprite(mSplashImage.GetAsset());
   }
 
   void SplashState::ReInit(void)
@@ -72,19 +68,15 @@ namespace GQE
   {
 #if (SFML_VERSION_MAJOR < 2)
     // Draw our Splash sprite
-    mApp.mWindow.Draw(*mSplashSprite);
+    mApp.mWindow.Draw(mSplashSprite);
 #else
     // Draw our Splash sprite
-    mApp.mWindow.draw(*mSplashSprite);
+    mApp.mWindow.draw(mSplashSprite);
 #endif
   }
 
   void SplashState::Cleanup(void)
   {
-    // Delete our sprite
-    delete mSplashSprite;
-    mSplashSprite = NULL;
-
     // Last of all, call our base class implementation
     IState::Cleanup();
   }

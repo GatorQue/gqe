@@ -18,8 +18,9 @@
 #define   CORE_ASSET_MANAGER_HPP_INCLUDED
 
 #include <map>
+#include <typeinfo>
+#include <GQE/Core/interfaces/TAssetHandler.hpp>
 #include <GQE/Core/Core_types.hpp>
-#include <GQE/Core/assets/DummyHandler.hpp>
 
 namespace GQE
 {
@@ -38,12 +39,48 @@ namespace GQE
       virtual ~AssetManager();
 
       /**
+       * GetHandler is responsible for returning an TAssetHandler derived
+       * class that was previously registered under typeid(TYPE).name() of the
+       * TYPE provided which can then be used to obtain Asset references by
+       * Asset ID.
+       */
+      template<class TYPE>
+      TAssetHandler<TYPE>& GetHandler() const
+      {
+        // The TAssetHandler<TYPE> derived class that will be returned
+        TAssetHandler<TYPE>* anResult = NULL;
+
+        // Iterator to the asset if found
+        std::map<const typeAssetHandlerID, IAssetHandler*>::const_iterator iter;
+
+        // Try to find the asset using theAssetID as the key
+        iter = mHandlers.find(typeid(TYPE).name());
+
+        // Found asset? increment the count and return the reference
+        if(iter != mHandlers.end())
+        {
+          // Cast the IAssetHandler address found into TAssetHandler
+          anResult = static_cast<TAssetHandler<TYPE>*>(iter->second);
+        }
+
+        // Make sure we aren't returning NULL at this point
+        if(anResult == NULL)
+        {
+          FLOG(StatusAppMissingAsset) << "AssetManager::GetHandler("
+            << typeid(TYPE).name() << ") not found!" << std::endl;
+        }
+
+        // Return the TAssetHandler addres or Null if something went wrong
+        return *anResult;
+      }
+
+      /**
        * GetHandler is responsible for returning an IAssetHandler derived
        * class that was previously registered under theAssetHandlerID provided
        * which can then be used to obtain Asset references by Asset ID.
        * @param[in] theAssetHandlerID to retrieve
        */
-      IAssetHandler& GetHandler(const typeAssetHandlerID theAssetHandlerID);
+      IAssetHandler& GetHandler(const typeAssetHandlerID theAssetHandlerID) const;
 
       /**
        * RegisterHandler is responsible for registering an IAssetHandler
@@ -53,6 +90,14 @@ namespace GQE
        */
       void RegisterHandler(IAssetHandler* theAssetHandler);
 
+      /**
+       * LoadAllAssets is responsible for loading all unloaded assets for every
+       * IAssetHandler derived class registered, typically from the
+       * IState::DoInit() method.
+       * @return true if all assets load successfully, false otherwise
+       */
+      bool LoadAllAssets(void);
+
     private:
       // Constants
       ///////////////////////////////////////////////////////////////////////////
@@ -61,8 +106,6 @@ namespace GQE
       ///////////////////////////////////////////////////////////////////////////
       /// Map to hold all IAssetHandler derived classes that manage assets
       std::map<const typeAssetHandlerID, IAssetHandler*> mHandlers;
-      /// The dummy handler class that will be returned by GetHandler
-      DummyHandler mDummyHandler;
 
       /**
        * AssetManager copy constructor is private because we do not allow copies

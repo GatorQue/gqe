@@ -15,23 +15,15 @@
 
 #include <assert.h>
 #include <stddef.h>
-#include <GQE/Core/loggers/Log_macros.hpp>
 #include <GQE/Core/assets/ConfigAsset.hpp>
-#include <GQE/Core/assets/ConfigHandler.hpp>
-#include <GQE/Core/interfaces/IApp.hpp>
+#include <GQE/Core/loggers/Log_macros.hpp>
 
 namespace GQE
 {
-  ConfigAsset::ConfigAsset() :
-    TAsset<ConfigReader>(
-      IApp::GetApp()->mAssetManager.GetHandler(ConfigHandler::DEFAULT_ID))
-  {
-  }
-
-  ConfigAsset::ConfigAsset(std::string theFilename, bool theLoadFlag) :
-    TAsset<ConfigReader>(
-      IApp::GetApp()->mAssetManager.GetHandler(ConfigHandler::DEFAULT_ID),
-      theFilename, theLoadFlag)
+  ConfigAsset::ConfigAsset(const typeAssetID theAssetID,
+    AssetLoadTime theLoadTime, AssetLoadStyle theLoadStyle,
+    AssetDropTime theDropTime) :
+    TAsset<ConfigReader>(theAssetID, theLoadTime, theLoadStyle, theDropTime)
   {
   }
 

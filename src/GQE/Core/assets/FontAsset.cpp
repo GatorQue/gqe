@@ -17,23 +17,15 @@
 
 #include <assert.h>
 #include <stddef.h>
-#include <GQE/Core/loggers/Log_macros.hpp>
 #include <GQE/Core/assets/FontAsset.hpp>
-#include <GQE/Core/assets/FontHandler.hpp>
-#include <GQE/Core/interfaces/IApp.hpp>
+#include <GQE/Core/loggers/Log_macros.hpp>
 
 namespace GQE
 {
-  FontAsset::FontAsset() :
-    TAsset<sf::Font>(
-      IApp::GetApp()->mAssetManager.GetHandler(FontHandler::DEFAULT_ID))
-  {
-  }
-
-  FontAsset::FontAsset(std::string theFilename, bool theLoadFlag) :
-    TAsset<sf::Font>(
-      IApp::GetApp()->mAssetManager.GetHandler(FontHandler::DEFAULT_ID),
-      theFilename, theLoadFlag)
+  FontAsset::FontAsset(const typeAssetID theAssetID,
+    AssetLoadTime theLoadTime, AssetLoadStyle theLoadStyle,
+    AssetDropTime theDropTime) :
+    TAsset<sf::Font>(theAssetID, theLoadTime, theLoadStyle, theDropTime)
   {
   }
 

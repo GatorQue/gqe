@@ -2,12 +2,13 @@
 #include <GQE/Entity/classes/Entity.hpp>
 namespace GQE
 {
-	RenderComponent::RenderComponent(IApp& theApp, EntityManager* theEntityManager,
-    const typeAssetID theAssetID, bool theLoadFlag) :
+	RenderComponent::RenderComponent(IApp& theApp,
+    EntityManager* theEntityManager,
+    const typeAssetID theAssetID, AssetLoadTime theLoadTime,
+    AssetLoadStyle theLoadStyle, AssetDropTime theDropTime) :
     IComponent("RenderComponent",theApp,theEntityManager),
-    mImage(theAssetID, theLoadFlag),
-	  mSprite(mImage.GetAsset()),
-    mLoadFlag(theLoadFlag)
+    mImage(theAssetID, theLoadTime, theLoadStyle, theDropTime),
+	  mSprite(mImage.GetAsset())
   {
   }
 
@@ -68,6 +69,7 @@ namespace GQE
 
   IComponent* RenderComponent::MakeClone()
   {
-	  return (new(std::nothrow) RenderComponent(mApp, mEntityManager, mImage.GetID(), mLoadFlag));
+	  return (new(std::nothrow) RenderComponent(mApp, mEntityManager,
+      mImage.GetID(), mImage.GetLoadTime(), mImage.GetLoadStyle(), mImage.GetDropTime()));
   }
 }

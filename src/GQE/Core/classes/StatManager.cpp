@@ -17,11 +17,11 @@
  * @date 20120322 - Support new SFML2 snapshot changes
  * @date 20120421 - Use arial.ttf font since SFML 2 crashes on exit when using default font
  * @date 20120512 - Renamed App to IApp since it really is just an interface
+ * @date 20120518 - Use sf::Font instead of FontAsset to remove circular dependency
  */
 
 #include <assert.h>
 #include <sstream>
-#include <GQE/Core/assets/FontAsset.hpp>
 #include <GQE/Core/loggers/Log_macros.hpp>
 #include <GQE/Core/classes/StatManager.hpp>
 #include <GQE/Core/interfaces/IApp.hpp>
@@ -33,13 +33,14 @@ namespace GQE
     mShow(false),
     mFrames(0),
     mFrameClock(),
-    mDefaultFont("resources/arial.ttf", true),
+    mDefaultFont(),
     mFPS(NULL),
     mUpdates(0),
     mUpdateClock(),
     mUPS(NULL)
   {
     ILOGM("StatManager::ctor()");
+    mDefaultFont.LoadFromFile("resources/arial.ttf");
   }
 
   StatManager::~StatManager()
@@ -64,11 +65,11 @@ namespace GQE
     mUpdateClock.Reset();
 
     // Position and color for the FPS/UPS string
-    mFPS = new sf::String("", mDefaultFont.GetAsset(), 30.0F);
+    mFPS = new sf::String("", mDefaultFont, 30.0F);
     mFPS->SetColor(sf::Color(255,255,255,128));
     mFPS->SetPosition(0,0);
     
-    mUPS = new sf::String("", mDefaultFont.GetAsset(), 30.0F);
+    mUPS = new sf::String("", mDefaultFont, 30.0F);
     mUPS->SetColor(sf::Color(255,255,255,128));
     mUPS->SetPosition(0,30);
 #else
@@ -76,11 +77,11 @@ namespace GQE
     mUpdateClock.restart();
 
     // Position and color for the FPS/UPS string
-    mFPS = new sf::Text("", mDefaultFont.GetAsset(), 30);
+    mFPS = new sf::Text("", mDefaultFont, 30);
     mFPS->setColor(sf::Color(255,255,255,128));
     mFPS->setPosition(0,0);
 
-    mUPS = new sf::Text("", mDefaultFont.GetAsset(), 30);
+    mUPS = new sf::Text("", mDefaultFont, 30);
     mUPS->setColor(sf::Color(255,255,255,128));
     mUPS->setPosition(0,30);
 #endif

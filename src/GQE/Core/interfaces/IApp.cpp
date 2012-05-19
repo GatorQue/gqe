@@ -205,13 +205,13 @@ namespace GQE
   void IApp::InitSettingsConfig(void)
   {
     SLOG(App_InitSettingsConfig, SeverityInfo) << std::endl;
-    ConfigAsset anSettingsConfig(IApp::APP_SETTINGS, true);
+    ConfigAsset anSettingsConfig(IApp::APP_SETTINGS);
   }
 
   void IApp::InitRenderer(void)
   {
     SLOG(App_InitRenderer, SeverityInfo) << std::endl;
-    ConfigAsset anSettingsConfig(IApp::APP_SETTINGS, true);
+    ConfigAsset anSettingsConfig(IApp::APP_SETTINGS);
 
     // Are we in Fullscreen mode?
     if(anSettingsConfig.GetAsset().GetBool("window","fullscreen",true))

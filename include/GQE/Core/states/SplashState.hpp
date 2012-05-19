@@ -18,8 +18,8 @@
 
 #include <SFML/Graphics.hpp>
 #include <GQE/Core/assets/ImageAsset.hpp>
-#include <GQE/Core/Core_types.hpp>
 #include <GQE/Core/interfaces/IState.hpp>
+#include <GQE/Core/Core_types.hpp>
 
 namespace GQE
 {
@@ -96,7 +96,7 @@ namespace GQE
       /// Splash ImageAsset to load
       ImageAsset          mSplashImage;
       /// The sprite to hold the splash image being displayed
-      sf::Sprite*         mSplashSprite;
+      sf::Sprite          mSplashSprite;
   }; // class SplashState
 } // namespace GQE
 

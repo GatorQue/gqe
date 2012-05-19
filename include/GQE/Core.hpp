@@ -39,13 +39,13 @@
 #include <GQE/Core/interfaces/ILogger.hpp>
 #include <GQE/Core/interfaces/IState.hpp>
 #include <GQE/Core/interfaces/TAsset.hpp>
+#include <GQE/Core/interfaces/TAssetHandler.hpp>
 #include <GQE/Core/loggers/Log_macros.hpp>
 #include <GQE/Core/loggers/FatalLogger.hpp>
 #include <GQE/Core/loggers/FileLogger.hpp>
 #include <GQE/Core/loggers/ScopeLogger.hpp>
 #include <GQE/Core/loggers/StringLogger.hpp>
 #include <GQE/Core/loggers/onullstream>
-#include <GQE/Core/states/MenuState.hpp>
 #include <GQE/Core/states/SplashState.hpp>
 #include <GQE/Core/utils/StringUtil.hpp>
 

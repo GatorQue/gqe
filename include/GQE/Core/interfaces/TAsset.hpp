@@ -21,7 +21,8 @@
 #define   CORE_TASSET_HPP_INCLUDED
 
 #include <string>
-#include <GQE/Core/interfaces/IAssetHandler.hpp>
+#include <GQE/Core/interfaces/IApp.hpp>
+#include <GQE/Core/interfaces/TAssetHandler.hpp>
 #include <GQE/Core/Core_types.hpp>
 
 namespace GQE
@@ -30,42 +31,21 @@ namespace GQE
   template<class TYPE>
   class GQE_API TAsset
   {
-    protected:
-      // Variables
-      ///////////////////////////////////////////////////////////////////////////
-      /// Asset Handler class that will manage this asset
-      IAssetHandler& mAssetHandler;
-      /// Pointer to the loaded asset
-      TYPE*          mAsset;
-      /// Asset ID specified for this asset
-      typeAssetID    mAssetID;
-
     public:
       /**
-        * TAsset default constructor is used for TAsset classes whose ID's are
-        * not available at construction time.  ID's can be specified after
-        * construction time using the SetID method.  A dummy Asset will be
-        * provided by the AssetManager using theAssetHandlerID provided until
-        * a proper ID can be obtained.
-        * @param[in] theAssetHandler to use for retrieving asset references
-        */
-      TAsset(IAssetHandler& theAssetHandler) :
-        mAssetHandler(theAssetHandler),
-        mAsset(static_cast<TYPE*>(mAssetHandler.GetReference()))
-      {
-      }
-
-      /**
-        * TAsset constructor that should be used most frequently since it
-        * allows theAssetManager to provide the asset at construction time.
-        * @param[in] theAssetHandler to use for retrieving asset references
-        * @param[in] theAssetID to use for this asset
-        * @param[in] theLoadFlag indicating immediate loading of asset
-        */
-      TAsset(IAssetHandler& theAssetHandler, const typeAssetID theAssetID,
-        bool theLoadFlag = false) :
-        mAssetHandler(theAssetHandler),
-        mAsset(static_cast<TYPE*>(mAssetHandler.GetReference(theAssetID, theLoadFlag))),
+       * TAsset constructor that should be used most frequently since it
+       * allows theAssetManager to provide the asset at construction time.
+       * @param[in] theAssetID to use for this asset
+       * @param[in] theLoadTime (Now, Later) of when to load this asset
+       * @param[in] theLoadStyle (File, Mem, Network) to use when loading this asset
+       * @param[in] theDropTime at (Zero, Exit) for when to unload this asset
+       */
+      TAsset(const typeAssetID theAssetID,
+        AssetLoadTime theLoadTime = AssetLoadLater,
+        AssetLoadStyle theLoadStyle = AssetLoadFromFile,
+        AssetDropTime theDropTime = AssetDropAtZero) :
+        mAssetHandler(IApp::GetApp()->mAssetManager.GetHandler<TYPE>()),
+        mAsset(mAssetHandler.GetReference(theAssetID, theLoadTime, theLoadStyle, theDropTime)),
         mAssetID(theAssetID)
       {
       }
@@ -80,7 +60,7 @@ namespace GQE
         mAssetID(theCopy.mAssetID)
       {
         // Increment reference count to this asset
-        mAsset = static_cast<TYPE*>(mAssetHandler.GetReference(mAssetID));
+        mAsset = mAssetHandler.GetReference(mAssetID);
       }
 
       /**
@@ -114,24 +94,128 @@ namespace GQE
        * SetID will set the ID for this asset and get a reference to the
        * asset.
        * @param[in] theAssetID to use for this asset
-       * @param[in] theLoadFlag indicating immediate loading of asset
+       * @param[in] theLoadTime (Now, Later) of when to load this asset
+       * @param[in] theLoadStyle (File, Mem, Network) to use when loading this asset
+       * @param[in] theDropTime at (Zero, Exit) for when to unload this asset
        */
-      void SetID(const typeAssetID theAssetID, bool theLoadFlag = false)
+      void SetID(const typeAssetID theAssetID,
+        AssetLoadTime theLoadTime = AssetLoadLater,
+        AssetLoadStyle theLoadStyle = AssetLoadFromFile,
+        AssetDropTime theDropTime = AssetDropAtZero)
       {
         // Make note of the new Asset ID
         mAssetID = theAssetID;
 
         // Try to obtain a reference to the new Asset from Handler
-        mAsset = static_cast<TYPE*>(mAssetHandler.GetReference(mAssetID, theLoadFlag));
+        mAsset = mAssetHandler.GetReference(mAssetID, theLoadTime, theLoadStyle, theDropTime);
       }
 
       /**
        * GetAsset will return the Asset if it is available.
        * @return pointer to the Asset or NULL if not available yet.
        */
-      TYPE& GetAsset(void) const
+      TYPE& GetAsset(void)
       {
+        // Is asset not yet loaded, then try to load it immediately
+        if(false == mAssetHandler.IsLoaded(mAssetID))
+        {
+          // Load the asset immediately
+          bool anLoaded = mAssetHandler.LoadAsset(mAssetID);
+
+          // If the asset was loaded, get a reference to it now
+          if(anLoaded)
+          {
+            // Get reference to the asset immediately
+            mAsset = mAssetHandler.GetReference(mAssetID);
+          }
+        }
+
+        // Return reference to dummy asset or loaded asset
         return *mAsset;
+      }
+
+      /**
+       * GetFilename is responsible for retrieving the filename to use when
+       * loading this asset.
+       * @return the filename to use when loading this asset
+       */
+      const std::string GetFilename(void)
+      {
+        return mAssetHandler.GetFilename(mAssetID);
+      }
+
+      /**
+       * SetFilename is responsible for setting the filename to use when
+       * loading this asset.
+       * @param[in] theFilename to use for loading asset
+       */
+      void SetFilename(std::string theFilename)
+      {
+        // Set the filename to use for this asset
+        mAssetHandler.SetFilename(mAssetID, theFilename);
+      }
+
+      /**
+       * GetLoadStyle will attempt to retrieve the loading style to use when
+       * loading this asset. If the asset ID isn't found then
+       * AssetLoadFromUnknown will be returned.
+       * @return the loading style to use or AssetLoadFromUnknown otherwise
+       */
+      AssetLoadStyle GetLoadStyle(void) const
+      {
+        return mAssetHandler.GetLoadStyle(mAssetID);
+      }
+
+      /**
+       * SetLoadStyle will set the loading style for this asset to theLoadStyle
+       * specified.
+       * @param[in] theLoadStyle (File, Mem, Network) to use when loading this asset
+       */
+      void SetLoadTime(AssetLoadStyle theLoadStyle)
+      {
+        mAssetHandler.SetLoadStyle(mAssetID, theLoadStyle);
+      }
+
+      /**
+       * GetLoadTime will attempt to retrieve the loading time of when this
+       * asset will be loaded.  If the asset ID isn't found then AssetLoadLater
+       * will be returned.
+       * @return the loading time or AssetLoadLater otherwise
+       */
+      AssetLoadTime GetLoadTime(void) const
+      {
+        return mAssetHandler.GetLoadTime(mAssetID);
+      }
+
+      /**
+       * SetLoadTime will set the load time for this asset to theLoadTime
+       * specified.
+       * @param[in] theLoadTime (Now, Later) of when to load this asset
+       */
+      void SetLoadTime(AssetLoadTime theLoadTime)
+      {
+        mAssetHandler.SetLoadTime(mAssetID, theLoadTime);
+      }
+
+      /**
+       * GetDropTime will attempt to retrieve the drop time of when this asset
+       * will be unloaded.  If the asset ID isn't found then
+       * AssetDropUnspecified will be returned.
+       * @return the loading time or AssetDropUnspecified otherwise
+       */
+      AssetDropTime GetDropTime(void) const
+      {
+        return mAssetHandler.GetDropTime(mAssetID);
+      }
+
+      /**
+       * SetDropTime will set the drop time for this asset to theDropTime
+       * specified.
+       * @param[in] theDropTime at (Zero, Exit) for when to unload this asset
+       */
+      void SetDropTime(AssetDropTime theDropTime)
+      {
+        mAssetHandler.SetDropTime(mAssetID, theDropTime);
       }
 
       /**
@@ -155,6 +239,16 @@ namespace GQE
         // Return my pointer
         return *this;
       }
+
+    protected:
+      // Variables
+      ///////////////////////////////////////////////////////////////////////////
+      /// Asset Handler class that will manage this asset
+      TAssetHandler<TYPE>& mAssetHandler;
+      /// Pointer to the loaded asset
+      TYPE*                mAsset;
+      /// Asset ID specified for this asset
+      typeAssetID          mAssetID;
   }; // class TAsset
 } // namespace GQE
 

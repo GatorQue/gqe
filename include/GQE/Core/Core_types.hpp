@@ -21,7 +21,6 @@
 #include <string>
 #include <vector>
 #include <GQE/Config.hpp>
-#include <GQE/Core/loggers/onullstream>
 
 #define INFO_LEVEL   0  ///< Defines the value for GQE::SeverityInfo
 #define WARN_LEVEL   1  ///< Defines the value for GQE::SeverityWarning
@@ -31,15 +30,29 @@
 
 namespace GQE
 {
-  /// Enumeration of all Asset loading styles
-  //enum AssetLoadingStyle
-  //{
-  //  AssetLoadStyleFirst      = 0,  ///< First Loading Style
-  //  AssetLoadStyleBackground = 1,  ///< Background thread loading style
-  //  AssetLoadStyleForeground = 2,  ///< Foreground thread loading style
-  //  AssetLoadStyleImmediate  = 3,  ///< Immediate loading style
-  //  AssetLoadStyleLast             ///< Last Loading Style
-  //};
+  /// Enumeration of AssetLoadTime
+  enum AssetLoadTime
+  {
+    AssetLoadNow   = 0, ///< Load the asset now
+    AssetLoadLater = 1  ///< Load the asset later
+  };
+
+  /// Enumeration of AssetDropTime
+  enum AssetDropTime
+  {
+    AssetDropUnspecified = 0, ///< Drop/unload time unspecified, use default AtZero
+    AssetDropAtZero      = 1, ///< Drop/unload when count reaches 0
+    AssetDropAtExit      = 2  ///< Drop/unload when program exits (deconstructor)
+  };
+
+  /// Enumeration of all Asset loading techniques
+  enum AssetLoadStyle
+  {
+    AssetLoadFromUnknown = 0, ///< Error condition returned by GetLoadStyle
+    AssetLoadFromFile    = 1, ///< Load the asset from a file
+    AssetLoadFromMemory  = 2, ///< Load the asset from memory
+    AssetLoadFromNetwork = 3  ///< Load the asset from the network
+  };
 
   /// Enumeration of all Logging severity types
   enum SeverityType
@@ -119,10 +132,6 @@ namespace GQE
 
   /// Declare NameValueIter typedef which is used for name,value pair maps
   typedef std::map<const std::string, const std::string>::iterator typeNameValueIter;
-
-  // Internal Core global variables
-  /// Null stream for Logger macros if not active or severity level is disabled
-  extern GQE_API std::onullstream gNullStream;
 } // namespace GQE
 #endif // GQE_CORE_TYPES_HPP_INCLUDED
 

@@ -13,7 +13,6 @@
 #include <GQE/Core/classes/ConfigReader.hpp>
 #include <GQE/Core/interfaces/TAsset.hpp>
 #include <GQE/Core/Core_types.hpp>
-#include <GQE/Core/loggers/onullstream>
 
 namespace GQE
 {
@@ -36,9 +35,6 @@ namespace GQE
 
   /// Force instance of sf::SoundBuffer TAsset template class
   template class TAsset<sf::SoundBuffer>;
-
-  // Internal Core global variables
-  GQE_API std::onullstream gNullStream;
 } // namespace GQE
 
 /**

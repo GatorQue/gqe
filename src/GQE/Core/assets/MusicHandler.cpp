@@ -8,16 +8,12 @@
  */
  
 #include <GQE/Core/assets/MusicHandler.hpp>
-#include <GQE/Core/interfaces/IApp.hpp>
 #include <GQE/Core/loggers/Log_macros.hpp>
  
 namespace GQE
 {
-  /// Default Asset Handler ID for this Asset Handler
-  const char* MusicHandler::DEFAULT_ID = "music";
-
   MusicHandler::MusicHandler() :
-    IAssetHandler(MusicHandler::DEFAULT_ID)
+    TAssetHandler<sf::Music>()
   {
     ILOG() << "MusicHandler::ctor()" << std::endl;
   }
@@ -26,53 +22,73 @@ namespace GQE
   {
     ILOG() << "MusicHandler::dtor()" << std::endl;
   }
- 
-  void* MusicHandler::AcquireAsset(const typeAssetID theAssetID)
-  {
-    ILOG() << "MusicHandler(" << GetID() << "):AcquireAsset("
-      << theAssetID << ") Creating asset" << std::endl;
-    return new sf::Music();
-  }
-      
-  void* MusicHandler::GetDummyAsset(void)
-  {
-    ILOG() << "MusicHandler(" << GetID()
-      << "):GetDummyAsset() Returning Dummy Asset." << std::endl;
-    return &mDummyAsset;
-  }
 
-  bool MusicHandler::LoadAsset(const typeAssetID theAssetID, void* theAsset)
+  bool MusicHandler::LoadFromFile(const typeAssetID theAssetID, sf::Music& theAsset)
   {
-    // Default to NOT loaded
+    // Start with a return result of false
     bool anResult = false;
-    sf::Music* anAsset = static_cast<sf::Music*>(theAsset);
 
-    if(NULL != anAsset)
+    // Retrieve the filename for this asset
+    std::string anFilename = GetFilename(theAssetID);
+
+    // Was a valid filename found? then attempt to load the asset from anFilename
+    if(anFilename.length() > 0)
     {
-      // Get filename for this asset from AppSettings file in App
-      std::string anFilename = theAssetID; // gApp->mAppSettings.GetString("Images", theAssetID);
-
-      ILOG() << "MusicHandler::LoadAsset(" << theAssetID
-        << ") Loading asset from file(" << anFilename << ") ..." << std::endl;
- 
-      // Attempt to load the asset from a file
-      anResult = anAsset->OpenFromFile(anFilename);
- 
-      // If the asset did not load successfully, log a fatal error
-      if(false == anResult)
-      {
-        FLOG(StatusAppMissingAsset) << "MusicHandler::LoadAsset(" << theAssetID
-          << ") Unable to open music from file(" << anFilename << ")!" << std::endl;
-      }
+      // Load the asset from a file
+#if (SFML_MAJOR_VERSION < 2)
+      anResult = theAsset.OpenFromFile(anFilename);
+#else
+      anResult = theAsset.openFromFile(anFilename);
+#endif
     }
     else
     {
-      // Log fatal error if our static cast failed!
-      FLOG(StatusAppMissingAsset) << "MusicHandler::LoadAsset(" << theAssetID
-        << ") Bad static cast!" << std::endl;
+      ELOG() << "MusicHandler::LoadFromFile(" << theAssetID
+        << ") No filename provided!" << std::endl;
     }
 
-    // Return anResult determined above or false for NOT loaded
+    // Return anResult of true if successful, false otherwise
+    return anResult;
+  }
+
+  bool MusicHandler::LoadFromMemory(const typeAssetID theAssetID, sf::Music& theAsset)
+  {
+    // Start with a return result of false
+    bool anResult = false;
+
+    // TODO: Retrieve the const char* pointer to load data from
+    const char* anData = NULL;
+    // TODO: Retrieve the size in bytes of the font to load from memory
+    size_t anDataSize = 0;
+
+    // Try to obtain the font from the memory location specified
+    if(NULL != anData && anDataSize > 0)
+    {
+      // Load the image from the memory location specified
+#if (SFML_MAJOR_VERSION < 2)
+      anResult = theAsset.OpenFromMemory(anData, anDataSize);
+#else
+      anResult = theAsset.openFromMemory(anData, anDataSize);
+#endif
+    }
+    else
+    {
+      ELOG() << "MusicHandler::LoadFromMemory(" << theAssetID
+        << ") Bad memory location or size!" << std::endl;
+    }
+
+    // Return anResult of true if successful, false otherwise
+    return anResult;
+  }
+
+  bool MusicHandler::LoadFromNetwork(const typeAssetID theAssetID, sf::Music& theAsset)
+  {
+    // Start with a return result of false
+    bool anResult = false;
+
+    // TODO: Add load from network for this asset
+
+    // Return anResult of true if successful, false otherwise
     return anResult;
   }
 } // namespace GQE

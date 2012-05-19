@@ -17,23 +17,15 @@
 
 #include <assert.h>
 #include <stddef.h>
-#include <GQE/Core/loggers/Log_macros.hpp>
 #include <GQE/Core/assets/MusicAsset.hpp>
-#include <GQE/Core/assets/MusicHandler.hpp>
-#include <GQE/Core/interfaces/IApp.hpp>
+#include <GQE/Core/loggers/Log_macros.hpp>
 
 namespace GQE
 {
-  MusicAsset::MusicAsset() :
-    TAsset<sf::Music>(
-      IApp::GetApp()->mAssetManager.GetHandler(MusicHandler::DEFAULT_ID))
-  {
-  }
-
-  MusicAsset::MusicAsset(std::string theFilename, bool theLoadFlag) :
-    TAsset<sf::Music>(
-      IApp::GetApp()->mAssetManager.GetHandler(MusicHandler::DEFAULT_ID),
-      theFilename, theLoadFlag)
+  MusicAsset::MusicAsset(const typeAssetID theAssetID,
+    AssetLoadTime theLoadTime, AssetLoadStyle theLoadStyle,
+    AssetDropTime theDropTime) :
+    TAsset<sf::Music>(theAssetID, theLoadTime, theLoadStyle, theDropTime)
   {
   }
 

@@ -33,10 +33,15 @@ namespace GQE
 
       /**
        * ConfigAsset constructor
-       * @param[in] theFilename to use when loading this asset
-       * @param[in] theLoadFlag indicating immediate loading of asset
+       * @param[in] theAssetID to uniquely identify this asset
+       * @param[in] theLoadTime (Now, Later) of when to load this asset
+       * @param[in] theLoadStyle (File, Mem, Network) to use when loading this asset
+       * @param[in] theDropTime at (Zero, Exit) for when to unload this asset
        */
-      ConfigAsset(std::string theFilename, bool theLoadFlag = false);
+      ConfigAsset(const typeAssetID theAssetID,
+        AssetLoadTime theLoadTime = AssetLoadLater,
+        AssetLoadStyle theLoadStyle = AssetLoadFromFile,
+        AssetDropTime theDropTime = AssetDropAtZero);
 
       /**
        * ConfigAsset deconstructor

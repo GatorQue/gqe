@@ -9,21 +9,16 @@
 #ifndef   CORE_MUSIC_HANDLER_HPP_INCLUDED
 #define   CORE_MUSIC_HANDLER_HPP_INCLUDED
  
-#include <GQE/Core/Core_types.hpp>
-#include <GQE/Core/interfaces/IAssetHandler.hpp>
 #include <SFML/Audio.hpp>
+#include <GQE/Core/Core_types.hpp>
+#include <GQE/Core/interfaces/TAssetHandler.hpp>
 
 namespace GQE
 {
   /// Provides the MusicHandler class for managing sf::Music assets
-  class GQE_API MusicHandler : public IAssetHandler
+  class GQE_API MusicHandler : public TAssetHandler<sf::Music>
   {
   public:
-    // Constants
-    ///////////////////////////////////////////////////////////////////////////
-    /// Default Asset Handler ID for this Asset Handler
-    static const char* DEFAULT_ID;
-
     /**
      * MusicHandler constructor
      */
@@ -36,35 +31,36 @@ namespace GQE
  
   protected:
     /**
-     * AcquireAsset is responsible for creating an IAsset derived asset and
-     * returning it to the caller.
-     * @param[in] theAssetID of the asset to acquire
-     * @return a pointer to the newly created asset
-     */
-    virtual void* AcquireAsset(const typeAssetID theAssetID);
-
-    /**
-     * GetDummyAsset is responsible for returning a pointer to a Dummy asset
-     * which will be returned if AcquireAsset fails to create an asset or
-     * GetReference() is called. This makes the system more stable since all
-     * assets will have a valid reference pointer
-     * @return pointer to a dummy asset
-     */
-    virtual void* GetDummyAsset(void);
-
-    /**
-     * LoadAsset is responsible for loading theAsset returned by AcquireAsset
-     * and must provide a default implementation for all loading style types.
+     * LoadFromFile is responsible for loading theAsset from a file and must
+     * be defined by the derived class since the interface for TYPE is
+     * unknown at this stage.
+     * @param[in] theAssetID of the asset to be loaded
      * @param[in] theAsset pointer to load
      * @return true if the asset was successfully loaded, false otherwise
      */
-    virtual bool LoadAsset(const typeAssetID theAssetID, void* theAsset);
+    virtual bool LoadFromFile(const typeAssetID theAssetID, sf::Music& theAsset);
+
+    /**
+     * LoadFromMemory is responsible for loading theAsset from memory and
+     * must be defined by the derived class since the interface for TYPE is
+     * unknown at this stage.
+     * @param[in] theAssetID of the asset to be loaded
+     * @param[in] theAsset pointer to load
+     * @return true if the asset was successfully loaded, false otherwise
+     */
+    virtual bool LoadFromMemory(const typeAssetID theAssetID, sf::Music& theAsset);
+
+    /**
+     * LoadFromNetwork is responsible for loading theAsset from network and
+     * must be defined by the derived class since the interface for TYPE is
+     * unknown at this stage.
+     * @param[in] theAssetID of the asset to be loaded
+     * @param[in] theAsset pointer to load
+     * @return true if the asset was successfully loaded, false otherwise
+     */
+    virtual bool LoadFromNetwork(const typeAssetID theAssetID, sf::Music& theAsset);
 
   private:
-    // Variables
-    ///////////////////////////////////////////////////////////////////////////
-    /// Dummy asset that will be returned if an asset can't be Acquired
-    sf::Music mDummyAsset;
   }; // class MusicHandler
 } // namespace GQE
 

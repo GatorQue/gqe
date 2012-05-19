@@ -8,16 +8,16 @@
  */
  
 #include <GQE/Core/assets/ImageHandler.hpp>
-#include <GQE/Core/interfaces/IApp.hpp>
 #include <GQE/Core/loggers/Log_macros.hpp>
  
 namespace GQE
 {
-  /// Default Asset Handler ID for this Asset Handler
-  const char* ImageHandler::DEFAULT_ID = "images";
-
   ImageHandler::ImageHandler() :
-    IAssetHandler(ImageHandler::DEFAULT_ID)
+#if (SFML_MAJOR_VERSION < 2)
+    TAssetHandler<sf::Image>()
+#else
+    TAssetHandler<sf::Texture>()
+#endif
   {
     ILOG() << "ImageHandler::ctor()" << std::endl;
   }
@@ -26,57 +26,89 @@ namespace GQE
   {
     ILOG() << "ImageHandler::dtor()" << std::endl;
   }
- 
-  void* ImageHandler::AcquireAsset(const typeAssetID theAssetID)
-  {
-    ILOG() << "ImageHandler(" << GetID() << "):AcquireAsset("
-      << theAssetID << ") Creating asset" << std::endl;
-    return new sf::Image();
-  }
-      
-  void* ImageHandler::GetDummyAsset(void)
-  {
-    ILOG() << "ImageHandler(" << GetID()
-      << "):GetDummyAsset() Returning Dummy Asset." << std::endl;
-    return &mDummyAsset;
-  }
 
-  bool ImageHandler::LoadAsset(const typeAssetID theAssetID, void* theAsset)
+#if (SFML_MAJOR_VERSION < 2)
+  bool ImageHandler::LoadFromFile(const typeAssetID theAssetID, sf::Image& theAsset)
+#else
+  bool ImageHandler::LoadFromFile(const typeAssetID theAssetID, sf::Texture& theAsset)
+#endif
   {
-    // Default to NOT loaded
+    // Start with a return result of false
     bool anResult = false;
-    sf::Image* anAsset = static_cast<sf::Image*>(theAsset);
 
-    if(NULL != anAsset)
+    // Retrieve the filename for this asset
+    std::string anFilename = GetFilename(theAssetID);
+
+    // Was a valid filename found? then attempt to load the asset from anFilename
+    if(anFilename.length() > 0)
     {
-      // Get filename for this asset from AppSettings file in App
-      std::string anFilename = theAssetID; // gApp->mAppSettings.GetString("Images", theAssetID);
-
-      ILOG() << "ImageHandler::LoadAsset(" << theAssetID
-        << ") Loading asset from file(" << anFilename << ") ..." << std::endl;
- 
-      // Attempt to load the asset from a file
-      anResult = anAsset->LoadFromFile(anFilename);
- 
-      // If the asset did not load successfully, log a fatal error
-      if(false == anResult)
-      {
-        FLOG(StatusAppMissingAsset) << "ImageHandler::LoadAsset(" << theAssetID
-          << ") Unable to load from file(" << anFilename << ")!" << std::endl;
-      }
+      // Load the asset from a file
+#if (SFML_MAJOR_VERSION < 2)
+      anResult = theAsset.LoadFromFile(anFilename);
+#else
+      anResult = theAsset.loadFromFile(anFilename);
+#endif
     }
     else
     {
-      // Log fatal error if our static cast failed!
-      FLOG(StatusAppMissingAsset) << "ImageHandler::LoadAsset(" << theAssetID
-        << ") Bad static cast!" << std::endl;
+      ELOG() << "ImageHandler::LoadFromFile(" << theAssetID
+        << ") No filename provided!" << std::endl;
     }
 
-    // Return anResult determined above or false for NOT loaded
+    // Return anResult of true if successful, false otherwise
+    return anResult;
+  }
+
+#if (SFML_MAJOR_VERSION < 2)
+  bool ImageHandler::LoadFromMemory(const typeAssetID theAssetID, sf::Image& theAsset)
+#else
+  bool ImageHandler::LoadFromMemory(const typeAssetID theAssetID, sf::Texture& theAsset)
+#endif
+  {
+    // Start with a return result of false
+    bool anResult = false;
+
+    // TODO: Retrieve the const char* pointer to load data from
+    const char* anData = NULL;
+    // TODO: Retrieve the size in bytes of the font to load from memory
+    size_t anDataSize = 0;
+
+    // Try to obtain the font from the memory location specified
+    if(NULL != anData && anDataSize > 0)
+    {
+      // Load the image from the memory location specified
+#if (SFML_MAJOR_VERSION < 2)
+      anResult = theAsset.LoadFromMemory(anData, anDataSize);
+#else
+      anResult = theAsset.loadFromMemory(anData, anDataSize);
+#endif
+    }
+    else
+    {
+      ELOG() << "ImageHandler::LoadFromMemory(" << theAssetID
+        << ") Bad memory location or size!" << std::endl;
+    }
+
+    // Return anResult of true if successful, false otherwise
+    return anResult;
+  }
+
+#if (SFML_MAJOR_VERSION < 2)
+  bool ImageHandler::LoadFromNetwork(const typeAssetID theAssetID, sf::Image& theAsset)
+#else
+  bool ImageHandler::LoadFromNetwork(const typeAssetID theAssetID, sf::Texture& theAsset)
+#endif
+  {
+    // Start with a return result of false
+    bool anResult = false;
+
+    // TODO: Add load from network for this asset
+
+    // Return anResult of true if successful, false otherwise
     return anResult;
   }
 } // namespace GQE
- 
+
 /**
  * Copyright (c) 2010-2012 Ryan Lindeman
  * Permission is hereby granted, free of charge, to any person obtaining a copy

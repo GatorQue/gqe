@@ -1,3 +1,8 @@
+Version 0.19.0
+==============
+- New AssetManager and Asset handling techniques (using RAII)
+- Rename gqe-entities as gqe-entity
+
 Version 0.18.1
 ==============
 - Fix inability to find SFML when SFML files are in extlibs directory

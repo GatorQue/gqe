@@ -17,23 +17,15 @@
 
 #include <assert.h>
 #include <stddef.h>
-#include <GQE/Core/loggers/Log_macros.hpp>
 #include <GQE/Core/assets/SoundAsset.hpp>
-#include <GQE/Core/assets/SoundHandler.hpp>
-#include <GQE/Core/interfaces/IApp.hpp>
+#include <GQE/Core/loggers/Log_macros.hpp>
 
 namespace GQE
 {
-  SoundAsset::SoundAsset() :
-    TAsset<sf::SoundBuffer>(
-      IApp::GetApp()->mAssetManager.GetHandler(SoundHandler::DEFAULT_ID))
-  {
-  }
-
-  SoundAsset::SoundAsset(std::string theFilename, bool theLoadFlag) :
-    TAsset<sf::SoundBuffer>(
-      IApp::GetApp()->mAssetManager.GetHandler(SoundHandler::DEFAULT_ID),
-      theFilename, theLoadFlag)
+  SoundAsset::SoundAsset(const typeAssetID theAssetID,
+    AssetLoadTime theLoadTime, AssetLoadStyle theLoadStyle,
+    AssetDropTime theDropTime) :
+    TAsset<sf::SoundBuffer>(theAssetID, theLoadTime, theLoadStyle, theDropTime)
   {
   }
 

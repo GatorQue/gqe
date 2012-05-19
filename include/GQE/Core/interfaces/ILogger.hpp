@@ -14,6 +14,7 @@
 #define   CORE_ILOGGER_HPP_INCLUDED
 
 #include <GQE/Core/Core_types.hpp>
+#include <GQE/Core/loggers/onullstream>
 
 namespace GQE
 {
@@ -21,6 +22,9 @@ namespace GQE
   class GQE_API ILogger
   {
     public:
+      /// Null stream for Logger macros if not active or severity level is disabled
+      static std::onullstream gNullStream;
+
       /**
        * ILogger deconstructor
        */
