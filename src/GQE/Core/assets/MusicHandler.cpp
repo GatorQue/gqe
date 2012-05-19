@@ -35,7 +35,7 @@ namespace GQE
     if(anFilename.length() > 0)
     {
       // Load the asset from a file
-#if (SFML_MAJOR_VERSION < 2)
+#if (SFML_VERSION_MAJOR < 2)
       anResult = theAsset.OpenFromFile(anFilename);
 #else
       anResult = theAsset.openFromFile(anFilename);
@@ -65,7 +65,7 @@ namespace GQE
     if(NULL != anData && anDataSize > 0)
     {
       // Load the image from the memory location specified
-#if (SFML_MAJOR_VERSION < 2)
+#if (SFML_VERSION_MAJOR < 2)
       anResult = theAsset.OpenFromMemory(anData, anDataSize);
 #else
       anResult = theAsset.openFromMemory(anData, anDataSize);

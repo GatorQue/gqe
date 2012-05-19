@@ -40,7 +40,11 @@ namespace GQE
     mUPS(NULL)
   {
     ILOGM("StatManager::ctor()");
-    mDefaultFont.LoadFromFile("resources/arial.ttf");
+#if SFML_VERSION_MAJOR < 2
+		mDefaultFont.LoadFromFile("resources/arial.ttf");
+#else
+		mDefaultFont.loadFromFile("resources/arial.ttf");
+#endif
   }
 
   StatManager::~StatManager()

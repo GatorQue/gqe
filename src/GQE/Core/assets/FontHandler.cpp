@@ -35,7 +35,7 @@ namespace GQE
     if(anFilename.length() > 0)
     {
       // Load the asset from a file
-#if (SFML_MAJOR_VERSION < 2)
+#if (SFML_VERSION_MAJOR < 2)
       anResult = theAsset.LoadFromFile(anFilename);
 #else
       anResult = theAsset.loadFromFile(anFilename);
@@ -67,10 +67,10 @@ namespace GQE
     if(NULL != anData && anDataSize > 0)
     {
       // Load the font from the memory location specified
-#if (SFML_MAJOR_VERSION < 2)
+#if (SFML_VERSION_MAJOR < 2)
       anResult = theAsset.LoadFromMemory(anData, anDataSize, anCharSize);
 #else
-      anResult = theAsset.loadFromMemory(anData, anDataSize, anCharSize);
+      anResult = theAsset.loadFromMemory(anData, anDataSize);
 #endif
     }
     else
