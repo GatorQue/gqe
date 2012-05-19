@@ -21,6 +21,7 @@ namespace GQE
   {
 	  IComponent::DoInit(theEntity);
 	  theEntity->AddProperty<std::string>("SpriteName", mImage.GetID());
+		theEntity->AddProperty<sf::Vector2f>("Origin", sf::Vector2f(0.0f,0.0f));
   }
 
   void RenderComponent::ReInit()
@@ -37,11 +38,12 @@ namespace GQE
 	  float anRotation=mEntity->GetProperty<float>("Rotation");
 	  sf::Vector2f anScale=mEntity->GetProperty<sf::Vector2f>("Scale");
   #if (SFML_VERSION_MAJOR < 2)
+		mSprite.SetCenter(mEntity->GetProperty<sf::Vector2f>("Origin"));
 	  mSprite.SetPosition(anPosition);
 	  mSprite.SetRotation(anRotation);
 	  mSprite.SetScale(anScale);
   #else
-	  mSprite.setOrigin(mSprite.getTexture().getSize().x/2,mSprite.getTexture().getSize().y/2);
+		mSprite.setOrigin(mEntity->GetProperty<sf::Vector2f>("Origin"));
 	  mSprite.setPosition(anPosition);
 	  mSprite.setRotation(anRotation);
 	  mSprite.setScale(anScale);

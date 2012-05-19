@@ -13,7 +13,7 @@
 namespace GQE
 {
   ImageHandler::ImageHandler() :
-#if (SFML_MAJOR_VERSION < 2)
+#if (SFML_VERSION_MAJOR < 2)
     TAssetHandler<sf::Image>()
 #else
     TAssetHandler<sf::Texture>()
@@ -27,7 +27,7 @@ namespace GQE
     ILOG() << "ImageHandler::dtor()" << std::endl;
   }
 
-#if (SFML_MAJOR_VERSION < 2)
+#if (SFML_VERSION_MAJOR < 2)
   bool ImageHandler::LoadFromFile(const typeAssetID theAssetID, sf::Image& theAsset)
 #else
   bool ImageHandler::LoadFromFile(const typeAssetID theAssetID, sf::Texture& theAsset)
@@ -59,7 +59,7 @@ namespace GQE
     return anResult;
   }
 
-#if (SFML_MAJOR_VERSION < 2)
+#if (SFML_VERSION_MAJOR < 2)
   bool ImageHandler::LoadFromMemory(const typeAssetID theAssetID, sf::Image& theAsset)
 #else
   bool ImageHandler::LoadFromMemory(const typeAssetID theAssetID, sf::Texture& theAsset)
@@ -93,7 +93,7 @@ namespace GQE
     return anResult;
   }
 
-#if (SFML_MAJOR_VERSION < 2)
+#if (SFML_VERSION_MAJOR < 2)
   bool ImageHandler::LoadFromNetwork(const typeAssetID theAssetID, sf::Image& theAsset)
 #else
   bool ImageHandler::LoadFromNetwork(const typeAssetID theAssetID, sf::Texture& theAsset)
