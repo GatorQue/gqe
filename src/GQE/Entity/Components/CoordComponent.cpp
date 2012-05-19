@@ -1,9 +1,9 @@
 #include <GQE/Entity/Components/CoordComponent.hpp>
-#include <GQE/Entity/classes/Entity.hpp>
+#include "GQE/Entity/interfaces/IEntity.hpp"
 namespace GQE
 {
-	CoordComponent::CoordComponent(IApp& theApp, EntityManager* theEntityManager) :
-    IComponent("CoordComponent",theApp, theEntityManager)
+	CoordComponent::CoordComponent(IApp& theApp) :
+    IComponent("CoordComponent",theApp)
   {
 
   }
@@ -13,7 +13,7 @@ namespace GQE
 
   }
 
-  void CoordComponent::DoInit(Entity* theEntity)
+  void CoordComponent::DoInit(IEntity* theEntity)
   {
 	  IComponent::DoInit(theEntity);
 	  theEntity->AddProperty<sf::Vector2f>("Position",sf::Vector2f(0,0));
@@ -53,6 +53,6 @@ namespace GQE
 
   IComponent* CoordComponent::MakeClone()
   {
-    return (new(std::nothrow) CoordComponent(mApp, mEntityManager));
+    return (new(std::nothrow) CoordComponent(mApp));
   }
 }

@@ -1,9 +1,9 @@
 #ifndef INSTANCE_HPP_INCLUDED
 #define INSTANCE_HPP_INCLUDED
-#include "GQE/Entity/classes/Entity.hpp"
+#include "GQE/Entity/interfaces/IEntity.hpp"
 namespace GQE
 {
-	class GQE_API Instance : public Entity
+	class GQE_API Instance : public IEntity
 	{
 	public:
 		Instance(const typeInstanceID theInstanceID, Prototype* thePrototype);

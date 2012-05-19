@@ -22,7 +22,7 @@ namespace GQE
 		* @param[in] theComponentID to use for this component object
 		* @param[in] theApp is the address to the App derived class
 		*/
-		IComponent(const typeComponentID theComponentID, IApp& theApp, EntityManager* theEntityManager);
+		IComponent(const typeComponentID theComponentID, IApp& theApp);
 
 		/**
 		* IComponent deconstructor
@@ -40,7 +40,7 @@ namespace GQE
 		* be called if mCleanup is true so Derived classes should always call
 		* IComponent::DoInit() first before initializing their assets.
 		*/
-		virtual void DoInit(Entity* theEntity);
+		virtual void DoInit(IEntity* theEntity);
 
 		/**
 		* ReInit is responsible for Reseting this component.
@@ -103,10 +103,7 @@ namespace GQE
     IApp&   mApp;
 
 		//pointer to the attached entity.
-		Entity* mEntity;
-
-    //pointer to active entity manager.
-		EntityManager* mEntityManager;
+		IEntity* mEntity;
 
 		/**
 		* Cleanup is responsible for performing any cleanup required before

@@ -1,9 +1,9 @@
 #include <GQE/Entity/Components/DynamicComponent.hpp>
-#include <GQE/Entity/classes/Entity.hpp>
+#include "GQE/Entity/interfaces/IEntity.hpp"
 namespace GQE
 {
-	DynamicComponent::DynamicComponent(GQE::IApp& theApp, EntityManager* theEntityManager) :
-    IComponent("DynamicComponent",theApp, theEntityManager)
+	DynamicComponent::DynamicComponent(GQE::IApp& theApp) :
+    IComponent("DynamicComponent",theApp)
   {
 
   }
@@ -13,7 +13,7 @@ namespace GQE
 
   }
 
-  void DynamicComponent::DoInit(GQE::Entity* theEntity)
+  void DynamicComponent::DoInit(IEntity* theEntity)
   {
 	  IComponent::DoInit(theEntity);
 	  theEntity->AddProperty<sf::Vector2f>("Velocity",sf::Vector2f(0,0));
@@ -64,6 +64,6 @@ namespace GQE
 
   GQE::IComponent* DynamicComponent::MakeClone()
   {
-	  return (new(std::nothrow) DynamicComponent(mApp,mEntityManager));
+	  return (new(std::nothrow) DynamicComponent(mApp));
   }
 }

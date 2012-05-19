@@ -14,7 +14,7 @@ namespace GQE
 		* RenderComponent constructor
 		* @param[in] theApp is the address to the App derived class
 		*/
-		CoordComponent(IApp& theApp, EntityManager* theEntityManager);
+		CoordComponent(IApp& theApp);
 
 		/**
 		* RenderComponent deconstructor
@@ -26,7 +26,7 @@ namespace GQE
 		* be called if mCleanup is true so Derived classes should always call
 		* RenderComponent::DoInit() first before initializing their assets.
 		*/
-		virtual void DoInit(Entity* theEntity);
+		virtual void DoInit(IEntity* theEntity);
 
 		/**
 		* ReInit is responsible for Reseting this component.

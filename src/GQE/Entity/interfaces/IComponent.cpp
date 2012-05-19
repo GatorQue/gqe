@@ -1,14 +1,12 @@
 #include <assert.h>
 #include "GQE/Entity/interfaces/IComponent.hpp"
-#include "GQE/Entity/classes/Entity.hpp"
 #include <GQE/Core/loggers/Log_macros.hpp>
 
 namespace GQE
 {
-	IComponent::IComponent(const typeComponentID theComponentID , IApp& theApp, EntityManager* theEntityManager) :
+	IComponent::IComponent(const typeComponentID theComponentID , IApp& theApp) :
 mApp(theApp),
 	mEntity(NULL),
-	mEntityManager(theEntityManager),
 	mComponentID(theComponentID),
 	mInit(false),
 	mCleanup(false),
@@ -26,7 +24,7 @@ const typeComponentID IComponent::GetID(void) const
 	return mComponentID;
 }
 
-void IComponent::DoInit(Entity* theEntity)
+void IComponent::DoInit(IEntity* theEntity)
 {
 	ILOG() << "IComponent::DoInit(" << mComponentID << ")" << std::endl;
 	mEntity=theEntity;

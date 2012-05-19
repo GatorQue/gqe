@@ -14,7 +14,7 @@ namespace GQE
      * DynamicComponent constructor
      * @param[in] theApp is the address to the App derived class
      */
-    DynamicComponent(IApp& theApp, EntityManager* theEntityManager);
+    DynamicComponent(IApp& theApp);
 
     /**
      * DynamicComponent deconstructor
@@ -26,7 +26,7 @@ namespace GQE
      * be called if mCleanup is true so Derived classes should always call
      * WanderComponent::DoInit() first before initializing their assets.
      */
-    virtual void DoInit(Entity* theEntity);
+    virtual void DoInit(IEntity* theEntity);
 
     /**
      * ReInit is responsible for Reseting this component.

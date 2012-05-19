@@ -1,14 +1,14 @@
-#include <GQE/Entity/classes/Entity.hpp>
+#include "GQE/Entity/interfaces/IEntity.hpp"
 #include <GQE/Entity/interfaces/IComponent.hpp>
 
 namespace GQE
 {
 
-	Entity::Entity()
+	IEntity::IEntity()
 	{
 	}
 
-	Entity::~Entity()
+	IEntity::~IEntity()
 	{
 		std::map<const typePropertyID, IProperty*>::iterator anProptertyIter;
 		std::map<const typeComponentID, IComponent*>::iterator anComponentIter;
@@ -28,7 +28,7 @@ namespace GQE
 		}
 	}
 
-  void Entity::AddProperty(IProperty* theProperty)
+  void IEntity::AddProperty(IProperty* theProperty)
 	{
 		if(mPropertyList.find(theProperty->GetID())!=mPropertyList.end())
 		{
@@ -38,7 +38,7 @@ namespace GQE
 		mPropertyList[theProperty->GetID()]=theProperty;
 	}
 
-  void Entity::AttachComponent(IComponent* theComponent)
+  void IEntity::AttachComponent(IComponent* theComponent)
 	{
     if(NULL == theComponent)
     {
@@ -54,7 +54,7 @@ namespace GQE
 		theComponent->DoInit(this);
 	}
 
-	void Entity::DetachComponent(const typeComponentID theComponentID)
+	void IEntity::DetachComponent(const typeComponentID theComponentID)
 	{
 		if(mComponentList.find(theComponentID)==mComponentList.end())
 		{
@@ -65,7 +65,7 @@ namespace GQE
 		anComponent->DeInit();
 	}
 
-	void Entity::HandleEvents(sf::Event theEvent)
+	void IEntity::HandleEvents(sf::Event theEvent)
 	{
 		std::map<const typeComponentID, IComponent*>::iterator anComponentIter;
 		for(anComponentIter=mComponentList.begin(); anComponentIter!=mComponentList.end(); ++anComponentIter)
@@ -75,7 +75,7 @@ namespace GQE
 		}
 	}
 	
-  void Entity::UpdateFixed()
+  void IEntity::UpdateFixed()
 	{
 		std::map<const typeComponentID, IComponent*>::iterator anComponentIter;
 		for(anComponentIter=mComponentList.begin(); anComponentIter!=mComponentList.end(); ++anComponentIter)
@@ -85,7 +85,7 @@ namespace GQE
 		}
 	}
 
-	void Entity::UpdateVariable(float theElapstedTime)
+	void IEntity::UpdateVariable(float theElapstedTime)
 	{
 		std::map<const typeComponentID, IComponent*>::iterator anComponentIter;
 		for(anComponentIter=mComponentList.begin(); anComponentIter!=mComponentList.end(); ++anComponentIter)
@@ -95,7 +95,7 @@ namespace GQE
 		}
 	}
 	
-  void Entity::Draw()
+  void IEntity::Draw()
 	{
 		std::map<const typeComponentID, IComponent*>::iterator anComponentIter;
 		for(anComponentIter=mComponentList.begin(); anComponentIter!=mComponentList.end(); ++anComponentIter)
@@ -105,7 +105,7 @@ namespace GQE
 		}
 	}
 
-	void Entity::HandleCleanup()
+	void IEntity::HandleCleanup()
 	{
 		std::map<const typeComponentID, IComponent*>::iterator anComponentIter;
 		for(anComponentIter=mComponentList.begin(); anComponentIter!=mComponentList.end(); ++anComponentIter)

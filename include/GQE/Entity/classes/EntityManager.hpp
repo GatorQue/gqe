@@ -10,7 +10,7 @@
 
 #include <map>
 #include <vector>
-#include <GQE/Entity/classes/Entity.hpp>
+#include "GQE/Entity/interfaces/IEntity.hpp"
 
 namespace GQE
 {

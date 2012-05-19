@@ -5,7 +5,7 @@
 namespace GQE
 {
   Prototype::Prototype(const typePrototypeID thePrototypeID):
-    Entity(),
+    IEntity(),
 	  mPrototypeID(thePrototypeID)
   {
 

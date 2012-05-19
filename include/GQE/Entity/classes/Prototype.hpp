@@ -1,11 +1,11 @@
 #ifndef PROTOTYPE_HPP_INCLUDED
 #define PROTOTYPE_HPP_INCLUDED
 
-#include <GQE/Entity/classes/Entity.hpp>
+#include "GQE/Entity/interfaces/IEntity.hpp"
 
 namespace GQE
 {
-	class GQE_API Prototype : public Entity
+	class GQE_API Prototype : public IEntity
 	{
 	  public:
 		  Prototype(const typePrototypeID thePrototypeID);

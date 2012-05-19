@@ -3,7 +3,7 @@
 namespace GQE
 {
   Instance::Instance(const typeInstanceID theInstanceID, Prototype* thePrototype):
-    Entity(),
+    IEntity(),
 	  mID(theInstanceID),
 	  mPrototype(thePrototype)
   {

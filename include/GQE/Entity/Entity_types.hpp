@@ -16,9 +16,11 @@ namespace GQE
 {
   // Forward declare GQE Entity interfaces provided
   class IComponent;
+  class IEntity;
+	class IProperty;
 
-  // Forward declare GQE Entity classes provided
-  class Entity;
+	// Forward declare GQE Entity classes provided
+
   class Prototype;
   class Instance;
   class EntityManager;
