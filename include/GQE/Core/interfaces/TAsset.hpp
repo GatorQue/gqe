@@ -16,6 +16,7 @@
  * @date 20120503 - Rewrote TAsset to use RAII technique and more flexible
  *                  handling of Assets using the new IAssetHandler classes.
  * @date 20120514 - Fix comment whitespace and added GetID method call
+ * @date 20120523 - Remove GQE_API from template classes to fix linker issues
  */
 #ifndef   CORE_TASSET_HPP_INCLUDED
 #define   CORE_TASSET_HPP_INCLUDED
@@ -29,7 +30,7 @@ namespace GQE
 {
   /// Provides base template class for all game assets
   template<class TYPE>
-  class GQE_API TAsset
+  class TAsset
   {
     public:
       /**

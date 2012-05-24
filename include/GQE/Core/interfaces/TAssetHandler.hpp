@@ -5,6 +5,7 @@
  * @file include/GQE/Core/interfaces/IAssetHandler.hpp
  * @author Ryan Lindeman
  * @date 20120428 - Initial Release
+ * @date 20120523 - Remove GQE_API from template classes to fix linker issues
  */
 #ifndef   CORE_TASSET_HANDLER_HPP_INCLUDED
 #define   CORE_TASSET_HANDLER_HPP_INCLUDED
@@ -19,7 +20,7 @@ namespace GQE
 {
   /// Provides the base class interface for all game states
   template<class TYPE>
-  class GQE_API TAssetHandler : public IAssetHandler
+  class TAssetHandler : public IAssetHandler
   {
     public:
       /**

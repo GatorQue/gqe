@@ -7,34 +7,12 @@
  * @date 20120426 - Remove gLogger variable (moved to ILogger::gInstance)
  * @date 20120512 - Remove gApp variable (moved to IApp::gApp)
  * @date 20120512 - Force compiler to create TAsset<xyz> base classes
+ * @date 20120523 - Remove unnecessary force of TAsset<xyz> base classes
  */
-#include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
-#include <GQE/Core/classes/ConfigReader.hpp>
-#include <GQE/Core/interfaces/TAsset.hpp>
 #include <GQE/Core/Core_types.hpp>
 
 namespace GQE
 {
-  /// Force instance of ConfigReader TAsset template class
-  template class TAsset<ConfigReader>;
-
-  /// Force instance of sf::Font TAsset template class
-  template class TAsset<sf::Font>;
-
-#if (SFML_VERSION_MAJOR < 2)
-  /// Force instance of sf::Image TAsset template class
-  template class TAsset<sf::Image>;
-#else
-  /// Force instance of sf::Texture TAsset template class
-  template class TAsset<sf::Texture>;
-#endif
-
-  /// Force instance of sf::Music TAsset template class
-  template class TAsset<sf::Music>;
-
-  /// Force instance of sf::SoundBuffer TAsset template class
-  template class TAsset<sf::SoundBuffer>;
 } // namespace GQE
 
 /**
