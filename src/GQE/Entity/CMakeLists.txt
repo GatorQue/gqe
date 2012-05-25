@@ -22,7 +22,7 @@ set(SRC
     ${SRCROOT}/Entity/classes/Prototype.cpp
     ${SRCROOT}/Entity/classes/Instance.cpp
     ${SRCROOT}/Entity/classes/EntityManager.cpp
-    ${SRCROOT}/Entity/Interfaces/IEntity.cpp
+    ${SRCROOT}/Entity/interfaces/IEntity.cpp
     ${SRCROOT}/Entity/interfaces/IProperty.cpp
     ${SRCROOT}/Entity/interfaces/IComponent.cpp
     ${SRCROOT}/Entity/Components/RenderComponent.cpp
