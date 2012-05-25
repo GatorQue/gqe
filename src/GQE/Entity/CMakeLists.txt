@@ -23,13 +23,13 @@ set(SRC
     ${SRCROOT}/Entity/classes/EntityManager.cpp
     ${SRCROOT}/Entity/classes/Instance.cpp
     ${SRCROOT}/Entity/classes/Prototype.cpp
-    ${SRCROOT}/Entity/Interfaces/IEntity.cpp
     ${SRCROOT}/Entity/interfaces/IComponent.cpp
+    ${SRCROOT}/Entity/interfaces/IEntity.cpp
     ${SRCROOT}/Entity/interfaces/IProperty.cpp
     ${SRCROOT}/Entity/Components/CoordComponent.cpp
     ${SRCROOT}/Entity/Components/DynamicComponent.cpp
     ${SRCROOT}/Entity/Components/RenderComponent.cpp
-	${SRCROOT}/Entity/Components/SolidComponent.cpp
+    ${SRCROOT}/Entity/Components/SolidComponent.cpp
     ${SRCROOT}/Entity/Entity_types.cpp
 )
 
