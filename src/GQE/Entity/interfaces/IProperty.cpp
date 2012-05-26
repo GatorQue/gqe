@@ -10,8 +10,8 @@
 namespace GQE
 {
   IProperty::IProperty(std::string theType, const typePropertyID thePropertyID) :
-    mPropertyID(thePropertyID),
-    mType(theType)
+    mType(theType),
+    mPropertyID(thePropertyID)
   {
   }
 
