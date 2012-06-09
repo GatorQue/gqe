@@ -6,6 +6,7 @@
  * @date 20120418 - Initial Release
  * @date 20120507 - Changed how properties are retrived/set.
  * @date 20120519 - Renaimed Entity class to IEntity and moved to interfaces folder.
+ * @date 20120609 - Log output changes and improved AddProperty technique
  */
 #ifndef IENTITY_HPP_INCLUDED
 #define IENTITY_HPP_INCLUDED
@@ -51,7 +52,7 @@ namespace GQE
           }
           else
           {
-            WLOG() << "Entity:GetProperty() returning blank property(" << thePropertyID << ") type" << std::endl;
+            WLOG() << "IEntity:GetProperty() returning blank property(" << thePropertyID << ") type" << std::endl;
           }
           TYPE anReturn=TYPE();
           return anReturn;
@@ -74,7 +75,7 @@ namespace GQE
           }
           else
           {
-            ELOG() << "Entity:SetProperty() unable to find property(" << thePropertyID << ")" << std::endl;
+            ELOG() << "IEntity:SetProperty() unable to find property(" << thePropertyID << ")" << std::endl;
           }
         }
 
@@ -86,14 +87,18 @@ namespace GQE
       template<class TYPE>
         void AddProperty(const typePropertyID thePropertyID, TYPE theValue)
         {
-          if(mPropertyList.find(thePropertyID)!=mPropertyList.end())
+          // Only add the property if it doesn't already exist
+          if(mPropertyList.find(thePropertyID)==mPropertyList.end())
           {
-            ELOG() << "Entity:AddProperty() label(" << thePropertyID << ") not found!" << std::endl;
-            return;
+            TProperty<TYPE>* anProperty=new(std::nothrow) TProperty<TYPE>(thePropertyID);
+            anProperty->SetValue(theValue);
+            mPropertyList[anProperty->GetID()]=anProperty;
           }
-          TProperty<TYPE>* anProperty=new TProperty<TYPE>(thePropertyID);
-          anProperty->SetValue(theValue);
-          mPropertyList[anProperty->GetID()]=anProperty;
+          else
+          {
+            WLOG() << "IEntity:AddProperty() property(" << thePropertyID
+              << ") already exists!" << std::endl;
+          }
         }
 
       /**

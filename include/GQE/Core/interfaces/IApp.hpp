@@ -15,6 +15,8 @@
  * @date 20110704 - Changed Init to pure virtual function and defaults to 800x600
  * @date 20110831 - Support new SFML2 snapshot changes
  * @date 20120512 - Add new Init hooks for derived classes and changed name to IApp
+ * @date 20120609 - Default to 20 UPS, 20 FPS, and windowed mode and added new
+ *                  improved gameloop.
  */
 #ifndef   CORE_APP_HPP_INCLUDED
 #define   CORE_APP_HPP_INCLUDED
@@ -117,12 +119,23 @@ namespace GQE
 
       /**
        * SetUpdateRate will set the game loop update rate to theRate specified
-       * from 1 Hz to 1000 Hz.  Any other value outside this range will not be
-       * accepted.
-       *
-       * @param[in] theRate in Hz (updates per second) range is [1,1000]
+       * (from 1 Hz to 200 Hz, any other value outside this range will not be
+       * accepted). The update rate is always fixed to provide a deterministic
+       * game loop. But the actual updates per second is affected by the
+       * performance of the system and the complexity of your UpdateFixed game
+       * logic. Use SetMaxUpdates to improve the frames per second on lower
+       * performing systems.
+       * @param[in] theRate in Hz (updates per second) range is [1,200]
        */
       void SetUpdateRate(float theRate);
+
+      /**
+       * SetMaxUpdates will set the maximum number of sequential updates
+       * allowed in any given game loop. If your frames per second rate is
+       * struggling, you should set theMaxUpdates to 1.
+       * @param[in] theMaxUpdates range is [1,200]
+       */
+      void SetMaxUpdates(Uint32 theMaxUpdates);
 
       /**
        * Quit will signal the Application to stop running.
@@ -157,6 +170,12 @@ namespace GQE
       virtual void GameLoop(void);
 
       /**
+       * ProcessInput is responsible for performing all input processing for
+       * the game loop.
+       */
+      virtual void ProcessInput(IState& theState);
+
+      /**
        * HandleCleanup is responsible for performing any custom last minute
        * Application cleanup steps before exiting the Application.
        */
@@ -175,8 +194,10 @@ namespace GQE
       float        mUpdateRate;
 #else
       /// Update rate in milliseconds to use for fixed update in game loop
-      Uint32       mUpdateRate;
+      sf::Int32    mUpdateRate;
 #endif
+      /// Maximum sequential UpdateFixed calls allowed to still meet minimum frame rate
+      Uint32       mMaxUpdates;
 
       /**
        * InitApplication is responsible for registering and loading the

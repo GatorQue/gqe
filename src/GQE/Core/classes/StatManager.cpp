@@ -18,6 +18,7 @@
  * @date 20120421 - Use arial.ttf font since SFML 2 crashes on exit when using default font
  * @date 20120512 - Renamed App to IApp since it really is just an interface
  * @date 20120518 - Use sf::Font instead of FontAsset to remove circular dependency
+ * @date 20120609 - Whitespace changes
  */
 
 #include <assert.h>
@@ -180,30 +181,30 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
     if(mFrameClock.GetElapsedTime() > 1.0f)
 #else
-      if(mFrameClock.getElapsedTime().asSeconds() > 1.0f)
+    if(mFrameClock.getElapsedTime().asSeconds() > 1.0f)
 #endif
-      {
-        // Frames string stream
-        std::ostringstream frames;
+    {
+      // Frames string stream
+      std::ostringstream frames;
 
-        // Get our FramesPerSecond value
-        frames.precision(2);
-        frames.width(7);
-        frames << "FPS: " << std::fixed << mFrames;
+      // Get our FramesPerSecond value
+      frames.precision(2);
+      frames.width(7);
+      frames << "FPS: " << std::fixed << mFrames;
 #if (SFML_VERSION_MAJOR < 2)
-        mFPS->SetText(frames.str());
+      mFPS->SetText(frames.str());
 #else
-        mFPS->setString(frames.str());
+      mFPS->setString(frames.str());
 #endif
 
-        // Reset our Frames clock and frame counter
-        mFrames = 0;
+      // Reset our Frames clock and frame counter
+      mFrames = 0;
 #if (SFML_VERSION_MAJOR < 2)
-        mFrameClock.Reset();
+      mFrameClock.Reset();
 #else
-        mFrameClock.restart();
+      mFrameClock.restart();
 #endif
-      }
+    }
 
     // Are we showing the current statistics?
     if(mShow)

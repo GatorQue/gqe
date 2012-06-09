@@ -23,6 +23,8 @@
  * @date 20120322 - Support new SFML2 snapshot changes
  * @date 20120426 - Convert from pointer to address for anState in Loop method.
  * @date 20120512 - Add new Init hooks for derived classes and changed name to IApp
+ * @date 20120609 - Default to 20 UPS, 20 FPS, and windowed mode and added new
+ *                  improved gameloop.
  */
 
 #include <assert.h>
@@ -64,10 +66,11 @@ namespace GQE
     mExitCode(0),
     mRunning(false),
 #if (SFML_VERSION_MAJOR < 2)
-    mUpdateRate(1.0f / 100.0f) // in seconds
+    mUpdateRate(1.0f / 20.0f), // 20 updates per second
 #else
-    mUpdateRate((Uint32)(1000.0f / 100.0f)) // in milliseconds
+    mUpdateRate((Uint32)(1000.0f / 20.0f)), // 20 updates per second
 #endif
+    mMaxUpdates(5)
   {
     // Save our global App pointer
     gApp = this;
@@ -172,11 +175,13 @@ namespace GQE
 
   bool IApp::IsRunning(void) const
   {
+    // Return true if game loop is still running
     return mRunning;
   }
 
   float IApp::GetUpdateRate(void) const
   {
+    // Return the previously set UpdateFixed game loop rate
 #if (SFML_VERSION_MAJOR < 2)
     return (1.0f / mUpdateRate);
 #else
@@ -186,13 +191,24 @@ namespace GQE
 
   void IApp::SetUpdateRate(float theRate)
   {
-    if(1000.0f >= theRate && 1.0f <= theRate)
+    if(200.0f >= theRate && 1.0f <= theRate)
     {
+      // Make note of the fixed updates per second rate
 #if (SFML_VERSION_MAJOR < 2)
       mUpdateRate = 1.0f / theRate;
 #else
       mUpdateRate = (Uint32)(1000.0f / theRate);
 #endif
+    }
+  }
+
+  void IApp::SetMaxUpdates(Uint32 theMaxUpdates)
+  {
+    // Validate Max Updates range first
+    if(200 >= theMaxUpdates && 1 <= theMaxUpdates)
+    {
+      // Set max updates value to theMaxUpdates value provided
+      mMaxUpdates = theMaxUpdates;
     }
   }
 
@@ -214,7 +230,7 @@ namespace GQE
     ConfigAsset anSettingsConfig(IApp::APP_SETTINGS);
 
     // Are we in Fullscreen mode?
-    if(anSettingsConfig.GetAsset().GetBool("window","fullscreen",true))
+    if(anSettingsConfig.GetAsset().GetBool("window","fullscreen",false))
     {
       mWindowStyle = sf::Style::Fullscreen;
     }
@@ -226,7 +242,7 @@ namespace GQE
     mVideoMode.Height =
       anSettingsConfig.GetAsset().GetUint32("window","height",DEFAULT_VIDEO_HEIGHT);
     mVideoMode.BitsPerPixel =
- anSettingsConfig.GetAsset().GetUint32("window","depth",DEFAULT_VIDEO_BPP);
+      anSettingsConfig.GetAsset().GetUint32("window","depth",DEFAULT_VIDEO_BPP);
 
     // For Fullscreen, verify valid VideoMode, otherwise revert to defaults for Fullscreen
     if(sf::Style::Fullscreen == mWindowStyle && false == mVideoMode.IsValid())
@@ -287,7 +303,7 @@ namespace GQE
     anUpdateClock.restart();
 
     // When do we need to update next (in milliseconds)?
-    Int32 anUpdateNext = anUpdateClock.getElapsedTime().asMilliseconds();
+    sf::Int32 anUpdateNext = anUpdateClock.getElapsedTime().asMilliseconds();
 #endif
 
     // Make sure we have at least one state active
@@ -307,54 +323,40 @@ namespace GQE
       // Get the currently active state
       IState& anState = mStateManager.GetActiveState();
 
-      // Create a fixed rate Update loop
-#if (SFML_VERSION_MAJOR < 2)
-      while(anUpdateClock.GetElapsedTime() > anUpdateNext)
-#else
-      while(anUpdateClock.getElapsedTime().asMilliseconds() > anUpdateNext)
-#endif
-      {
-        // Handle some events and let the current active state handle the rest
-        sf::Event anEvent;
-#if (SFML_VERSION_MAJOR < 2)
-        while(mWindow.GetEvent(anEvent))
-#else
-        while(mWindow.pollEvent(anEvent))
-#endif
-        {
-#if (SFML_VERSION_MAJOR < 2)
-          // Switch on Event Type
-          switch(anEvent.Type)
-#else
-          // Switch on Event Type
-          switch(anEvent.type)
-#endif
-          {
-            case sf::Event::Closed:       // Window closed
-              Quit(StatusAppOK);
-              break;
-            case sf::Event::GainedFocus:  // Window gained focus
-              anState.Resume();
-              break;
-            case sf::Event::LostFocus:    // Window lost focus
-              anState.Pause();
-              break;
-            case sf::Event::Resized:      // Window resized
-              break;
-            default:                      // Current active state will handle
-              anState.HandleEvents(anEvent);
-          } // switch(anEvent.Type)
-        } // while(mWindow.GetEvent(anEvent))
+      // Count the number of sequential UpdateFixed loop calls
+      Uint32 anUpdates = 0;
 
+      // Process any available input
+      ProcessInput(anState);
+
+      // Make note of the current update time
+#if (SFML_VERSION_MAJOR < 2)
+      float anUpdateTime = anUpdateClock.GetElapsedTime();
+#else
+      sf::Int32 anUpdateTime = anUpdateClock.getElapsedTime().asMilliseconds();
+#endif
+
+      // Process our UpdateFixed portion of the game loop
+      while((anUpdateTime - anUpdateNext) >= mUpdateRate && anUpdates++ < mMaxUpdates)
+      {
         // Let the current active state perform fixed updates next
         anState.UpdateFixed();
 
         // Let the StatManager perfom its updates
         mStatManager.UpdateFixed();
 
-        // Update our update next time
+        //ILOG() << "IApp::UpdateFixed() anUpdates=" << anUpdates
+        //  << ", anUpdateTime=" << anUpdateTime << ", anUpdateNext=" << anUpdateNext
+        //  << ", mUpdateRate=" << mUpdateRate << ", anUpdateActual="
+#if (SFML_VERSION_MAJOR < 2)
+        //  << (anUpdateClock.GetElapsedTime() - anUpdateTime) << std::endl;
+#else
+        //  << (anUpdateClock.getElapsedTime().asMilliseconds() - anUpdateTime) << std::endl;
+#endif
+
+        // Compute the next appropriate UpdateFixed time
         anUpdateNext += mUpdateRate;
-      } // while(anUpdateClock.GetElapsedTime() > anUpdateNext)
+      } // while((anUpdateTime - anUpdateNext) >= mUpdateRate && anUpdates <= mMaxUpdates)
 
       // Let the current active state perform its variable update
 #if (SFML_VERSION_MAJOR < 2)
@@ -381,6 +383,43 @@ namespace GQE
       // Handle Cleanup of any recently removed states at this point as needed
       mStateManager.HandleCleanup(); 
     } // while(IsRunning() && !mStates.empty())
+  }
+
+  void IApp::ProcessInput(IState& theState)
+  {
+    // Variable for storing the current input event to be processed
+    sf::Event anEvent;
+
+#if (SFML_VERSION_MAJOR < 2)
+    while(mWindow.GetEvent(anEvent))
+#else
+    while(mWindow.pollEvent(anEvent))
+#endif
+    {
+      // Handle some input events and let the current state handle the rest
+#if (SFML_VERSION_MAJOR < 2)
+      // Switch on Event Type
+      switch(anEvent.Type)
+#else
+      // Switch on Event Type
+      switch(anEvent.type)
+#endif
+      {
+        case sf::Event::Closed:       // Window closed
+          Quit(StatusAppOK);
+          break;
+        case sf::Event::GainedFocus:  // Window gained focus
+          theState.Resume();
+          break;
+        case sf::Event::LostFocus:    // Window lost focus
+          theState.Pause();
+          break;
+        case sf::Event::Resized:      // Window resized
+          break;
+        default:                      // Current active state will handle
+          theState.HandleEvents(anEvent);
+      } // switch(anEvent.Type)
+    } // while(mWindow.GetEvent(anEvent))
   }
 
   void IApp::Cleanup(void)
