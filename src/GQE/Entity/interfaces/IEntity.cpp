@@ -4,6 +4,7 @@
  * @file src/GQE/Entity/interfaces/IEntity.cpp
  * @author Jacob Dix
  * @date 20120423 - Initial Release
+ * @date 20120609 - Log output changes and improved AddProperty technique
  */
 #include <GQE/Entity/interfaces/IEntity.hpp>
 #include <GQE/Entity/interfaces/IComponent.hpp>
@@ -41,24 +42,27 @@ namespace GQE
 
   void IEntity::AddProperty(IProperty* theProperty)
   {
-    if(mPropertyList.find(theProperty->GetID())!=mPropertyList.end())
+    if(mPropertyList.find(theProperty->GetID())==mPropertyList.end())
     {
-      ELOG() << "Entity:AddProperty() property(" << theProperty->GetID() << ") not found!" << std::endl;
+      mPropertyList[theProperty->GetID()]=theProperty;
+    }
+    else
+    {
+      WLOG() << "IEntity:AddProperty() property(" << theProperty->GetID() << ") already exists!" << std::endl;
       return;
     }
-    mPropertyList[theProperty->GetID()]=theProperty;
   }
 
   void IEntity::AttachComponent(IComponent* theComponent)
   {
     if(NULL == theComponent)
     {
-      ELOG() << "Entity:AttachComponent() null component provided!" << std::endl;
+      ELOG() << "IEntity:AttachComponent() null component provided!" << std::endl;
       return;
     }
     if(mComponentList.find(theComponent->GetID())!=mComponentList.end())
     {
-      ELOG() << "Entity:AttachComponent() component(" << theComponent->GetID() << ") not found!" << std::endl;
+      ELOG() << "IEntity:AttachComponent() component(" << theComponent->GetID() << ") not found!" << std::endl;
       return;
     }
     mComponentList[theComponent->GetID()]=theComponent;
@@ -69,7 +73,7 @@ namespace GQE
   {
     if(mComponentList.find(theComponentID)==mComponentList.end())
     {
-      ELOG() << "Entity:DetachComponent() component(" << theComponentID << ") not found!" << std::endl;
+      ELOG() << "IEntity:DetachComponent() component(" << theComponentID << ") not found!" << std::endl;
       return;
     }
     IComponent* anComponent = mComponentList[theComponentID];

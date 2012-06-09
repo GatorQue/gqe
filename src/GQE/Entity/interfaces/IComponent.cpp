@@ -5,6 +5,7 @@
  * @file src/GQE/Entity/interfaces/IComponent.cpp
  * @author Jacob Dix
  * @date 20120423 - Initial Release
+ * @date 20120609 - Whitespace changes
  */
 #include <assert.h>
 #include <GQE/Entity/interfaces/IComponent.hpp>
@@ -12,7 +13,7 @@
 
 namespace GQE
 {
-  IComponent::IComponent(const typeComponentID theComponentID , IApp& theApp) :
+  IComponent::IComponent(const typeComponentID theComponentID, IApp& theApp) :
     mApp(theApp),
     mEntity(NULL),
     mComponentID(theComponentID),
