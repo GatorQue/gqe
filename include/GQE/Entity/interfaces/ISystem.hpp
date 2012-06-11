@@ -52,7 +52,7 @@ namespace GQE
 		* RegisterPrototype is responsible for adding the properties to a prototype.
 		* @param[in] thePrototype is the prototype to use.
 		*/
-		virtual void RegisterPrototype(Prototype* thePrototype)=0;
+		virtual void RegisterPrototype(Prototype* thePrototype);
 		/**
 		* GetInstance is responsible for returning the Instance class pointer
 		* that matches theInstanceID provided.

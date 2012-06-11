@@ -6,26 +6,26 @@
 * @author Jacob Dix
 * @date 20120417 - Initial Release
 */
-#ifndef RENDER_SYSTEM_HPP_INCLUDED
-#define RENDER_SYSTEM_HPP_INCLUDED
+#ifndef MOVEMENT_SYSTEM_HPP_INCLUDED
+#define MOVEMENT_SYSTEM_HPP_INCLUDED
 
 #include <GQE/Entity/interfaces/ISystem.hpp>
 namespace GQE
 {
 	/// The component interface class used by all IEntity derived classes
-	class GQE_API RenderSystem : public ISystem
+	class GQE_API MovementSystem : public ISystem
 	{
 	public:
 		/**
 		RenderSystem Constructor.
 		@param[in] theApp is the Current GQE App.
 		**/
-		RenderSystem(IApp& theApp);
+		MovementSystem(IApp& theApp);
 
 		/**
 		ISystem Destructor.
 		**/
-		~RenderSystem();
+		~MovementSystem();
 		/**
 		* InitInstance is called when an instance is added to the system.
 		* @Param[in] theInstance is the new instance added.

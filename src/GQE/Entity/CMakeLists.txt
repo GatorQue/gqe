@@ -3,7 +3,8 @@ set(Entity_HEADER ${INCROOT}/Entity.hpp)
 
 # Entity library additional include files
 set(INC
-    ${INCROOT}/Entity/systems/RenderSystem.hpp    
+    ${INCROOT}/Entity/systems/RenderSystem.hpp
+    ${INCROOT}/Entity/systems/MovementSystem.hpp
     ${INCROOT}/Entity/classes/PrototypeManager.hpp
     ${INCROOT}/Entity/classes/Instance.hpp
     ${INCROOT}/Entity/classes/Prototype.hpp
@@ -17,6 +18,7 @@ set(INC
 # Entity library source files
 set(SRC
     ${SRCROOT}/Entity/systems/RenderSystem.cpp
+    ${SRCROOT}/Entity/systems/MovementSystem.cpp
     ${SRCROOT}/Entity/classes/PrototypeManager.cpp
     ${SRCROOT}/Entity/classes/Instance.cpp
     ${SRCROOT}/Entity/classes/Prototype.cpp

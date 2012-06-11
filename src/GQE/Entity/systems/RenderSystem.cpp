@@ -20,10 +20,11 @@ namespace GQE
 		thePrototype->AddProperty<sf::Vector2f>("Scale",sf::Vector2f(1,1));
 		thePrototype->AddProperty<sf::Vector2f>("Orgin",sf::Vector2f(0,0));
 		thePrototype->AddProperty<float>("Rotation",0);
-		thePrototype->AddProperty<ImageAsset>("Image",ImageAsset(""));
+		thePrototype->AddProperty<sf::Texture*>("Texture",NULL);
 		thePrototype->AddProperty<sf::IntRect>("SubRect",sf::IntRect(0,0,0,0));
-		thePrototype->AddProperty<bool>("Visible",false);
+		thePrototype->AddProperty<bool>("Visible",true);
 		thePrototype->AddSystem(this);
+		ISystem::RegisterPrototype(thePrototype);
 	}
 	void RenderSystem::InitInstance(Instance* theInstance)
 	{
@@ -53,7 +54,7 @@ namespace GQE
 			sf::Sprite anSprite;
 			if(anInstance!=NULL)
 			{
-				if(anInstance->GetProperty<ImageAsset>("Image").GetID().length()>0)
+				if(anInstance->GetProperty<sf::Texture*>("Texture")!=NULL)
 				{
 					#if SFML_VERSION_MAJOR<2
 
@@ -63,7 +64,7 @@ namespace GQE
 					anSprite.setScale(anInstance->GetProperty<sf::Vector2f>("Scale"));
 					anSprite.setRotation(anInstance->GetProperty<float>("Rotation"));
 					anSprite.setTextureRect(anInstance->GetProperty<sf::IntRect>("SubRect"));
-					anSprite.setTexture(anInstance->GetProperty<ImageAsset>("Image").GetAsset());
+					anSprite.setTexture(*(anInstance->GetProperty<sf::Texture*>("Texture")));
 					mApp.mWindow.draw(anSprite);
 					#endif
 				}

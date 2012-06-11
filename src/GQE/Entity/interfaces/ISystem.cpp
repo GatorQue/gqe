@@ -50,7 +50,10 @@ namespace GQE
   {
     return mSystemID;
   }
-
+	void ISystem::RegisterPrototype(Prototype* thePrototype)
+	{
+		gPrototypeManager->AddPrototype(thePrototype);
+	}
 } // namespace GQE
 
 /**
