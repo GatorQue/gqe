@@ -1,0 +1,17 @@
+# - Config file for the GQE package
+# It defines the following variables
+#  GQE_INCLUDE_DIRS - include directories for GQE
+#  GQE_LIBRARY_DIRS - library directories for GQE (normally not used!)
+#  GQE_LIBRARIES    - libraries to link against
+#  GQE_EXECUTABLE   - the example executable(s)
+ 
+# Tell the user project where to find our headers and libraries
+set(GQE_INCLUDE_DIRS "@GQE_INCLUDE_DIRS@")
+set(GQE_LIBRARY_DIRS "@GQE_LIB_DIR@")
+ 
+# Our library dependencies (contains definitions for IMPORTED targets)
+include("@GQE_CMAKE_DIR@/GQE_LibraryDepends.cmake")
+ 
+# These are IMPORTED targets created by GQE_LibraryDepends.cmake
+set(GQE_LIBRARIES gqe-core gqe-entities)
+set(GQE_EXECUTABLE demo)
