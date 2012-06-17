@@ -62,15 +62,16 @@ namespace GQE
 			anInstance=(*anInstanceIter);
 			if(anInstance!=NULL)
 			{
-					#if SFML_VERSION_MAJOR<2
-
-					#else
-					sf::Sprite anSprite=anInstance->mProperties.Get<sf::Sprite>("Sprite");
-					anSprite.setPosition(anInstance->mProperties.Get<sf::Vector2f>("Position"));
-
-					anSprite.setRotation(anInstance->GetProperty<float>("Rotation"));
-					mApp.mWindow.draw(anSprite);
-					#endif
+				sf::Sprite anSprite=anInstance->mProperties.Get<sf::Sprite>("Sprite");
+#if SFML_VERSION_MAJOR<2
+				anSprite.SetPosition(anInstance->mProperties.Get<sf::Vector2f>("Position"));
+				anSprite.SetRotation(anInstance->mProperties.Get<float>("Rotation"));
+				mApp.mWindow.Draw(anSprite);
+#else
+				anSprite.setPosition(anInstance->mProperties.Get<sf::Vector2f>("Position"));
+				anSprite.setRotation(anInstance->mProperties.Get<float>("Rotation"));
+				mApp.mWindow.draw(anSprite);
+#endif
 			}
 		}	
 	}
