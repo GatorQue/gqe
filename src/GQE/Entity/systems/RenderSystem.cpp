@@ -29,8 +29,7 @@ namespace GQE
 		thePrototype->mProperties.Add<sf::Vector2f>("Scale",sf::Vector2f(1,1));
 		thePrototype->mProperties.Add<sf::Vector2f>("Orgin",sf::Vector2f(0,0));
 		thePrototype->mProperties.Add<float>("Rotation",0);
-		thePrototype->mProperties.Add<sf::Texture*>("Texture",NULL);
-		thePrototype->mProperties.Add<sf::IntRect>("SubRect",sf::IntRect(0,0,0,0));
+		thePrototype->mProperties.Add<sf::Sprite>("Sprite",sf::Sprite());
 		thePrototype->mProperties.Add<bool>("Visible",true);
 		thePrototype->AddSystem(this);
 		ISystem::RegisterPrototype(thePrototype);
@@ -61,23 +60,17 @@ namespace GQE
 			++anInstanceIter)
 		{
 			anInstance=(*anInstanceIter);
-			sf::Sprite anSprite;
 			if(anInstance!=NULL)
 			{
-				if(anInstance->mProperties.Get<sf::Texture*>("Texture")!=NULL)
-				{
 					#if SFML_VERSION_MAJOR<2
 
 					#else
+					sf::Sprite anSprite=anInstance->mProperties.Get<sf::Sprite>("Sprite");
 					anSprite.setPosition(anInstance->mProperties.Get<sf::Vector2f>("Position"));
-					anSprite.setOrigin(anInstance->mProperties.Get<sf::Vector2f>("Orgin"));
-					anSprite.setScale(anInstance->mProperties.Get<sf::Vector2f>("Scale"));
-					anSprite.setRotation(anInstance->mProperties.Get<float>("Rotation"));
-					anSprite.setTextureRect(anInstance->mProperties.Get<sf::IntRect>("SubRect"));
-					anSprite.setTexture(*(anInstance->mProperties.Get<sf::Texture*>("Texture")));
+
+					anSprite.setRotation(anInstance->GetProperty<float>("Rotation"));
 					mApp.mWindow.draw(anSprite);
 					#endif
-				}
 			}
 		}	
 	}
