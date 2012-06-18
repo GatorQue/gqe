@@ -44,6 +44,7 @@ namespace GQE
       ISystem* anSystem = (anSystemIter->second);
       anInstance->AddSystem(anSystem);
 			anSystem->AddInstance(anInstance);
+			anSystem->InitInstance(anInstance);
     }
 
     // Return the new Instance class created
