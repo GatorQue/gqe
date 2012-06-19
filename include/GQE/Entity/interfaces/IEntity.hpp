@@ -54,6 +54,8 @@ namespace GQE
        * @param[in] theSystem is a pointer to the active system.
        */
 			void AddSystem(ISystem* theSystem);
+			
+			bool HasSystem(typeSystemID theSystemID);
     protected:
       // Variables
       ///////////////////////////////////////////////////////////////////////////

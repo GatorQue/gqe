@@ -46,6 +46,15 @@ namespace GQE
         << ") is already controlling this entity." << std::endl;
     }
 	}
+	bool IEntity::HasSystem(typeSystemID theSystemID)
+	{
+		bool anResult=false;
+		if(mSystemList.find(theSystemID)!=mSystemList.end())
+		{
+			anResult=true;
+		}
+		return anResult;
+	}
 } // namespace GQE
 
 /**

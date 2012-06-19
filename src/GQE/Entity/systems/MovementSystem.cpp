@@ -29,7 +29,7 @@ namespace GQE
 		theEntity->mProperties.Add<sf::Vector2f>("Accelleration",sf::Vector2f(0,0));
 		theEntity->mProperties.Add<float>("RotationalVelocity",0);
 		theEntity->mProperties.Add<float>("RotationalAccelleration",0);
-		theEntity->mProperties.Add<bool>("Warp",true);
+		theEntity->mProperties.Add<bool>("Wrap",true);
 		theEntity->AddSystem(this);
 	}
 	
@@ -55,21 +55,24 @@ namespace GQE
 			anPosition+=anVelocity;
 			anRotationalVelocity+=anRotationalAccelleration;
 			anRotation+=anRotationalVelocity;
-			if(anPosition.x>mApp.mWindow.getSize().x)
+			if(anInstance->mProperties.Get<bool>("Wrap"))
 			{
-				anPosition.x=0;
-			}
-			else if(anPosition.x<0)
-			{
-				anPosition.x=(float)mApp.mWindow.getSize().x;
-			}
-			if(anPosition.y>mApp.mWindow.getSize().y)
-			{
-				anPosition.y=0;
-			}
-			else if(anPosition.y<0)
-			{
-				anPosition.y=(float)mApp.mWindow.getSize().y;
+				if(anPosition.x>mApp.mWindow.getSize().x)
+				{
+					anPosition.x=0;
+				}
+				else if(anPosition.x<0)
+				{
+					anPosition.x=(float)mApp.mWindow.getSize().x;
+				}
+				if(anPosition.y>mApp.mWindow.getSize().y)
+				{
+					anPosition.y=0;
+				}
+				else if(anPosition.y<0)
+				{
+					anPosition.y=(float)mApp.mWindow.getSize().y;
+				}
 			}
 			anEntity->mProperties.Set<sf::Vector2f>("Velocity",anVelocity);
 			anEntity->mProperties.Set<sf::Vector2f>("Position",anPosition);
