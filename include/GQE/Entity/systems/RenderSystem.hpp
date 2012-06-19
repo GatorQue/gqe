@@ -34,7 +34,11 @@ namespace GQE
      * @param[in] theEntity to add the properties too.
      */
     virtual void AddProperties(IEntity* theEntity);
-		
+		/**
+		 * InitInstance is called when an instance is added to the system.
+		 * @Param[in] theInstance is the new instance added.
+		 */
+		virtual void InitInstance(Instance* theInstance);
 		/**
 		 * HandleEvents is responsible for letting each Instance class have a
 		 * chance to handle theEvent specified.
