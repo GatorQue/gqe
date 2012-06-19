@@ -55,7 +55,7 @@ namespace GQE
 			anPosition+=anVelocity;
 			anRotationalVelocity+=anRotationalAccelleration;
 			anRotation+=anRotationalVelocity;
-			if(anInstance->mProperties.Get<bool>("Wrap"))
+			if(anEntity->mProperties.Get<bool>("Wrap"))
 			{
 				if(anPosition.x>mApp.mWindow.getSize().x)
 				{
