@@ -5,7 +5,6 @@
  * @author Jacob Dix
  * @date 20120611 - Initial Release
  * @date 20120616 - Adjustments for new PropertyManager class
- * @date 20120618 - Use IEntity not Instance and changed AddPrototype to AddProperties
  */
 #include <GQE/Entity/systems/RenderSystem.hpp>
 #include <GQE/Core/assets/ImageAsset.hpp>
@@ -18,23 +17,27 @@ namespace GQE
 	RenderSystem::RenderSystem(IApp& theApp):
 		ISystem("RenderSystem",theApp)
 	{
-    ILOG() << "RenderSystem::ctor()" << std::endl;
 	}
 
   RenderSystem::~RenderSystem()
 	{
-    ILOG() << "RenderSystem::dtor()" << std::endl;
 	}
 
-	void RenderSystem::AddProperties(IEntity* theEntity)
+	void RenderSystem::RegisterPrototype(Prototype* thePrototype)
 	{
-		theEntity->mProperties.Add<sf::Vector2f>("Position",sf::Vector2f(0,0));
-		theEntity->mProperties.Add<sf::Vector2f>("Scale",sf::Vector2f(1,1));
-		theEntity->mProperties.Add<sf::Vector2f>("Orgin",sf::Vector2f(0,0));
-		theEntity->mProperties.Add<float>("Rotation",0);
-		theEntity->mProperties.Add<sf::Sprite>("Sprite",sf::Sprite());
-		theEntity->mProperties.Add<bool>("Visible",true);
-		theEntity->AddSystem(this);
+		thePrototype->mProperties.Add<sf::Vector2f>("Position",sf::Vector2f(0,0));
+		thePrototype->mProperties.Add<sf::Vector2f>("Scale",sf::Vector2f(1,1));
+		thePrototype->mProperties.Add<sf::Vector2f>("Orgin",sf::Vector2f(0,0));
+		thePrototype->mProperties.Add<float>("Rotation",0);
+		thePrototype->mProperties.Add<sf::Sprite>("Sprite",sf::Sprite());
+		thePrototype->mProperties.Add<bool>("Visible",true);
+		thePrototype->mProperties.Add<sf::IntRect>("SubRect",sf::IntRect(0,0,0,0));
+		thePrototype->AddSystem(this);
+		ISystem::RegisterPrototype(thePrototype);
+	}
+
+  void RenderSystem::InitInstance(Instance* theInstance)
+	{
 	}
 
   void RenderSystem::HandleEvents(sf::Event theEvent)
@@ -51,22 +54,25 @@ namespace GQE
 
   void RenderSystem::Draw()
 	{
-		std::vector<IEntity*>::iterator anEntityIter;
-		for(anEntityIter=mEntities.begin();
-			anEntityIter!=mEntities.end();
-			++anEntityIter)
+		Instance* anInstance=NULL;
+		std::vector<Instance*>::iterator anInstanceIter;
+		for(anInstanceIter=mInstanceList.begin();
+			anInstanceIter!=mInstanceList.end();
+			++anInstanceIter)
 		{
-			IEntity* anEntity = (*anEntityIter);
-			if(anEntity!=NULL)
+			anInstance=(*anInstanceIter);
+			if(anInstance!=NULL)
 			{
-				sf::Sprite anSprite=anEntity->mProperties.Get<sf::Sprite>("Sprite");
+				sf::Sprite anSprite=anInstance->mProperties.Get<sf::Sprite>("Sprite");
 #if SFML_VERSION_MAJOR<2
-				anSprite.SetPosition(anEntity->mProperties.Get<sf::Vector2f>("Position"));
-				anSprite.SetRotation(anEntity->mProperties.Get<float>("Rotation"));
+				anSprite.SetPosition(anInstance->mProperties.Get<sf::Vector2f>("Position"));
+				anSprite.SetRotation(anInstance->mProperties.Get<float>("Rotation"));
+				anSprite.SetSubRect(anInstance->mProperties.Get<float>("SubRect"));
 				mApp.mWindow.Draw(anSprite);
 #else
-				anSprite.setPosition(anEntity->mProperties.Get<sf::Vector2f>("Position"));
-				anSprite.setRotation(anEntity->mProperties.Get<float>("Rotation"));
+				anSprite.setPosition(anInstance->mProperties.Get<sf::Vector2f>("Position"));
+				anSprite.setRotation(anInstance->mProperties.Get<float>("Rotation"));
+				anSprite.setTextureRect(anInstance->mProperties.Get<sf::IntRect>("SubRect"));
 				mApp.mWindow.draw(anSprite);
 #endif
 			}
