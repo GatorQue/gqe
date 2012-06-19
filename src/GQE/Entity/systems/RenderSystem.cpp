@@ -31,6 +31,7 @@ namespace GQE
 		thePrototype->mProperties.Add<float>("Rotation",0);
 		thePrototype->mProperties.Add<sf::Sprite>("Sprite",sf::Sprite());
 		thePrototype->mProperties.Add<bool>("Visible",true);
+		thePrototype->mProperties.Add<sf::IntRect>("SubRect",sf::IntRect(0,0,0,0));
 		thePrototype->AddSystem(this);
 		ISystem::RegisterPrototype(thePrototype);
 	}
@@ -66,10 +67,12 @@ namespace GQE
 #if SFML_VERSION_MAJOR<2
 				anSprite.SetPosition(anInstance->mProperties.Get<sf::Vector2f>("Position"));
 				anSprite.SetRotation(anInstance->mProperties.Get<float>("Rotation"));
+				anSprite.SetSubRect(anInstance->mProperties.Get<float>("SubRect"));
 				mApp.mWindow.Draw(anSprite);
 #else
 				anSprite.setPosition(anInstance->mProperties.Get<sf::Vector2f>("Position"));
 				anSprite.setRotation(anInstance->mProperties.Get<float>("Rotation"));
+				anSprite.setTextureRect(anInstance->mProperties.Get<sf::IntRect>("SubRect"));
 				mApp.mWindow.draw(anSprite);
 #endif
 			}
