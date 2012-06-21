@@ -4,7 +4,8 @@
  *
  * @file include/GQE/Entity/classes/PropertyManager.hpp
  * @author Jacob Dix
- * @date 20120609 Initial Release
+ * @date 20120609 - Initial Release
+ * @date 20120620 - Remove excess warning message when adding existing properties
  */
 
 #include <GQE/Entity/classes/PropertyManager.hpp>
@@ -46,11 +47,6 @@ namespace GQE
     if(mList.find(theProperty->GetID()) == mList.end())
     {
       mList[theProperty->GetID()] = theProperty;
-    }
-    else
-    {
-      WLOG() << "PropertyManager:Add() property(" << theProperty->GetID()
-        << ") already exists!" << std::endl;
     }
   }
 

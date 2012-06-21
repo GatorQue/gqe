@@ -6,20 +6,40 @@
  * @author Jacob Dix
  * @date 20120423 - Initial Release
  * @date 20120616 - Adjustments made for new PropertyManager
+ * @date 20120620 - Use Prototype to manage and delete eventually all Instances created
  */
 #include <GQE/Entity/classes/Prototype.hpp>
 #include <GQE/Entity/classes/Instance.hpp>
 #include <GQE/Entity/interfaces/ISystem.hpp>
+
 namespace GQE
 {
   Prototype::Prototype(const typePrototypeID thePrototypeID) :
     IEntity(),
     mPrototypeID(thePrototypeID)
   {
+    ILOG() << "Prototype::ctor(" << mPrototypeID << ")" << std::endl;
   }
 
   Prototype::~Prototype()
   {
+    ILOG() << "Prototype::dtor(" << mPrototypeID << ")" << std::endl;
+
+    // Make sure we delete all created Instance classes
+		std::vector<Instance*>::iterator anInstanceIter;
+
+    // Start at the beginning of the list of IEntity classes
+    anInstanceIter = mInstances.begin();
+    while(anInstanceIter != mInstances.end())
+    {
+			Instance* anInstance = (*anInstanceIter);
+
+      // Remove the Instance from our list
+      mInstances.erase(anInstanceIter++);
+
+      // Delete this Instance class now
+      delete anInstance;
+    }
   }
 
   const typePrototypeID Prototype::GetID(void) const
@@ -31,19 +51,33 @@ namespace GQE
   {
     Instance* anInstance = new(std::nothrow) Instance(*this);
 
-    // Clone our Prototype properties into the new Instance class
-    anInstance->mProperties.Clone(mProperties);
-
-    // Make sure the new Instance is registered with the same systems
-    std::map<const typeSystemID, ISystem*>::iterator anSystemIter;
-		for(anSystemIter=mSystemList.begin();
-        anSystemIter!=mSystemList.end();
-        ++anSystemIter)
+    if(anInstance != NULL)
     {
-      ISystem* anSystem = (anSystemIter->second);
-      anInstance->AddSystem(anSystem);
-			anSystem->AddEntity(anInstance);
-			anSystem->InitInstance(anInstance);
+      // Clone our Prototype properties into the new Instance class
+      anInstance->mProperties.Clone(mProperties);
+
+      // Make sure the new Instance is registered with the same systems
+      std::map<const typeSystemID, ISystem*>::iterator anSystemIter;
+		  for(anSystemIter=mSystemList.begin();
+          anSystemIter!=mSystemList.end();
+          ++anSystemIter)
+      {
+        ISystem* anSystem = (anSystemIter->second);
+        anInstance->AddSystem(anSystem);
+			  anSystem->AddEntity(anInstance);
+			  anSystem->InitInstance(anInstance);
+      }
+
+      // Add this Instance to our list of instances we have created
+      mInstances.push_back(anInstance);
+
+      // Make note of this instance in our log file
+      ILOG() << "Prototype(" << mPrototypeID << ")::MakeInstance("
+        << anInstance->GetID() << ") created successfully!" << std::endl;
+    }
+    else
+    {
+      ELOG() << "Unable to create instance, out of memory!" << std::endl;
     }
 
     // Return the new Instance class created

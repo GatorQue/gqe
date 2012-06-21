@@ -1,12 +1,13 @@
 /**
-* The IComponent interface class used for all derived IComponent entities that
-* can be added to an IEntity class.
-*
-* @file include/GQE/Entity/interfaces/IComponent.hpp
-* @author Jacob Dix
-* @date 20120417 - Initial Release
-* @date 20120618 - Use IEntity not Instance and changed AddPrototype to AddProperties
-*/
+ * The IComponent interface class used for all derived IComponent entities that
+ * can be added to an IEntity class.
+ *
+ * @file include/GQE/Entity/interfaces/IComponent.hpp
+ * @author Jacob Dix
+ * @date 20120417 - Initial Release
+ * @date 20120618 - Use IEntity not Instance and changed AddPrototype to AddProperties
+ * @date 20120620 - Drop ourselves from registered IEntity classes
+ */
 #ifndef ISYSTEM_HPP_INCLUDED
 #define ISYSTEM_HPP_INCLUDED
 
@@ -45,6 +46,20 @@ namespace GQE
 		 */
 		const typeEntityID AddEntity(IEntity* theEntity);
     
+    /**
+     * HasEntity is responsible for finding if the IEntity class has already
+     * been registered with this ISystem.
+     * @param[in] theEntityID to find and confirm has been added
+     */
+    bool HasEntity(const typeEntityID theEntityID) const;
+
+    /**
+     * DropEntity is responsible for removing the IEntity class that matches
+     * the ID provided from this ISystem derived class.
+     * @param[in] theEntityID to remove from the ISystem class
+     */
+    void DropEntity(const typeEntityID theEntityID);
+
     /**
      * AddProperties is responsible for adding the properties used by this
      * ISystem derived class to the IEntity derived class provided.

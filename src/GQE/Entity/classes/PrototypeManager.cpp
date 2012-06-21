@@ -6,6 +6,7 @@
  * @author Jacob Dix
  * @date 20120423 - Initial Release
  * @date 20120618 - Changed name from mPrototypeList to mPrototypes
+ * @date 20120620 - Cleanup list of Prototypes at destruction time
  */
 #include <GQE/Entity/classes/PrototypeManager.hpp>
 #include <GQE/Entity/classes/Prototype.hpp>
@@ -22,6 +23,22 @@ namespace GQE
   PrototypeManager::~PrototypeManager()
   {
     ILOG() << "PrototypeManager::dtor()" << std::endl;
+
+    // Make sure we delete all registered Prototype classes
+    std::map<const typePrototypeID, Prototype*>::iterator anPrototypeIter;
+
+    // Start at the beginning of the list of ISystem classes
+    anPrototypeIter = mPrototypes.begin();
+    while(anPrototypeIter != mPrototypes.end())
+    {
+      Prototype* anPrototype = anPrototypeIter->second;
+
+      // Remove the Prototype from our list
+      mPrototypes.erase(anPrototypeIter++);
+
+      // Now delete the Prototype
+      delete anPrototype;
+    }
   }
 
   void PrototypeManager::AddPrototype(Prototype* thePrototype)

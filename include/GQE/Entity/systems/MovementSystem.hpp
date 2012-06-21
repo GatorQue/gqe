@@ -6,6 +6,7 @@
  * @date 20120611 - Initial Release
  * @date 20120616 - Adjustments for new PropertyManager class
  * @date 20120618 - Use IEntity not Instance and changed AddPrototype to AddProperties
+ * @date 20120620 - Fix typo in destructor method description
  */
 #ifndef MOVEMENT_SYSTEM_HPP_INCLUDED
 #define MOVEMENT_SYSTEM_HPP_INCLUDED
@@ -24,7 +25,7 @@ namespace GQE
 		MovementSystem(IApp& theApp);
 
 		/**
-     * MovementSystme Destructor.
+     * MovementSystem Destructor.
 		 */
 		virtual ~MovementSystem();
 

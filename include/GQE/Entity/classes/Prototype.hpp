@@ -6,6 +6,7 @@
  * @author Jacob Dix
  * @date 20120423 - Initial Release
  * @date 20120616 - Fixed MakeInstance method parameter comments
+ * @date 20120620 - Use Prototype to manage and delete eventually all Instances created
  */
 #ifndef PROTOTYPE_HPP_INCLUDED
 #define PROTOTYPE_HPP_INCLUDED
@@ -47,6 +48,8 @@ namespace GQE
       ///////////////////////////////////////////////////////////////////////////
       /// The prototype ID assigned to this Prototype class
       const typePrototypeID mPrototypeID;
+		  /// A linked list of all Instance classes created by this Prototype
+		  std::vector<Instance*> mInstances;
   };
 } // namespace GQE
 

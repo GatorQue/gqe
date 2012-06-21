@@ -34,12 +34,11 @@ namespace GQE
 		theEntity->mProperties.Add<sf::IntRect>("SubRect",sf::IntRect(0,0,0,0));
 		theEntity->AddSystem(this);
 	}
-
 	
-	void RenderSystem::InitInstance(GQE::Instance* theInstance)
+	void RenderSystem::InitInstance(Instance* theInstance)
 	{
-
 	}
+
   void RenderSystem::HandleEvents(sf::Event theEvent)
 	{
 	}
@@ -65,9 +64,9 @@ namespace GQE
 			{
 				sf::Sprite anSprite=anEntity->mProperties.Get<sf::Sprite>("Sprite");
 #if SFML_VERSION_MAJOR<2
-				anSprite.SetPosition(anInstance->mProperties.Get<sf::Vector2f>("Position"));
-				anSprite.SetRotation(anInstance->mProperties.Get<float>("Rotation"));
-				anSprite.SetSubRect(anInstance->mProperties.Get<float>("SubRect"));
+				anSprite.SetPosition(anEntity->mProperties.Get<sf::Vector2f>("Position"));
+				anSprite.SetRotation(anEntity->mProperties.Get<float>("Rotation"));
+				anSprite.SetSubRect(anEntity->mProperties.Get<sf::IntRect>("SubRect"));
 				mApp.mWindow.Draw(anSprite);
 #else
 				anSprite.setPosition(anEntity->mProperties.Get<sf::Vector2f>("Position"));

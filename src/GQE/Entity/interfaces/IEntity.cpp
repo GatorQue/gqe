@@ -6,6 +6,7 @@
  * @date 20120423 - Initial Release
  * @date 20120609 - Move property methods to new PropertyManager class
  * @date 20120618 - Moved ID from Instance class to this base class
+ * @date 20120620 - Drop ourselves from registered ISystem classes
  */
 #include <GQE/Entity/interfaces/IEntity.hpp>
 #include <GQE/Entity/interfaces/ISystem.hpp>
@@ -22,6 +23,26 @@ namespace GQE
   IEntity::~IEntity()
   {
     ILOG() << "IEntity::dtor(" << mEntityID << ")" << std::endl;
+
+    // Make sure we drop ourselves from all registered ISystem classes
+    std::map<const typeSystemID, ISystem*>::iterator anSystemIter;
+
+    // Start at the beginning of the list of ISystem classes
+    anSystemIter = mSystemList.begin();
+    while(anSystemIter != mSystemList.end())
+    {
+      ISystem* anSystem = anSystemIter->second;
+
+      // Remove the ISystem from our list
+      mSystemList.erase(anSystemIter++);
+
+      // Is this IEntity still registered with this system?
+      if(anSystem->HasEntity(GetID()))
+      {
+        // Remove this IEntity from this system
+        anSystem->DropEntity(GetID());
+      }
+    }
   }
 
   const typeEntityID IEntity::GetID() const
@@ -46,7 +67,8 @@ namespace GQE
         << ") is already controlling this entity." << std::endl;
     }
 	}
-	bool IEntity::HasSystem(typeSystemID theSystemID)
+
+	bool IEntity::HasSystem(const typeSystemID theSystemID) const
 	{
 		bool anResult=false;
 		if(mSystemList.find(theSystemID)!=mSystemList.end())
@@ -55,6 +77,28 @@ namespace GQE
 		}
 		return anResult;
 	}
+
+  void IEntity::DropSystem(const typeSystemID theSystemID)
+  {
+    std::map<const typeSystemID, ISystem*>::iterator iter;
+    iter = mSystemList.find(theSystemID);
+    if(iter != mSystemList.end())
+    {
+      // Get the pointer to this ISystem
+      ISystem* anSystem = iter->second;
+
+      // Now remove the ISystem class from our list
+      mSystemList.erase(iter);
+
+      // Is this IEntity still registered with this system?
+      if(anSystem->HasEntity(GetID()))
+      {
+        // Remove this IEntity from the ISystem
+        anSystem->DropEntity(GetID());
+      }
+    }
+  }
+
 } // namespace GQE
 
 /**

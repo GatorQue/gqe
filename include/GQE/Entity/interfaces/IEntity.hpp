@@ -8,6 +8,7 @@
  * @date 20120519 - Renaimed Entity class to IEntity and moved to interfaces folder.
  * @date 20120609 - Moved property methods to new PropertyManager class
  * @date 20120618 - Moved ID from Instance class to this base class
+ * @date 20120620 - Drop ourselves from registered ISystem classes
  */
 #ifndef IENTITY_HPP_INCLUDED
 #define IENTITY_HPP_INCLUDED
@@ -55,7 +56,18 @@ namespace GQE
        */
 			void AddSystem(ISystem* theSystem);
 			
-			bool HasSystem(typeSystemID theSystemID);
+      /**
+       * HasSystem confirms that theSystemID has been registered with this
+       * IEntity class.
+       * @param[in] theSystemID to confirm is registered
+       */
+			bool HasSystem(const typeSystemID theSystemID) const;
+
+      /**
+       * DropSystem removes a dependent system from the entity.
+       * @param[in] theSystemID to find and drop from this entity
+       */
+      void DropSystem(const typeSystemID theSystemID);
     protected:
       // Variables
       ///////////////////////////////////////////////////////////////////////////
