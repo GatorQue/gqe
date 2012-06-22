@@ -68,6 +68,10 @@ namespace GQE
        * @param[in] theSystemID to find and drop from this entity
        */
       void DropSystem(const typeSystemID theSystemID);
+
+			void DropEnity();
+
+			int GetSystemCount();
     protected:
       // Variables
       ///////////////////////////////////////////////////////////////////////////

@@ -32,9 +32,9 @@ namespace GQE
 		theEntity->mProperties.Add<bool>("Wrap",true);
 		theEntity->AddSystem(this);
 	}
-	void MovementSystem::InitInstance(GQE::Instance* theInstance)
+	void MovementSystem::HandleInit(void)
 	{
-
+		ISystem::HandleInit();
 	}
   void MovementSystem::HandleEvents(sf::Event theEvent)
 	{
@@ -94,6 +94,7 @@ namespace GQE
 
   void MovementSystem::HandleCleanup()
 	{
+		ISystem::HandleCleanup();
 	}
 } // namespace GQE
 

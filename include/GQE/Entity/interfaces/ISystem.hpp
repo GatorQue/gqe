@@ -13,7 +13,7 @@
 
 #include <GQE/Core/interfaces/IApp.hpp>
 #include <GQE/Entity/Entity_types.hpp>
-
+#include <queue>
 namespace GQE
 {
 	/// The ISystem interface used by all IEntity system managers
@@ -68,10 +68,9 @@ namespace GQE
     virtual void AddProperties(IEntity* theEntity) = 0;
 
 		/**
-		 * InitInstance is called when an instance is added to the system.
-		 * @Param[in] theInstance is the new instance added.
+		 * HandleInit is called at the begining of an update cycle.
 		 */
-		virtual void InitInstance(Instance* theInstance) = 0;
+		virtual void HandleInit(void);
 
 		/**
 		 * HandleEvents is responsible for letting each Instance class have a
@@ -104,12 +103,11 @@ namespace GQE
 		 */
 		virtual void Draw(void) = 0;
 
+
 		/**
-		 * HandleCleanup will be called during the game loop or IState shutdown
-		 * process and gives a chance for each Instance and Prototype class an
-		 * opportunity to clean up any loose ends and free up memory resources.
+		 * HandleCleanup will be called at the end of the game loop, preferably after Draw().
 		 */
-		virtual void HandleCleanup(void) = 0;
+		virtual void HandleCleanup(void);
 
 		//static PrototypeManager* gPrototypeManager;
 	protected:
@@ -117,6 +115,11 @@ namespace GQE
 		/////////////////////////////////////////////////////////////
 		/// A linked list of all IEntity classes managed by this ISystem
 		std::vector<IEntity*> mEntities;
+		/// A queue of all IEntity classes to be added to this ISystem
+		std::queue<IEntity*> mNewEntities;
+		/// A queue of all IEntity classes to be removed from this ISystem
+		std::queue<IEntity*> mDeadEntities;
+
 		/// The ID for this System.
 		typeSystemID mSystemID;
 		/// The address to the IApp derived class

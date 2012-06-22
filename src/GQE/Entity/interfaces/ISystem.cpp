@@ -63,7 +63,7 @@ namespace GQE
       AddProperties(theEntity);
 
       // Now add this entity to the list of IEntities we currently process
-			mEntities.push_back(theEntity);
+			mNewEntities.push(theEntity);
 
       // Return the ID of this IEntity as a result
 			anResult = theEntity->GetID();
@@ -117,21 +117,55 @@ namespace GQE
       // Is this the IEntity we are looking for?
       if(anEntity != NULL && anEntity->GetID() == theEntityID)
       {
-        // Make sure to deregister this system from this IEntity class
-        if(anEntity->HasSystem(GetID()))
-        {
-          // Drop the ISystem from this IEntity class
-          anEntity->DropSystem(GetID());
-        }
-
         // Remove this IEntity and exit the loop and method
-        mEntities.erase(anEntityIter);
+				mDeadEntities.push(anEntity);
 
         // Exit the for loop, we found the IEntity we were looking for
         break;
       }
     }
   }
+
+	void ISystem::HandleInit(void)
+	{
+		IEntity* anNewEntity;
+		while(!mNewEntities.empty())
+		{
+			anNewEntity=mNewEntities.front();
+			mNewEntities.pop();
+			if(anNewEntity!=NULL)
+			{
+				mEntities.push_back(anNewEntity);
+			}
+		}
+	}
+
+	void ISystem::HandleCleanup(void)
+	{
+		IEntity* anDeadEntity;
+		std::vector<IEntity*>::iterator anDeadEntityIter;
+		while(!mDeadEntities.empty())
+		{
+			anDeadEntity=mDeadEntities.front();
+			mDeadEntities.pop();
+			if(anDeadEntity!=NULL)
+			{
+				anDeadEntityIter=std::find(mEntities.begin(),mEntities.end(),anDeadEntity);
+				if(anDeadEntityIter!=mEntities.end())
+				{
+					mEntities.erase(anDeadEntityIter);
+					if(anDeadEntity->HasSystem(GetID()))
+					{
+						anDeadEntity->DropSystem(GetID());
+						if(anDeadEntity->GetSystemCount()==0)
+						{
+							delete anDeadEntity;
+						}
+					}
+				}
+			}
+		}
+	}
 } // namespace GQE
 
 /**

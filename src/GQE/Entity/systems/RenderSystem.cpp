@@ -35,8 +35,9 @@ namespace GQE
 		theEntity->AddSystem(this);
 	}
 	
-	void RenderSystem::InitInstance(Instance* theInstance)
+	void RenderSystem::HandleInit(void)
 	{
+		ISystem::HandleInit();
 	}
 
   void RenderSystem::HandleEvents(sf::Event theEvent)
@@ -45,6 +46,7 @@ namespace GQE
 
   void RenderSystem::UpdateFixed()
 	{
+		
 	}
 
   void RenderSystem::UpdateVariable(float theElaspedTime)
@@ -60,26 +62,30 @@ namespace GQE
 			++anEntityIter)
 		{
 			anEntity=(*anEntityIter);
-			if(anEntity!=NULL)
+			if(anEntity->mProperties.Get<bool>("Visible"))
 			{
-				sf::Sprite anSprite=anEntity->mProperties.Get<sf::Sprite>("Sprite");
+				if(anEntity!=NULL)
+				{
+					sf::Sprite anSprite=anEntity->mProperties.Get<sf::Sprite>("Sprite");
 #if SFML_VERSION_MAJOR<2
-				anSprite.SetPosition(anEntity->mProperties.Get<sf::Vector2f>("Position"));
-				anSprite.SetRotation(anEntity->mProperties.Get<float>("Rotation"));
-				anSprite.SetSubRect(anEntity->mProperties.Get<sf::IntRect>("SubRect"));
-				mApp.mWindow.Draw(anSprite);
+					anSprite.SetPosition(anEntity->mProperties.Get<sf::Vector2f>("Position"));
+					anSprite.SetRotation(anEntity->mProperties.Get<float>("Rotation"));
+					anSprite.SetSubRect(anEntity->mProperties.Get<sf::IntRect>("SubRect"));
+					mApp.mWindow.Draw(anSprite);
 #else
-				anSprite.setPosition(anEntity->mProperties.Get<sf::Vector2f>("Position"));
-				anSprite.setRotation(anEntity->mProperties.Get<float>("Rotation"));
-				anSprite.setTextureRect(anEntity->mProperties.Get<sf::IntRect>("SubRect"));
-				mApp.mWindow.draw(anSprite);
+					anSprite.setPosition(anEntity->mProperties.Get<sf::Vector2f>("Position"));
+					anSprite.setRotation(anEntity->mProperties.Get<float>("Rotation"));
+					anSprite.setTextureRect(anEntity->mProperties.Get<sf::IntRect>("SubRect"));
+					mApp.mWindow.draw(anSprite);
 #endif
+			}
 			}
 		}	
 	}
 
   void RenderSystem::HandleCleanup()
 	{
+		ISystem::HandleCleanup();
 	}
 } // namespace GQE
 

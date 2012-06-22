@@ -36,10 +36,9 @@ namespace GQE
     virtual void AddProperties(IEntity* theEntity);
 
 		/**
-		 * InitInstance is called when an instance is added to the system.
-		 * @Param[in] theInstance is the new instance added.
+		 * HandleInit is called at the begining of an update cycle.
 		 */
-		virtual void InitInstance(Instance* theInstance);
+		virtual void HandleInit(void);
 
 		/**
 		 * HandleEvents is responsible for letting each Instance class have a
@@ -73,9 +72,7 @@ namespace GQE
 		virtual void Draw(void);
 
 		/**
-		 * HandleCleanup will be called during the game loop or IState shutdown
-		 * process and gives a chance for each Instance and Prototype class an
-		 * opportunity to clean up any loose ends and free up memory resources.
+		 * HandleCleanup will be called at the end of the game loop, preferably after Draw().
 		 */
 		virtual void HandleCleanup(void);
 	private:

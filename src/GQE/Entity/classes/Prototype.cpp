@@ -65,7 +65,6 @@ namespace GQE
         ISystem* anSystem = (anSystemIter->second);
         anInstance->AddSystem(anSystem);
 			  anSystem->AddEntity(anInstance);
-			  anSystem->InitInstance(anInstance);
       }
 
       // Add this Instance to our list of instances we have created

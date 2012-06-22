@@ -23,26 +23,6 @@ namespace GQE
   IEntity::~IEntity()
   {
     ILOG() << "IEntity::dtor(" << mEntityID << ")" << std::endl;
-
-    // Make sure we drop ourselves from all registered ISystem classes
-    std::map<const typeSystemID, ISystem*>::iterator anSystemIter;
-
-    // Start at the beginning of the list of ISystem classes
-    anSystemIter = mSystemList.begin();
-    while(anSystemIter != mSystemList.end())
-    {
-      ISystem* anSystem = anSystemIter->second;
-
-      // Remove the ISystem from our list
-      mSystemList.erase(anSystemIter++);
-
-      // Is this IEntity still registered with this system?
-      if(anSystem->HasEntity(GetID()))
-      {
-        // Remove this IEntity from this system
-        anSystem->DropEntity(GetID());
-      }
-    }
   }
 
   const typeEntityID IEntity::GetID() const
@@ -84,21 +64,35 @@ namespace GQE
     iter = mSystemList.find(theSystemID);
     if(iter != mSystemList.end())
     {
-      // Get the pointer to this ISystem
-      ISystem* anSystem = iter->second;
+			mSystemList.erase(iter);
+    }
+  }
+	void IEntity::DropEnity()
+	{
+		// Make sure we drop ourselves from all registered ISystem classes
+    std::map<const typeSystemID, ISystem*>::iterator anSystemIter;
 
-      // Now remove the ISystem class from our list
-      mSystemList.erase(iter);
+    // Start at the beginning of the list of ISystem classes
+    anSystemIter = mSystemList.begin();
+    while(anSystemIter != mSystemList.end())
+    {
+      ISystem* anSystem = anSystemIter->second;
+
+			anSystemIter++;
 
       // Is this IEntity still registered with this system?
       if(anSystem->HasEntity(GetID()))
       {
-        // Remove this IEntity from the ISystem
+        // Remove this IEntity from this system
         anSystem->DropEntity(GetID());
       }
     }
-  }
-
+		mSystemList.clear();
+	}
+	int IEntity::GetSystemCount()
+	{
+		return mSystemList.size();
+	}
 } // namespace GQE
 
 /**
