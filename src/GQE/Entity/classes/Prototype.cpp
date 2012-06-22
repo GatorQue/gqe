@@ -26,19 +26,17 @@ namespace GQE
     ILOG() << "Prototype::dtor(" << mPrototypeID << ")" << std::endl;
 
     // Make sure we delete all created Instance classes
-		std::vector<Instance*>::iterator anInstanceIter;
+		int anInstanceIndex;
 
     // Start at the beginning of the list of IEntity classes
-    anInstanceIter = mInstances.begin();
-    while(anInstanceIter != mInstances.end())
+    anInstanceIndex = 0;
+    while(anInstanceIndex < mInstances.size())
     {
-			Instance* anInstance = (*anInstanceIter);
+			mInstances.at(anInstanceIndex)->DropEnity();
+			// Remove the Instance from our list
+			mInstances.erase(mInstances.begin()+anInstanceIndex);
 
-      // Remove the Instance from our list
-      mInstances.erase(anInstanceIter++);
-
-      // Delete this Instance class now
-      delete anInstance;
+			anInstanceIndex++;
     }
   }
 

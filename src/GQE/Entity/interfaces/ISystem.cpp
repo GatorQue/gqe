@@ -25,7 +25,7 @@ namespace GQE
   ISystem::~ISystem()
   {
     ILOG() << "ISystem::dtor(" << mSystemID << ")" << std::endl;
-
+		HandleInit();
     // Make sure we drop ourselves from all registered IEntity classes
 		std::vector<IEntity*>::iterator anEntityIter;
 
@@ -34,17 +34,9 @@ namespace GQE
     while(anEntityIter != mEntities.end())
     {
 			IEntity* anEntity = (*anEntityIter);
-
-      // Remove the IEntity from our list
-      mEntities.erase(anEntityIter++);
-
-      // Is this ISystem still registered with this IEntity class?
-      if(anEntity->HasSystem(GetID()))
-      {
-        // Remove this ISystem from the IEntity
-        anEntity->DropSystem(GetID());
-      }
+			DropEntity(anEntity->GetID());
     }
+		HandleCleanup();
   }
 
   const typeSystemID ISystem::GetID(void) const
