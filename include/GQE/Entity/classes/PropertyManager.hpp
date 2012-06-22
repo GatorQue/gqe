@@ -6,6 +6,7 @@
  * @file include/GQE/Entity/classes/PropertyManager.hpp
  * @author Jacob Dix
  * @date 20120615 - Initial Release
+ * @date 20120622 - Fix warning and error comments
  */
 #ifndef PROPERTY_MANAGER_HPP_INCLUDED
 #define PROPERTY_MANAGER_HPP_INCLUDED
@@ -58,7 +59,7 @@ namespace GQE
         }
         else
         {
-          WLOG() << "PropertyManager:GetProperty() returning blank property("
+          WLOG() << "PropertyManager:Get() returning blank property("
             << thePropertyID << ") type" << std::endl;
         }
         TYPE anReturn=TYPE();
@@ -82,7 +83,7 @@ namespace GQE
         }
         else
         {
-          ELOG() << "PropertyManager:SetProperty() unable to find property("
+          ELOG() << "PropertyManager:Set() unable to find property("
             << thePropertyID << ")" << std::endl;
         }
       }
@@ -101,11 +102,6 @@ namespace GQE
           TProperty<TYPE>* anProperty=new(std::nothrow) TProperty<TYPE>(thePropertyID);
           anProperty->SetValue(theValue);
           mList[anProperty->GetID()]=anProperty;
-        }
-        else
-        {
-          WLOG() << "PropertyManager:AddProperty() property(" << thePropertyID
-            << ") already exists!" << std::endl;
         }
       }
 
