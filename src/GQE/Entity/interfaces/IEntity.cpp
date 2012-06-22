@@ -7,12 +7,13 @@
  * @date 20120609 - Move property methods to new PropertyManager class
  * @date 20120618 - Moved ID from Instance class to this base class
  * @date 20120620 - Drop ourselves from registered ISystem classes
+ * @date 20120622 - Fix issues with dropping ISystem classes
  */
 #include <GQE/Entity/interfaces/IEntity.hpp>
 #include <GQE/Entity/interfaces/ISystem.hpp>
 namespace GQE
 {
-	typeEntityID IEntity::mNextID = 0;
+  typeEntityID IEntity::mNextID = 0;
 
   IEntity::IEntity() :
     mEntityID(UseNextID())
@@ -23,76 +24,94 @@ namespace GQE
   IEntity::~IEntity()
   {
     ILOG() << "IEntity::dtor(" << mEntityID << ")" << std::endl;
+
+    // Make sure to drop all our systems
+    DropAllSystems();
   }
 
-  const typeEntityID IEntity::GetID() const
+  const typeEntityID IEntity::GetID(void) const
   {
     return mEntityID;
   }
 
-	typeEntityID IEntity::UseNextID()
-	{
-		return ++mNextID;
-	}
+  typeEntityID IEntity::UseNextID()
+  {
+    return ++mNextID;
+  }
 
-	void IEntity::AddSystem(ISystem* theSystem)
-	{
-		if(mSystemList.find(theSystem->GetID())==mSystemList.end())
+  void IEntity::AddSystem(ISystem* theSystem)
+  {
+    if(mSystems.find(theSystem->GetID())==mSystems.end())
     {
-      mSystemList[theSystem->GetID()]=theSystem;
+      mSystems[theSystem->GetID()]=theSystem;
     }
     else
     {
       WLOG() << "IEntity:AddSystem() system(" << theSystem->GetID()
         << ") is already controlling this entity." << std::endl;
     }
-	}
+  }
 
-	bool IEntity::HasSystem(const typeSystemID theSystemID) const
-	{
-		bool anResult=false;
-		if(mSystemList.find(theSystemID)!=mSystemList.end())
-		{
-			anResult=true;
-		}
-		return anResult;
-	}
+  bool IEntity::HasSystem(const typeSystemID theSystemID) const
+  {
+    bool anResult=false;
+    if(mSystems.find(theSystemID)!=mSystems.end())
+    {
+      anResult=true;
+    }
+    return anResult;
+  }
 
   void IEntity::DropSystem(const typeSystemID theSystemID)
   {
-    std::map<const typeSystemID, ISystem*>::iterator iter;
-    iter = mSystemList.find(theSystemID);
-    if(iter != mSystemList.end())
+    // Iterator for looping through each registered ISystem
+    std::map<const typeSystemID, ISystem*>::iterator anSystemIter;
+
+    // See if we can find theSystemID specified
+    anSystemIter = mSystems.find(theSystemID);
+    if(anSystemIter != mSystems.end())
     {
-			mSystemList.erase(iter);
+      // Call our EraseSystem variable
+      EraseSystem(anSystemIter);
+    }
+    else
+    {
+      WLOG() << "IEntity::DropSystem(" << theSystemID
+        << ") was not found!" << std::endl;
     }
   }
-	void IEntity::DropEnity()
+
+	void IEntity::DropAllSystems(void)
 	{
 		// Make sure we drop ourselves from all registered ISystem classes
     std::map<const typeSystemID, ISystem*>::iterator anSystemIter;
 
     // Start at the beginning of the list of ISystem classes
-    anSystemIter = mSystemList.begin();
-    while(anSystemIter != mSystemList.end())
+    anSystemIter = mSystems.begin();
+    while(anSystemIter != mSystems.end())
     {
-      ISystem* anSystem = anSystemIter->second;
-
-			anSystemIter++;
-
-      // Is this IEntity still registered with this system?
-      if(anSystem->HasEntity(GetID()))
-      {
-        // Remove this IEntity from this system
-        anSystem->DropEntity(GetID());
-      }
+      EraseSystem(anSystemIter++);
     }
-		mSystemList.clear();
+
+    // Last of all clear our list of systems
+		mSystems.clear();
 	}
-	int IEntity::GetSystemCount()
-	{
-		return mSystemList.size();
-	}
+
+  void IEntity::EraseSystem(std::map<const typeSystemID, ISystem*>::iterator theSystemIter)
+  {
+    // Get our ISystem reference first
+    ISystem* anSystem = theSystemIter->second;
+
+    // First remove the ISystem from our list
+		mSystems.erase(theSystemIter);
+
+    // Now use our ISystem reference to remove any IEntity references
+    if(anSystem->HasEntity(GetID()))
+    {
+      // Cause ISystem to drop our reference
+      anSystem->DropEntity(GetID());
+    }
+  }
 } // namespace GQE
 
 /**

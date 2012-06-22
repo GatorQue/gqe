@@ -7,6 +7,7 @@
  * @date 20120423 - Initial Release
  * @date 20120616 - Adjustments made for new PropertyManager
  * @date 20120620 - Use Prototype to manage and delete eventually all Instances created
+ * @date 20120622 - Fix issues deleting Instances at destruction
  */
 #include <GQE/Entity/classes/Prototype.hpp>
 #include <GQE/Entity/classes/Instance.hpp>
@@ -26,18 +27,34 @@ namespace GQE
     ILOG() << "Prototype::dtor(" << mPrototypeID << ")" << std::endl;
 
     // Make sure we delete all created Instance classes
-		int anInstanceIndex;
+    unsigned int anInstanceIndex;
 
     // Start at the beginning of the list of IEntity classes
     anInstanceIndex = 0;
     while(anInstanceIndex < mInstances.size())
     {
-			mInstances.at(anInstanceIndex)->DropEnity();
-			// Remove the Instance from our list
-			mInstances.erase(mInstances.begin()+anInstanceIndex);
+      // Get the Instance at the index specified
+      Instance* anInstance = mInstances.at(anInstanceIndex);
 
-			anInstanceIndex++;
+      // Make sure it wasn't NULL
+      if(anInstance != NULL)
+      {
+        // Cause the Instance to drop itself from all its registered ISystems
+        anInstance->DropAllSystems();
+
+        // Now delete the Instance
+        delete anInstance;
+
+        // Clear out value
+        anInstance = NULL;
+      }
+
+      // Increment our index
+      anInstanceIndex++;
     }
+
+    // Now clear our instance list
+    mInstances.clear();
   }
 
   const typePrototypeID Prototype::GetID(void) const
@@ -56,13 +73,13 @@ namespace GQE
 
       // Make sure the new Instance is registered with the same systems
       std::map<const typeSystemID, ISystem*>::iterator anSystemIter;
-		  for(anSystemIter=mSystemList.begin();
-          anSystemIter!=mSystemList.end();
+      for(anSystemIter=mSystems.begin();
+          anSystemIter!=mSystems.end();
           ++anSystemIter)
       {
         ISystem* anSystem = (anSystemIter->second);
         anInstance->AddSystem(anSystem);
-			  anSystem->AddEntity(anInstance);
+        anSystem->AddEntity(anInstance);
       }
 
       // Add this Instance to our list of instances we have created

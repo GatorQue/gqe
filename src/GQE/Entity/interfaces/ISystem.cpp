@@ -7,6 +7,7 @@
  * @date 20120423 - Initial Release
  * @date 20120618 - Use IEntity not Instance and changed AddPrototype to AddProperties
  * @date 20120620 - Drop ourselves from registered IEntity classes
+ * @date 20120622 - Fix issues with dropping IEntity classes
  */
 #include <assert.h>
 #include <GQE/Entity/interfaces/ISystem.hpp>
@@ -25,18 +26,9 @@ namespace GQE
   ISystem::~ISystem()
   {
     ILOG() << "ISystem::dtor(" << mSystemID << ")" << std::endl;
-		HandleInit();
-    // Make sure we drop ourselves from all registered IEntity classes
-		std::vector<IEntity*>::iterator anEntityIter;
 
-    // Start at the beginning of the list of IEntity classes
-    anEntityIter = mEntities.begin();
-    while(anEntityIter != mEntities.end())
-    {
-			IEntity* anEntity = (*anEntityIter);
-			DropEntity(anEntity->GetID());
-    }
-		HandleCleanup();
+    // Make sure to drop all our entities
+    DropAllEntities();
   }
 
   const typeSystemID ISystem::GetID(void) const
@@ -44,120 +36,144 @@ namespace GQE
     return mSystemID;
   }
 
-	const typeEntityID ISystem::AddEntity(IEntity* theEntity)
-	{
-		typeEntityID anResult = 0;
+  const typeEntityID ISystem::AddEntity(IEntity* theEntity)
+  {
+    typeEntityID anResult = 0;
 
     // Make sure the caller didn't give us a bad pointer
-		if(theEntity != NULL)
-		{
+    if(theEntity != NULL)
+    {
       // Make sure this entity has the correct properties added for this system
       AddProperties(theEntity);
 
+      // Perform any custom Initialization for this new IEntity before adding it
+      HandleInit(theEntity);
+
       // Now add this entity to the list of IEntities we currently process
-			mNewEntities.push(theEntity);
+      mEntities.insert(std::pair<const typeEntityID, IEntity*>(theEntity->GetID(), theEntity));
 
       // Return the ID of this IEntity as a result
-			anResult = theEntity->GetID();
-		}
+      anResult = theEntity->GetID();
+    }
     else
     {
       ELOG() << "ISystem::AddEntity() Null Entity pointer provided!" << std::endl;
     }
 
     // Return the ID of this IEntity class or 0 if something went wrong
-		return anResult;
-	}
+    return anResult;
+  }
 
   bool ISystem::HasEntity(const typeEntityID theEntityID) const
   {
-    bool anResult = false;
-		std::vector<IEntity*>::const_iterator anEntityIter;
-
-    // Loop through each IEntity class looking for the ID provided
-		for(anEntityIter=mEntities.begin();
-			anEntityIter!=mEntities.end();
-			++anEntityIter)
-		{
-			IEntity* anEntity = (*anEntityIter);
-
-      // Is this the IEntity we are looking for?
-      if(anEntity != NULL && anEntity->GetID() == theEntityID)
-      {
-        // We found the IEntity
-        anResult = true;
-
-        // Exit the for loop, we found the IEntity we were looking for
-        break;
-      }
-    }
-
     // Return anResult which will be true if IEntity was found, false otherwise
-    return anResult;
+    return (mEntities.find(theEntityID) != mEntities.end());
   }
 
   void ISystem::DropEntity(const typeEntityID theEntityID)
   {
-		std::vector<IEntity*>::iterator anEntityIter;
+    std::map<const typeEntityID, IEntity*>::iterator anEntityIter;
 
-    // Loop through each IEntity class looking for the ID provided
-		for(anEntityIter=mEntities.begin();
-			anEntityIter!=mEntities.end();
-			++anEntityIter)
-		{
-			IEntity* anEntity = (*anEntityIter);
-      // Is this the IEntity we are looking for?
-      if(anEntity != NULL && anEntity->GetID() == theEntityID)
-      {
-        // Remove this IEntity and exit the loop and method
-				mDeadEntities.push(anEntity);
-
-        // Exit the for loop, we found the IEntity we were looking for
-        break;
-      }
+    anEntityIter = mEntities.find(theEntityID);
+    if(anEntityIter != mEntities.end())
+    {
+      // Erase the IEntity from our ISystem
+      EraseEntity(anEntityIter);
     }
   }
 
-	void ISystem::HandleInit(void)
-	{
-		IEntity* anNewEntity;
-		while(!mNewEntities.empty())
-		{
-			anNewEntity=mNewEntities.front();
-			mNewEntities.pop();
-			if(anNewEntity!=NULL)
-			{
-				mEntities.push_back(anNewEntity);
-			}
-		}
-	}
+  void ISystem::DropAllEntities(void)
+  {
+		// Make sure we drop ourselves from all registered IEntity classes
+    std::map<const typeEntityID, IEntity*>::iterator anEntityIter;
 
-	void ISystem::HandleCleanup(void)
-	{
-		IEntity* anDeadEntity;
-		std::vector<IEntity*>::iterator anDeadEntityIter;
-		while(!mDeadEntities.empty())
-		{
-			anDeadEntity=mDeadEntities.front();
-			mDeadEntities.pop();
-			if(anDeadEntity!=NULL)
-			{
-				anDeadEntityIter=std::find(mEntities.begin(),mEntities.end(),anDeadEntity);
-				if(anDeadEntityIter!=mEntities.end())
-				{
-					mEntities.erase(anDeadEntityIter);
-					if(anDeadEntity->HasSystem(GetID()))
-					{
-						anDeadEntity->DropSystem(GetID());
-						if(anDeadEntity->GetSystemCount()==0)
-						{
-							delete anDeadEntity;
-						}
-					}
-				}
-			}
-		}
-	}
+    // Start at the beginning of the list of IEntity classes
+    anEntityIter = mEntities.begin();
+    while(anEntityIter != mEntities.end())
+    {
+      // Erase this IEntity and move to the next one
+      EraseEntity(anEntityIter++);
+    }
+
+    // Last of all clear our list of entities
+		mEntities.clear();
+  }
+
+  /*
+  void ISystem::HandleInit(void)
+  {
+    // Loop until all new IEntities have been added
+    while(!mNewEntities.empty())
+    {
+      // Grab an IEntity from the back of this vector
+      IEntity* anEntity = mNewEntities.back();
+
+      // Pop the entity off the back
+      mNewEntities.pop_back();
+
+      // Make sure anEntity is not NULL
+      if(anEntity != NULL)
+      {
+        // Add this IEntity to our mEntities list
+        mEntities.insert(std::pair<const typeEntityID, IEntity*>(anEntity->GetID(), anEntity));
+      }
+    }
+  }
+  */
+
+  /*
+  void ISystem::HandleCleanup(void)
+  {
+    while(!mDeadEntities.empty())
+    {
+      // Grab an IEntity to remove
+      IEntity* anEntity = mDeadEntities.back();
+      
+      // Pop the IEntity from the back
+      mDeadEntities.pop_back();
+
+      // Try to find an IEntity with this same address
+      std::map<const typeEntityID, IEntity*>::iterator anEntityIter = mEntities.begin();
+      while(anEntityIter != mEntities.end())
+      {
+        // Does this IEntity match?
+        if(anEntityIter->second == anEntity)
+        {
+          // Erase this IEntity from our map
+          mEntities.erase(anEntityIter);
+
+          // Exit the while loop
+          break;
+        }
+        else
+        {
+          // Otherwise increment our IEntity iterator to the next IEntity class
+          anEntityIter++;
+        }
+      }
+    }
+  }
+  */
+
+  void ISystem::EraseEntity(std::map<const typeEntityID, IEntity*>::iterator theEntityIter)
+  {
+    // Get our IEntity reference first
+    IEntity* anEntity = theEntityIter->second;
+
+    // First remove the IEntity from our list
+		mEntities.erase(theEntityIter);
+
+    // Now handle any last minute cleanup for this IEntity
+    HandleCleanup(anEntity);
+
+    // Now use our IEntity reference to remove any ISystem references
+    if(anEntity->HasSystem(GetID()))
+    {
+      // Cause IEntity to drop our reference
+      anEntity->DropSystem(GetID());
+    }
+  }
+
 } // namespace GQE
 
 /**

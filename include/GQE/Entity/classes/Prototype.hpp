@@ -48,8 +48,8 @@ namespace GQE
       ///////////////////////////////////////////////////////////////////////////
       /// The prototype ID assigned to this Prototype class
       const typePrototypeID mPrototypeID;
-		  /// A linked list of all Instance classes created by this Prototype
-		  std::vector<Instance*> mInstances;
+      /// A linked list of all Instance classes created by this Prototype
+      std::vector<Instance*> mInstances;
   };
 } // namespace GQE
 

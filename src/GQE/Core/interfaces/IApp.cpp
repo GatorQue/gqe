@@ -25,6 +25,7 @@
  * @date 20120512 - Add new Init hooks for derived classes and changed name to IApp
  * @date 20120609 - Default to 20 UPS, 20 FPS, and windowed mode and added new
  *                  improved gameloop.
+ * @date 20120622 - Remove setting of show value of StatManager to false
  */
 
 #include <assert.h>
@@ -148,9 +149,6 @@ namespace GQE
 
     // Give the StatManager a chance to initialize
     mStatManager.DoInit();
-
-    // Show statistics: Frames per second (FPS) and Updates per second (UPS)
-    mStatManager.SetShow(false);
 
     // GameLoop if Running flag is still true
     GameLoop();

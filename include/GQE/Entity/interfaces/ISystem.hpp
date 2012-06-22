@@ -1,12 +1,16 @@
 /**
- * The IComponent interface class used for all derived IComponent entities that
- * can be added to an IEntity class.
+ * The ISystem interface class defines a useful system that can be used for all
+ * registered IEntity classes. This includes a RenderSystem, CollisionSystem,
+ * MovementSystem, AnimationSystem, etc.
  *
- * @file include/GQE/Entity/interfaces/IComponent.hpp
+ * @file include/GQE/Entity/interfaces/ISystem.hpp
  * @author Jacob Dix
  * @date 20120417 - Initial Release
  * @date 20120618 - Use IEntity not Instance and changed AddPrototype to AddProperties
  * @date 20120620 - Drop ourselves from registered IEntity classes
+ * @date 20120622 - Added EraseSystem, DropAllEntities and fixed comments and changed
+ *                  HandleInit and HandleCleanup to be called during AddEntity and
+ *                  EraseEntity.
  */
 #ifndef ISYSTEM_HPP_INCLUDED
 #define ISYSTEM_HPP_INCLUDED
@@ -16,115 +20,124 @@
 #include <queue>
 namespace GQE
 {
-	/// The ISystem interface used by all IEntity system managers
-	class GQE_API ISystem
-	{
-	public:
-		/**
-     * ISystem Constructor.
-     * @param[in] theSystemID is the ID of this system.
-     * @param[in] theApp is the Current GQE App.
-		 */
-		ISystem(const typeSystemID theSystemID, IApp& theApp);
+  /// The ISystem interface used by all IEntity system managers
+  class GQE_API ISystem
+  {
+    public:
+      /**
+       * ISystem Constructor.
+       * @param[in] theSystemID is the ID of this system.
+       * @param[in] theApp is the Current GQE App.
+       */
+      ISystem(const typeSystemID theSystemID, IApp& theApp);
 
-		/**
-     * ISystem Destructor.
-		 */
-		virtual ~ISystem();
+      /**
+       * ISystem Destructor.
+       */
+      virtual ~ISystem();
 
-		/**
-		 * GetID will return the ID used for this .
-		 * @return the system ID for this system
-		 */
-		const typeSystemID GetID(void) const;
+      /**
+       * GetID will return the ID used for this .
+       * @return the system ID for this system
+       */
+      const typeSystemID GetID(void) const;
 
-		/**
-		 * AddEntity is responsible for adding a new IEntity class to be managed by
-     * this ISystem derived class.
-		 * @param[in] theEntity to add to this ISystem class
-		 * @return theEntityID of theEntity that was provided and added
-		 */
-		const typeEntityID AddEntity(IEntity* theEntity);
-    
-    /**
-     * HasEntity is responsible for finding if the IEntity class has already
-     * been registered with this ISystem.
-     * @param[in] theEntityID to find and confirm has been added
-     */
-    bool HasEntity(const typeEntityID theEntityID) const;
+      /**
+       * AddEntity is responsible for adding a new IEntity class to be managed by
+       * this ISystem derived class.
+       * @param[in] theEntity to add to this ISystem class
+       * @return theEntityID of theEntity that was provided and added
+       */
+      const typeEntityID AddEntity(IEntity* theEntity);
 
-    /**
-     * DropEntity is responsible for removing the IEntity class that matches
-     * the ID provided from this ISystem derived class.
-     * @param[in] theEntityID to remove from the ISystem class
-     */
-    void DropEntity(const typeEntityID theEntityID);
+      /**
+       * AddProperties is responsible for adding the properties used by this
+       * ISystem derived class to the IEntity derived class provided.
+       * @param[in] theEntity to add the properties to.
+       */
+      virtual void AddProperties(IEntity* theEntity) = 0;
 
-    /**
-     * AddProperties is responsible for adding the properties used by this
-     * ISystem derived class to the IEntity derived class provided.
-     * @param[in] theEntity to add the properties too.
-     */
-    virtual void AddProperties(IEntity* theEntity) = 0;
+      /**
+       * HasEntity is responsible for finding if the IEntity class has already
+       * been registered with this ISystem.
+       * @param[in] theEntityID to find and confirm has been added
+       */
+      bool HasEntity(const typeEntityID theEntityID) const;
 
-		/**
-		 * HandleInit is called at the begining of an update cycle.
-		 */
-		virtual void HandleInit(void);
+      /**
+       * DropEntity is responsible for removing the IEntity class that matches
+       * the ID provided from this ISystem derived class.
+       * @param[in] theEntityID to remove from the ISystem class
+       */
+      void DropEntity(const typeEntityID theEntityID);
 
-		/**
-		 * HandleEvents is responsible for letting each Instance class have a
-		 * chance to handle theEvent specified.
-		 * @param[in] theEvent to handle
-		 */
-		virtual void HandleEvents(sf::Event theEvent) = 0;
+      /**
+       * DropAllEntities is responsible for removing this ISystem class from
+       * all registered IEntity classes.
+       */
+      void DropAllEntities(void);
 
-		/**
-		 * UpdateFixed is called a specific number of times every game loop and
-		 * this method will allow each Instance class a chance to have its
-		 * UpdateFixed method called for each game loop iteration.
-		 */
-		virtual void UpdateFixed(void) = 0;
+      /**
+       * HandleEvents is responsible for letting each Instance class have a
+       * chance to handle theEvent specified.
+       * @param[in] theEvent to handle
+       */
+      virtual void HandleEvents(sf::Event theEvent) = 0;
 
-		/**
-		 * UpdateVariable is called every time the game loop draws a frame and
-		 * includes the elapsed time between the last UpdateVariable call for
-		 * use with equations that use time as a variable. (e.g. physics velocity
-		 * and acceleration equations).
-		 */
-		virtual void UpdateVariable(float theElapsedTime) = 0;
+      /**
+       * UpdateFixed is called a specific number of times every game loop and
+       * this method will allow each Instance class a chance to have its
+       * UpdateFixed method called for each game loop iteration.
+       */
+      virtual void UpdateFixed(void) = 0;
 
-		/**
-		 * Draw is called during the game loop after events and the fixed update
-		 * loop calls are completed and depends largely on the speed of the
-		 * computer to determine how frequently it will be called. This gives the
-		 * EntityManager a chance to call the Draw method for each Instance
-		 * class.
-		 */
-		virtual void Draw(void) = 0;
+      /**
+       * UpdateVariable is called every time the game loop draws a frame and
+       * includes the elapsed time between the last UpdateVariable call for
+       * use with equations that use time as a variable. (e.g. physics velocity
+       * and acceleration equations).
+       */
+      virtual void UpdateVariable(float theElapsedTime) = 0;
 
+      /**
+       * Draw is called during the game loop after events and the fixed update
+       * loop calls are completed and depends largely on the speed of the
+       * computer to determine how frequently it will be called. This gives the
+       * EntityManager a chance to call the Draw method for each Instance
+       * class.
+       */
+      virtual void Draw(void) = 0;
+    protected:
+      //Variables
+      /////////////////////////////////////////////////////////////
+      /// A linked list of all IEntity classes managed by this ISystem
+      std::map<const typeEntityID, IEntity*> mEntities;
 
-		/**
-		 * HandleCleanup will be called at the end of the game loop, preferably after Draw().
-		 */
-		virtual void HandleCleanup(void);
+      /// The ID for this System.
+      typeSystemID mSystemID;
+      /// The address to the IApp derived class
+      IApp& mApp;
 
-		//static PrototypeManager* gPrototypeManager;
-	protected:
-		//Variables
-		/////////////////////////////////////////////////////////////
-		/// A linked list of all IEntity classes managed by this ISystem
-		std::vector<IEntity*> mEntities;
-		/// A queue of all IEntity classes to be added to this ISystem
-		std::queue<IEntity*> mNewEntities;
-		/// A queue of all IEntity classes to be removed from this ISystem
-		std::queue<IEntity*> mDeadEntities;
+      /**
+       * HandleInit is called to allow each derived ISystem to perform any
+       * initialization steps when a new IEntity is added.
+       */
+      virtual void HandleInit(IEntity* theEntity) = 0;
 
-		/// The ID for this System.
-		typeSystemID mSystemID;
-		/// The address to the IApp derived class
-		IApp& mApp;
-	};
+      /**
+       * HandleCleanup is called when the IEntity that was added is finally
+       * dropped from this ISystem and gives the derived ISystem class a chance
+       * to perform any custom work before the IEntity is deleted.
+       */
+      virtual void HandleCleanup(IEntity* theEntity) = 0;
+
+    private:
+      /**
+       * EraseEntity will erase the IEntity iterator provided.
+       * @param[in] theEntityIter iterator to be erased
+       */
+      void EraseEntity(std::map<const typeEntityID, IEntity*>::iterator theEntityIter);
+  };
 } // namespace GQE
 
 #endif // ICOMPONENT_HPP_INCLUDED

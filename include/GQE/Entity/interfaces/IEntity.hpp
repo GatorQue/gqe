@@ -9,6 +9,7 @@
  * @date 20120609 - Moved property methods to new PropertyManager class
  * @date 20120618 - Moved ID from Instance class to this base class
  * @date 20120620 - Drop ourselves from registered ISystem classes
+ * @date 20120622 - Added EraseSystem and renamed DropEntity to DropAllSystems
  */
 #ifndef IENTITY_HPP_INCLUDED
 #define IENTITY_HPP_INCLUDED
@@ -42,26 +43,26 @@ namespace GQE
        * GetID will return the Entity ID used by this IEntity class.
        * @return the entity ID for this IEntity class
        */
-      const typeEntityID GetID() const;
+      const typeEntityID GetID(void) const;
 
-		  /**
-		   * UseNextID Gets the next available Entity ID.
-		   * @return an ID of an IEntity;
-		   */
-		  static typeEntityID UseNextID();
+      /**
+       * UseNextID Gets the next available Entity ID.
+       * @return an ID of an IEntity;
+       */
+      static typeEntityID UseNextID();
 
-			/**
+      /**
        * AddSystem adds a dependant system to the entity.
        * @param[in] theSystem is a pointer to the active system.
        */
-			void AddSystem(ISystem* theSystem);
-			
+      void AddSystem(ISystem* theSystem);
+
       /**
        * HasSystem confirms that theSystemID has been registered with this
        * IEntity class.
        * @param[in] theSystemID to confirm is registered
        */
-			bool HasSystem(const typeSystemID theSystemID) const;
+      bool HasSystem(const typeSystemID theSystemID) const;
 
       /**
        * DropSystem removes a dependent system from the entity.
@@ -69,18 +70,26 @@ namespace GQE
        */
       void DropSystem(const typeSystemID theSystemID);
 
-			void DropEnity();
-
-			int GetSystemCount();
+      /**
+       * DropAllSystems is responsible for removing this IEntity class from all
+       * registered ISystem classes.
+       */
+      void DropAllSystems(void);
     protected:
       // Variables
       ///////////////////////////////////////////////////////////////////////////
       /// The entity ID assigned to this IEntity class
       const typeEntityID mEntityID;
-			//A list of systems this entity is controlled by
-			std::map<const typeSystemID, ISystem*> mSystemList;
-		  /// The next ID to assign to a new Instance class
-		  static typeEntityID mNextID;
+      //A list of systems this entity is controlled by
+      std::map<const typeSystemID, ISystem*> mSystems;
+      /// The next ID to assign to a new Instance class
+      static typeEntityID mNextID;
+    private:
+      /**
+       * EraseSystem will erase the ISystem iterator provided.
+       * @param[in] theSystemIter iterator to be erased
+       */
+      void EraseSystem(std::map<const typeSystemID, ISystem*>::iterator theSystemIter);
   };
 }
 

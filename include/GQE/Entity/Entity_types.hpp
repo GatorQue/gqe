@@ -35,7 +35,7 @@ namespace GQE
   /// Declare System ID typedef which is used for identifying ISystem objects
   typedef std::string typeSystemID;
 
-	/// Declare Entity ID typedef which is used for identifying IEntity objects
+  /// Declare Entity ID typedef which is used for identifying IEntity objects
   typedef Uint32 typeEntityID;
 }
 #endif // ENTITY_TYPES_HPP_INCLUDED

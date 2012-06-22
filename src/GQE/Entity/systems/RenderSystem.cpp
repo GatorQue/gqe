@@ -5,6 +5,7 @@
  * @author Jacob Dix
  * @date 20120611 - Initial Release
  * @date 20120616 - Adjustments for new PropertyManager class
+ * @date 20120622 - Small adjustments to implementation and Handle methods
  */
 #include <GQE/Entity/systems/RenderSystem.hpp>
 #include <GQE/Core/assets/ImageAsset.hpp>
@@ -14,79 +15,80 @@
 
 namespace GQE
 {
-	RenderSystem::RenderSystem(IApp& theApp):
-		ISystem("RenderSystem",theApp)
-	{
-	}
+  RenderSystem::RenderSystem(IApp& theApp):
+    ISystem("RenderSystem",theApp)
+  {
+  }
 
   RenderSystem::~RenderSystem()
-	{
-	}
+  {
+  }
 
-	void RenderSystem::AddProperties(IEntity* theEntity)
-	{
-		theEntity->mProperties.Add<sf::Vector2f>("Position",sf::Vector2f(0,0));
-		theEntity->mProperties.Add<sf::Vector2f>("Scale",sf::Vector2f(1,1));
-		theEntity->mProperties.Add<sf::Vector2f>("Orgin",sf::Vector2f(0,0));
-		theEntity->mProperties.Add<float>("Rotation",0);
-		theEntity->mProperties.Add<sf::Sprite>("Sprite",sf::Sprite());
-		theEntity->mProperties.Add<bool>("Visible",true);
-		theEntity->mProperties.Add<sf::IntRect>("SubRect",sf::IntRect(0,0,0,0));
-		theEntity->AddSystem(this);
-	}
-	
-	void RenderSystem::HandleInit(void)
-	{
-		ISystem::HandleInit();
-	}
+  void RenderSystem::AddProperties(IEntity* theEntity)
+  {
+    theEntity->mProperties.Add<sf::Vector2f>("Position",sf::Vector2f(0,0));
+    theEntity->mProperties.Add<sf::Vector2f>("Scale",sf::Vector2f(1,1));
+    theEntity->mProperties.Add<sf::Vector2f>("Orgin",sf::Vector2f(0,0));
+    theEntity->mProperties.Add<float>("Rotation",0);
+    theEntity->mProperties.Add<sf::Sprite>("Sprite",sf::Sprite());
+    theEntity->mProperties.Add<bool>("Visible",true);
+    theEntity->mProperties.Add<sf::IntRect>("SubRect",sf::IntRect(0,0,0,0));
+    theEntity->AddSystem(this);
+  }
+
+  void RenderSystem::HandleInit(IEntity* theEntity)
+  {
+    // Do nothing
+  }
 
   void RenderSystem::HandleEvents(sf::Event theEvent)
-	{
-	}
+  {
+  }
 
   void RenderSystem::UpdateFixed()
-	{
-		
-	}
+  {
+  }
 
   void RenderSystem::UpdateVariable(float theElaspedTime)
-	{
-	}
+  {
+  }
 
   void RenderSystem::Draw()
-	{
-		IEntity* anEntity=NULL;
-		std::vector<IEntity*>::iterator anEntityIter;
-		for(anEntityIter=mEntities.begin();
-			anEntityIter!=mEntities.end();
-			++anEntityIter)
-		{
-			anEntity=(*anEntityIter);
-			if(anEntity->mProperties.Get<bool>("Visible"))
-			{
-				if(anEntity!=NULL)
-				{
-					sf::Sprite anSprite=anEntity->mProperties.Get<sf::Sprite>("Sprite");
-#if SFML_VERSION_MAJOR<2
-					anSprite.SetPosition(anEntity->mProperties.Get<sf::Vector2f>("Position"));
-					anSprite.SetRotation(anEntity->mProperties.Get<float>("Rotation"));
-					anSprite.SetSubRect(anEntity->mProperties.Get<sf::IntRect>("SubRect"));
-					mApp.mWindow.Draw(anSprite);
-#else
-					anSprite.setPosition(anEntity->mProperties.Get<sf::Vector2f>("Position"));
-					anSprite.setRotation(anEntity->mProperties.Get<float>("Rotation"));
-					anSprite.setTextureRect(anEntity->mProperties.Get<sf::IntRect>("SubRect"));
-					mApp.mWindow.draw(anSprite);
-#endif
-			}
-			}
-		}	
-	}
+  {
+    std::map<const typeEntityID, IEntity*>::iterator anEntityIter = mEntities.begin();
 
-  void RenderSystem::HandleCleanup()
-	{
-		ISystem::HandleCleanup();
-	}
+    // Loop through each IEntity in our mEntities map
+    while(anEntityIter != mEntities.end())
+    {
+      // Get the IEntity address first
+      IEntity* anEntity = anEntityIter->second;
+
+      // Increment the IEntity iterator second
+      anEntityIter++;
+
+      // See if this IEntity is visible, if so draw it now
+      if(anEntity->mProperties.Get<bool>("Visible"))
+      {
+        sf::Sprite anSprite=anEntity->mProperties.Get<sf::Sprite>("Sprite");
+#if SFML_VERSION_MAJOR<2
+        anSprite.SetPosition(anEntity->mProperties.Get<sf::Vector2f>("Position"));
+        anSprite.SetRotation(anEntity->mProperties.Get<float>("Rotation"));
+        anSprite.SetSubRect(anEntity->mProperties.Get<sf::IntRect>("SubRect"));
+        mApp.mWindow.Draw(anSprite);
+#else
+        anSprite.setPosition(anEntity->mProperties.Get<sf::Vector2f>("Position"));
+        anSprite.setRotation(anEntity->mProperties.Get<float>("Rotation"));
+        anSprite.setTextureRect(anEntity->mProperties.Get<sf::IntRect>("SubRect"));
+        mApp.mWindow.draw(anSprite);
+#endif
+      }
+    } //while(anEntityIter != mEntities.end())
+  }
+
+  void RenderSystem::HandleCleanup(IEntity* theEntity)
+  {
+    // Do nothing
+  }
 } // namespace GQE
 
 /**
