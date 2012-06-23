@@ -74,7 +74,7 @@ namespace GQE
         anSprite.SetPosition(anEntity->mProperties.Get<sf::Vector2f>("Position"));
         anSprite.SetRotation(anEntity->mProperties.Get<float>("Rotation"));
         anSprite.SetSubRect(anEntity->mProperties.Get<sf::IntRect>("SpriteRect"));
-        anSprite.SetOrigin(anEntity->mProperties.Get<sf::Vector2f>("Origin"));
+        anSprite.SetCenter(anEntity->mProperties.Get<sf::Vector2f>("Origin"));
         mApp.mWindow.Draw(anSprite);
 #else
         anSprite.setPosition(anEntity->mProperties.Get<sf::Vector2f>("Position"));

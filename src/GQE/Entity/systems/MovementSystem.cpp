@@ -78,6 +78,24 @@ namespace GQE
         // If ScreenWrap is true, account for screen wrapping
         if(anEntity->mProperties.Get<bool>("ScreenWrap"))
         {
+#if (SFML_VERSION_MAJOR < 2)
+          if(anPosition.x > (float)mApp.mWindow.GetWidth())
+          {
+            anPosition.x = 0.0f;
+          }
+          else if(anPosition.x < 0.0f)
+          {
+            anPosition.x = (float)mApp.mWindow.GetWidth();
+          }
+          if(anPosition.y > (float)mApp.mWindow.GetHeight())
+          {
+            anPosition.y = 0.0f;
+          }
+          else if(anPosition.y < 0.0f)
+          {
+            anPosition.y = (float)mApp.mWindow.GetHeight();
+          }
+#else
           if(anPosition.x > (float)mApp.mWindow.getSize().x)
           {
             anPosition.x = 0.0f;
@@ -94,6 +112,7 @@ namespace GQE
           {
             anPosition.y = (float)mApp.mWindow.getSize().y;
           }
+#endif
         }
 
         // Now update the MovementSystem properties for this IEntity class
@@ -142,6 +161,24 @@ namespace GQE
         // If ScreenWrap is true, account for screen wrapping
         if(anEntity->mProperties.Get<bool>("ScreenWrap"))
         {
+#if (SFML_VERSION_MAJOR < 2)
+          if(anPosition.x > (float)mApp.mWindow.GetWidth())
+          {
+            anPosition.x = 0.0f;
+          }
+          else if(anPosition.x < 0.0f)
+          {
+            anPosition.x = (float)mApp.mWindow.GetWidth();
+          }
+          if(anPosition.y > (float)mApp.mWindow.GetHeight())
+          {
+            anPosition.y = 0.0f;
+          }
+          else if(anPosition.y < 0.0f)
+          {
+            anPosition.y = (float)mApp.mWindow.GetHeight();
+          }
+#else
           if(anPosition.x > (float)mApp.mWindow.getSize().x)
           {
             anPosition.x = 0.0f;
@@ -158,6 +195,7 @@ namespace GQE
           {
             anPosition.y = (float)mApp.mWindow.getSize().y;
           }
+#endif
         }
 
         // Now update the MovementSystem properties for this IEntity class
