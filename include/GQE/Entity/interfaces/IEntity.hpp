@@ -10,6 +10,7 @@
  * @date 20120618 - Moved ID from Instance class to this base class
  * @date 20120620 - Drop ourselves from registered ISystem classes
  * @date 20120622 - Added EraseSystem and renamed DropEntity to DropAllSystems
+ * @date 20120623 - Adjusted scope of some IEntity variables
  */
 #ifndef IENTITY_HPP_INCLUDED
 #define IENTITY_HPP_INCLUDED
@@ -78,13 +79,17 @@ namespace GQE
     protected:
       // Variables
       ///////////////////////////////////////////////////////////////////////////
-      /// The entity ID assigned to this IEntity class
-      const typeEntityID mEntityID;
       //A list of systems this entity is controlled by
       std::map<const typeSystemID, ISystem*> mSystems;
+
+    private:
+      // Variables
+      ///////////////////////////////////////////////////////////////////////////
+      /// The entity ID assigned to this IEntity class
+      const typeEntityID mEntityID;
       /// The next ID to assign to a new Instance class
       static typeEntityID mNextID;
-    private:
+
       /**
        * EraseSystem will erase the ISystem iterator provided.
        * @param[in] theSystemIter iterator to be erased

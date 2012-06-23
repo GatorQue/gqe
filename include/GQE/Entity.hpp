@@ -7,6 +7,7 @@
  * @date 20100423 - Initial Release
  * @date 20120616 - Added PropertyManager class
  * @date 20120618 - Added missing Entity classes
+ * @date 20120623 - Added AnimationSystem class
  */
 #ifndef ENTITY_HPP_INCLUDED
 #define ENTITY_HPP_INCLUDED
@@ -25,8 +26,9 @@
 #include <GQE/Entity/interfaces/IProperty.hpp>
 #include <GQE/Entity/interfaces/ISystem.hpp>
 #include <GQE/Entity/interfaces/TProperty.hpp>
-#include <GQE/Entity/systems/RenderSystem.hpp>
+#include <GQE/Entity/systems/AnimationSystem.hpp>
 #include <GQE/Entity/systems/MovementSystem.hpp>
+#include <GQE/Entity/systems/RenderSystem.hpp>
 
 #endif // ENTITY_HPP_INCLUDED
 

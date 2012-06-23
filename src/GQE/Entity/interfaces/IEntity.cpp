@@ -13,7 +13,7 @@
 #include <GQE/Entity/interfaces/ISystem.hpp>
 namespace GQE
 {
-  typeEntityID IEntity::mNextID = 0;
+  typeEntityID IEntity::mNextID = 0; // Start with 0
 
   IEntity::IEntity() :
     mEntityID(UseNextID())
@@ -36,6 +36,7 @@ namespace GQE
 
   typeEntityID IEntity::UseNextID()
   {
+    // Pre-increment the ID so that an ID of 0 can be considered an "invalid" ID
     return ++mNextID;
   }
 
@@ -44,11 +45,6 @@ namespace GQE
     if(mSystems.find(theSystem->GetID())==mSystems.end())
     {
       mSystems[theSystem->GetID()]=theSystem;
-    }
-    else
-    {
-      WLOG() << "IEntity:AddSystem() system(" << theSystem->GetID()
-        << ") is already controlling this entity." << std::endl;
     }
   }
 

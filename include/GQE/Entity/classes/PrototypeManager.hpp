@@ -11,8 +11,8 @@
 #define PROTOTYPE_MANAGER_HPP_INCLUDED
 
 #include <map>
-#include <vector>
 #include <GQE/Entity/interfaces/IEntity.hpp>
+#include <GQE/Entity/Entity_types.hpp>
 
 namespace GQE
 {

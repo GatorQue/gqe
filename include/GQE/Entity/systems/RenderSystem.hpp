@@ -1,5 +1,5 @@
 /**
- * Provides the RenderSystem class for handing all entity rendering in a game.
+ * Provides the RenderSystem class for handing all IEntity rendering in a game.
  *
  * @file src/GQE/Entity/systems/RenderSystem.cpp
  * @author Jacob Dix
@@ -7,11 +7,14 @@
  * @date 20120616 - Adjustments for new PropertyManager class
  * @date 20120618 - Use IEntity not Instance and changed AddPrototype to AddProperties
  * @date 20120622 - Changed HandleInit and HandleCleanup
+ * @date 20120623 - Improved documentation and adjusted some properties
  */
 #ifndef RENDER_SYSTEM_HPP_INCLUDED
 #define RENDER_SYSTEM_HPP_INCLUDED
 
 #include <GQE/Entity/interfaces/ISystem.hpp>
+#include <GQE/Entity/Entity_types.hpp>
+
 namespace GQE
 {
   /// The RenderSystem for managing all Instance rendering in a game
@@ -90,8 +93,17 @@ namespace GQE
 /**
  * @class GQE::RenderSystem
  * @ingroup Entity
- * The RenderSystem class represents the system used to manage rendering of all
- * Instance classes in a game.
+ * The RenderSystem class is used to render each IEntity as a Sprite and
+ * provides the following properties (which are used in other ISystem classes):
+ * - Position: The sf::Vector2f representing the current IEntity position
+ * - Rotation: The float representing the current IEntity rotation
+ * - SpriteRect: The sf::IntRect to use on the Image provided
+ * - Scale: The sf::Vector2f representing the scale to apply to the Image (defaults to 1.0,1.0)
+ * - Origin: The sf::Vector2f representing the origin for all transformations
+ * - Sprite: The sf::Sprite that represents this IEntity
+ * - Visible: A boolean indicating this IEntity is currently visible
+ * The RenderSystem can be combined with the MovementSystem to cause each
+ * IEntity to be moved around in the game.
  *
  * Copyright (c) 2010-2012 Jacob Dix
  * Permission is hereby granted, free of charge, to any person obtaining a copy

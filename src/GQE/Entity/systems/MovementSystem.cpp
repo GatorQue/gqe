@@ -7,12 +7,11 @@
  * @date 20120616 - Adjustments for new PropertyManager class
  * @date 20120618 - Use IEntity not Instance and changed AddPrototype to AddProperties
  * @date 20120622 - Small adjustments to implementation and Handle methods
+ * @date 20120623 - Improved documentation and adjusted some properties
  */
 #include <SFML/Graphics.hpp>
 #include <GQE/Entity/systems/MovementSystem.hpp>
-#include <GQE/Core/assets/ImageAsset.hpp>
-#include <GQE/Entity/classes/Prototype.hpp>
-#include <GQE/Entity/classes/Instance.hpp>
+#include <GQE/Entity/interfaces/IEntity.hpp>
 
 namespace GQE
 {
@@ -27,10 +26,11 @@ namespace GQE
   void MovementSystem::AddProperties(IEntity* theEntity)
   {
     theEntity->mProperties.Add<sf::Vector2f>("Velocity",sf::Vector2f(0,0));
-    theEntity->mProperties.Add<sf::Vector2f>("Accelleration",sf::Vector2f(0,0));
+    theEntity->mProperties.Add<sf::Vector2f>("Acceleration",sf::Vector2f(0,0));
     theEntity->mProperties.Add<float>("RotationalVelocity",0);
-    theEntity->mProperties.Add<float>("RotationalAccelleration",0);
-    theEntity->mProperties.Add<bool>("Wrap",true);
+    theEntity->mProperties.Add<float>("RotationalAcceleration",0);
+    theEntity->mProperties.Add<bool>("FixedMovement",true);
+    theEntity->mProperties.Add<bool>("ScreenWrap",true);
     theEntity->AddSystem(this);
   }
 
@@ -56,51 +56,119 @@ namespace GQE
       // Increment the IEntity iterator second
       anEntityIter++;
 
-      // Get the current movement properties
-      sf::Vector2f anPosition = anEntity->mProperties.Get<sf::Vector2f>("Position");
-      sf::Vector2f anVelocity = anEntity->mProperties.Get<sf::Vector2f>("Velocity");
-      sf::Vector2f anAccelleration = anEntity->mProperties.Get<sf::Vector2f>("Accelleration");
-      float anRotation = anEntity->mProperties.Get<float>("Rotation");
-      float anRotationalVelocity = anEntity->mProperties.Get<float>("RotationalVelocity");
-      float anRotationalAccelleration = anEntity->mProperties.Get<float>("RotationalAccelleration");
-
-      // Now update the current movement properties
-      anVelocity += anAccelleration;
-      anPosition += anVelocity;
-      anRotationalVelocity += anRotationalAccelleration;
-      anRotation += anRotationalVelocity;
-
-      // If Wrap is true, account for screen wrapping
-      if(anEntity->mProperties.Get<bool>("Wrap"))
+      // Are we using fixed movement mathematics?
+      if(anEntity->mProperties.Get<bool>("FixedMovement"))
       {
-        if(anPosition.x > mApp.mWindow.getSize().x)
-        {
-          anPosition.x = 0;
-        }
-        else if(anPosition.x<0)
-        {
-          anPosition.x = (float)mApp.mWindow.getSize().x;
-        }
-        if(anPosition.y > mApp.mWindow.getSize().y)
-        {
-          anPosition.y = 0;
-        }
-        else if(anPosition.y < 0)
-        {
-          anPosition.y=(float)mApp.mWindow.getSize().y;
-        }
-      }
+        // Get the RenderSystem properties
+        sf::Vector2f anPosition = anEntity->mProperties.Get<sf::Vector2f>("Position");
+        float anRotation = anEntity->mProperties.Get<float>("Rotation");
 
-      // Now update the movement properties of this IEntity class
-      anEntity->mProperties.Set<sf::Vector2f>("Velocity",anVelocity);
-      anEntity->mProperties.Set<sf::Vector2f>("Position",anPosition);
-      anEntity->mProperties.Set<float>("Rotation",anRotation);
-      anEntity->mProperties.Set<float>("RotationalVelocity",anRotationalVelocity);
+        // Get the MovementSystem properties
+        sf::Vector2f anVelocity = anEntity->mProperties.Get<sf::Vector2f>("Velocity");
+        sf::Vector2f anAccelleration = anEntity->mProperties.Get<sf::Vector2f>("Acceleration");
+        float anRotationalVelocity = anEntity->mProperties.Get<float>("RotationalVelocity");
+        float anRotationalAccelleration = anEntity->mProperties.Get<float>("RotationalAcceleration");
+
+        // Now update the current movement properties
+        anVelocity += anAccelleration;
+        anPosition += anVelocity;
+        anRotationalVelocity += anRotationalAccelleration;
+        anRotation += anRotationalVelocity;
+
+        // If ScreenWrap is true, account for screen wrapping
+        if(anEntity->mProperties.Get<bool>("ScreenWrap"))
+        {
+          if(anPosition.x > (float)mApp.mWindow.getSize().x)
+          {
+            anPosition.x = 0.0f;
+          }
+          else if(anPosition.x < 0.0f)
+          {
+            anPosition.x = (float)mApp.mWindow.getSize().x;
+          }
+          if(anPosition.y > (float)mApp.mWindow.getSize().y)
+          {
+            anPosition.y = 0.0f;
+          }
+          else if(anPosition.y < 0.0f)
+          {
+            anPosition.y = (float)mApp.mWindow.getSize().y;
+          }
+        }
+
+        // Now update the MovementSystem properties for this IEntity class
+        anEntity->mProperties.Set<sf::Vector2f>("Velocity",anVelocity);
+        anEntity->mProperties.Set<float>("RotationalVelocity",anRotationalVelocity);
+
+        // Now update the RenderSystem properties of this IEntity class
+        anEntity->mProperties.Set<sf::Vector2f>("Position",anPosition);
+        anEntity->mProperties.Set<float>("Rotation",anRotation);
+      } //if(anEntity->mProperties.Get<bool>("FixedMovement"))
     } // while(anEntityIter != mEntities.end())
   }
 
-  void MovementSystem::UpdateVariable(float theElaspedTime)
+  void MovementSystem::UpdateVariable(float theElapsedTime)
   {
+    std::map<const typeEntityID, IEntity*>::iterator anEntityIter = mEntities.begin();
+
+    // Loop through each IEntity in our mEntities map
+    while(anEntityIter != mEntities.end())
+    {
+      // Get the IEntity address first
+      IEntity* anEntity = anEntityIter->second;
+
+      // Increment the IEntity iterator second
+      anEntityIter++;
+
+      // Are we NOT using fixed movement mathematics?
+      if(anEntity->mProperties.Get<bool>("FixedMovement") == false)
+      {
+        // Get the RenderSystem properties
+        sf::Vector2f anPosition = anEntity->mProperties.Get<sf::Vector2f>("Position");
+        float anRotation = anEntity->mProperties.Get<float>("Rotation");
+
+        // Get the MovementSystem properties
+        sf::Vector2f anVelocity = anEntity->mProperties.Get<sf::Vector2f>("Velocity");
+        sf::Vector2f anAccelleration = anEntity->mProperties.Get<sf::Vector2f>("Acceleration");
+        float anRotationalVelocity = anEntity->mProperties.Get<float>("RotationalVelocity");
+        float anRotationalAccelleration = anEntity->mProperties.Get<float>("RotationalAcceleration");
+
+        // Now update the current movement properties
+        anVelocity += anAccelleration * theElapsedTime;
+        anPosition += anVelocity * theElapsedTime;
+        anRotationalVelocity += anRotationalAccelleration * theElapsedTime;
+        anRotation += anRotationalVelocity * theElapsedTime;
+
+        // If ScreenWrap is true, account for screen wrapping
+        if(anEntity->mProperties.Get<bool>("ScreenWrap"))
+        {
+          if(anPosition.x > (float)mApp.mWindow.getSize().x)
+          {
+            anPosition.x = 0.0f;
+          }
+          else if(anPosition.x < 0.0f)
+          {
+            anPosition.x = (float)mApp.mWindow.getSize().x;
+          }
+          if(anPosition.y > (float)mApp.mWindow.getSize().y)
+          {
+            anPosition.y = 0.0f;
+          }
+          else if(anPosition.y < 0.0f)
+          {
+            anPosition.y = (float)mApp.mWindow.getSize().y;
+          }
+        }
+
+        // Now update the MovementSystem properties for this IEntity class
+        anEntity->mProperties.Set<sf::Vector2f>("Velocity",anVelocity);
+        anEntity->mProperties.Set<float>("RotationalVelocity",anRotationalVelocity);
+
+        // Now update the RenderSystem properties of this IEntity class
+        anEntity->mProperties.Set<sf::Vector2f>("Position",anPosition);
+        anEntity->mProperties.Set<float>("Rotation",anRotation);
+      } //if(anEntity->mProperties.Get<bool>("FixedMovement") == false)
+    } // while(anEntityIter != mEntities.end())
   }
 
   void MovementSystem::Draw()

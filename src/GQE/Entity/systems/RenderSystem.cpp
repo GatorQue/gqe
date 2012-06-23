@@ -6,12 +6,11 @@
  * @date 20120611 - Initial Release
  * @date 20120616 - Adjustments for new PropertyManager class
  * @date 20120622 - Small adjustments to implementation and Handle methods
+ * @date 20120623 - Improved documentation and adjusted some properties
  */
-#include <GQE/Entity/systems/RenderSystem.hpp>
-#include <GQE/Core/assets/ImageAsset.hpp>
-#include <GQE/Entity/classes/Prototype.hpp>
-#include <GQE/Entity/classes/Instance.hpp>
 #include <SFML/Graphics.hpp>
+#include <GQE/Entity/systems/RenderSystem.hpp>
+#include <GQE/Entity/interfaces/IEntity.hpp>
 
 namespace GQE
 {
@@ -26,13 +25,13 @@ namespace GQE
 
   void RenderSystem::AddProperties(IEntity* theEntity)
   {
-    theEntity->mProperties.Add<sf::Vector2f>("Position",sf::Vector2f(0,0));
-    theEntity->mProperties.Add<sf::Vector2f>("Scale",sf::Vector2f(1,1));
-    theEntity->mProperties.Add<sf::Vector2f>("Orgin",sf::Vector2f(0,0));
-    theEntity->mProperties.Add<float>("Rotation",0);
     theEntity->mProperties.Add<sf::Sprite>("Sprite",sf::Sprite());
-    theEntity->mProperties.Add<bool>("Visible",true);
-    theEntity->mProperties.Add<sf::IntRect>("SubRect",sf::IntRect(0,0,0,0));
+    theEntity->mProperties.Add<sf::IntRect>("SpriteRect",sf::IntRect(0,0,0,0));
+    theEntity->mProperties.Add<sf::Vector2f>("Scale",sf::Vector2f(1,1));
+    theEntity->mProperties.Add<sf::Vector2f>("Origin",sf::Vector2f(0,0));
+    theEntity->mProperties.Add<sf::Vector2f>("Position",sf::Vector2f(0,0));
+    theEntity->mProperties.Add<float>("Rotation", 0.0f);
+    theEntity->mProperties.Add<bool>("Visible", true);
     theEntity->AddSystem(this);
   }
 
@@ -49,7 +48,7 @@ namespace GQE
   {
   }
 
-  void RenderSystem::UpdateVariable(float theElaspedTime)
+  void RenderSystem::UpdateVariable(float theElapsedTime)
   {
   }
 
@@ -69,19 +68,22 @@ namespace GQE
       // See if this IEntity is visible, if so draw it now
       if(anEntity->mProperties.Get<bool>("Visible"))
       {
+        // Get the other RenderSystem properties now
         sf::Sprite anSprite=anEntity->mProperties.Get<sf::Sprite>("Sprite");
 #if SFML_VERSION_MAJOR<2
         anSprite.SetPosition(anEntity->mProperties.Get<sf::Vector2f>("Position"));
         anSprite.SetRotation(anEntity->mProperties.Get<float>("Rotation"));
-        anSprite.SetSubRect(anEntity->mProperties.Get<sf::IntRect>("SubRect"));
+        anSprite.SetSubRect(anEntity->mProperties.Get<sf::IntRect>("SpriteRect"));
+        anSprite.SetOrigin(anEntity->mProperties.Get<sf::Vector2f>("Origin"));
         mApp.mWindow.Draw(anSprite);
 #else
         anSprite.setPosition(anEntity->mProperties.Get<sf::Vector2f>("Position"));
         anSprite.setRotation(anEntity->mProperties.Get<float>("Rotation"));
-        anSprite.setTextureRect(anEntity->mProperties.Get<sf::IntRect>("SubRect"));
+        anSprite.setTextureRect(anEntity->mProperties.Get<sf::IntRect>("SpriteRect"));
+        anSprite.setOrigin(anEntity->mProperties.Get<sf::Vector2f>("Origin"));
         mApp.mWindow.draw(anSprite);
 #endif
-      }
+      } // if(anEntity->mProperties.Get<bool>("Visible"))
     } //while(anEntityIter != mEntities.end())
   }
 

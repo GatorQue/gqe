@@ -82,7 +82,6 @@ namespace GQE
       ///////////////////////////////////////////////////////////////////////////
       /// The type that represents this class
       Type_t mType;
-
       /// The property ID assigned to this IProperty derived class
       const typePropertyID mPropertyID;
   };

@@ -11,6 +11,7 @@
 #define INSTANCE_HPP_INCLUDED
 
 #include <GQE/Entity/interfaces/IEntity.hpp>
+#include <GQE/Entity/Entity_types.hpp>
 
 namespace GQE
 {

@@ -6,6 +6,7 @@
  * @date 20120423 - Initial Release
  * @date 20120616 - Fixed typedef comments
  * @date 20120618 - Changed name from typeInstanceID to typeEntityID
+ * @date 20120623 - Add forward declaration of ISystem derived classes
  */
 #ifndef ENTITY_TYPES_HPP_INCLUDED
 #define ENTITY_TYPES_HPP_INCLUDED
@@ -20,11 +21,17 @@ namespace GQE
   class IEntity;
   class IProperty;
   class ISystem;
+
   // Forward declare GQE Entity classes provided
   class Prototype;
   class Instance;
   class PropertyManager;
   class PrototypeManager;
+
+  // Forward declare GQE Entity systems provided
+  class AnimationSystem;
+  class MovementSystem;
+  class RenderSystem;
 
   /// Declare Property ID typedef which is used for identifying Properties
   typedef std::string typePropertyID;

@@ -8,9 +8,9 @@
 #ifndef TPROPERTY_HPP_INCLUDED
 #define TPROPERTY_HPP_INCLUDED
 
-#include <GQE/Entity/Entity_types.hpp>
-#include <GQE/Entity/interfaces/IProperty.hpp>
 #include <typeinfo>
+#include <GQE/Entity/interfaces/IProperty.hpp>
+#include <GQE/Entity/Entity_types.hpp>
 
 namespace GQE
 {

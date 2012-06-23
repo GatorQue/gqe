@@ -11,13 +11,14 @@
  * @date 20120622 - Added EraseSystem, DropAllEntities and fixed comments and changed
  *                  HandleInit and HandleCleanup to be called during AddEntity and
  *                  EraseEntity.
+ * @date 20120623 - Adjusted scope of some ISystem variables
  */
 #ifndef ISYSTEM_HPP_INCLUDED
 #define ISYSTEM_HPP_INCLUDED
 
-#include <GQE/Core/interfaces/IApp.hpp>
+#include <map>
 #include <GQE/Entity/Entity_types.hpp>
-#include <queue>
+
 namespace GQE
 {
   /// The ISystem interface used by all IEntity system managers
@@ -112,9 +113,6 @@ namespace GQE
       /////////////////////////////////////////////////////////////
       /// A linked list of all IEntity classes managed by this ISystem
       std::map<const typeEntityID, IEntity*> mEntities;
-
-      /// The ID for this System.
-      typeSystemID mSystemID;
       /// The address to the IApp derived class
       IApp& mApp;
 
@@ -132,6 +130,11 @@ namespace GQE
       virtual void HandleCleanup(IEntity* theEntity) = 0;
 
     private:
+      //Variables
+      /////////////////////////////////////////////////////////////
+      /// The ID for this System.
+      const typeSystemID mSystemID;
+
       /**
        * EraseEntity will erase the IEntity iterator provided.
        * @param[in] theEntityIter iterator to be erased

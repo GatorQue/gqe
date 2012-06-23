@@ -9,11 +9,10 @@
  * @date 20120620 - Drop ourselves from registered IEntity classes
  * @date 20120622 - Fix issues with dropping IEntity classes
  */
-#include <assert.h>
 #include <GQE/Entity/interfaces/ISystem.hpp>
+#include <GQE/Entity/interfaces/IEntity.hpp>
 #include <GQE/Core/loggers/Log_macros.hpp>
-#include <GQE/Entity/classes/Instance.hpp>
-#include <GQE/Entity/classes/PrototypeManager.hpp>
+
 namespace GQE
 {
   ISystem::ISystem(const typeSystemID theSystemID, IApp& theApp) :
@@ -98,62 +97,6 @@ namespace GQE
     // Last of all clear our list of entities
 		mEntities.clear();
   }
-
-  /*
-  void ISystem::HandleInit(void)
-  {
-    // Loop until all new IEntities have been added
-    while(!mNewEntities.empty())
-    {
-      // Grab an IEntity from the back of this vector
-      IEntity* anEntity = mNewEntities.back();
-
-      // Pop the entity off the back
-      mNewEntities.pop_back();
-
-      // Make sure anEntity is not NULL
-      if(anEntity != NULL)
-      {
-        // Add this IEntity to our mEntities list
-        mEntities.insert(std::pair<const typeEntityID, IEntity*>(anEntity->GetID(), anEntity));
-      }
-    }
-  }
-  */
-
-  /*
-  void ISystem::HandleCleanup(void)
-  {
-    while(!mDeadEntities.empty())
-    {
-      // Grab an IEntity to remove
-      IEntity* anEntity = mDeadEntities.back();
-      
-      // Pop the IEntity from the back
-      mDeadEntities.pop_back();
-
-      // Try to find an IEntity with this same address
-      std::map<const typeEntityID, IEntity*>::iterator anEntityIter = mEntities.begin();
-      while(anEntityIter != mEntities.end())
-      {
-        // Does this IEntity match?
-        if(anEntityIter->second == anEntity)
-        {
-          // Erase this IEntity from our map
-          mEntities.erase(anEntityIter);
-
-          // Exit the while loop
-          break;
-        }
-        else
-        {
-          // Otherwise increment our IEntity iterator to the next IEntity class
-          anEntityIter++;
-        }
-      }
-    }
-  }
-  */
 
   void ISystem::EraseEntity(std::map<const typeEntityID, IEntity*>::iterator theEntityIter)
   {

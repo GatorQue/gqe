@@ -9,12 +9,12 @@
 #include <GQE/Entity/classes/Prototype.hpp>
 #include <GQE/Entity/classes/Instance.hpp>
 #include <GQE/Entity/interfaces/ISystem.hpp>
+
 namespace GQE
 {
   Instance::Instance(Prototype& thePrototype) :
     mPrototype(thePrototype)
   {
-
   }
 
   Instance::~Instance()

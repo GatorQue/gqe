@@ -11,7 +11,9 @@
 #ifndef PROTOTYPE_HPP_INCLUDED
 #define PROTOTYPE_HPP_INCLUDED
 
+#include <vector>
 #include <GQE/Entity/interfaces/IEntity.hpp>
+#include <GQE/Entity/Entity_types.hpp>
 
 namespace GQE
 {
