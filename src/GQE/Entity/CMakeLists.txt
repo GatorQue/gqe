@@ -19,7 +19,7 @@ set(INC
 
 # Entity library source files
 set(SRC
-    ${SRCROOT}/Entity/systems/AnimationSystem.hpp
+    ${SRCROOT}/Entity/systems/AnimationSystem.cpp
     ${SRCROOT}/Entity/systems/MovementSystem.cpp
     ${SRCROOT}/Entity/systems/RenderSystem.cpp
     ${SRCROOT}/Entity/classes/PropertyManager.cpp
