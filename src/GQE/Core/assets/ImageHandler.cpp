@@ -45,6 +45,9 @@ namespace GQE
       // Load the asset from a file
 #if (SFML_VERSION_MAJOR < 2)
       anResult = theAsset.LoadFromFile(anFilename);
+
+      // Don't forget to set smoothing to false to better support tile base games
+      theAsset.SetSmooth(false);
 #else
       anResult = theAsset.loadFromFile(anFilename);
 #endif
@@ -79,6 +82,9 @@ namespace GQE
       // Load the image from the memory location specified
 #if (SFML_VERSION_MAJOR < 2)
       anResult = theAsset.LoadFromMemory(anData, anDataSize);
+
+      // Don't forget to set smoothing to false to better support tile base games
+      theAsset.SetSmooth(false);
 #else
       anResult = theAsset.loadFromMemory(anData, anDataSize);
 #endif
