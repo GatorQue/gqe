@@ -73,18 +73,22 @@ namespace GQE
         // Are we using a horizontal row of animation images?
         if(anFrameModifier.x > 0)
         {
-          anSpriteRect.Left += anSpriteRect.GetWidth()*anFrameModifier.x;
+          anSpriteRect.Offset(anSpriteRect.GetWidth()*anFrameModifier.x, 0);
           if(anSpriteRect.Left > anFrameRect.Left+anFrameRect.GetWidth())
           {
+            // Do Right first since GetWidth will change size if Left is done first
+            anSpriteRect.Right = anFrameRect.Left + anSpriteRect.GetWidth();
             anSpriteRect.Left = anFrameRect.Left;
           }
         }
         // Are we using a vertical row of animation images?
         if(anFrameModifier.y > 0)
         {
-          anSpriteRect.Top += anSpriteRect.GetHeight()*anFrameModifier.y;
+          anSpriteRect.Offset(0,anSpriteRect.GetHeight()*anFrameModifier.y);
           if(anSpriteRect.Top > anFrameRect.Top+anFrameRect.GetHeight())
           {
+            // Do Bottom first since GetHeight will change size if Top is done first
+            anSpriteRect.Bottom = anFrameRect.Top + anSpriteRect.GetHeight();
             anSpriteRect.Top = anFrameRect.Top;
           }
         }
