@@ -1,3 +1,9 @@
+Version 0.22.0
+==============
+- Improved screen wrap around in MovementSystem
+- Added GetInstance method to Prototype class
+- Added ActionSystem and its associated classes
+
 Version 0.21.0
 ==============
 - Created PropertyManager class
