@@ -2,7 +2,7 @@
  * Provides a class that manages all properties for an IEntity. This enables
  * using the PropertyManager class in another class than IEntity if desired.
  *
- * @file include/GQE/Entity/classes/PropertyManager.hpp
+ * @file src/GQE/Entity/classes/PropertyManager.cpp
  * @author Jacob Dix
  * @date 20120609 - Initial Release
  * @date 20120620 - Remove excess warning message when adding existing properties
@@ -30,7 +30,7 @@ namespace GQE
     }
   }
 
-  bool PropertyManager::HasID(const typePropertyID thePropertyID)
+  bool PropertyManager::HasID(const typePropertyID thePropertyID) const
   {
     bool anResult = false;
 

@@ -7,6 +7,7 @@
  * @date 20120616 - Fixed typedef comments
  * @date 20120618 - Changed name from typeInstanceID to typeEntityID
  * @date 20120623 - Add forward declaration of ISystem derived classes
+ * @date 20120627 - Add forward declaration of ActionSystem classes
  */
 #ifndef ENTITY_TYPES_HPP_INCLUDED
 #define ENTITY_TYPES_HPP_INCLUDED
@@ -18,6 +19,7 @@
 namespace GQE
 {
   // Forward declare GQE Entity interfaces provided
+  class IAction;
   class IEntity;
   class IProperty;
   class ISystem;
@@ -29,9 +31,16 @@ namespace GQE
   class PrototypeManager;
 
   // Forward declare GQE Entity systems provided
+  class ActionSystem;
   class AnimationSystem;
   class MovementSystem;
   class RenderSystem;
+
+  /// Declare Action ID typedef which is used for identifying IAction objects
+  typedef std::string typeActionID;
+
+  /// Declare Entity ID typedef which is used for identifying IEntity objects
+  typedef Uint32 typeEntityID;
 
   /// Declare Property ID typedef which is used for identifying Properties
   typedef std::string typePropertyID;
@@ -41,9 +50,6 @@ namespace GQE
 
   /// Declare System ID typedef which is used for identifying ISystem objects
   typedef std::string typeSystemID;
-
-  /// Declare Entity ID typedef which is used for identifying IEntity objects
-  typedef Uint32 typeEntityID;
 }
 #endif // ENTITY_TYPES_HPP_INCLUDED
 

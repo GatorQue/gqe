@@ -7,6 +7,7 @@
  * @author Jacob Dix
  * @date 20120615 - Initial Release
  * @date 20120622 - Fix warning and error comments
+ * @date 20120630 - Fix documentation of various methods
  */
 #ifndef PROPERTY_MANAGER_HPP_INCLUDED
 #define PROPERTY_MANAGER_HPP_INCLUDED
@@ -35,15 +36,15 @@ namespace GQE
       virtual ~PropertyManager();
 
       /**
-       * HasProperty returs true if thePropertyID specified exists in this
+       * HasID returns true if thePropertyID specified exists in this
        * PropertyManager.
        * @param[in] thePropertyID to lookup in this PropertyManager
        * @return true if thePropertyID exists, false otherwise
        */
-      bool HasID(const typePropertyID thePropertyID);
+      bool HasID(const typePropertyID thePropertyID) const;
 
       /**
-       * GetProperty returns the property as type with the ID of thePropertyID.
+       * Get returns the property as type with the ID of thePropertyID.
        * @param[in] thePropertyID is the ID of the property to return.
        * @return the value stored in the found propery in the form of TYPE. If no
        * Property was found it returns the default value the type constructor.
@@ -66,7 +67,7 @@ namespace GQE
       }
 
       /**
-       * SetProperty sets the property with the ID of thePropertyID to theValue.
+       * Set sets the property with the ID of thePropertyID to theValue.
        * @param[in] thePropertyID is the ID of the property to set.
        * @param[in] theValue is the value to set.
        */
@@ -88,7 +89,7 @@ namespace GQE
       }
 
       /**
-       * AddProperty Creates a Property and addes it to this entity.
+       * Add creates a Property and addes it to this PropertyManager.
        * @param[in] thePropertyID is the ID of the property to create.
        * @param[in] theValue is the inital value to set.
        */
@@ -105,7 +106,7 @@ namespace GQE
       }
 
       /**
-       * AddProperty gets a premade Property and addes it to this entity.
+       * Add gets a premade Property and adds it to this PropertyManager.
        * @param[in] theProperty is a pointer to a pre exisiting property.
        */
       void Add(IProperty* theProperty);
@@ -116,7 +117,6 @@ namespace GQE
        * @param[in] thePropertyManager to clone into ourselves
        */
       void Clone(const PropertyManager& thePropertyManager);
-
     protected:
 
     private:

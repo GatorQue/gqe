@@ -9,10 +9,12 @@
  * @date 20120620 - Fix typo in destructor method description
  * @date 20120622 - Changed HandleInit and HandleCleanup
  * @date 20120623 - Improved documentation and adjusted some properties
+ * @date 20120630 - Added SpriteRect to list of dependent properties
  */
 #ifndef MOVEMENT_SYSTEM_HPP_INCLUDED
 #define MOVEMENT_SYSTEM_HPP_INCLUDED
 
+#include <SFML/System.hpp>
 #include <GQE/Entity/interfaces/ISystem.hpp>
 #include <GQE/Entity/Entity_types.hpp>
 
@@ -84,6 +86,15 @@ namespace GQE
        */
       virtual void HandleCleanup(IEntity* theEntity);
 
+      /**
+       * HandleScreenWrap is called by either UpdateFixed or UpdateVariable to
+       * perform the screen wrapping calculations. The screen will wrap if the
+       * IEntity has moved just beyond its SpriteRect width or height on left
+       * or top or just beyond the screen width or height on right and bottom.
+       * @param[in] theEntity to peform screen wrap calculation
+       * @param[in] thePosition is the current position of the sprite
+       */
+      virtual void HandleScreenWrap(IEntity* theEntity, sf::Vector2f* thePosition);
     private:
   };
 } // namespace GQE
@@ -105,6 +116,7 @@ namespace GQE
  * RenderSystem class:
  * - Position: The sf::Vector2f representing the current IEntity position
  * - Rotation: The float representing the current IEntity rotation
+ * - SpriteRect: To determine when to perform screen wrap around
  * If the FixedMovement property is true then the following math is used in the
  * UpdateFixed method:
  * Velocity += Acceleration

@@ -8,6 +8,7 @@
  * @date 20120618 - Use IEntity not Instance and changed AddPrototype to AddProperties
  * @date 20120622 - Small adjustments to implementation and Handle methods
  * @date 20120623 - Improved documentation and adjusted some properties
+ * @date 20120630 - Improve ScreenWrap functionality using SpriteRect values
  */
 #include <SFML/Graphics.hpp>
 #include <GQE/Entity/systems/MovementSystem.hpp>
@@ -78,41 +79,8 @@ namespace GQE
         // If ScreenWrap is true, account for screen wrapping
         if(anEntity->mProperties.Get<bool>("ScreenWrap"))
         {
-#if (SFML_VERSION_MAJOR < 2)
-          if(anPosition.x > (float)mApp.mWindow.GetWidth())
-          {
-            anPosition.x = 0.0f;
-          }
-          else if(anPosition.x < 0.0f)
-          {
-            anPosition.x = (float)mApp.mWindow.GetWidth();
-          }
-          if(anPosition.y > (float)mApp.mWindow.GetHeight())
-          {
-            anPosition.y = 0.0f;
-          }
-          else if(anPosition.y < 0.0f)
-          {
-            anPosition.y = (float)mApp.mWindow.GetHeight();
-          }
-#else
-          if(anPosition.x > (float)mApp.mWindow.getSize().x)
-          {
-            anPosition.x = 0.0f;
-          }
-          else if(anPosition.x < 0.0f)
-          {
-            anPosition.x = (float)mApp.mWindow.getSize().x;
-          }
-          if(anPosition.y > (float)mApp.mWindow.getSize().y)
-          {
-            anPosition.y = 0.0f;
-          }
-          else if(anPosition.y < 0.0f)
-          {
-            anPosition.y = (float)mApp.mWindow.getSize().y;
-          }
-#endif
+          // Call our universal HandleScreenWrap method to wrap this IEntity
+          HandleScreenWrap(anEntity, &anPosition);
         }
 
         // Now update the MovementSystem properties for this IEntity class
@@ -161,50 +129,17 @@ namespace GQE
         // If ScreenWrap is true, account for screen wrapping
         if(anEntity->mProperties.Get<bool>("ScreenWrap"))
         {
-#if (SFML_VERSION_MAJOR < 2)
-          if(anPosition.x > (float)mApp.mWindow.GetWidth())
-          {
-            anPosition.x = 0.0f;
-          }
-          else if(anPosition.x < 0.0f)
-          {
-            anPosition.x = (float)mApp.mWindow.GetWidth();
-          }
-          if(anPosition.y > (float)mApp.mWindow.GetHeight())
-          {
-            anPosition.y = 0.0f;
-          }
-          else if(anPosition.y < 0.0f)
-          {
-            anPosition.y = (float)mApp.mWindow.GetHeight();
-          }
-#else
-          if(anPosition.x > (float)mApp.mWindow.getSize().x)
-          {
-            anPosition.x = 0.0f;
-          }
-          else if(anPosition.x < 0.0f)
-          {
-            anPosition.x = (float)mApp.mWindow.getSize().x;
-          }
-          if(anPosition.y > (float)mApp.mWindow.getSize().y)
-          {
-            anPosition.y = 0.0f;
-          }
-          else if(anPosition.y < 0.0f)
-          {
-            anPosition.y = (float)mApp.mWindow.getSize().y;
-          }
-#endif
+          // Call our universal HandleScreenWrap method to wrap this IEntity
+          HandleScreenWrap(anEntity, &anPosition);
         }
 
         // Now update the MovementSystem properties for this IEntity class
-        anEntity->mProperties.Set<sf::Vector2f>("Velocity",anVelocity);
-        anEntity->mProperties.Set<float>("RotationalVelocity",anRotationalVelocity);
+        anEntity->mProperties.Set<sf::Vector2f>("Velocity", anVelocity);
+        anEntity->mProperties.Set<float>("RotationalVelocity", anRotationalVelocity);
 
         // Now update the RenderSystem properties of this IEntity class
-        anEntity->mProperties.Set<sf::Vector2f>("Position",anPosition);
-        anEntity->mProperties.Set<float>("Rotation",anRotation);
+        anEntity->mProperties.Set<sf::Vector2f>("Position", anPosition);
+        anEntity->mProperties.Set<float>("Rotation", anRotation);
       } //if(anEntity->mProperties.Get<bool>("FixedMovement") == false)
     } // while(anEntityIter != mEntities.end())
   }
@@ -217,6 +152,57 @@ namespace GQE
   {
     // Do nothing
   }
+
+  void MovementSystem::HandleScreenWrap(IEntity* theEntity, sf::Vector2f* thePosition)
+  {
+    // Get SpriteRect to see how many pixels to over shoot screen before wrapping
+    sf::IntRect anSpriteRect = theEntity->mProperties.Get<sf::IntRect>("SpriteRect");
+
+#if (SFML_VERSION_MAJOR < 2)
+    // If current x is bigger than screen width then wrap to barely showing sprite
+    if(thePosition->x > (float)mApp.mWindow.GetWidth())
+    {
+      thePosition->x = -(float)anSpriteRect.GetWidth();
+    }
+    // If current x is less than width of sprite then wrap to barley showing sprite
+    else if(thePosition->x < -(float)anSpriteRect.GetWidth())
+    {
+      thePosition->x = (float)mApp.mWindow.GetWidth();
+    }
+    // If current y is bigger than screen height then wrap to barely showing sprite
+    if(thePosition->y > (float)mApp.mWindow.GetHeight())
+    {
+      thePosition->y = -(float)anSpriteRect.GetHeight();
+    }
+    // If current y is less than height of sprite then wrap to barley showing sprite
+    else if(thePosition->y < -(float)anSpriteRect.GetHeight())
+    {
+      thePosition->y = (float)mApp.mWindow.GetHeight();
+    }
+#else
+    // If current x is bigger than screen width then wrap to barely showing sprite
+    if(thePosition->x > (float)mApp.mWindow.getSize().x)
+    {
+      thePosition->x = -(float)anSpriteRect.width;
+    }
+    // If current x is less than width of sprite then wrap to barley showing sprite
+    else if(thePosition->x < -(float)anSpriteRect.width)
+    {
+      thePosition->x = (float)mApp.mWindow.getSize().x;
+    }
+    // If current y is bigger than screen height then wrap to barely showing sprite
+    if(thePosition->y > (float)mApp.mWindow.getSize().y)
+    {
+      thePosition->y = -(float)anSpriteRect.height;
+    }
+    // If current y is less than height of sprite then wrap to barley showing sprite
+    else if(anPosition->y < -(float)anSpriteRect.height)
+    {
+      thePosition->y = (float)mApp.mWindow.getSize().y;
+    }
+#endif
+  }
+
 } // namespace GQE
 
 /**

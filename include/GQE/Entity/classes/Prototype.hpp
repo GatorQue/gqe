@@ -7,11 +7,12 @@
  * @date 20120423 - Initial Release
  * @date 20120616 - Fixed MakeInstance method parameter comments
  * @date 20120620 - Use Prototype to manage and delete eventually all Instances created
+ * @date 20120630 - Add new GetInstance method to retrieve specific instance
  */
 #ifndef PROTOTYPE_HPP_INCLUDED
 #define PROTOTYPE_HPP_INCLUDED
 
-#include <vector>
+#include <map>
 #include <GQE/Entity/interfaces/IEntity.hpp>
 #include <GQE/Entity/Entity_types.hpp>
 
@@ -39,6 +40,15 @@ namespace GQE
       const typePrototypeID GetID(void) const;
 
       /**
+       * GetInstance is responsible for returning the Instance class that
+       * matches theEntityID provided. Each Prototype class keeps track of all
+       * Instance classes that were created using the MakeInstance method below.
+       * @param[in] theEntityID to find and return
+       * @return a pointer to theInstance class found, NULL otherwise
+       */
+      Instance* GetInstance(const typeEntityID theEntityID) const;
+
+      /**
        * MakeInstance is responsible for creating an Instance of this Prototype
        * class using the MakeClone methods provided by the IComponent and
        * IProperty derived classes.
@@ -51,7 +61,7 @@ namespace GQE
       /// The prototype ID assigned to this Prototype class
       const typePrototypeID mPrototypeID;
       /// A linked list of all Instance classes created by this Prototype
-      std::vector<Instance*> mInstances;
+      std::map<const typeEntityID, Instance*> mInstances;
   };
 } // namespace GQE
 

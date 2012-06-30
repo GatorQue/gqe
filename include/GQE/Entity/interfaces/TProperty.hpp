@@ -25,8 +25,8 @@ namespace GQE
        */
       TProperty(const typePropertyID thePropertyID) :
         IProperty(typeid(TYPE).name(), thePropertyID)
-    {
-    }
+      {
+      }
 
       /**
        * GetValue will return the property value
@@ -41,9 +41,10 @@ namespace GQE
        * SetValue will set the property value to the value
        * provided.
        */
-      void SetValue(TYPE theValue)
+      void SetValue(TYPE& theValue)
       {
-        mValue=theValue;
+        // Use assignment operation to transfer theValue contents over
+        mValue = theValue;
       }
 
       /**
