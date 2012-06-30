@@ -20,7 +20,7 @@ namespace GQE
 
   ActionSystem::~ActionSystem()
   {
-		// Make sure clear all of our IAction classes
+    // Make sure clear all of our IAction classes
     std::map<const typeActionID, IAction*>::iterator anActionIter;
 
     // Start at the beginning of the list of IAction classes
@@ -32,7 +32,7 @@ namespace GQE
     }
 
     // Last of all clear our list of IActions
-		mActions.clear();
+    mActions.clear();
   }
 
   IAction* ActionSystem::GetAction(const typeActionID theActionID)
@@ -61,8 +61,8 @@ namespace GQE
       {
         // Add theAction provided to our map
         mActions.insert(
-          std::pair<const typeActionID, IAction*>(
-          theAction->GetID(), theAction));
+            std::pair<const typeActionID, IAction*>(
+              theAction->GetID(), theAction));
       }
       else
       {
@@ -128,7 +128,7 @@ namespace GQE
     IAction* anEntity = theActionIter->second;
 
     // First remove the IAction from our list
-		mActions.erase(theActionIter);
+    mActions.erase(theActionIter);
   }
 } // namespace GQE
 
@@ -152,3 +152,4 @@ namespace GQE
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+

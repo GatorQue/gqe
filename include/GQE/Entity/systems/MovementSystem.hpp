@@ -96,7 +96,7 @@ namespace GQE
        */
       virtual void HandleScreenWrap(IEntity* theEntity, sf::Vector2f* thePosition);
     private:
-  };
+  }; // class MovementSystem
 } // namespace GQE
 
 #endif // MOVEMENT_SYSTEM_HPP_INCLUDED

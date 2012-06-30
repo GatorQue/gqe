@@ -84,7 +84,7 @@ namespace GQE
       Type_t mType;
       /// The property ID assigned to this IProperty derived class
       const typePropertyID mPropertyID;
-  };
+  }; // class IProperty
 } // namespace GQE
 #endif //IPROPERTY_HPP_INCLUDED
 

@@ -76,7 +76,7 @@ namespace GQE
       }
     private:
       TYPE mValue;
-  };
+  }; // class TProperty
 } // namespace GQE
 #endif // TPROPERTY_HPP_INCLUDED
 

@@ -95,8 +95,8 @@ namespace GQE
        * @param[in] theSystemIter iterator to be erased
        */
       void EraseSystem(std::map<const typeSystemID, ISystem*>::iterator theSystemIter);
-  };
-}
+  }; // class IEntity
+} // namespace GQE
 
 #endif // IENTITY_HPP_INCLUDED
 

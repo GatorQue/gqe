@@ -85,7 +85,7 @@ namespace GQE
       virtual void HandleCleanup(IEntity* theEntity);
 
     private:
-  };
+  }; // class RenderSystem
 } // namespace GQE
 
 #endif // RENDER_SYSTEM_HPP_INCLUDED

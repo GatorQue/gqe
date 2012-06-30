@@ -77,9 +77,9 @@ namespace GQE
     }
   }
 
-	void IEntity::DropAllSystems(void)
-	{
-		// Make sure we drop ourselves from all registered ISystem classes
+  void IEntity::DropAllSystems(void)
+  {
+    // Make sure we drop ourselves from all registered ISystem classes
     std::map<const typeSystemID, ISystem*>::iterator anSystemIter;
 
     // Start at the beginning of the list of ISystem classes
@@ -90,8 +90,8 @@ namespace GQE
     }
 
     // Last of all clear our list of systems
-		mSystems.clear();
-	}
+    mSystems.clear();
+  }
 
   void IEntity::EraseSystem(std::map<const typeSystemID, ISystem*>::iterator theSystemIter)
   {
@@ -99,7 +99,7 @@ namespace GQE
     ISystem* anSystem = theSystemIter->second;
 
     // First remove the ISystem from our list
-		mSystems.erase(theSystemIter);
+    mSystems.erase(theSystemIter);
 
     // Now use our ISystem reference to remove any IEntity references
     if(anSystem->HasEntity(GetID()))

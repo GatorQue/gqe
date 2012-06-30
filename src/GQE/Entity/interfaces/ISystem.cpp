@@ -83,7 +83,7 @@ namespace GQE
 
   void ISystem::DropAllEntities(void)
   {
-		// Make sure we drop ourselves from all registered IEntity classes
+    // Make sure we drop ourselves from all registered IEntity classes
     std::map<const typeEntityID, IEntity*>::iterator anEntityIter;
 
     // Start at the beginning of the list of IEntity classes
@@ -95,7 +95,7 @@ namespace GQE
     }
 
     // Last of all clear our list of entities
-		mEntities.clear();
+    mEntities.clear();
   }
 
   void ISystem::EraseEntity(std::map<const typeEntityID, IEntity*>::iterator theEntityIter)
@@ -104,7 +104,7 @@ namespace GQE
     IEntity* anEntity = theEntityIter->second;
 
     // First remove the IEntity from our list
-		mEntities.erase(theEntityIter);
+    mEntities.erase(theEntityIter);
 
     // Now handle any last minute cleanup for this IEntity
     HandleCleanup(anEntity);

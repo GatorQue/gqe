@@ -140,7 +140,7 @@ namespace GQE
        * @param[in] theEntityIter iterator to be erased
        */
       void EraseEntity(std::map<const typeEntityID, IEntity*>::iterator theEntityIter);
-  };
+  }; // class ISystem
 } // namespace GQE
 
 #endif // ICOMPONENT_HPP_INCLUDED
