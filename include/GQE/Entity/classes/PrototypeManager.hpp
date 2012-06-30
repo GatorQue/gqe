@@ -2,7 +2,7 @@
  * Provides a system for Managing Prototype and Instance IEntity derived
  * classes.
  *
- * @file include/GQE/Entity/classes/PrototypeManager.hpp>
+ * @file include/GQE/Entity/classes/PrototypeManager.hpp
  * @author Jacob Dix
  * @date 20120425 - Initial Release
  * @date 20120618 - Changed name from mPrototypeList to mPrototypes

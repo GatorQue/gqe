@@ -1,7 +1,7 @@
 /**
  * Provides the IEntity interface class for all game entities in a game.
  *
- * @file include/GQE/Entity/interfaces/IEntity.hpp>
+ * @file include/GQE/Entity/interfaces/IEntity.hpp
  * @author Jacob Dix
  * @date 20120418 - Initial Release
  * @date 20120507 - Changed how properties are retrived/set.

@@ -8,6 +8,7 @@
  * @date 20120616 - Adjustments made for new PropertyManager
  * @date 20120620 - Use Prototype to manage and delete eventually all Instances created
  * @date 20120622 - Fix issues deleting Instances at destruction
+ * @date 20120630 - Add new GetInstance method to retrieve specific instance
  */
 #include <GQE/Entity/classes/Prototype.hpp>
 #include <GQE/Entity/classes/Instance.hpp>
@@ -27,34 +28,30 @@ namespace GQE
     ILOG() << "Prototype::dtor(" << mPrototypeID << ")" << std::endl;
 
     // Make sure we delete all created Instance classes
-    unsigned int anInstanceIndex;
+    std::map<const typeEntityID, Instance*>::iterator anInstanceIter;
 
-    // Start at the beginning of the list of IEntity classes
-    anInstanceIndex = 0;
-    while(anInstanceIndex < mInstances.size())
+    // Start at the beginning of the list of Instance classes
+    anInstanceIter = mInstances.begin();
+    while(anInstanceIter != mInstances.end())
     {
-      // Get the Instance at the index specified
-      Instance* anInstance = mInstances.at(anInstanceIndex);
+      // Get our Instance pointer
+      Instance* anInstance = anInstanceIter->second;
 
-      // Make sure it wasn't NULL
-      if(anInstance != NULL)
-      {
-        // Cause the Instance to drop itself from all its registered ISystems
-        anInstance->DropAllSystems();
+      // Increment our iterator before deleting our Instance
+      anInstanceIter++;
 
-        // Now delete the Instance
-        delete anInstance;
+      // Cause the Instance to drop itself from all its registered ISystems
+      anInstance->DropAllSystems();
 
-        // Clear out value
-        anInstance = NULL;
-      }
+      // Now delete the Instance
+      delete anInstance;
 
-      // Increment our index
-      anInstanceIndex++;
+      // Clear out value
+      anInstance = NULL;
     }
 
-    // Now clear our instance list
-    mInstances.clear();
+    // Last of all clear our list of Instances
+		mInstances.clear();
   }
 
   const typePrototypeID Prototype::GetID(void) const
@@ -62,10 +59,30 @@ namespace GQE
     return mPrototypeID;
   }
 
+  Instance* Prototype::GetInstance(const typeEntityID theEntityID) const
+  {
+    // Default return result to NULL for now
+    Instance* anResult = NULL;
+
+    // See if we can find theEntityID in our map of Instances
+    std::map<const typeEntityID, Instance*>::const_iterator anInstanceIter;
+    anInstanceIter = mInstances.find(theEntityID);
+    if(anInstanceIter != mInstances.end())
+    {
+      // Get the Instance class found
+      anResult = anInstanceIter->second;
+    }
+
+    // Return anResult found above or NULL otherwise
+    return anResult;
+  }
+
   Instance* Prototype::MakeInstance()
   {
+    // Try to create an Instance class right now
     Instance* anInstance = new(std::nothrow) Instance(*this);
 
+    // If successful, clone our Prototype properties to this new Instance class
     if(anInstance != NULL)
     {
       // Clone our Prototype properties into the new Instance class
@@ -83,7 +100,8 @@ namespace GQE
       }
 
       // Add this Instance to our list of instances we have created
-      mInstances.push_back(anInstance);
+      mInstances.insert(std::pair<const typeEntityID, Instance*>(
+        anInstance->GetID(), anInstance));
 
       // Make note of this instance in our log file
       ILOG() << "Prototype(" << mPrototypeID << ")::MakeInstance("

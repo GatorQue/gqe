@@ -1,33 +1,49 @@
 /**
- * Provides the AnimationSystem class for handing all IEntity animation in a game.
+ * Provides the ActionSystem class for handing all IEntity input in a game.
  *
- * @file include/GQE/Entity/systems/AnimationSystem.cpp
+ * @file src/GQE/Entity/systems/ActionSystem.cpp
  * @author Jacob Dix
- * @date 20120623 - Initial Release
+ * @date 20120620 - Initial Release
  */
-#ifndef ANIMATION_SYSTEM_HPP_INCLUDED
-#define ANIMATION_SYSTEM_HPP_INCLUDED
+#ifndef INPUT_SYSTEM_HPP_INCLUDED
+#define INPUT_SYSTEM_HPP_INCLUDED
 
 #include <GQE/Entity/interfaces/ISystem.hpp>
-#include <GQE/Entity/Entity_types.hpp>
-
 namespace GQE
 {
-  /// The AnimationSystem provides animation support for all IEntity classes in a game
-  class GQE_API AnimationSystem : public ISystem
+  /// The ActionSystem for managing all IEntity input in a game
+  class GQE_API ActionSystem : public ISystem
   {
     public:
       /**
-       * AnimationSystem Constructor.
+       * ActionSystem Constructor.
        * @param[in] theApp is the current GQE app.
        */
-	    AnimationSystem(IApp& theApp);
+      ActionSystem(IApp& theApp);
 
       /**
-       * AnimationSystem Destructor.
+       * ActionSystem Destructor.
        */
-	    virtual ~AnimationSystem();
+      virtual ~ActionSystem();
 
+      /**
+       * GetAction is responsible for retrieving an IAction previously
+       * registered under theActionID specified and returning it to the caller
+       * which is typically an ActionGroup class. All IActions should be first
+       * registered with the ActionSystem before ActionGroups are created and
+       * composed for each IEntity class.
+       * @param[in] theActionID to find and retrieve
+       * @return pointer to IAction found or NULL otherwise
+       */
+      IAction* GetAction(const typeActionID theActionID);
+
+      /**
+       * AddAction is responsible for adding the IAction provided to the list
+       * of available actions to be assigned to an ActionGroup.
+       * @param[in] theAction to be added
+       */
+      void AddAction(IAction* theAction);
+      
       /**
        * AddProperties is responsible for adding the properties used by this
        * ISystem derived class to the IEntity derived class provided.
@@ -79,32 +95,28 @@ namespace GQE
        * to perform any custom work before the IEntity is deleted.
        */
       virtual void HandleCleanup(IEntity* theEntity);
-	  private:
-  };
+    private:
+      // Variables
+      ///////////////////////////////////////////////////////////////////////////
+      /// Map of all available actions
+      std::map<const typeActionID, IAction*> mActions;
+
+      /**
+       * EraseAction will erase the IAction iterator provided.
+       * @param[in] theActionIter iterator to be erased
+       */
+      void EraseAction(std::map<const typeActionID, IAction*>::iterator theActionIter);
+  }; // ActionSystem class
 } // namespace GQE
-#endif // ANIMATION_SYSTEM_HPP_INCLUDED
+
+#endif // INPUT_SYSTEM_HPP_INCLUDED
 
 /**
- * @class GQE::AnimationSystem
+ * @class GQE::ActionSystem
  * @ingroup Entity
- * The AnimationSystem class is used to update the SpriteRect property of each
- * IEntity to cause its Sprite image to show animation. The properties provided
- * by this ISystem are as follows:
- * - FrameClock: The sf::Clock which keeps track of when IEntity was last animated
- * - FrameDelay: The float which determines in seconds when to animate next
- * - FrameModifier: The sf::Vector2u to determine the next animation frame to use
- * - FrameRect: The sf::IntRect which acounts for the animation boundaries
- * The AnimationSystem class makes use of the following properties provided by the
- * RenderSystem class:
- * - SpriteRect: The sf::IntRect currently being shown
- * The math involved is essentially this:
- * ImageRect.x += (ImageRect.Width*FrameModifier.x)
- * ImageRect.y += (ImageRect.Height*FrameModifier.y)
- * And the resulting ImageRect.x and ImageRect.y values are limited to
- * FrameRect.x and FrameRect.y. Your FrameModifier values will typically be set
- * to x=1,y=0 or vice-versa depending on how your animations are organized
- * (horizontal or vertical).
- * 
+ * The ActionSystem class represents the system used to manage all Actions
+ * to be run against with each IEntity class in a game.
+ *
  * Copyright (c) 2010-2012 Jacob Dix
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

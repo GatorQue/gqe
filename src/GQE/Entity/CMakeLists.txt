@@ -3,15 +3,18 @@ set(Entity_HEADER ${INCROOT}/Entity.hpp)
 
 # Entity library additional include files
 set(INC
+    ${INCROOT}/Entity/systems/ActionSystem.hpp
     ${INCROOT}/Entity/systems/AnimationSystem.hpp
     ${INCROOT}/Entity/systems/MovementSystem.hpp
     ${INCROOT}/Entity/systems/RenderSystem.hpp
+    ${INCROOT}/Entity/classes/ActionGroup.hpp
     ${INCROOT}/Entity/classes/PropertyManager.hpp
     ${INCROOT}/Entity/classes/PrototypeManager.hpp
     ${INCROOT}/Entity/classes/Instance.hpp
     ${INCROOT}/Entity/classes/Prototype.hpp
-    ${INCROOT}/Entity/interfaces/ISystem.hpp
+    ${INCROOT}/Entity/interfaces/IAction.hpp
     ${INCROOT}/Entity/interfaces/IEntity.hpp
+    ${INCROOT}/Entity/interfaces/ISystem.hpp
     ${INCROOT}/Entity/interfaces/IProperty.hpp
     ${INCROOT}/Entity/interfaces/TProperty.hpp
     ${INCROOT}/Entity/Entity_types.hpp
@@ -19,15 +22,18 @@ set(INC
 
 # Entity library source files
 set(SRC
+    ${SRCROOT}/Entity/systems/ActionSystem.cpp
     ${SRCROOT}/Entity/systems/AnimationSystem.cpp
     ${SRCROOT}/Entity/systems/MovementSystem.cpp
     ${SRCROOT}/Entity/systems/RenderSystem.cpp
+    ${SRCROOT}/Entity/classes/ActionGroup.cpp
     ${SRCROOT}/Entity/classes/PropertyManager.cpp
     ${SRCROOT}/Entity/classes/PrototypeManager.cpp
     ${SRCROOT}/Entity/classes/Instance.cpp
     ${SRCROOT}/Entity/classes/Prototype.cpp
-    ${SRCROOT}/Entity/interfaces/ISystem.cpp
+    ${SRCROOT}/Entity/interfaces/IAction.cpp
     ${SRCROOT}/Entity/interfaces/IEntity.cpp
+    ${SRCROOT}/Entity/interfaces/ISystem.cpp
     ${SRCROOT}/Entity/interfaces/IProperty.cpp
     ${SRCROOT}/Entity/Entity_types.cpp
 )
