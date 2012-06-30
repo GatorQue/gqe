@@ -26,6 +26,7 @@
  * @date 20120609 - Default to 20 UPS, 20 FPS, and windowed mode and added new
  *                  improved gameloop.
  * @date 20120622 - Remove setting of show value of StatManager to false
+ * @date 20120630 - Add new SetGraphicRange and CalculateGraphicRange methods
  */
 
 #include <assert.h>
@@ -58,6 +59,7 @@ namespace GQE
     mContextSettings(),
 #endif
     mWindowStyle(sf::Style::Close | sf::Style::Resize),
+    mGraphicRange(LowRange),
 #if (SFML_VERSION_MAJOR < 2)
     mInput(mWindow.GetInput()),
 #endif
@@ -177,6 +179,15 @@ namespace GQE
     return mRunning;
   }
 
+  void IApp::SetGraphicRange(const GraphicRange theGraphicRange)
+  {
+    // Sanity check theGraphicRange provided
+    if(theGraphicRange >= LowRange && theGraphicRange <= HighRange)
+    {
+      mGraphicRange = theGraphicRange;
+    }
+  }
+
   float IApp::GetUpdateRate(void) const
   {
     // Return the previously set UpdateFixed game loop rate
@@ -216,6 +227,27 @@ namespace GQE
     mRunning = false;
   }
 
+  const GraphicRange IApp::CalculateRange(Uint32 theHeight) const
+  {
+    // Default to LowRange
+    GraphicRange anResult = LowRange;
+
+    // Do we fall under the Medium Range category?
+    if(((theHeight - 240) / 10.0) > 52.0 && ((theHeight - 240) / 10.0) <= 72.0)
+    {
+      // Return MidRange
+      anResult = MidRange;
+    }
+    else if(((theHeight - 240) / 10.0) > 72.0)
+    {
+      // Return HighRange
+      anResult = HighRange;
+    }
+
+    // Return anResult determined above or the default of LowRange
+    return anResult;
+  }
+
   void IApp::InitSettingsConfig(void)
   {
     SLOG(App_InitSettingsConfig, SeverityInfo) << std::endl;
@@ -250,6 +282,9 @@ namespace GQE
       mVideoMode.BitsPerPixel = DEFAULT_VIDEO_BPP;
     }
 
+    // Calculate and set GraphicRange value
+    SetGraphicRange(CalculateRange(mVideoMode.Height));
+
     // Create a RenderWindow object using VideoMode object above
     mWindow.Create(mVideoMode, mTitle, mWindowStyle, mWindowSettings);
 
@@ -271,6 +306,9 @@ namespace GQE
       mVideoMode.height = DEFAULT_VIDEO_HEIGHT;
       mVideoMode.bitsPerPixel = DEFAULT_VIDEO_BPP;
     }
+
+    // Calculate and set GraphicRange value
+    SetGraphicRange(CalculateRange(mVideoMode.height));
 
     // Create a RenderWindow object using VideoMode object above
     mWindow.create(mVideoMode, mTitle, mWindowStyle, mContextSettings);

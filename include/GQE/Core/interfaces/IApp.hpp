@@ -17,6 +17,7 @@
  * @date 20120512 - Add new Init hooks for derived classes and changed name to IApp
  * @date 20120609 - Default to 20 UPS, 20 FPS, and windowed mode and added new
  *                  improved gameloop.
+ * @date 20120630 - Add new SetGraphicRange and CalculateGraphicRange methods
  */
 #ifndef   CORE_APP_HPP_INCLUDED
 #define   CORE_APP_HPP_INCLUDED
@@ -39,7 +40,7 @@ namespace GQE
   {
     public:
       // Constants
-      ///////////////////////////////////////////////////////////////////////////
+      /////////////////////////////////////////////////////////////////////////
       /// Default Video Width to use if config file not found
       static const unsigned int DEFAULT_VIDEO_WIDTH = 800;
       /// Default Video Height to use if config file not found
@@ -50,7 +51,7 @@ namespace GQE
       static const char* APP_SETTINGS;
 
       // Variables
-      ///////////////////////////////////////////////////////////////////////////
+      /////////////////////////////////////////////////////////////////////////
       /// Title to use for Window
       std::string               mTitle;
       /// Video Mode to use (width, height, bpp)
@@ -63,8 +64,10 @@ namespace GQE
 #else
       sf::ContextSettings       mContextSettings;
 #endif
-      /// Window style to use when createing Render window
+      /// Window style to use when creating Render window
       unsigned long             mWindowStyle;
+      /// Recommended Graphic Range to use based on screen height
+      GraphicRange              mGraphicRange;
       /// Input manager for Render window above
 #if (SFML_VERSION_MAJOR < 2)
       const sf::Input&          mInput;
@@ -109,6 +112,14 @@ namespace GQE
        * @return true if Application is running, false otherwise
        */
       bool IsRunning(void) const;
+
+      /**
+       * SetGraphicRange will set theGraphicRange value provided if it fits
+       * within the GraphicRange enumeration. It is typically called with the
+       * result of CalculateRange in the InitRenderer method.
+       * @param[in] theGraphicRange to set
+       */
+      void SetGraphicRange(const GraphicRange theGraphicRange);
 
       /**
        * GetUpdateRate will return the current game loop update rate being
@@ -198,6 +209,14 @@ namespace GQE
 #endif
       /// Maximum sequential UpdateFixed calls allowed to still meet minimum frame rate
       Uint32       mMaxUpdates;
+
+      /**
+       * CalculateRange is responsible for returning the best GraphicRange
+       * value to use for the given window height provided.
+       * @param[in] theHeight to use as part of calculation.
+       * @return a GraphicRange enum value computed
+       */
+      const GraphicRange CalculateRange(Uint32 theHeight) const;
 
       /**
        * InitApplication is responsible for registering and loading the

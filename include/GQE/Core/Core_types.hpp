@@ -13,6 +13,7 @@
  * @date 20110627 - Removed extra , from enum and ; from namespace
  * @date 20120426 - Remove gLogger variable (moved to ILogger::gInstance)
  * @date 20120428 - Added new IAsset and IAssetHandler types
+ * @date 20120630 - Added new GraphicRange enumeration
  */
 #ifndef   GQE_CORE_TYPES_HPP_INCLUDED
 #define   GQE_CORE_TYPES_HPP_INCLUDED
@@ -30,6 +31,14 @@
 
 namespace GQE
 {
+  /// Enumeration of recommended Graphic Range
+  enum GraphicRange
+  {
+    LowRange  = 0, ///< Recommend using LowRange graphics (32x32 pixels)
+    MidRange  = 1, ///< Recommend using MidRange graphics (64x64 pixels)
+    HighRange = 2  ///< Recommend using HighRange graphics (128x128 pixels)
+  };
+
   /// Enumeration of AssetLoadTime
   enum AssetLoadTime
   {
