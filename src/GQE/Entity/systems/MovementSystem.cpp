@@ -196,7 +196,7 @@ namespace GQE
       thePosition->y = -(float)anSpriteRect.height;
     }
     // If current y is less than height of sprite then wrap to barley showing sprite
-    else if(anPosition->y < -(float)anSpriteRect.height)
+    else if(thePosition->y < -(float)anSpriteRect.height)
     {
       thePosition->y = (float)mApp.mWindow.getSize().y;
     }
