@@ -9,6 +9,7 @@
  * @date 20120620 - Use Prototype to manage and delete eventually all Instances created
  * @date 20120622 - Fix issues deleting Instances at destruction
  * @date 20120630 - Add new GetInstance method to retrieve specific instance
+ * @date 20120630 - Add Destroy, DestroyInstance, and DropAllInstance methods
  */
 #include <GQE/Entity/classes/Prototype.hpp>
 #include <GQE/Entity/classes/Instance.hpp>
@@ -27,36 +28,43 @@ namespace GQE
   {
     ILOG() << "Prototype::dtor(" << mPrototypeID << ")" << std::endl;
 
-    // Make sure we delete all created Instance classes
-    std::map<const typeEntityID, Instance*>::iterator anInstanceIter;
-
-    // Start at the beginning of the list of Instance classes
-    anInstanceIter = mInstances.begin();
-    while(anInstanceIter != mInstances.end())
-    {
-      // Get our Instance pointer
-      Instance* anInstance = anInstanceIter->second;
-
-      // Increment our iterator before deleting our Instance
-      anInstanceIter++;
-
-      // Cause the Instance to drop itself from all its registered ISystems
-      anInstance->DropAllSystems();
-
-      // Now delete the Instance
-      delete anInstance;
-
-      // Clear out value
-      anInstance = NULL;
-    }
-
-    // Last of all clear our list of Instances
-		mInstances.clear();
+    // Call our DropAllInstances method to remove all Instance classes
+    DropAllInstances();
   }
 
   const typePrototypeID Prototype::GetID(void) const
   {
     return mPrototypeID;
+  }
+
+  void Prototype::Destroy(void)
+  {
+    // Call our DropAllInstances method to remove all Instance classes
+    DropAllInstances();
+  }
+
+  void Prototype::DestroyInstance(const typeEntityID theEntityID)
+  {
+    // See if we can find theEntityID in our map of Instances
+    std::map<const typeEntityID, Instance*>::const_iterator anInstanceIter;
+    anInstanceIter = mInstances.find(theEntityID);
+    if(anInstanceIter != mInstances.end())
+    {
+      // First get our Instance class pointer
+      Instance* anInstance = anInstanceIter->second;
+
+      // Next, remove this Instance from our list of Instances
+      mInstances.erase(anInstanceIter);
+
+      // Now call the Destroy method for this Instance
+      anInstance->Destroy();
+
+      // Now delete the Instance
+      delete anInstance;
+
+      // Remove our pointer to this instance (sanity)
+      anInstance = NULL;
+    }
   }
 
   Instance* Prototype::GetInstance(const typeEntityID theEntityID) const
@@ -114,6 +122,35 @@ namespace GQE
 
     // Return the new Instance class created
     return anInstance;
+  }
+
+  void Prototype::DropAllInstances(void)
+  {
+    // Make sure we delete all created Instance classes
+    std::map<const typeEntityID, Instance*>::iterator anInstanceIter;
+
+    // Start at the beginning of the list of Instance classes
+    anInstanceIter = mInstances.begin();
+    while(anInstanceIter != mInstances.end())
+    {
+      // Get our Instance pointer
+      Instance* anInstance = anInstanceIter->second;
+
+      // Increment our iterator before deleting our Instance
+      anInstanceIter++;
+
+      // Cause the Instance to drop itself from all its registered ISystems
+      anInstance->Destroy();
+
+      // Now delete the Instance
+      delete anInstance;
+
+      // Clear out value
+      anInstance = NULL;
+    }
+
+    // Last of all clear our list of Instances
+		mInstances.clear();
   }
 } // namespace GQE
 

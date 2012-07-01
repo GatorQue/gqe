@@ -11,6 +11,7 @@
  * @date 20120620 - Drop ourselves from registered ISystem classes
  * @date 20120622 - Added EraseSystem and renamed DropEntity to DropAllSystems
  * @date 20120623 - Adjusted scope of some IEntity variables
+ * @date 20120630 - Add virtual Destroy method to be called to destroy an IEntity class
  */
 #ifndef IENTITY_HPP_INCLUDED
 #define IENTITY_HPP_INCLUDED
@@ -53,6 +54,12 @@ namespace GQE
       static typeEntityID UseNextID();
 
       /**
+       * Destroy is responsible for safely marking this IEntity class for
+       * being destroyed and should be implemented by a derived class.
+       */
+      virtual void Destroy(void) = 0;
+
+      /**
        * AddSystem adds a dependant system to the entity.
        * @param[in] theSystem is a pointer to the active system.
        */
@@ -71,17 +78,17 @@ namespace GQE
        */
       void DropSystem(const typeSystemID theSystemID);
 
-      /**
-       * DropAllSystems is responsible for removing this IEntity class from all
-       * registered ISystem classes.
-       */
-      void DropAllSystems(void);
     protected:
       // Variables
       ///////////////////////////////////////////////////////////////////////////
       //A list of systems this entity is controlled by
       std::map<const typeSystemID, ISystem*> mSystems;
 
+      /**
+       * DropAllSystems is responsible for removing this IEntity class from all
+       * registered ISystem classes.
+       */
+      void DropAllSystems(void);
     private:
       // Variables
       ///////////////////////////////////////////////////////////////////////////

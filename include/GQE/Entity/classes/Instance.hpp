@@ -6,6 +6,7 @@
  * @date 20120423 - Initial Release
  * @date 20120616 - Fixed constructor parameter comments
  * @date 20120618 - Move ID related stuff to IEntity base class
+ * @date 20120630 - Add Destroy method implementation to call DestroyInstance
  */
 #ifndef INSTANCE_HPP_INCLUDED
 #define INSTANCE_HPP_INCLUDED
@@ -29,6 +30,12 @@ namespace GQE
        * Instance deconstructor
        */
       virtual ~Instance();
+
+      /**
+       * Destroy is responsible for safely marking this IEntity class for
+       * being destroyed and should be implemented by a derived class.
+       */
+      virtual void Destroy(void);
 
       /**
        * GetPrototype will return the Prototype class used to create this

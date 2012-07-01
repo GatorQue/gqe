@@ -8,6 +8,7 @@
  * @date 20120616 - Fixed MakeInstance method parameter comments
  * @date 20120620 - Use Prototype to manage and delete eventually all Instances created
  * @date 20120630 - Add new GetInstance method to retrieve specific instance
+ * @date 20120630 - Add Destroy, DestroyInstance, and DropAllInstance methods
  */
 #ifndef PROTOTYPE_HPP_INCLUDED
 #define PROTOTYPE_HPP_INCLUDED
@@ -40,6 +41,18 @@ namespace GQE
       const typePrototypeID GetID(void) const;
 
       /**
+       * Destroy is responsible for removing this Prototype and all of its
+       * Instances.
+       */
+      virtual void Destroy(void);
+
+      /**
+       * DestroyInstance is responsible for dropping and removing theEntityID
+       * Instance specified and is usually called by the Instance class itself.
+       */
+      void DestroyInstance(const typeEntityID theEntityID);
+
+      /**
        * GetInstance is responsible for returning the Instance class that
        * matches theEntityID provided. Each Prototype class keeps track of all
        * Instance classes that were created using the MakeInstance method below.
@@ -62,6 +75,13 @@ namespace GQE
       const typePrototypeID mPrototypeID;
       /// A linked list of all Instance classes created by this Prototype
       std::map<const typeEntityID, Instance*> mInstances;
+
+      /**
+       * DropAllInstances is responsible for dropping all Instance classes that
+       * this Prototype is responsible for as part of the removal of this
+       * Prototype class.
+       */
+      void DropAllInstances(void);
   };
 } // namespace GQE
 

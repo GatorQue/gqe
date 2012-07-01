@@ -5,6 +5,7 @@
  * @author Jacob Dix
  * @date 20120423 - Initial Release
  * @date 20120618 - Move ID related stuff to IEntity base class
+ * @date 20120630 - Add Destroy method implementation to call DestroyInstance
  */
 #include <GQE/Entity/classes/Prototype.hpp>
 #include <GQE/Entity/classes/Instance.hpp>
@@ -19,6 +20,17 @@ namespace GQE
 
   Instance::~Instance()
   {
+    // Call our Prototype to remove ourselves
+    mPrototype.DestroyInstance(GetID());
+  }
+
+  void Instance::Destroy(void)
+  {
+    // First drop all our registered ISystem classes
+    DropAllSystems();
+
+    // Next, call our Prototype to remove ourselves
+    mPrototype.DestroyInstance(GetID());
   }
 
   Prototype& Instance::GetPrototype()
