@@ -16,12 +16,15 @@ set(INC
     ${INCROOT}/Core/assets/SoundHandler.hpp
     ${INCROOT}/Core/classes/AssetManager.hpp
     ${INCROOT}/Core/classes/ConfigReader.hpp
+    ${INCROOT}/Core/classes/EventManager.hpp
     ${INCROOT}/Core/classes/StatManager.hpp
     ${INCROOT}/Core/classes/StateManager.hpp
     ${INCROOT}/Core/interfaces/IApp.hpp
     ${INCROOT}/Core/interfaces/IAssetHandler.hpp
+    ${INCROOT}/Core/interfaces/IEvent.hpp
     ${INCROOT}/Core/interfaces/ILogger.hpp
     ${INCROOT}/Core/interfaces/IState.hpp
+    ${INCROOT}/Core/interfaces/TEvent.hpp
     ${INCROOT}/Core/interfaces/TAsset.hpp
     ${INCROOT}/Core/interfaces/TAssetHandler.hpp
     ${INCROOT}/Core/loggers/Log_macros.hpp
@@ -49,10 +52,12 @@ set(SRC
     ${SRCROOT}/Core/assets/SoundHandler.cpp
     ${SRCROOT}/Core/classes/AssetManager.cpp
     ${SRCROOT}/Core/classes/ConfigReader.cpp
+    ${SRCROOT}/Core/classes/EventManager.cpp
     ${SRCROOT}/Core/classes/StatManager.cpp
     ${SRCROOT}/Core/classes/StateManager.cpp
     ${SRCROOT}/Core/interfaces/IApp.cpp
     ${SRCROOT}/Core/interfaces/IAssetHandler.cpp
+    ${SRCROOT}/Core/interfaces/IEvent.cpp
     ${SRCROOT}/Core/interfaces/ILogger.cpp
     ${SRCROOT}/Core/interfaces/IState.cpp
     ${SRCROOT}/Core/loggers/FatalLogger.cpp

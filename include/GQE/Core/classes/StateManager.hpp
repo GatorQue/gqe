@@ -17,6 +17,7 @@
  * @date 20110218 - Change to system include style
  * @date 20110627 - Removed extra ; from namespace
  * @date 20110810 - Return address not pointer for GetActiveState method
+ * @date 20120702 - Rename HandleCleanup to Cleanup.
  */
 #ifndef   CORE_STATE_MANAGER_HPP_INCLUDED
 #define   CORE_STATE_MANAGER_HPP_INCLUDED
@@ -113,10 +114,10 @@ namespace GQE
       void SetActiveState(typeStateID theStateID);
 
       /**
-       * HandleCleanup is responsible for dealing with the cleanup of recently
+       * Cleanup is responsible for dealing with the cleanup of recently
        * dropped states.
        */
-      void HandleCleanup(void);
+      void Cleanup(void);
 
     private:
       // Constants

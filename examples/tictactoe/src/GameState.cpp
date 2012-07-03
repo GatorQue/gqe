@@ -8,6 +8,7 @@
  * @date 20110831 - Support new SFML2 snapshot changes
  * @date 20120421 - Use arial.ttf font since SFML 2 crashes on exit when using default font
  * @date 20120512 - Use new RAII Asset style
+ * @date 20120630 - Fix mouse image of X or O and SFML 2 and Window mode.
  */
 #include "GameState.hpp"
 #include <GQE/Core/interfaces/IApp.hpp>
@@ -301,7 +302,8 @@ void GameState::UpdateVariable(float theElapsedTime)
 #if (SFML_VERSION_MAJOR < 2)
   mCursor.SetPosition(mApp.mInput.GetMouseX()-32.0f, mApp.mInput.GetMouseY()-25.25f);
 #else
-  mCursor.setPosition(sf::Mouse::getPosition().x-32.0f, sf::Mouse::getPosition().y-25.25f);
+  mCursor.setPosition(sf::Mouse::getPosition(mApp.mWindow).x-32.0f,
+    sf::Mouse::getPosition(mApp.mWindow).y-25.25f);
 #endif
 }
 

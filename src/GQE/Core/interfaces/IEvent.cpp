@@ -1,47 +1,42 @@
 /**
- * Provides an instantiation of an IEntity class that was based on a Prototype
- * IEntity class.
- * @file src/GQE/Entity/classes/Instance.cpp
- * @author Jacob Dix
- * @date 20120423 - Initial Release
- * @date 20120618 - Move ID related stuff to IEntity base class
- * @date 20120630 - Add Destroy method implementation to call DestroyInstance
- * @date 20120702 - Don't call DropAllSystems from Destroy, call from destructor
+ * Provides the IEvent interface class for storing IEvent values.
+ *
+ * @file src/GQE/Core/interfaces/IEvent.cpp
+ * @author Ryan Lindeman
+ * @date 20120630 - Initial Release
  */
-#include <GQE/Entity/classes/Prototype.hpp>
-#include <GQE/Entity/classes/Instance.hpp>
-#include <GQE/Entity/interfaces/ISystem.hpp>
+#include <GQE/Core/interfaces/IEvent.hpp>
 
 namespace GQE
 {
-  Instance::Instance(Prototype& thePrototype) :
-    mPrototype(thePrototype)
+  IEvent::IEvent(std::string theType, const typeEventID theEventID) :
+    mType(theType),
+    mEventID(theEventID)
   {
   }
 
-  Instance::~Instance()
+  IEvent::~IEvent()
   {
-    // First drop all our registered ISystem classes
-    DropAllSystems();
-
-    // Call our Prototype to remove ourselves
-    mPrototype.DestroyInstance(GetID());
   }
 
-  void Instance::Destroy(void)
+  IEvent::Type_t* IEvent::GetType(void)
   {
-    // Next, call our Prototype to remove ourselves
-    mPrototype.DestroyInstance(GetID());
+    return &mType;
   }
 
-  Prototype& Instance::GetPrototype()
+  const typeEventID IEvent::GetID(void) const
   {
-    return mPrototype;
+    return mEventID;
+  }
+
+  void IEvent::SetType(std::string theType)
+  {
+    mType = Type_t(theType);
   }
 } // namespace GQE
 
 /**
- * Copyright (c) 2010-2012 Jacob Dix
+ * Copyright (c) 2010-2012 Ryan Lindeman
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights

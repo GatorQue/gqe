@@ -6,6 +6,7 @@
  * @author Jacob Dix
  * @date 20120609 - Initial Release
  * @date 20120620 - Remove excess warning message when adding existing properties
+ * @date 20120702 - Fix variable misspelling with iterators
  */
 
 #include <GQE/Entity/classes/PropertyManager.hpp>
@@ -19,12 +20,12 @@ namespace GQE
   PropertyManager::~PropertyManager()
   {
     // Make sure to remove all registered properties on desstruction
-    std::map<const typePropertyID, IProperty*>::iterator anProptertyIter;
-    for(anProptertyIter = mList.begin();
-        anProptertyIter != mList.end();
-        ++anProptertyIter)
+    std::map<const typePropertyID, IProperty*>::iterator anPropertyIter;
+    for(anPropertyIter = mList.begin();
+        anPropertyIter != mList.end();
+        ++anPropertyIter)
     {
-      IProperty* anProperty = (anProptertyIter->second);
+      IProperty* anProperty = (anPropertyIter->second);
       delete anProperty;
       anProperty = NULL;
     }
@@ -53,12 +54,12 @@ namespace GQE
   void PropertyManager::Clone(const PropertyManager& thePropertyManager)
   {
     // Make sure to remove all registered properties on desstruction
-    std::map<const typePropertyID, IProperty*>::const_iterator anProptertyIter;
-    for(anProptertyIter = thePropertyManager.mList.begin();
-        anProptertyIter != thePropertyManager.mList.end();
-        ++anProptertyIter)
+    std::map<const typePropertyID, IProperty*>::const_iterator anPropertyIter;
+    for(anPropertyIter = thePropertyManager.mList.begin();
+        anPropertyIter != thePropertyManager.mList.end();
+        ++anPropertyIter)
     {
-      IProperty* anProperty = (anProptertyIter->second);
+      IProperty* anProperty = (anPropertyIter->second);
       Add(anProperty->MakeClone());
     }
   }

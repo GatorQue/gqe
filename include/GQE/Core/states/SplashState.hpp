@@ -12,6 +12,7 @@
  * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
  * @date 20110627 - Removed extra ; from namespace
  * @date 20110906 - Change mApp from a pointer to an address reference
+ * @date 20120702 - Changed Cleanup to HandleCleanup
  */
 #ifndef   CORE_SPLASH_STATE_HPP_INCLUDED
 #define   CORE_SPLASH_STATE_HPP_INCLUDED
@@ -79,10 +80,10 @@ namespace GQE
 
     protected:
       /**
-       * Cleanup is responsible for performing any cleanup required before
-       * this State is removed.
+       * HandleCleanup is responsible for performing any cleanup required
+       * before this State is removed.
        */
-      virtual void Cleanup(void);
+      virtual void HandleCleanup(void);
 
     private:
       // Variables

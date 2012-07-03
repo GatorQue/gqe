@@ -10,6 +10,7 @@
  * @date 20110218 - Added ConfigAsset to Core includes
  * @date 20110906 - Added new StringUtil include file
  * @date 20120512 - Add new Asset Handler classes
+ * @date 20120702 - Add new EventManager and IEvent classes
  */
 #ifndef   GQE_CORE_HPP_INCLUDED
 #define   GQE_CORE_HPP_INCLUDED
@@ -32,14 +33,17 @@
 #include <GQE/Core/assets/SoundHandler.hpp>
 #include <GQE/Core/classes/AssetManager.hpp>
 #include <GQE/Core/classes/ConfigReader.hpp>
+#include <GQE/Core/classes/EventManager.hpp>
 #include <GQE/Core/classes/StatManager.hpp>
 #include <GQE/Core/classes/StateManager.hpp>
 #include <GQE/Core/interfaces/IApp.hpp>
 #include <GQE/Core/interfaces/IAssetHandler.hpp>
+#include <GQE/Core/interfaces/IEvent.hpp>
 #include <GQE/Core/interfaces/ILogger.hpp>
 #include <GQE/Core/interfaces/IState.hpp>
 #include <GQE/Core/interfaces/TAsset.hpp>
 #include <GQE/Core/interfaces/TAssetHandler.hpp>
+#include <GQE/Core/interfaces/TEvent.hpp>
 #include <GQE/Core/loggers/Log_macros.hpp>
 #include <GQE/Core/loggers/FatalLogger.hpp>
 #include <GQE/Core/loggers/FileLogger.hpp>

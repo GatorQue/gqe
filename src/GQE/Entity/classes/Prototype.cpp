@@ -10,18 +10,23 @@
  * @date 20120622 - Fix issues deleting Instances at destruction
  * @date 20120630 - Add new GetInstance method to retrieve specific instance
  * @date 20120630 - Add Destroy, DestroyInstance, and DropAllInstance methods
+ * @date 20120702 - Register HandleCleanup with IState and added IState to HandleCleanup
  */
 #include <GQE/Entity/classes/Prototype.hpp>
 #include <GQE/Entity/classes/Instance.hpp>
 #include <GQE/Entity/interfaces/ISystem.hpp>
+#include <GQE/Core/interfaces/IState.hpp>
 
 namespace GQE
 {
-  Prototype::Prototype(const typePrototypeID thePrototypeID) :
+  Prototype::Prototype(const typePrototypeID thePrototypeID, IState& theState) :
     IEntity(),
     mPrototypeID(thePrototypeID)
   {
     ILOG() << "Prototype::ctor(" << mPrototypeID << ")" << std::endl;
+
+    // Register our HandleCleanup method with theState provided
+    theState.AddCleanup<Prototype>(mPrototypeID, *this, &Prototype::HandleCleanup);
   }
 
   Prototype::~Prototype()
@@ -41,6 +46,9 @@ namespace GQE
   {
     // Call our DropAllInstances method to remove all Instance classes
     DropAllInstances();
+
+    // Call our HandleCleanup method explicitely
+    HandleCleanup(NULL);
   }
 
   void Prototype::DestroyInstance(const typeEntityID theEntityID)
@@ -56,14 +64,8 @@ namespace GQE
       // Next, remove this Instance from our list of Instances
       mInstances.erase(anInstanceIter);
 
-      // Now call the Destroy method for this Instance
-      anInstance->Destroy();
-
-      // Now delete the Instance
-      delete anInstance;
-
-      // Remove our pointer to this instance (sanity)
-      anInstance = NULL;
+      // Now add this Instance to our Cleanup list
+      mCleanup.push_back(anInstance);
     }
   }
 
@@ -136,21 +138,38 @@ namespace GQE
       // Get our Instance pointer
       Instance* anInstance = anInstanceIter->second;
 
-      // Increment our iterator before deleting our Instance
-      anInstanceIter++;
-
-      // Cause the Instance to drop itself from all its registered ISystems
-      anInstance->Destroy();
-
-      // Now delete the Instance
-      delete anInstance;
-
-      // Clear out value
-      anInstance = NULL;
+      // Add this Instance class to our Cleanup list
+      mCleanup.push_back(anInstance);
     }
 
     // Last of all clear our list of Instances
 		mInstances.clear();
+  }
+
+  void Prototype::HandleCleanup(IState* theContext)
+  {
+    // Iterate through each Instance in our Cleanup list
+    std::vector<Instance*>::iterator anIterator =
+      mCleanup.begin();
+
+    // Loop through each iterator and delete each Instance class
+    while(anIterator != mCleanup.end())
+    {
+      // Get the Instance pointer
+      Instance* anInstance = (*anIterator);
+
+      // Increment our iterator first
+      anIterator++;
+
+      // Delete the Instance
+      delete anInstance;
+
+      // Remove our pointer to this instance (sanity)
+      anInstance = NULL;
+    }
+
+    // Now clear our Cleanup list
+    mCleanup.clear();
   }
 } // namespace GQE
 

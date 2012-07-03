@@ -19,6 +19,7 @@
  * @date 20110810 - Return address not pointer from GetActiveState.
  * @date 20120426 - Add another sanity check in HandleCleanup for active state
  * @date 20120512 - Renamed App to IApp since it really is just an interface
+ * @date 20120702 - Rename HandleCleanup to Cleanup.
  */
 
 #include <assert.h>
@@ -56,7 +57,7 @@ namespace GQE
       anState->DeInit();
 
       // Handle the cleanup before we pop it off the stack
-      anState->HandleCleanup();
+      anState->Cleanup();
 
       // Just delete the state now
       delete anState;
@@ -81,7 +82,7 @@ namespace GQE
       anState->DeInit();
 
       // Handle the cleanup before we pop it off the stack
-      anState->HandleCleanup();
+      anState->Cleanup();
 
       // Just delete the state now
       delete anState;
@@ -417,7 +418,7 @@ namespace GQE
     } // for(it=mStack.begin(); it < mStack.end(); it++)
   }
 
-  void StateManager::HandleCleanup(void)
+  void StateManager::Cleanup(void)
   {
     // Remove one of our dead states
     if(!mDead.empty())
@@ -434,9 +435,6 @@ namespace GQE
       {
         anState->DeInit();
       }
-
-      // Next, call HandleCleanup for this state
-      anState->HandleCleanup();
 
       // Just delete the state now
       delete anState;

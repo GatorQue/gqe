@@ -15,6 +15,7 @@
  * @date 20110906 - Change mApp from a pointer to an address reference
  * @date 20120322 - Support new SFML2 snapshot changes
  * @date 20120512 - Renamed App to IApp since it really is just an interface
+ * @date 20120702 - Changed Cleanup to HandleCleanup
  */
 #include <GQE/Core/interfaces/IApp.hpp>
 #include <GQE/Core/states/SplashState.hpp>
@@ -75,10 +76,9 @@ namespace GQE
 #endif
   }
 
-  void SplashState::Cleanup(void)
+  void SplashState::HandleCleanup(void)
   {
-    // Last of all, call our base class implementation
-    IState::Cleanup();
+    // Do nothing
   }
 
 } // namespace GQE

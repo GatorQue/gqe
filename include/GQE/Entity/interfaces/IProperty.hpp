@@ -12,7 +12,7 @@
 
 namespace GQE
 {
-  /// Provides the interface for all IEntity properties
+  /// Provides the interface for all properties managed by the PropertyManager
   class GQE_API IProperty
   {
     public:

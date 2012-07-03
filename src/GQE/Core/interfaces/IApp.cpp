@@ -27,6 +27,7 @@
  *                  improved gameloop.
  * @date 20120622 - Remove setting of show value of StatManager to false
  * @date 20120630 - Add new SetGraphicRange and CalculateGraphicRange methods
+ * @date 20120702 - Call new IState::Cleanup method during game loop
  */
 
 #include <assert.h>
@@ -416,8 +417,11 @@ namespace GQE
       mWindow.display();
 #endif
 
-      // Handle Cleanup of any recently removed states at this point as needed
-      mStateManager.HandleCleanup(); 
+      // Give this state a chance to perform cleanup events now
+      anState.Cleanup();
+
+      // Give the state manager a chance to delete any pending states
+      mStateManager.Cleanup(); 
     } // while(IsRunning() && !mStates.empty())
   }
 

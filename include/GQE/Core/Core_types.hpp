@@ -14,6 +14,7 @@
  * @date 20120426 - Remove gLogger variable (moved to ILogger::gInstance)
  * @date 20120428 - Added new IAsset and IAssetHandler types
  * @date 20120630 - Added new GraphicRange enumeration
+ * @date 20120702 - Add new EventManager and Event ID typedef
  */
 #ifndef   GQE_CORE_TYPES_HPP_INCLUDED
 #define   GQE_CORE_TYPES_HPP_INCLUDED
@@ -93,12 +94,14 @@ namespace GQE
   // Forward declare GQE core interfaces provided
   class IApp;
   class IAssetHandler;
+  class IEvent;
   class ILogger;
   class IState;
 
   // Forward declare GQE core classes provided
   class AssetManager;
   class ConfigReader;
+  class EventManager;
   class StateManager;
 
   // Forward declare GQE core assets provided
@@ -124,14 +127,14 @@ namespace GQE
   class MenuState;
   class SplashState;
 
-  /// Declare Action ID typedef which is used for identifying Action objects
-  typedef std::string typeActionID;
-
   /// Declare Asset ID typedef which is used for identifying Asset objects
   typedef std::string typeAssetID;
 
   /// Declare Asset Handler ID typedef which is used for identifying Asset Handler objects
   typedef std::string typeAssetHandlerID;
+
+  /// Declare Event ID typedef which is used for identifying Event objects
+  typedef std::string typeEventID;
 
   /// Declare State ID typedef which is used for identifying State objects
   typedef std::string typeStateID;

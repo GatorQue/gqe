@@ -9,13 +9,15 @@
  * @date 20120620 - Use Prototype to manage and delete eventually all Instances created
  * @date 20120630 - Add new GetInstance method to retrieve specific instance
  * @date 20120630 - Add Destroy, DestroyInstance, and DropAllInstance methods
+ * @date 20120702 - Add IState to constructor and HandleCleanup
  */
 #ifndef PROTOTYPE_HPP_INCLUDED
 #define PROTOTYPE_HPP_INCLUDED
 
 #include <map>
-#include <GQE/Entity/interfaces/IEntity.hpp>
+#include <vector>
 #include <GQE/Entity/Entity_types.hpp>
+#include <GQE/Entity/interfaces/IEntity.hpp>
 
 namespace GQE
 {
@@ -26,8 +28,9 @@ namespace GQE
       /**
        * Prototype default constructor
        * @param[in] thePrototypeID to use for this prototype
+       * @param[in] theState address to use to register cleanup of instances
        */
-      Prototype(const typePrototypeID thePrototypeID);
+      Prototype(const typePrototypeID thePrototypeID, IState& theState);
 
       /**
        * Prototype destructor
@@ -73,8 +76,10 @@ namespace GQE
       ///////////////////////////////////////////////////////////////////////////
       /// The prototype ID assigned to this Prototype class
       const typePrototypeID mPrototypeID;
-      /// A linked list of all Instance classes created by this Prototype
+      /// A map of all Instance classes created by this Prototype
       std::map<const typeEntityID, Instance*> mInstances;
+      /// A linked list of all Instance classes to destroy during HandleCleanup
+      std::vector<Instance*> mCleanup;
 
       /**
        * DropAllInstances is responsible for dropping all Instance classes that
@@ -82,6 +87,13 @@ namespace GQE
        * Prototype class.
        */
       void DropAllInstances(void);
+
+      /**
+       * HandleCleanup is responsible for deleting all Instance classes from
+       * our Cleanup list. Instances are placed in our Cleanup list by either
+       * the DropAllInstances or DropInstance methods.
+       */
+      void HandleCleanup(IState* theContext);
   };
 } // namespace GQE
 

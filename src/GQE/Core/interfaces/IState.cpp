@@ -8,6 +8,7 @@
  * @date 20120211 - Support new SFML2 snapshot changes
  * @date 20120322 - Support new SFML2 snapshot changes
  * @date 20120512 - Renamed App to IApp since it really is just an interface
+ * @date 20120702 - Switched names of Cleanup and HandleCleanup and added cleanup events
  */
 
 #include <assert.h>
@@ -48,6 +49,7 @@ namespace GQE
     {
       HandleCleanup();
     }
+
     // Initialize if necessary
     if(false == mInit)
     {
@@ -149,21 +151,20 @@ namespace GQE
     return result;
   }
 
-  void IState::HandleCleanup(void)
+  void IState::Cleanup(void)
   {
+    // Always call our cleanup events with our pointer when this method is called
+    mCleanupEvents.DoEvents(this);
+
+    // This will be true if this IState is about to be deleted soon
     if(true == mCleanup)
     {
-      // Call cleanup
-      Cleanup();
+      // Call our handle cleanup virtual method
+      HandleCleanup();
 
       // Clear our cleanup flag
       mCleanup = false;
     }
-  }
-
-  void IState::Cleanup(void)
-  {
-    ILOG() << "IState::Cleanup(" << mStateID << ")" << std::endl;
   }
 } // namespace GQE
 

@@ -18,6 +18,7 @@
  * @date 20110625 - Added UpdateVariable and changed Update to UpdateFixed
  * @date 20110627 - Removed extra ; from namespace
  * @date 20110801 - Moved code to .cpp file due to circular dependencies
+ * @date 20120702 - Switched names of Cleanup and HandleCleanup and added cleanup events
  */
 #ifndef   CORE_ISTATE_HPP_INCLUDED
 #define   CORE_ISTATE_HPP_INCLUDED
@@ -25,6 +26,7 @@
 #include <GQE/Core/Core_types.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
+#include <GQE/Core/classes/EventManager.hpp>
 
 namespace GQE
 {
@@ -43,6 +45,20 @@ namespace GQE
        * IState deconstructor
        */
       virtual ~IState();
+
+      /**
+       * AddCleanup is responsible for adding a class and member function
+       * to call during the HandleCleanup method call of the game loop. When
+       * this event is called, a pointer to the current IState class will
+       * be provided as the Context variable to be used.
+       * @param[in] theEventID to use for this event, must be unique
+       */
+      template<class TCLASS>
+      void AddCleanup(const typeEventID theEventID, TCLASS& theEventClass,
+        typename TEvent<TCLASS, IState>::typeEventFunc theEventFunc)
+      {
+        mCleanupEvents.Add<TCLASS,IState>(theEventID, theEventClass, theEventFunc);
+      }
 
       /**
        * GetID will return the ID used to identify this State object
@@ -123,10 +139,11 @@ namespace GQE
       virtual void Draw(void) = 0;
 
       /**
-       * HandleCleanup is responsible for calling Cleanup if this class has been
-       * flagged to be cleaned up after it completes the game loop.
+       * Cleanup is responsible for calling all the registered cleanup Events
+       * during each game loop iteration and HandleCleanup if this class has
+       * been flagged to be cleaned up after it completes the game loop.
        */
-      void HandleCleanup(void);
+      void Cleanup(void);
 
       /**
        * GetElapsedTime will return one of the following:
@@ -142,10 +159,10 @@ namespace GQE
       IApp&                 mApp;
 
       /**
-       * Cleanup is responsible for performing any cleanup required before
-       * this State is removed.
+       * HandleCleanup is responsible for performing any cleanup required
+       * before this State is removed.
        */
-      virtual void Cleanup(void);
+      virtual void HandleCleanup(void) = 0;
 
     private:
       /// The State ID
@@ -164,6 +181,8 @@ namespace GQE
       sf::Clock             mPausedClock;
       /// Total elapsed time paused since DoInit was called
       float                 mPausedTime;
+      /// The event manager to store cleanup events
+      EventManager          mCleanupEvents;
 
       /**
        * Our copy constructor is private because we do not allow copies of
