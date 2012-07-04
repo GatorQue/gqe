@@ -138,6 +138,9 @@ namespace GQE
       // Get our Instance pointer
       Instance* anInstance = anInstanceIter->second;
 
+      // Increment iterator
+      anInstanceIter++;
+
       // Add this Instance class to our Cleanup list
       mCleanup.push_back(anInstance);
     }
