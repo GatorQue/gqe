@@ -20,7 +20,7 @@ namespace GQE
   {
     public:
       /// Declare the event function typedef for people to use to pass functions
-      typename typedef void (TCLASS::*typeEventFunc)(TCONTEXT* theContext);
+      typedef void (TCLASS::*typeEventFunc)(TCONTEXT* theContext);
 
       /**
        * TEvent default constructor

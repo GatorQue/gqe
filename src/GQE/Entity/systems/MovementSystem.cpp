@@ -32,6 +32,7 @@ namespace GQE
     theEntity->mProperties.Add<float>("RotationalAcceleration",0);
     theEntity->mProperties.Add<bool>("FixedMovement",true);
     theEntity->mProperties.Add<bool>("ScreenWrap",true);
+    theEntity->mProperties.Add<bool>("Movable",true);
     theEntity->AddSystem(this);
   }
 

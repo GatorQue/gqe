@@ -54,7 +54,7 @@ namespace GQE
   void Prototype::DestroyInstance(const typeEntityID theEntityID)
   {
     // See if we can find theEntityID in our map of Instances
-    std::map<const typeEntityID, Instance*>::const_iterator anInstanceIter;
+    std::map<const typeEntityID, Instance*>::iterator anInstanceIter;
     anInstanceIter = mInstances.find(theEntityID);
     if(anInstanceIter != mInstances.end())
     {
