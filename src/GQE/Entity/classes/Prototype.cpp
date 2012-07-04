@@ -15,18 +15,18 @@
 #include <GQE/Entity/classes/Prototype.hpp>
 #include <GQE/Entity/classes/Instance.hpp>
 #include <GQE/Entity/interfaces/ISystem.hpp>
-#include <GQE/Core/interfaces/IState.hpp>
+#include <GQE/Core/interfaces/IApp.hpp>
 
 namespace GQE
 {
-  Prototype::Prototype(const typePrototypeID thePrototypeID, IState& theState) :
+  Prototype::Prototype(const typePrototypeID thePrototypeID) :
     IEntity(),
     mPrototypeID(thePrototypeID)
   {
     ILOG() << "Prototype::ctor(" << mPrototypeID << ")" << std::endl;
 
     // Register our HandleCleanup method with theState provided
-    theState.AddCleanup<Prototype>(mPrototypeID, *this, &Prototype::HandleCleanup);
+    IApp::GetApp()->mStateManager.AddCleanup<Prototype>(mPrototypeID, *this, &Prototype::HandleCleanup);
   }
 
   Prototype::~Prototype()
@@ -149,7 +149,7 @@ namespace GQE
 		mInstances.clear();
   }
 
-  void Prototype::HandleCleanup(IState* theContext)
+  void Prototype::HandleCleanup(void* theContext)
   {
     // Iterate through each Instance in our Cleanup list
     std::vector<Instance*>::iterator anIterator =

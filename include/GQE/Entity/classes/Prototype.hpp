@@ -30,7 +30,7 @@ namespace GQE
        * @param[in] thePrototypeID to use for this prototype
        * @param[in] theState address to use to register cleanup of instances
        */
-      Prototype(const typePrototypeID thePrototypeID, IState& theState);
+      Prototype(const typePrototypeID thePrototypeID);
 
       /**
        * Prototype destructor
@@ -93,7 +93,7 @@ namespace GQE
        * our Cleanup list. Instances are placed in our Cleanup list by either
        * the DropAllInstances or DropInstance methods.
        */
-      void HandleCleanup(IState* theContext);
+      void HandleCleanup(void* theContext);
   };
 } // namespace GQE
 

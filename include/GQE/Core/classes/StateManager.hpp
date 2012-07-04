@@ -25,6 +25,7 @@
 #include <vector>
 #include <string>
 #include <GQE/Core/Core_types.hpp>
+#include <GQE/Core/classes/EventManager.hpp>
 
 namespace GQE
 {
@@ -48,6 +49,20 @@ namespace GQE
        * @param[in] theApp is a pointer to the App (or App derived) class
        */
       void RegisterApp(IApp* theApp);
+
+      /**
+       * AddCleanup is responsible for adding a class and member function
+       * to call during the HandleCleanup method call of the game loop. When
+       * this event is called, a pointer to the current IState class will
+       * be provided as the Context variable to be used.
+       * @param[in] theEventID to use for this event, must be unique
+       */
+      template<class TCLASS>
+      void AddCleanup(const typeEventID theEventID, TCLASS& theEventClass,
+        typename TEvent<TCLASS, void>::typeEventFunc theEventFunc)
+      {
+        mCleanupEvents.Add<TCLASS, void>(theEventID, theEventClass, theEventFunc);
+      }
 
       /**
        * IsEmpty will return true if there are no active states on the stack.
@@ -131,6 +146,8 @@ namespace GQE
       std::vector<IState*>  mStack;
       /// Stack to store the dead states until they properly cleaned up
       std::vector<IState*>  mDead;
+      /// The event manager to store cleanup events
+      EventManager          mCleanupEvents;
 
       /**
        * StateManager copy constructor is private because we do not allow copies

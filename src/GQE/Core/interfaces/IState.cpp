@@ -153,9 +153,6 @@ namespace GQE
 
   void IState::Cleanup(void)
   {
-    // Always call our cleanup events with our pointer when this method is called
-    mCleanupEvents.DoEvents(this);
-
     // This will be true if this IState is about to be deleted soon
     if(true == mCleanup)
     {

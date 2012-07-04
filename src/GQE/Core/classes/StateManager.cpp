@@ -420,6 +420,9 @@ namespace GQE
 
   void StateManager::Cleanup(void)
   {
+    // Always call our cleanup events with our pointer when this method is called
+    mCleanupEvents.DoEvents();
+
     // Remove one of our dead states
     if(!mDead.empty())
     {
@@ -435,6 +438,9 @@ namespace GQE
       {
         anState->DeInit();
       }
+
+      // Handle the cleanup before we delete anState
+      anState->Cleanup();
 
       // Just delete the state now
       delete anState;

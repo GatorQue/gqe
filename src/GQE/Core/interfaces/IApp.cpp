@@ -417,9 +417,6 @@ namespace GQE
       mWindow.display();
 #endif
 
-      // Give this state a chance to perform cleanup events now
-      anState.Cleanup();
-
       // Give the state manager a chance to delete any pending states
       mStateManager.Cleanup(); 
     } // while(IsRunning() && !mStates.empty())
