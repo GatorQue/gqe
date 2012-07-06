@@ -72,10 +72,10 @@ class GameState : public GQE::IState
 
   protected:
     /**
-     * Cleanup is responsible for performing any cleanup required before
+     * HandleCleanup is responsible for performing any cleanup required before
      * this State is removed.
      */
-    virtual void Cleanup(void);
+    virtual void HandleCleanup(void);
 
   private:
     // Variables

@@ -647,10 +647,8 @@ void GameState::Draw(void)
 
 }
 
-void GameState::Cleanup(void)
+void GameState::HandleCleanup(void)
 {
-  // Last of all, call our base class implementation
-  IState::Cleanup();
 }
 
 /**
