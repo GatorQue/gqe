@@ -24,18 +24,18 @@ endif()
 
 # find the GQE include directory
 find_path(GQE_INCLUDE_DIR GQE/Config.hpp
-          PATH_SUFFIXES include
-          PATHS
-          ~/Library/Frameworks
-          /Library/Frameworks
-          /usr/local/
-          /usr/
-          /sw          # Fink
-          /opt/local/  # DarwinPorts
-          /opt/csw/    # Blastwave
-          /opt/
-          ${GQEDIR}
-          $ENV{GQEDIR})
+  PATH_SUFFIXES include
+  PATHS
+  ~/Library/Frameworks
+  /Library/Frameworks
+  /usr/local/
+  /usr/
+  /sw          # Fink
+  /opt/local/  # DarwinPorts
+  /opt/csw/    # Blastwave
+  /opt/
+  ${GQEDIR}
+  $ENV{GQEDIR})
 
 # check the version number
 set(GQE_VERSION_OK TRUE)
@@ -59,7 +59,7 @@ if(GQE_FIND_VERSION AND GQE_INCLUDE_DIR)
   else()
     # GQE version is < 2.0
     if (GQE_REQUESTED_VERSION GREATER 19)
-        set(GQE_VERSION_OK FALSE)
+      set(GQE_VERSION_OK FALSE)
       set(GQE_VERSION_MAJOR 1)
       set(GQE_VERSION_MINOR x)
     endif()
@@ -69,15 +69,15 @@ endif()
 # find the requested components
 set(GQE_FOUND TRUE) # will be set to false if one of the required modules is not found
 set(FIND_GQE_LIB_PATHS ~/Library/Frameworks
-                        /Library/Frameworks
-                        /usr/local
-                        /usr
-                        /sw
-                        /opt/local
-                        /opt/csw
-                        /opt
-                        ${GQEDIR}
-                        $ENV{GQEDIR})
+  /Library/Frameworks
+  /usr/local
+  /usr
+  /sw
+  /opt/local
+  /opt/csw
+  /opt
+  ${GQEDIR}
+  $ENV{GQEDIR})
 
 #set(FIND_GQE_PATH_SUFFIXES lib64 lib)
 #if (WINDOWS AND COMPILER_GCC)
@@ -89,7 +89,7 @@ set(FIND_GQE_LIB_PATHS ~/Library/Frameworks
 #else()
 #	set(FIND_GQE_PATH_SUFFIXES ${FIND_GQE_PATH_SUFFIXES} libs-gcc)
 #endif()
-						
+
 foreach(FIND_GQE_COMPONENT ${GQE_FIND_COMPONENTS})
   string(TOLOWER ${FIND_GQE_COMPONENT} FIND_GQE_COMPONENT_LOWER)
   string(TOUPPER ${FIND_GQE_COMPONENT} FIND_GQE_COMPONENT_UPPER)
@@ -105,27 +105,28 @@ foreach(FIND_GQE_COMPONENT ${GQE_FIND_COMPONENTS})
 
   # debug library
   find_library(GQE_${FIND_GQE_COMPONENT_UPPER}_LIBRARY_DEBUG
-               ${FIND_GQE_COMPONENT_NAME}-d
-               PATH_SUFFIXES lib64 lib
-               PATHS ${FIND_GQE_LIB_PATHS})
+    ${FIND_GQE_COMPONENT_NAME}-d
+    PATH_SUFFIXES lib64 lib
+    PATHS ${FIND_GQE_LIB_PATHS})
 
   # release library
   find_library(GQE_${FIND_GQE_COMPONENT_UPPER}_LIBRARY_RELEASE
-               ${FIND_GQE_COMPONENT_NAME}
-               PATH_SUFFIXES lib64 lib
-               PATHS ${FIND_GQE_LIB_PATHS})
+    ${FIND_GQE_COMPONENT_NAME}
+    PATH_SUFFIXES lib64 lib
+    PATHS ${FIND_GQE_LIB_PATHS})
 
   if (GQE_${FIND_GQE_COMPONENT_UPPER}_LIBRARY_DEBUG OR GQE_${FIND_GQE_COMPONENT_UPPER}_LIBRARY_RELEASE)
     # library found
     set(GQE_${FIND_GQE_COMPONENT_UPPER}_FOUND TRUE)
-    
+
     # if both are found, set GQE_XXX_LIBRARY to contain both
     if (GQE_${FIND_GQE_COMPONENT_UPPER}_LIBRARY_DEBUG AND GQE_${FIND_GQE_COMPONENT_UPPER}_LIBRARY_RELEASE)
       # This causes problems with building under NMake Makefiles (command line Visual Studio)
-      #set(GQE_${FIND_GQE_COMPONENT_UPPER}_LIBRARY debug     ${GQE_${FIND_GQE_COMPONENT_UPPER}_LIBRARY_DEBUG}
-      #                                            optimized ${GQE_${FIND_GQE_COMPONENT_UPPER}_LIBRARY_RELEASE})
-      # Use Release only if both are found
-      set(GQE_${FIND_GQE_COMPONENT_UPPER}_LIBRARY        ${GQE_${FIND_GQE_COMPONENT_UPPER}_LIBRARY_RELEASE})
+      set(GQE_${FIND_GQE_COMPONENT_UPPER}_LIBRARY debug     ${GQE_${FIND_GQE_COMPONENT_UPPER}_LIBRARY_DEBUG}
+        optimized ${GQE_${FIND_GQE_COMPONENT_UPPER}_LIBRARY_RELEASE})
+
+      # Use this instead if your using NMake and you have problems compiling/linking
+      #set(GQE_${FIND_GQE_COMPONENT_UPPER}_LIBRARY        ${GQE_${FIND_GQE_COMPONENT_UPPER}_LIBRARY_RELEASE})
     endif()
 
     # if only one debug/release variant is found, set the other to be equal to the found one
@@ -149,8 +150,8 @@ foreach(FIND_GQE_COMPONENT ${GQE_FIND_COMPONENTS})
 
   # mark as advanced
   MARK_AS_ADVANCED(GQE_${FIND_GQE_COMPONENT_UPPER}_LIBRARY
-                   GQE_${FIND_GQE_COMPONENT_UPPER}_LIBRARY_RELEASE
-                   GQE_${FIND_GQE_COMPONENT_UPPER}_LIBRARY_DEBUG)
+    GQE_${FIND_GQE_COMPONENT_UPPER}_LIBRARY_RELEASE
+    GQE_${FIND_GQE_COMPONENT_UPPER}_LIBRARY_DEBUG)
 
   # add to the global list of libraries
   set(GQE_LIBRARIES ${GQE_LIBRARIES} "${GQE_${FIND_GQE_COMPONENT_UPPER}_LIBRARY}")
@@ -158,24 +159,24 @@ endforeach()
 
 # handle errors
 if(NOT GQE_VERSION_OK)
-    # GQE version not ok
-    set(FIND_GQE_ERROR "GQE found but version too low (requested: ${GQE_FIND_VERSION}, found: ${GQE_VERSION_MAJOR}.${GQE_VERSION_MINOR})")
-    set(GQE_FOUND FALSE)
+  # GQE version not ok
+  set(FIND_GQE_ERROR "GQE found but version too low (requested: ${GQE_FIND_VERSION}, found: ${GQE_VERSION_MAJOR}.${GQE_VERSION_MINOR})")
+  set(GQE_FOUND FALSE)
 elseif(NOT GQE_FOUND)
-    # include directory or library not found
-    set(FIND_GQE_ERROR "Could NOT find GQE (missing: ${FIND_GQE_MISSING})")
+  # include directory or library not found
+  set(FIND_GQE_ERROR "Could NOT find GQE (missing: ${FIND_GQE_MISSING})")
 endif()
 if (NOT GQE_FOUND)
-    if(GQE_FIND_REQUIRED)
-        # fatal error
-        message(FATAL_ERROR ${FIND_GQE_ERROR})
-    elseif(NOT GQE_FIND_QUIETLY)
-        # error but continue
-        message(STATUS "${FIND_GQE_ERROR}")
-    endif()
+  if(GQE_FIND_REQUIRED)
+    # fatal error
+    message(FATAL_ERROR ${FIND_GQE_ERROR})
+  elseif(NOT GQE_FIND_QUIETLY)
+    # error but continue
+    message(STATUS "${FIND_GQE_ERROR}")
+  endif()
 endif()
 
 # handle success
 if(GQE_FOUND)
-    message(STATUS "Found GQE: ${GQE_INCLUDE_DIR}")
+  message(STATUS "Found GQE: ${GQE_INCLUDE_DIR}")
 endif()
