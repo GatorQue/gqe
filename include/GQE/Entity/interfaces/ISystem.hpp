@@ -12,6 +12,7 @@
  *                  HandleInit and HandleCleanup to be called during AddEntity and
  *                  EraseEntity.
  * @date 20120623 - Adjusted scope of some ISystem variables
+ * @date 20120707 - Fix pure-virtual crash which calls HandleCleanup in dtor
  */
 #ifndef ISYSTEM_HPP_INCLUDED
 #define ISYSTEM_HPP_INCLUDED
@@ -127,7 +128,7 @@ namespace GQE
        * dropped from this ISystem and gives the derived ISystem class a chance
        * to perform any custom work before the IEntity is deleted.
        */
-      virtual void HandleCleanup(IEntity* theEntity) = 0;
+      virtual void HandleCleanup(IEntity* theEntity);
 
     private:
       //Variables

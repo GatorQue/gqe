@@ -8,6 +8,7 @@
  * @date 20120618 - Use IEntity not Instance and changed AddPrototype to AddProperties
  * @date 20120620 - Drop ourselves from registered IEntity classes
  * @date 20120622 - Fix issues with dropping IEntity classes
+ * @date 20120707 - Fix pure-virtual crash which calls HandleCleanup in dtor
  */
 #include <GQE/Entity/interfaces/ISystem.hpp>
 #include <GQE/Entity/interfaces/IEntity.hpp>
@@ -96,6 +97,11 @@ namespace GQE
 
     // Last of all clear our list of entities
     mEntities.clear();
+  }
+
+  void ISystem::HandleCleanup(IEntity* theEntity)
+  {
+    // Do nothing
   }
 
   void ISystem::EraseEntity(std::map<const typeEntityID, IEntity*>::iterator theEntityIter)
