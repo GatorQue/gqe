@@ -43,17 +43,31 @@ namespace GQE
     // Make sure the caller didn't give us a bad pointer
     if(theEntity != NULL)
     {
-      // Make sure this entity has the correct properties added for this system
-      AddProperties(theEntity);
+      // Make sure this IEntity doesn't already exist in our list
+      std::map<const typeEntityID, IEntity*>::iterator anIter;
+      anIter = mEntities.find(theEntity->GetID());
+      if(anIter == mEntities.end())
+      {
+        // Make sure this entity has the correct properties added for this system
+        AddProperties(theEntity);
 
-      // Perform any custom Initialization for this new IEntity before adding it
-      HandleInit(theEntity);
+        // Add this system to this entity
+        theEntity->AddSystem(this);
 
-      // Now add this entity to the list of IEntities we currently process
-      mEntities.insert(std::pair<const typeEntityID, IEntity*>(theEntity->GetID(), theEntity));
+        // Perform any custom Initialization for this new IEntity before adding it
+        HandleInit(theEntity);
 
-      // Return the ID of this IEntity as a result
-      anResult = theEntity->GetID();
+        // Now add this entity to the list of IEntities we currently process
+        mEntities.insert(std::pair<const typeEntityID, IEntity*>(theEntity->GetID(), theEntity));
+
+        // Return the ID of this IEntity as a result
+        anResult = theEntity->GetID();
+      }
+      else
+      {
+        WLOG() << "ISystem::AddEntity(" << theEntity->GetID()
+          << ") Entity already exists!" << std::endl;
+      }
     }
     else
     {

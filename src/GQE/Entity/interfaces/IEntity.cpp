@@ -42,9 +42,9 @@ namespace GQE
 
   void IEntity::AddSystem(ISystem* theSystem)
   {
-    if(mSystems.find(theSystem->GetID())==mSystems.end())
+    if(mSystems.find(theSystem->GetID()) == mSystems.end())
     {
-      mSystems[theSystem->GetID()]=theSystem;
+      mSystems[theSystem->GetID()] = theSystem;
     }
   }
 

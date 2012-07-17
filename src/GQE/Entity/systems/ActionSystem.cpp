@@ -79,7 +79,6 @@ namespace GQE
   void ActionSystem::AddProperties(IEntity* theEntity)
   {
     theEntity->mProperties.Add<ActionGroup>("Actions",ActionGroup(this));
-    theEntity->AddSystem(this);
   }
 
   void ActionSystem::HandleEvents(sf::Event theEvent)

@@ -32,7 +32,6 @@ namespace GQE
     theEntity->mProperties.Add<sf::Vector2f>("Position",sf::Vector2f(0,0));
     theEntity->mProperties.Add<float>("Rotation", 0.0f);
     theEntity->mProperties.Add<bool>("Visible", true);
-    theEntity->AddSystem(this);
   }
 
   void RenderSystem::HandleInit(IEntity* theEntity)

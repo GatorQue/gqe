@@ -31,7 +31,6 @@ namespace GQE
     theEntity->mProperties.Add<sf::Vector2u>("FrameModifier",sf::Vector2u(0,0));
 #endif
     theEntity->mProperties.Add<sf::IntRect>("FrameRect",sf::IntRect(0,0,0,0));
-    theEntity->AddSystem(this);
   }
 
   void AnimationSystem::HandleInit(GQE::IEntity* theEntity)
