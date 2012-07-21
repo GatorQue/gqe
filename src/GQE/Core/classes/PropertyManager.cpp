@@ -2,14 +2,14 @@
  * Provides a class that manages all properties for an IEntity. This enables
  * using the PropertyManager class in another class than IEntity if desired.
  *
- * @file src/GQE/Entity/classes/PropertyManager.cpp
+ * @file src/GQE/Core/classes/PropertyManager.cpp
  * @author Jacob Dix
  * @date 20120609 - Initial Release
  * @date 20120620 - Remove excess warning message when adding existing properties
  * @date 20120702 - Fix variable misspelling with iterators
  */
 
-#include <GQE/Entity/classes/PropertyManager.hpp>
+#include <GQE/Core/classes/PropertyManager.hpp>
 
 namespace GQE
 {

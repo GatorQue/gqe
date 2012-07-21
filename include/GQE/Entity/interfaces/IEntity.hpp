@@ -18,7 +18,7 @@
 
 #include <map>
 #include <SFML/Window/Event.hpp>
-#include <GQE/Entity/classes/PropertyManager.hpp>
+#include <GQE/Core/classes/PropertyManager.hpp>
 #include <GQE/Entity/Entity_types.hpp>
 
 namespace GQE

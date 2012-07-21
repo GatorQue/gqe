@@ -1,7 +1,7 @@
 /**
  * Provides a system for storing custom property values.
  *
- * @file include/GQE/Entity/interfaces/TProperty.hpp
+ * @file include/GQE/Core/interfaces/TProperty.hpp
  * @author Jacob Dix
  * @date 20120423 - Initial Release
  */
@@ -9,8 +9,8 @@
 #define TPROPERTY_HPP_INCLUDED
 
 #include <typeinfo>
-#include <GQE/Entity/interfaces/IProperty.hpp>
-#include <GQE/Entity/Entity_types.hpp>
+#include <GQE/Core/interfaces/IProperty.hpp>
+#include <GQE/Core/Core_types.hpp>
 
 namespace GQE
 {

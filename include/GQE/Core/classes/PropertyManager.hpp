@@ -15,9 +15,9 @@
 #include <map>
 #include <typeinfo>
 #include <GQE/Core/loggers/Log_macros.hpp>
-#include <GQE/Entity/interfaces/IProperty.hpp>
-#include <GQE/Entity/interfaces/TProperty.hpp>
-#include <GQE/Entity/Entity_types.hpp>
+#include <GQE/Core/interfaces/IProperty.hpp>
+#include <GQE/Core/interfaces/TProperty.hpp>
+#include <GQE/Core/Core_types.hpp>
 
 namespace GQE
 {

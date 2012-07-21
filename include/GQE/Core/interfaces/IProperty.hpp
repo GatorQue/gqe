@@ -1,14 +1,14 @@
 /**
  * Provides the IProperty interface class for storing IEntity wide values.
  *
- * @file include/GQE/Entity/interfaces/IProperty.hpp
+ * @file include/GQE/Core/interfaces/IProperty.hpp
  * @author Jacob Dix
  * @date 20120423 - Initial Release
  */
 #ifndef IPROPERTY_HPP_INCLUDED
 #define IPROPERTY_HPP_INCLUDED
 
-#include <GQE/Entity/Entity_types.hpp>
+#include <GQE/Core/Core_types.hpp>
 
 namespace GQE
 {

@@ -18,6 +18,7 @@
  * @date 20120609 - Default to 20 UPS, 20 FPS, and windowed mode and added new
  *                  improved gameloop.
  * @date 20120630 - Add new SetGraphicRange and CalculateGraphicRange methods
+ * @date 20120720 - Add new PropertyManager to IApp class for storing app wide properties
  */
 #ifndef   CORE_APP_HPP_INCLUDED
 #define   CORE_APP_HPP_INCLUDED
@@ -29,6 +30,7 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <GQE/Core/classes/AssetManager.hpp>
+#include <GQE/Core/classes/PropertyManager.hpp>
 #include <GQE/Core/classes/StatManager.hpp>
 #include <GQE/Core/classes/StateManager.hpp>
 #include <GQE/Core/Core_types.hpp>
@@ -74,6 +76,8 @@ namespace GQE
 #endif
       /// AssetManager for managing assets
       AssetManager              mAssetManager;
+      /// PropertyManager for managing IApp properties
+      PropertyManager           mProperties;
       /// StatManager for managing game statistics
       StatManager               mStatManager;
       /// StateManager for managing states
