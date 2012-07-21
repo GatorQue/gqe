@@ -25,21 +25,21 @@ namespace GQE
    * @param[in] theBoolean to convert to a string.
    * @return the resulting string after converting theBoolean
    */
-  std::string ConvertBool(const bool theBoolean);
+  std::string GQE_API ConvertBool(const bool theBoolean);
 
   /**
    * ConvertColor will convert theColor value provided into a string.
    * @param[in] theVector to convert to a string.
    * @return the resulting string after converting theVector
    */
-  std::string ConvertColor(const sf::Color theVector);
+  std::string GQE_API ConvertColor(const sf::Color theVector);
 
   /**
    * ConvertFloat will convert the float value provided into a string.
    * @param[in] theFloat to convert to a string.
    * @return the resulting string after converting theFloat
    */
-  std::string ConvertFloat(const bool theFloat);
+  std::string GQE_API ConvertFloat(const bool theFloat);
 
   /**
    * ConvertInt32 will convert the 32 bit signed integer provided into a
@@ -47,7 +47,7 @@ namespace GQE
    * @param[in] theNumber to convert to a string.
    * @return the resulting string after converting theNumber
    */
-  std::string ConvertInt32(const Int32 theNumber);
+  std::string GQE_API ConvertInt32(const Int32 theNumber);
 
   /**
    * ConvertUint32 will convert the 32 bit unsigned integer provided into a
@@ -55,7 +55,7 @@ namespace GQE
    * @param[in] theNumber to convert to a string.
    * @return the resulting string after converting theNumber
    */
-  std::string ConvertUint32(const Uint32 theNumber);
+  std::string GQE_API ConvertUint32(const Uint32 theNumber);
 
   /**
    * ConvertVector2f will convert theVector value provided into a
@@ -63,7 +63,7 @@ namespace GQE
    * @param[in] theVector to convert to a string.
    * @return the resulting string after converting theVector
    */
-  std::string ConvertVector2f(const sf::Vector2f theVector);
+  std::string GQE_API ConvertVector2f(const sf::Vector2f theVector);
 
   /**
    * ConvertVector3f will convert theVector value provided into a
@@ -71,7 +71,7 @@ namespace GQE
    * @param[in] theVector to convert to a string.
    * @return the resulting string after converting theVector
    */
-  std::string ConvertVector3f(const sf::Vector3f theVector);
+  std::string GQE_API ConvertVector3f(const sf::Vector3f theVector);
 
   ///////////////////////////////////////////////////////////////////////////
   // String Parse Methods
@@ -84,7 +84,7 @@ namespace GQE
    * @param[in] theDefault value to return if not one of the above
    * @return the boolean value obtained
    */
-  bool ParseBool(std::string theValue, const bool theDefault);
+  bool GQE_API ParseBool(std::string theValue, const bool theDefault);
 
   /**
    * ParseColor will parse theValue string to obtain the R,G,B,A color values
@@ -93,7 +93,7 @@ namespace GQE
    * @param[in] theDefault color to use if the parser fails
    * @return the color object created with the values obtained
    */
-  sf::Color ParseColor(const std::string theValue, const sf::Color theDefault);
+  sf::Color GQE_API ParseColor(const std::string theValue, const sf::Color theDefault);
 
   /**
    * ParseFloat will parse theValue string to obtain the float value to
@@ -102,7 +102,7 @@ namespace GQE
    * @param[in] theDefault float value to use if the parser fails
    * @return the float value obtained or theDefault if not parsed
    */
-  float ParseFloat(const std::string theValue, const float theDefault);
+  float GQE_API ParseFloat(const std::string theValue, const float theDefault);
 
   /**
    * ParseInt32 will parse theValue string to obtain a signed 32 bit value.
@@ -111,7 +111,7 @@ namespace GQE
    * @param[in] theDefault signed 32 bit value to use if the parser fails
    * @return the signed 32 bit value obtained
    */
-  Int32 ParseInt32(const std::string theValue, const Int32 theDefault);
+  Int32 GQE_API ParseInt32(const std::string theValue, const Int32 theDefault);
 
   /**
    * ParseUint32 will parse theValue string to obtain an unsigned 32 bit
@@ -120,7 +120,7 @@ namespace GQE
    * @param[in] theDefault unsigned 32 bit value to use if the parser fails
    * @return the unsigned 32 bit value obtained
    */
-  Uint32 ParseUint32(const std::string theValue, const Uint32 theDefault);
+  Uint32 GQE_API ParseUint32(const std::string theValue, const Uint32 theDefault);
 
   /**
    * ParseVector2f will parse theValue string to obtain the X,Y vector values
@@ -129,7 +129,7 @@ namespace GQE
    * @param[in] theDefault color to use if the parser fails
    * @return the color object created with the values obtained
    */
-  sf::Vector2f ParseVector2f(const std::string theValue, const sf::Vector2f theDefault);
+  sf::Vector2f GQE_API ParseVector2f(const std::string theValue, const sf::Vector2f theDefault);
 
   /**
    * ParseVector3f will parse theValue string to obtain the X,Y,Z vector values
@@ -138,7 +138,7 @@ namespace GQE
    * @param[in] theDefault color to use if the parser fails
    * @return the color object created with the values obtained
    */
-  sf::Vector3f ParseVector3f(const std::string theValue, const sf::Vector3f theDefault);
+  sf::Vector3f GQE_API ParseVector3f(const std::string theValue, const sf::Vector3f theDefault);
 
 } // namespace GQE
 
