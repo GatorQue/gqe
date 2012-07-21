@@ -26,12 +26,12 @@ namespace GQE
   void RenderSystem::AddProperties(IEntity* theEntity)
   {
     theEntity->mProperties.Add<sf::Sprite>("Sprite",sf::Sprite());
-    theEntity->mProperties.Add<sf::IntRect>("SpriteRect",sf::IntRect(0,0,0,0));
-    theEntity->mProperties.Add<sf::Vector2f>("Scale",sf::Vector2f(1,1));
-    theEntity->mProperties.Add<sf::Vector2f>("Origin",sf::Vector2f(0,0));
-    theEntity->mProperties.Add<sf::Vector2f>("Position",sf::Vector2f(0,0));
-    theEntity->mProperties.Add<float>("Rotation", 0.0f);
-    theEntity->mProperties.Add<bool>("Visible", true);
+    theEntity->mProperties.Add<sf::IntRect>("rSpriteRect",sf::IntRect(0,0,0,0));
+    theEntity->mProperties.Add<sf::Vector2f>("vScale",sf::Vector2f(1,1));
+    theEntity->mProperties.Add<sf::Vector2f>("vOrigin",sf::Vector2f(0,0));
+    theEntity->mProperties.Add<sf::Vector2f>("vPosition",sf::Vector2f(0,0));
+    theEntity->mProperties.Add<float>("fRotation", 0.0f);
+    theEntity->mProperties.Add<bool>("bVisible", true);
   }
 
   void RenderSystem::HandleInit(IEntity* theEntity)
@@ -68,24 +68,24 @@ namespace GQE
         anQueue++;
 
         // See if this IEntity is visible, if so draw it now
-        if(anEntity->mProperties.Get<bool>("Visible"))
+        if(anEntity->mProperties.Get<bool>("bVisible"))
         {
           // Get the other RenderSystem properties now
           sf::Sprite anSprite=anEntity->mProperties.Get<sf::Sprite>("Sprite");
 #if SFML_VERSION_MAJOR<2
-          anSprite.SetPosition(anEntity->mProperties.Get<sf::Vector2f>("Position"));
-          anSprite.SetRotation(anEntity->mProperties.Get<float>("Rotation"));
-          anSprite.SetSubRect(anEntity->mProperties.Get<sf::IntRect>("SpriteRect"));
-          anSprite.SetCenter(anEntity->mProperties.Get<sf::Vector2f>("Origin"));
+          anSprite.SetPosition(anEntity->mProperties.Get<sf::Vector2f>("vPosition"));
+          anSprite.SetRotation(anEntity->mProperties.Get<float>("fRotation"));
+          anSprite.SetSubRect(anEntity->mProperties.Get<sf::IntRect>("rSpriteRect"));
+          anSprite.SetCenter(anEntity->mProperties.Get<sf::Vector2f>("vOrigin"));
           mApp.mWindow.Draw(anSprite);
 #else
-          anSprite.setPosition(anEntity->mProperties.Get<sf::Vector2f>("Position"));
-          anSprite.setRotation(anEntity->mProperties.Get<float>("Rotation"));
-          anSprite.setTextureRect(anEntity->mProperties.Get<sf::IntRect>("SpriteRect"));
-          anSprite.setOrigin(anEntity->mProperties.Get<sf::Vector2f>("Origin"));
+          anSprite.setPosition(anEntity->mProperties.Get<sf::Vector2f>("vPosition"));
+          anSprite.setRotation(anEntity->mProperties.Get<float>("fRotation"));
+          anSprite.setTextureRect(anEntity->mProperties.Get<sf::IntRect>("rSpriteRect"));
+          anSprite.setOrigin(anEntity->mProperties.Get<sf::Vector2f>("vOrigin"));
           mApp.mWindow.draw(anSprite);
 #endif
-        } // if(anEntity->mProperties.Get<bool>("Visible"))
+        } // if(anEntity->mProperties.Get<bool>("bVisible"))
       } // while(anQueue != anIter->second.end())
 
       // Increment map iterator

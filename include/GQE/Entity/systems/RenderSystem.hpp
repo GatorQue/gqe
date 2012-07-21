@@ -95,13 +95,13 @@ namespace GQE
  * @ingroup Entity
  * The RenderSystem class is used to render each IEntity as a Sprite and
  * provides the following properties (which are used in other ISystem classes):
- * - Position: The sf::Vector2f representing the current IEntity position
- * - Rotation: The float representing the current IEntity rotation
- * - SpriteRect: The sf::IntRect to use on the Image provided
- * - Scale: The sf::Vector2f representing the scale to apply to the Image (defaults to 1.0,1.0)
- * - Origin: The sf::Vector2f representing the origin for all transformations
+ * - bVisible: A boolean indicating this IEntity is currently visible
+ * - fRotation: The float representing the current IEntity rotation
+ * - rSpriteRect: The sf::IntRect to use on the Image provided
+ * - vOrigin: The sf::Vector2f representing the origin for all transformations
+ * - vPosition: The sf::Vector2f representing the current IEntity position
+ * - vScale: The sf::Vector2f representing the scale to apply to the Image (defaults to 1.0,1.0)
  * - Sprite: The sf::Sprite that represents this IEntity
- * - Visible: A boolean indicating this IEntity is currently visible
  * The RenderSystem can be combined with the MovementSystem to cause each
  * IEntity to be moved around in the game.
  *

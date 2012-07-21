@@ -91,17 +91,17 @@ namespace GQE
  * IEntity to cause its Sprite image to show animation. The properties provided
  * by this ISystem are as follows:
  * - FrameClock: The sf::Clock which keeps track of when IEntity was last animated
- * - FrameDelay: The float which determines in seconds when to animate next
- * - FrameModifier: The sf::Vector2u to determine the next animation frame to use
- * - FrameRect: The sf::IntRect which acounts for the animation boundaries
+ * - fFrameDelay: The float which determines in seconds when to animate next
+ * - vFrameModifier: The sf::Vector2u to determine the next animation frame to use
+ * - rFrameRect: The sf::IntRect which acounts for the animation boundaries
  * The AnimationSystem class makes use of the following properties provided by the
  * RenderSystem class:
- * - SpriteRect: The sf::IntRect currently being shown
+ * - rSpriteRect: The sf::IntRect currently being shown
  * The math involved is essentially this:
- * ImageRect.x += (ImageRect.Width*FrameModifier.x)
- * ImageRect.y += (ImageRect.Height*FrameModifier.y)
- * And the resulting ImageRect.x and ImageRect.y values are limited to
- * FrameRect.x and FrameRect.y. Your FrameModifier values will typically be set
+ * rSpriteRect.x += (rSpriteRect.Width*FrameModifier.x)
+ * rSpriteRect.y += (rSpriteRect.Height*FrameModifier.y)
+ * And the resulting rSpriteRect.x and rSpriteRect.y values are limited to
+ * rFrameRect.x and rFrameRect.y. Your vFrameModifier values will typically be set
  * to x=1,y=0 or vice-versa depending on how your animations are organized
  * (horizontal or vertical).
  * 

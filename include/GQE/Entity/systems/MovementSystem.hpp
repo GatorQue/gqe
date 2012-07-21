@@ -106,29 +106,29 @@ namespace GQE
  * @ingroup Entity
  * The MovementSystem class is used to update the IElement position based on the
  * following properties it provides:
- * - Velocity: The sf::Vector2f representing the velocity of this IEntity
- * - Acceleration: The sf::Vector2f representing the acceleration of this IEntity
- * - RotationalVelocity: The float representing the rotational velocity of this IEntity
- * - RotationalAcceleration: The float representing the rotational velocity of this IEntity
- * - ScreenWrap: A boolean indicating that the position should wrap from one side to the other
- * - FixedMovement: A boolean indicating fixed movement math should be used
+ * - bFixedMovement: A boolean indicating fixed movement math should be used
+ * - bScreenWrap: A boolean indicating that the position should wrap from one side to the other
+ * - fRotationalVelocity: The float representing the rotational velocity of this IEntity
+ * - fRotationalAcceleration: The float representing the rotational velocity of this IEntity
+ * - vAcceleration: The sf::Vector2f representing the acceleration of this IEntity
+ * - vVelocity: The sf::Vector2f representing the velocity of this IEntity
  * The MovementSystem class makes use of the following properties provided by the
  * RenderSystem class:
- * - Position: The sf::Vector2f representing the current IEntity position
- * - Rotation: The float representing the current IEntity rotation
- * - SpriteRect: To determine when to perform screen wrap around
+ * - fRotation: The float representing the current IEntity rotation
+ * - rSpriteRect: To determine when to perform screen wrap around
+ * - vPosition: The sf::Vector2f representing the current IEntity position
  * If the FixedMovement property is true then the following math is used in the
  * UpdateFixed method:
- * Velocity += Acceleration
- * Position += Velocity
- * RotationalVelocity += RotationalAcceleration
- * Rotation += RotationalVelocity
+ * vVelocity += vAcceleration
+ * vPosition += vVelocity
+ * fRotationalVelocity += fRotationalAcceleration
+ * fRotation += fRotationalVelocity
  * If the FixedMovement property is false then the following math is used in
  * the UpdateVariable method:
- * Velocity += Acceleration * theElapsedTime
- * Position += Velocity * theElapsedTime
- * RotationalVelocity += RotationalAcceleration * theElapsedTime
- * Rotation += RotationalVelocity * theElapsedTime
+ * vVelocity += vAcceleration * theElapsedTime
+ * vPosition += vVelocity * theElapsedTime
+ * fRotationalVelocity += fRotationalAcceleration * theElapsedTime
+ * fRotation += fRotationalVelocity * theElapsedTime
  *
  * Copyright (c) 2010-2012 Jacob Dix
  * Permission is hereby granted, free of charge, to any person obtaining a copy

@@ -24,13 +24,13 @@ namespace GQE
   void AnimationSystem::AddProperties(IEntity* theEntity)
   {
     theEntity->mProperties.Add<sf::Clock>("FrameClock",sf::Clock());	
-    theEntity->mProperties.Add<float>("FrameDelay",0.0f);
+    theEntity->mProperties.Add<float>("fFrameDelay",0.0f);
 #if (SFML_VERSION_MAJOR < 2)
-    theEntity->mProperties.Add<sf::Vector2i>("FrameModifier",sf::Vector2i(0,0));	
+    theEntity->mProperties.Add<sf::Vector2i>("vFrameModifier",sf::Vector2i(0,0));	
 #else
-    theEntity->mProperties.Add<sf::Vector2u>("FrameModifier",sf::Vector2u(0,0));
+    theEntity->mProperties.Add<sf::Vector2u>("vFrameModifier",sf::Vector2u(0,0));
 #endif
-    theEntity->mProperties.Add<sf::IntRect>("FrameRect",sf::IntRect(0,0,0,0));
+    theEntity->mProperties.Add<sf::IntRect>("rFrameRect",sf::IntRect(0,0,0,0));
   }
 
   void AnimationSystem::HandleInit(GQE::IEntity* theEntity)
@@ -59,18 +59,18 @@ namespace GQE
 
         // Get the AnimationSystem properties
         sf::Clock anFrameClock = anEntity->mProperties.Get<sf::Clock>("FrameClock");
-        float anFrameDelay = anEntity->mProperties.Get<float>("FrameDelay");
+        float anFrameDelay = anEntity->mProperties.Get<float>("fFrameDelay");
 
         // Is it time to update to the next frame?
 #if (SFML_VERSION_MAJOR < 2)
         if(anFrameClock.GetElapsedTime() > anFrameDelay)
         {
           // Get the RenderSystem properties
-          sf::IntRect anSpriteRect = anEntity->mProperties.Get<sf::IntRect>("SpriteRect");
+          sf::IntRect anSpriteRect = anEntity->mProperties.Get<sf::IntRect>("rSpriteRect");
 
           // Get some additional AnimationSystem properties
-          sf::Vector2i anFrameModifier = anEntity->mProperties.Get<sf::Vector2i>("FrameModifier");
-          sf::IntRect anFrameRect = anEntity->mProperties.Get<sf::IntRect>("FrameRect");
+          sf::Vector2i anFrameModifier = anEntity->mProperties.Get<sf::Vector2i>("vFrameModifier");
+          sf::IntRect anFrameRect = anEntity->mProperties.Get<sf::IntRect>("rFrameRect");
 
           // Are we using a horizontal row of animation images?
           if(anFrameModifier.x > 0)
@@ -102,17 +102,17 @@ namespace GQE
           anEntity->mProperties.Set<sf::Clock>("FrameClock",anFrameClock);
 
           // Update our RenderSystem SpriteRect property
-          anEntity->mProperties.Set<sf::IntRect>("SpriteRect",anSpriteRect);
+          anEntity->mProperties.Set<sf::IntRect>("rSpriteRect",anSpriteRect);
         } // if(anFrameClock > anFrameDelay)
 #else
         if(anFrameClock.getElapsedTime().asSeconds() > anFrameDelay)
         {
           // Get the RenderSystem properties
-          sf::IntRect anSpriteRect = anEntity->mProperties.Get<sf::IntRect>("SpriteRect");
+          sf::IntRect anSpriteRect = anEntity->mProperties.Get<sf::IntRect>("rSpriteRect");
 
           // Get some additional AnimationSystem properties
-          sf::Vector2u anFrameModifier = anEntity->mProperties.Get<sf::Vector2u>("FrameModifier");
-          sf::IntRect anFrameRect = anEntity->mProperties.Get<sf::IntRect>("FrameRect");
+          sf::Vector2u anFrameModifier = anEntity->mProperties.Get<sf::Vector2u>("vFrameModifier");
+          sf::IntRect anFrameRect = anEntity->mProperties.Get<sf::IntRect>("rFrameRect");
 
           // Are we using a horizontal row of animation images?
           if(anFrameModifier.x > 0)
@@ -140,7 +140,7 @@ namespace GQE
           anEntity->mProperties.Set<sf::Clock>("FrameClock",anFrameClock);
 
           // Update our RenderSystem SpriteRect property
-          anEntity->mProperties.Set<sf::IntRect>("SpriteRect",anSpriteRect);
+          anEntity->mProperties.Set<sf::IntRect>("rSpriteRect",anSpriteRect);
         } // if(anFrameClock > anFrameDelay)
 #endif
       } // while(anQueue != anIter->second.end())
