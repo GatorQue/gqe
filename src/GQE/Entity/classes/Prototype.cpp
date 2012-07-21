@@ -19,8 +19,8 @@
 
 namespace GQE
 {
-  Prototype::Prototype(const typePrototypeID thePrototypeID) :
-    IEntity(),
+  Prototype::Prototype(const typePrototypeID thePrototypeID, Uint32 theOrder) :
+    IEntity(theOrder),
     mPrototypeID(thePrototypeID)
   {
     ILOG() << "Prototype::ctor(" << mPrototypeID << ")" << std::endl;
@@ -90,7 +90,7 @@ namespace GQE
   Instance* Prototype::MakeInstance()
   {
     // Try to create an Instance class right now
-    Instance* anInstance = new(std::nothrow) Instance(*this);
+    Instance* anInstance = new(std::nothrow) Instance(*this, GetOrder());
 
     // If successful, clone our Prototype properties to this new Instance class
     if(anInstance != NULL)

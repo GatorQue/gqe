@@ -53,37 +53,44 @@ namespace GQE
 
   void RenderSystem::Draw()
   {
-    std::map<const typeEntityID, IEntity*>::iterator anEntityIter = mEntities.begin();
-
-    // Loop through each IEntity in our mEntities map
-    while(anEntityIter != mEntities.end())
+    // Search through each z-order map to find theEntityID provided
+    std::map<const Uint32, std::deque<IEntity*> >::iterator anIter;
+    anIter = mEntities.begin();
+    while(anIter != mEntities.end())
     {
-      // Get the IEntity address first
-      IEntity* anEntity = anEntityIter->second;
-
-      // Increment the IEntity iterator second
-      anEntityIter++;
-
-      // See if this IEntity is visible, if so draw it now
-      if(anEntity->mProperties.Get<bool>("Visible"))
+      std::deque<IEntity*>::iterator anQueue = anIter->second.begin();
+      while(anQueue != anIter->second.end())
       {
-        // Get the other RenderSystem properties now
-        sf::Sprite anSprite=anEntity->mProperties.Get<sf::Sprite>("Sprite");
+        // Get the IEntity address first
+        GQE::IEntity* anEntity = *anQueue;
+
+        // Increment the IEntity iterator second
+        anQueue++;
+
+        // See if this IEntity is visible, if so draw it now
+        if(anEntity->mProperties.Get<bool>("Visible"))
+        {
+          // Get the other RenderSystem properties now
+          sf::Sprite anSprite=anEntity->mProperties.Get<sf::Sprite>("Sprite");
 #if SFML_VERSION_MAJOR<2
-        anSprite.SetPosition(anEntity->mProperties.Get<sf::Vector2f>("Position"));
-        anSprite.SetRotation(anEntity->mProperties.Get<float>("Rotation"));
-        anSprite.SetSubRect(anEntity->mProperties.Get<sf::IntRect>("SpriteRect"));
-        anSprite.SetCenter(anEntity->mProperties.Get<sf::Vector2f>("Origin"));
-        mApp.mWindow.Draw(anSprite);
+          anSprite.SetPosition(anEntity->mProperties.Get<sf::Vector2f>("Position"));
+          anSprite.SetRotation(anEntity->mProperties.Get<float>("Rotation"));
+          anSprite.SetSubRect(anEntity->mProperties.Get<sf::IntRect>("SpriteRect"));
+          anSprite.SetCenter(anEntity->mProperties.Get<sf::Vector2f>("Origin"));
+          mApp.mWindow.Draw(anSprite);
 #else
-        anSprite.setPosition(anEntity->mProperties.Get<sf::Vector2f>("Position"));
-        anSprite.setRotation(anEntity->mProperties.Get<float>("Rotation"));
-        anSprite.setTextureRect(anEntity->mProperties.Get<sf::IntRect>("SpriteRect"));
-        anSprite.setOrigin(anEntity->mProperties.Get<sf::Vector2f>("Origin"));
-        mApp.mWindow.draw(anSprite);
+          anSprite.setPosition(anEntity->mProperties.Get<sf::Vector2f>("Position"));
+          anSprite.setRotation(anEntity->mProperties.Get<float>("Rotation"));
+          anSprite.setTextureRect(anEntity->mProperties.Get<sf::IntRect>("SpriteRect"));
+          anSprite.setOrigin(anEntity->mProperties.Get<sf::Vector2f>("Origin"));
+          mApp.mWindow.draw(anSprite);
 #endif
-      } // if(anEntity->mProperties.Get<bool>("Visible"))
-    } //while(anEntityIter != mEntities.end())
+        } // if(anEntity->mProperties.Get<bool>("Visible"))
+      } // while(anQueue != anIter->second.end())
+
+      // Increment map iterator
+      anIter++;
+    } //while(anIter != mEntities.end())
   }
 
   void RenderSystem::HandleCleanup(IEntity* theEntity)

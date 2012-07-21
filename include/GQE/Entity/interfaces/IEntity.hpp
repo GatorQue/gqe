@@ -34,7 +34,7 @@ namespace GQE
       /**
        * IEntity default constructor
        */
-      IEntity();
+      IEntity(Uint32 theOrder = 0);
 
       /**
        * IEntity destructor
@@ -52,6 +52,22 @@ namespace GQE
        * @return an ID of an IEntity;
        */
       static typeEntityID UseNextID();
+
+      /**
+       * GetOrder will return the z-order value assigned to this IEntity which
+       * can be used to organize the display or processing order of each
+       * IEntity class assigned to a ISystem (see RenderSystem).
+       * @return the z-order value assigned to this IEntity class
+       */
+      const Uint32 GetOrder(void) const;
+
+      /**
+       * SetOrder will set the z-order value for this IEntity which can be used
+       * to organize the display or processing order of each IEntity class
+       * assigned to a ISystem (see RenderSystem).
+       * @param[in] theOrder to be assigned to this IEntity class
+       */
+      void SetOrder(const Uint32 theOrder);
 
       /**
        * Destroy is responsible for safely marking this IEntity class for
@@ -93,7 +109,9 @@ namespace GQE
       // Variables
       ///////////////////////////////////////////////////////////////////////////
       /// The entity ID assigned to this IEntity class
-      const typeEntityID mEntityID;
+      const typeEntityID  mEntityID;
+      /// The z-order assigned to this IEntity class
+      Uint32              mOrder;
       /// The next ID to assign to a new Instance class
       static typeEntityID mNextID;
 

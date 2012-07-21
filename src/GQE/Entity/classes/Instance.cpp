@@ -14,7 +14,8 @@
 
 namespace GQE
 {
-  Instance::Instance(Prototype& thePrototype) :
+  Instance::Instance(Prototype& thePrototype, Uint32 theOrder) :
+    IEntity(theOrder),
     mPrototype(thePrototype)
   {
   }

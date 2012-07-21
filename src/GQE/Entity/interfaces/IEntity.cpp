@@ -15,10 +15,11 @@ namespace GQE
 {
   typeEntityID IEntity::mNextID = 0; // Start with 0
 
-  IEntity::IEntity() :
-    mEntityID(UseNextID())
+  IEntity::IEntity(const Uint32 theOrder) :
+    mEntityID(UseNextID()),
+    mOrder(theOrder)
   {
-    ILOG() << "IEntity::ctor(" << mEntityID << ")" << std::endl;
+    ILOG() << "IEntity::ctor(" << mEntityID << "," << mOrder << ")" << std::endl;
   }
 
   IEntity::~IEntity()
@@ -38,6 +39,16 @@ namespace GQE
   {
     // Pre-increment the ID so that an ID of 0 can be considered an "invalid" ID
     return ++mNextID;
+  }
+
+  const Uint32 IEntity::GetOrder(void) const
+  {
+    return mOrder;
+  }
+
+  void IEntity::SetOrder(const Uint32 theOrder)
+  {
+    mOrder = theOrder;
   }
 
   void IEntity::AddSystem(ISystem* theSystem)

@@ -72,11 +72,11 @@ namespace GQE
 
     // Position and color for the FPS/UPS string
     mFPS = new(std::nothrow) sf::String("", mDefaultFont, 30.0F);
-    mFPS->SetColor(sf::Color(255,255,255,128));
+    mFPS->SetColor(sf::Color(0,255,0,128));
     mFPS->SetPosition(0,0);
     
     mUPS = new(std::nothrow) sf::String("", mDefaultFont, 30.0F);
-    mUPS->SetColor(sf::Color(255,255,255,128));
+    mUPS->SetColor(sf::Color(0,255,0,128));
     mUPS->SetPosition(0,30);
 #else
     mFrameClock.restart();
@@ -84,11 +84,11 @@ namespace GQE
 
     // Position and color for the FPS/UPS string
     mFPS = new(std::nothrow) sf::Text("", mDefaultFont, 30);
-    mFPS->setColor(sf::Color(255,255,255,128));
+    mFPS->setColor(sf::Color(0,255,0,128));
     mFPS->setPosition(0,0);
 
     mUPS = new(std::nothrow) sf::Text("", mDefaultFont, 30);
-    mUPS->setColor(sf::Color(255,255,255,128));
+    mUPS->setColor(sf::Color(0,255,0,128));
     mUPS->setPosition(0,30);
 #endif
   }

@@ -28,9 +28,9 @@ namespace GQE
       /**
        * Prototype default constructor
        * @param[in] thePrototypeID to use for this prototype
-       * @param[in] theState address to use to register cleanup of instances
+       * @param[in] theOrder to assign to this prototype and each Instance
        */
-      Prototype(const typePrototypeID thePrototypeID);
+      Prototype(const typePrototypeID thePrototypeID, Uint32 theOrder = 0);
 
       /**
        * Prototype destructor

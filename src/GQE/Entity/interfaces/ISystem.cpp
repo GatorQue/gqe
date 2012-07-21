@@ -43,11 +43,20 @@ namespace GQE
     // Make sure the caller didn't give us a bad pointer
     if(theEntity != NULL)
     {
-      // Make sure this IEntity doesn't already exist in our list
-      std::map<const typeEntityID, IEntity*>::iterator anIter;
-      anIter = mEntities.find(theEntity->GetID());
-      if(anIter == mEntities.end())
+      // This will be true if the IEntity was added
+      bool anAdded = false;
+
+      // See if this IEntity is already in this z-order class
+      std::deque<IEntity*>::iterator anFind;
+      anFind = std::find(mEntities[theEntity->GetOrder()].begin(),
+        mEntities[theEntity->GetOrder()].end(), theEntity);
+
+        // If IEntity wasn't found in this z-order class then add it now
+      if(anFind == mEntities[theEntity->GetOrder()].end())
       {
+        // Add theEntity provided to this deque
+        mEntities[theEntity->GetOrder()].push_back(theEntity);
+
         // Make sure this entity has the correct properties added for this system
         AddProperties(theEntity);
 
@@ -56,9 +65,6 @@ namespace GQE
 
         // Perform any custom Initialization for this new IEntity before adding it
         HandleInit(theEntity);
-
-        // Now add this entity to the list of IEntities we currently process
-        mEntities.insert(std::pair<const typeEntityID, IEntity*>(theEntity->GetID(), theEntity));
 
         // Return the ID of this IEntity as a result
         anResult = theEntity->GetID();
@@ -80,36 +86,92 @@ namespace GQE
 
   bool ISystem::HasEntity(const typeEntityID theEntityID) const
   {
+    bool anResult = false;
+
+    // Search through each z-order map to find theEntityID provided
+    std::map<const Uint32, std::deque<IEntity*> >::const_iterator anIter;
+    anIter = mEntities.begin();
+    while(anIter != mEntities.end() && anResult == false)
+    {
+      std::deque<IEntity*>::const_iterator anFind = anIter->second.begin();
+      while(anFind != anIter->second.end())
+      {
+        // Is this theEntityID we are looking for? then note it and return
+        if(theEntityID == (*anFind)->GetID())
+        {
+          // We found theEntityID
+          anResult = true;
+
+          // Exit while loop
+          break;
+        }
+
+        // Increment find iterator
+        anFind++;
+      }
+
+      // Increment map iterator
+      anIter++;
+    }
+
     // Return anResult which will be true if IEntity was found, false otherwise
-    return (mEntities.find(theEntityID) != mEntities.end());
+    return anResult;
   }
 
   void ISystem::DropEntity(const typeEntityID theEntityID)
   {
-    std::map<const typeEntityID, IEntity*>::iterator anEntityIter;
+    // This will be set to true if theEntityID was found and dropped
+    bool anFound = false;
 
-    anEntityIter = mEntities.find(theEntityID);
-    if(anEntityIter != mEntities.end())
+    // Search through each z-order map to find theEntityID provided
+    std::map<const Uint32, std::deque<IEntity*> >::iterator anIter;
+    anIter = mEntities.begin();
+    while(anIter != mEntities.end() && anFound == false)
     {
-      // Erase the IEntity from our ISystem
-      EraseEntity(anEntityIter);
+      std::deque<IEntity*>::iterator anFind = anIter->second.begin();
+      while(anFind != anIter->second.end())
+      {
+        // Is this theEntityID we are looking for? then note it and return
+        if(theEntityID == (*anFind)->GetID())
+        {
+          // Erase the IEntity from our deque
+          anFind = EraseEntity(anFind);
+
+          // Set anFound to true
+          anFound = true;
+
+          // Exit while loop
+          break;
+        }
+
+        // Increment find iterator
+        anFind++;
+      }
+
+      // Increment map iterator
+      anIter++;
     }
   }
 
   void ISystem::DropAllEntities(void)
   {
-    // Make sure we drop ourselves from all registered IEntity classes
-    std::map<const typeEntityID, IEntity*>::iterator anEntityIter;
-
-    // Start at the beginning of the list of IEntity classes
-    anEntityIter = mEntities.begin();
-    while(anEntityIter != mEntities.end())
+    // Search through each z-order map to find theEntityID provided
+    std::map<const Uint32, std::deque<IEntity*> >::iterator anIter;
+    anIter = mEntities.begin();
+    while(anIter != mEntities.end())
     {
-      // Erase this IEntity and move to the next one
-      EraseEntity(anEntityIter++);
+      std::deque<IEntity*>::iterator anFind = anIter->second.begin();
+      while(anFind != anIter->second.end())
+      {
+        // Erase the IEntity from our deque
+        anFind = EraseEntity(anFind);
+      }
+
+      // Increment map iterator
+      anIter++;
     }
 
-    // Last of all clear our list of entities
+    // Last of all clear our list of deques
     mEntities.clear();
   }
 
@@ -118,13 +180,14 @@ namespace GQE
     // Do nothing
   }
 
-  void ISystem::EraseEntity(std::map<const typeEntityID, IEntity*>::iterator theEntityIter)
+  std::deque<IEntity*>::iterator ISystem::EraseEntity(std::deque<IEntity*>::iterator theEntityIter)
   {
-    // Get our IEntity reference first
-    IEntity* anEntity = theEntityIter->second;
+    std::deque<IEntity*>::iterator anResult;
 
-    // First remove the IEntity from our list
-    mEntities.erase(theEntityIter);
+    // Get our IEntity reference first
+    IEntity* anEntity = (*theEntityIter);
+
+    anResult = mEntities[anEntity->GetOrder()].erase(theEntityIter);
 
     // Now handle any last minute cleanup for this IEntity
     HandleCleanup(anEntity);
@@ -135,6 +198,9 @@ namespace GQE
       // Cause IEntity to drop our reference
       anEntity->DropSystem(GetID());
     }
+
+    // Return anResult iterator to caller which might be end()
+    return anResult;
   }
 
 } // namespace GQE

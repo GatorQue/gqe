@@ -43,104 +43,111 @@ namespace GQE
 
   void AnimationSystem::UpdateFixed()
   {
-    std::map<const GQE::typeEntityID, GQE::IEntity*>::iterator anEntityIter = mEntities.begin();
-
-    // Loop through each IEntity in our mEntities map
-    while(anEntityIter != mEntities.end())
+    // Search through each z-order map to find theEntityID provided
+    std::map<const Uint32, std::deque<IEntity*> >::iterator anIter;
+    anIter = mEntities.begin();
+    while(anIter != mEntities.end())
     {
-      // Get the IEntity address first
-      GQE::IEntity* anEntity = anEntityIter->second;
+      std::deque<IEntity*>::iterator anQueue = anIter->second.begin();
+      while(anQueue != anIter->second.end())
+      {
+        // Get the IEntity address first
+        GQE::IEntity* anEntity = *anQueue;
 
-      // Increment the IEntity iterator second
-      anEntityIter++;
+        // Increment the IEntity iterator second
+        anQueue++;
 
-      // Get the AnimationSystem properties
-      sf::Clock anFrameClock = anEntity->mProperties.Get<sf::Clock>("FrameClock");
-      float anFrameDelay = anEntity->mProperties.Get<float>("FrameDelay");
+        // Get the AnimationSystem properties
+        sf::Clock anFrameClock = anEntity->mProperties.Get<sf::Clock>("FrameClock");
+        float anFrameDelay = anEntity->mProperties.Get<float>("FrameDelay");
 
-      // Is it time to update to the next frame?
+        // Is it time to update to the next frame?
 #if (SFML_VERSION_MAJOR < 2)
-      if(anFrameClock.GetElapsedTime() > anFrameDelay)
-      {
-        // Get the RenderSystem properties
-        sf::IntRect anSpriteRect = anEntity->mProperties.Get<sf::IntRect>("SpriteRect");
-
-        // Get some additional AnimationSystem properties
-        sf::Vector2i anFrameModifier = anEntity->mProperties.Get<sf::Vector2i>("FrameModifier");
-        sf::IntRect anFrameRect = anEntity->mProperties.Get<sf::IntRect>("FrameRect");
-
-        // Are we using a horizontal row of animation images?
-        if(anFrameModifier.x > 0)
+        if(anFrameClock.GetElapsedTime() > anFrameDelay)
         {
-          anSpriteRect.Offset(anSpriteRect.GetWidth()*anFrameModifier.x, 0);
-          if(anSpriteRect.Left > anFrameRect.Left+anFrameRect.GetWidth())
+          // Get the RenderSystem properties
+          sf::IntRect anSpriteRect = anEntity->mProperties.Get<sf::IntRect>("SpriteRect");
+
+          // Get some additional AnimationSystem properties
+          sf::Vector2i anFrameModifier = anEntity->mProperties.Get<sf::Vector2i>("FrameModifier");
+          sf::IntRect anFrameRect = anEntity->mProperties.Get<sf::IntRect>("FrameRect");
+
+          // Are we using a horizontal row of animation images?
+          if(anFrameModifier.x > 0)
           {
-            // Do Right first since GetWidth will change size if Left is done first
-            anSpriteRect.Right = anFrameRect.Left + anSpriteRect.GetWidth();
-            anSpriteRect.Left = anFrameRect.Left;
+            anSpriteRect.Offset(anSpriteRect.GetWidth()*anFrameModifier.x, 0);
+            if(anSpriteRect.Left > anFrameRect.Left+anFrameRect.GetWidth())
+            {
+              // Do Right first since GetWidth will change size if Left is done first
+              anSpriteRect.Right = anFrameRect.Left + anSpriteRect.GetWidth();
+              anSpriteRect.Left = anFrameRect.Left;
+            }
           }
-        }
-        // Are we using a vertical row of animation images?
-        if(anFrameModifier.y > 0)
-        {
-          anSpriteRect.Offset(0,anSpriteRect.GetHeight()*anFrameModifier.y);
-          if(anSpriteRect.Top > anFrameRect.Top+anFrameRect.GetHeight())
+          // Are we using a vertical row of animation images?
+          if(anFrameModifier.y > 0)
           {
-            // Do Bottom first since GetHeight will change size if Top is done first
-            anSpriteRect.Bottom = anFrameRect.Top + anSpriteRect.GetHeight();
-            anSpriteRect.Top = anFrameRect.Top;
+            anSpriteRect.Offset(0,anSpriteRect.GetHeight()*anFrameModifier.y);
+            if(anSpriteRect.Top > anFrameRect.Top+anFrameRect.GetHeight())
+            {
+              // Do Bottom first since GetHeight will change size if Top is done first
+              anSpriteRect.Bottom = anFrameRect.Top + anSpriteRect.GetHeight();
+              anSpriteRect.Top = anFrameRect.Top;
+            }
           }
-        }
 
-        // Restart our animation frame clock
-        anFrameClock.Reset();
+          // Restart our animation frame clock
+          anFrameClock.Reset();
 
-        // Now update our AnimationSystem FrameClock property
-        anEntity->mProperties.Set<sf::Clock>("FrameClock",anFrameClock);
+          // Now update our AnimationSystem FrameClock property
+          anEntity->mProperties.Set<sf::Clock>("FrameClock",anFrameClock);
 
-        // Update our RenderSystem SpriteRect property
-        anEntity->mProperties.Set<sf::IntRect>("SpriteRect",anSpriteRect);
-      } // if(anFrameClock > anFrameDelay)
+          // Update our RenderSystem SpriteRect property
+          anEntity->mProperties.Set<sf::IntRect>("SpriteRect",anSpriteRect);
+        } // if(anFrameClock > anFrameDelay)
 #else
-      if(anFrameClock.getElapsedTime().asSeconds() > anFrameDelay)
-      {
-        // Get the RenderSystem properties
-        sf::IntRect anSpriteRect = anEntity->mProperties.Get<sf::IntRect>("SpriteRect");
-
-        // Get some additional AnimationSystem properties
-        sf::Vector2u anFrameModifier = anEntity->mProperties.Get<sf::Vector2u>("FrameModifier");
-        sf::IntRect anFrameRect = anEntity->mProperties.Get<sf::IntRect>("FrameRect");
-
-        // Are we using a horizontal row of animation images?
-        if(anFrameModifier.x > 0)
+        if(anFrameClock.getElapsedTime().asSeconds() > anFrameDelay)
         {
-          anSpriteRect.left += anSpriteRect.width*anFrameModifier.x;
-          if(anSpriteRect.left >= anFrameRect.left+anFrameRect.width)
+          // Get the RenderSystem properties
+          sf::IntRect anSpriteRect = anEntity->mProperties.Get<sf::IntRect>("SpriteRect");
+
+          // Get some additional AnimationSystem properties
+          sf::Vector2u anFrameModifier = anEntity->mProperties.Get<sf::Vector2u>("FrameModifier");
+          sf::IntRect anFrameRect = anEntity->mProperties.Get<sf::IntRect>("FrameRect");
+
+          // Are we using a horizontal row of animation images?
+          if(anFrameModifier.x > 0)
           {
-            anSpriteRect.left = anFrameRect.left;
+            anSpriteRect.left += anSpriteRect.width*anFrameModifier.x;
+            if(anSpriteRect.left >= anFrameRect.left+anFrameRect.width)
+            {
+              anSpriteRect.left = anFrameRect.left;
+            }
           }
-        }
-        // Are we using a vertical row of animation images?
-        if(anFrameModifier.y > 0)
-        {
-          anSpriteRect.top += anSpriteRect.height*anFrameModifier.y;
-          if(anSpriteRect.top >= anFrameRect.top+anFrameRect.height)
+          // Are we using a vertical row of animation images?
+          if(anFrameModifier.y > 0)
           {
-            anSpriteRect.top = anFrameRect.top;
+            anSpriteRect.top += anSpriteRect.height*anFrameModifier.y;
+            if(anSpriteRect.top >= anFrameRect.top+anFrameRect.height)
+            {
+              anSpriteRect.top = anFrameRect.top;
+            }
           }
-        }
 
-        // Restart our animation frame clock
-        anFrameClock.restart();
+          // Restart our animation frame clock
+          anFrameClock.restart();
 
-        // Now update our AnimationSystem FrameClock property
-        anEntity->mProperties.Set<sf::Clock>("FrameClock",anFrameClock);
+          // Now update our AnimationSystem FrameClock property
+          anEntity->mProperties.Set<sf::Clock>("FrameClock",anFrameClock);
 
-        // Update our RenderSystem SpriteRect property
-        anEntity->mProperties.Set<sf::IntRect>("SpriteRect",anSpriteRect);
-      } // if(anFrameClock > anFrameDelay)
+          // Update our RenderSystem SpriteRect property
+          anEntity->mProperties.Set<sf::IntRect>("SpriteRect",anSpriteRect);
+        } // if(anFrameClock > anFrameDelay)
 #endif
-    } //while(anEntityIter != mEntities.end())
+      } // while(anQueue != anIter->second.end())
+
+      // Increment map iterator
+      anIter++;
+    } //while(anIter != mEntities.end())
   }
 
   void AnimationSystem::UpdateVariable(float theElapsedTime)

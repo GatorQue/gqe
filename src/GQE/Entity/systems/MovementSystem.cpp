@@ -46,102 +46,116 @@ namespace GQE
 
   void MovementSystem::UpdateFixed()
   {
-    std::map<const typeEntityID, IEntity*>::iterator anEntityIter = mEntities.begin();
-
-    // Loop through each IEntity in our mEntities map
-    while(anEntityIter != mEntities.end())
+    // Search through each z-order map to find theEntityID provided
+    std::map<const Uint32, std::deque<IEntity*> >::iterator anIter;
+    anIter = mEntities.begin();
+    while(anIter != mEntities.end())
     {
-      // Get the IEntity address first
-      IEntity* anEntity = anEntityIter->second;
-
-      // Increment the IEntity iterator second
-      anEntityIter++;
-
-      // Are we using fixed movement mathematics?
-      if(anEntity->mProperties.Get<bool>("FixedMovement"))
+      std::deque<IEntity*>::iterator anQueue = anIter->second.begin();
+      while(anQueue != anIter->second.end())
       {
-        // Get the RenderSystem properties
-        sf::Vector2f anPosition = anEntity->mProperties.Get<sf::Vector2f>("Position");
-        float anRotation = anEntity->mProperties.Get<float>("Rotation");
+        // Get the IEntity address first
+        GQE::IEntity* anEntity = *anQueue;
 
-        // Get the MovementSystem properties
-        sf::Vector2f anVelocity = anEntity->mProperties.Get<sf::Vector2f>("Velocity");
-        sf::Vector2f anAccelleration = anEntity->mProperties.Get<sf::Vector2f>("Acceleration");
-        float anRotationalVelocity = anEntity->mProperties.Get<float>("RotationalVelocity");
-        float anRotationalAccelleration = anEntity->mProperties.Get<float>("RotationalAcceleration");
+        // Increment the IEntity iterator second
+        anQueue++;
 
-        // Now update the current movement properties
-        anVelocity += anAccelleration;
-        anPosition += anVelocity;
-        anRotationalVelocity += anRotationalAccelleration;
-        anRotation += anRotationalVelocity;
-
-        // If ScreenWrap is true, account for screen wrapping
-        if(anEntity->mProperties.Get<bool>("ScreenWrap"))
+        // Are we using fixed movement mathematics?
+        if(anEntity->mProperties.Get<bool>("FixedMovement"))
         {
-          // Call our universal HandleScreenWrap method to wrap this IEntity
-          HandleScreenWrap(anEntity, &anPosition);
-        }
+          // Get the RenderSystem properties
+          sf::Vector2f anPosition = anEntity->mProperties.Get<sf::Vector2f>("Position");
+          float anRotation = anEntity->mProperties.Get<float>("Rotation");
 
-        // Now update the MovementSystem properties for this IEntity class
-        anEntity->mProperties.Set<sf::Vector2f>("Velocity",anVelocity);
-        anEntity->mProperties.Set<float>("RotationalVelocity",anRotationalVelocity);
+          // Get the MovementSystem properties
+          sf::Vector2f anVelocity = anEntity->mProperties.Get<sf::Vector2f>("Velocity");
+          sf::Vector2f anAccelleration = anEntity->mProperties.Get<sf::Vector2f>("Acceleration");
+          float anRotationalVelocity = anEntity->mProperties.Get<float>("RotationalVelocity");
+          float anRotationalAccelleration = anEntity->mProperties.Get<float>("RotationalAcceleration");
 
-        // Now update the RenderSystem properties of this IEntity class
-        anEntity->mProperties.Set<sf::Vector2f>("Position",anPosition);
-        anEntity->mProperties.Set<float>("Rotation",anRotation);
-      } //if(anEntity->mProperties.Get<bool>("FixedMovement"))
-    } // while(anEntityIter != mEntities.end())
+          // Now update the current movement properties
+          anVelocity += anAccelleration;
+          anPosition += anVelocity;
+          anRotationalVelocity += anRotationalAccelleration;
+          anRotation += anRotationalVelocity;
+
+          // If ScreenWrap is true, account for screen wrapping
+          if(anEntity->mProperties.Get<bool>("ScreenWrap"))
+          {
+            // Call our universal HandleScreenWrap method to wrap this IEntity
+            HandleScreenWrap(anEntity, &anPosition);
+          }
+
+          // Now update the MovementSystem properties for this IEntity class
+          anEntity->mProperties.Set<sf::Vector2f>("Velocity",anVelocity);
+          anEntity->mProperties.Set<float>("RotationalVelocity",anRotationalVelocity);
+
+          // Now update the RenderSystem properties of this IEntity class
+          anEntity->mProperties.Set<sf::Vector2f>("Position",anPosition);
+          anEntity->mProperties.Set<float>("Rotation",anRotation);
+        } //if(anEntity->mProperties.Get<bool>("FixedMovement"))
+      } // while(anQueue != anIter->second.end())
+
+      // Increment map iterator
+      anIter++;
+    } //while(anIter != mEntities.end())
   }
 
   void MovementSystem::UpdateVariable(float theElapsedTime)
   {
-    std::map<const typeEntityID, IEntity*>::iterator anEntityIter = mEntities.begin();
-
-    // Loop through each IEntity in our mEntities map
-    while(anEntityIter != mEntities.end())
+    // Search through each z-order map to find theEntityID provided
+    std::map<const Uint32, std::deque<IEntity*> >::iterator anIter;
+    anIter = mEntities.begin();
+    while(anIter != mEntities.end())
     {
-      // Get the IEntity address first
-      IEntity* anEntity = anEntityIter->second;
-
-      // Increment the IEntity iterator second
-      anEntityIter++;
-
-      // Are we NOT using fixed movement mathematics?
-      if(anEntity->mProperties.Get<bool>("FixedMovement") == false)
+      std::deque<IEntity*>::iterator anQueue = anIter->second.begin();
+      while(anQueue != anIter->second.end())
       {
-        // Get the RenderSystem properties
-        sf::Vector2f anPosition = anEntity->mProperties.Get<sf::Vector2f>("Position");
-        float anRotation = anEntity->mProperties.Get<float>("Rotation");
+        // Get the IEntity address first
+        GQE::IEntity* anEntity = *anQueue;
 
-        // Get the MovementSystem properties
-        sf::Vector2f anVelocity = anEntity->mProperties.Get<sf::Vector2f>("Velocity");
-        sf::Vector2f anAccelleration = anEntity->mProperties.Get<sf::Vector2f>("Acceleration");
-        float anRotationalVelocity = anEntity->mProperties.Get<float>("RotationalVelocity");
-        float anRotationalAccelleration = anEntity->mProperties.Get<float>("RotationalAcceleration");
+        // Increment the IEntity iterator second
+        anQueue++;
 
-        // Now update the current movement properties
-        anVelocity += anAccelleration * theElapsedTime;
-        anPosition += anVelocity * theElapsedTime;
-        anRotationalVelocity += anRotationalAccelleration * theElapsedTime;
-        anRotation += anRotationalVelocity * theElapsedTime;
-
-        // If ScreenWrap is true, account for screen wrapping
-        if(anEntity->mProperties.Get<bool>("ScreenWrap"))
+        // Are we NOT using fixed movement mathematics?
+        if(anEntity->mProperties.Get<bool>("FixedMovement") == false)
         {
-          // Call our universal HandleScreenWrap method to wrap this IEntity
-          HandleScreenWrap(anEntity, &anPosition);
-        }
+          // Get the RenderSystem properties
+          sf::Vector2f anPosition = anEntity->mProperties.Get<sf::Vector2f>("Position");
+          float anRotation = anEntity->mProperties.Get<float>("Rotation");
 
-        // Now update the MovementSystem properties for this IEntity class
-        anEntity->mProperties.Set<sf::Vector2f>("Velocity", anVelocity);
-        anEntity->mProperties.Set<float>("RotationalVelocity", anRotationalVelocity);
+          // Get the MovementSystem properties
+          sf::Vector2f anVelocity = anEntity->mProperties.Get<sf::Vector2f>("Velocity");
+          sf::Vector2f anAccelleration = anEntity->mProperties.Get<sf::Vector2f>("Acceleration");
+          float anRotationalVelocity = anEntity->mProperties.Get<float>("RotationalVelocity");
+          float anRotationalAccelleration = anEntity->mProperties.Get<float>("RotationalAcceleration");
 
-        // Now update the RenderSystem properties of this IEntity class
-        anEntity->mProperties.Set<sf::Vector2f>("Position", anPosition);
-        anEntity->mProperties.Set<float>("Rotation", anRotation);
-      } //if(anEntity->mProperties.Get<bool>("FixedMovement") == false)
-    } // while(anEntityIter != mEntities.end())
+          // Now update the current movement properties
+          anVelocity += anAccelleration * theElapsedTime;
+          anPosition += anVelocity * theElapsedTime;
+          anRotationalVelocity += anRotationalAccelleration * theElapsedTime;
+          anRotation += anRotationalVelocity * theElapsedTime;
+
+          // If ScreenWrap is true, account for screen wrapping
+          if(anEntity->mProperties.Get<bool>("ScreenWrap"))
+          {
+            // Call our universal HandleScreenWrap method to wrap this IEntity
+            HandleScreenWrap(anEntity, &anPosition);
+          }
+
+          // Now update the MovementSystem properties for this IEntity class
+          anEntity->mProperties.Set<sf::Vector2f>("Velocity", anVelocity);
+          anEntity->mProperties.Set<float>("RotationalVelocity", anRotationalVelocity);
+
+          // Now update the RenderSystem properties of this IEntity class
+          anEntity->mProperties.Set<sf::Vector2f>("Position", anPosition);
+          anEntity->mProperties.Set<float>("Rotation", anRotation);
+        } //if(anEntity->mProperties.Get<bool>("FixedMovement") == false)
+      } // while(anQueue != anIter->second.end())
+
+      // Increment map iterator
+      anIter++;
+    } //while(anIter != mEntities.end())
   }
 
   void MovementSystem::Draw()

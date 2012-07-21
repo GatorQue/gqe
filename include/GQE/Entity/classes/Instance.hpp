@@ -24,7 +24,7 @@ namespace GQE
        * Instance default constructor
        * @param[in] thePrototype class address used to create this Instance class
        */
-      Instance(Prototype& thePrototype);
+      Instance(Prototype& thePrototype, Uint32 theOrder = 0);
 
       /**
        * Instance deconstructor

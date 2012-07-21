@@ -18,6 +18,7 @@
 #define ISYSTEM_HPP_INCLUDED
 
 #include <map>
+#include <deque>
 #include <GQE/Entity/Entity_types.hpp>
 
 namespace GQE
@@ -113,7 +114,7 @@ namespace GQE
       //Variables
       /////////////////////////////////////////////////////////////
       /// A linked list of all IEntity classes managed by this ISystem
-      std::map<const typeEntityID, IEntity*> mEntities;
+      std::map<const Uint32, std::deque<IEntity*> > mEntities;
       /// The address to the IApp derived class
       IApp& mApp;
 
@@ -139,8 +140,9 @@ namespace GQE
       /**
        * EraseEntity will erase the IEntity iterator provided.
        * @param[in] theEntityIter iterator to be erased
+       * @return the next iterator that should be used
        */
-      void EraseEntity(std::map<const typeEntityID, IEntity*>::iterator theEntityIter);
+      std::deque<IEntity*>::iterator EraseEntity(std::deque<IEntity*>::iterator theEntityIter);
   }; // class ISystem
 } // namespace GQE
 

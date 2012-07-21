@@ -87,20 +87,30 @@ namespace GQE
 
   void ActionSystem::UpdateFixed()
   {
-    std::map<const typeEntityID, IEntity*>::iterator anEntityIter;
-    for(anEntityIter=mEntities.begin();
-        anEntityIter!=mEntities.end();
-        ++anEntityIter)
+    // Search through each z-order map to find theEntityID provided
+    std::map<const Uint32, std::deque<IEntity*> >::iterator anIter;
+    anIter = mEntities.begin();
+    while(anIter != mEntities.end())
     {
-      // Get the IEntity to process
-      IEntity* anEntity = anEntityIter->second;
+      std::deque<IEntity*>::iterator anQueue = anIter->second.begin();
+      while(anQueue != anIter->second.end())
+      {
+        // Get the IEntity address first
+        GQE::IEntity* anEntity = *anQueue;
 
-      // Get the ActionGroup stored as a property in the IEntity object
-      ActionGroup anActionGroup = anEntity->mProperties.Get<ActionGroup>("Actions");
+        // Increment the IEntity iterator second
+        anQueue++;
 
-      // Call the ActionGroup DoActions method with the given IEntity
-      anActionGroup.DoActions(anEntity);
-    }
+        // Get the ActionGroup stored as a property in the IEntity object
+        ActionGroup anActionGroup = anEntity->mProperties.Get<ActionGroup>("Actions");
+
+        // Call the ActionGroup DoActions method with the given IEntity
+        anActionGroup.DoActions(anEntity);
+      } // while(anQueue != anIter->second.end())
+
+      // Increment map iterator
+      anIter++;
+    } //while(anIter != mEntities.end())
   }
 
   void ActionSystem::UpdateVariable(float theElaspedTime)

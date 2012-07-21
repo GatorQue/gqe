@@ -102,7 +102,7 @@ namespace GQE
        * State when it is the active State.
        * @param[in] theEvent to process from the App class Loop method
        */
-      virtual void HandleEvents(sf::Event theEvent) = 0;
+      virtual void HandleEvents(sf::Event theEvent);
 
       /**
        * UpdateFixed is responsible for handling all State fixed update needs for

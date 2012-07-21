@@ -135,6 +135,22 @@ namespace GQE
     }
   }
 
+  void IState::HandleEvents(sf::Event theEvent)
+  {
+  // Exit program if Escape key is pressed
+    if(
+#if (SFML_VERSION_MAJOR < 2)
+      (theEvent.Type == sf::Event::KeyReleased) && (theEvent.Key.Code == sf::Key::Escape)
+#else
+      (theEvent.type == sf::Event::KeyReleased) && (theEvent.key.code == sf::Keyboard::Escape)
+#endif
+      )
+    {
+      // Signal the application to exit
+      mApp.Quit(GQE::StatusAppOK);
+    }
+  }
+
   float IState::GetElapsedTime(void) const
   {
 #if (SFML_VERSION_MAJOR < 2)

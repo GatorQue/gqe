@@ -6,6 +6,7 @@
  * @author Ryan Lindeman
  * @date 20110820 - Initial Release
  * @date 20110906 - Moved Util.hpp from Entities to here
+ * @date 20120720 - Added several new Convert and Parse functions
  */
 #ifndef   CORE_STRING_UTIL_HPP_INCLUDED
 #define   CORE_STRING_UTIL_HPP_INCLUDED
@@ -20,12 +21,57 @@ namespace GQE
   // String Manipulation Methods
   ///////////////////////////////////////////////////////////////////////////
   /**
+   * ConvertBool will convert the boolean value provided into a string.
+   * @param[in] theBoolean to convert to a string.
+   * @return the resulting string after converting theBoolean
+   */
+  std::string ConvertBool(const bool theBoolean);
+
+  /**
+   * ConvertColor will convert theColor value provided into a string.
+   * @param[in] theVector to convert to a string.
+   * @return the resulting string after converting theVector
+   */
+  std::string ConvertColor(const sf::Color theVector);
+
+  /**
+   * ConvertFloat will convert the float value provided into a string.
+   * @param[in] theFloat to convert to a string.
+   * @return the resulting string after converting theFloat
+   */
+  std::string ConvertFloat(const bool theFloat);
+
+  /**
    * ConvertInt32 will convert the 32 bit signed integer provided into a
    * string.
    * @param[in] theNumber to convert to a string.
    * @return the resulting string after converting theNumber
    */
   std::string ConvertInt32(const Int32 theNumber);
+
+  /**
+   * ConvertUint32 will convert the 32 bit unsigned integer provided into a
+   * string.
+   * @param[in] theNumber to convert to a string.
+   * @return the resulting string after converting theNumber
+   */
+  std::string ConvertUint32(const Uint32 theNumber);
+
+  /**
+   * ConvertVector2f will convert theVector value provided into a
+   * string.
+   * @param[in] theVector to convert to a string.
+   * @return the resulting string after converting theVector
+   */
+  std::string ConvertVector2f(const sf::Vector2f theVector);
+
+  /**
+   * ConvertVector3f will convert theVector value provided into a
+   * string.
+   * @param[in] theVector to convert to a string.
+   * @return the resulting string after converting theVector
+   */
+  std::string ConvertVector3f(const sf::Vector3f theVector);
 
   ///////////////////////////////////////////////////////////////////////////
   // String Parse Methods
@@ -59,6 +105,15 @@ namespace GQE
   float ParseFloat(const std::string theValue, const float theDefault);
 
   /**
+   * ParseInt32 will parse theValue string to obtain a signed 32 bit value.
+   * If the parser fails, then it will return theDefault instead.
+   * @param[in] theValue to parse for the signed 32 bit value
+   * @param[in] theDefault signed 32 bit value to use if the parser fails
+   * @return the signed 32 bit value obtained
+   */
+  Int32 ParseInt32(const std::string theValue, const Int32 theDefault);
+
+  /**
    * ParseUint32 will parse theValue string to obtain an unsigned 32 bit
    * value.  If the parser fails, then it will return theDefault instead.
    * @param[in] theValue to parse for the unsigned 32 bit value
@@ -66,6 +121,25 @@ namespace GQE
    * @return the unsigned 32 bit value obtained
    */
   Uint32 ParseUint32(const std::string theValue, const Uint32 theDefault);
+
+  /**
+   * ParseVector2f will parse theValue string to obtain the X,Y vector values
+   * to produce an sf::Vector2f object.
+   * @param[in] theValue to parse for X,Y vector values
+   * @param[in] theDefault color to use if the parser fails
+   * @return the color object created with the values obtained
+   */
+  sf::Vector2f ParseVector2f(const std::string theValue, const sf::Vector2f theDefault);
+
+  /**
+   * ParseVector3f will parse theValue string to obtain the X,Y,Z vector values
+   * to produce an sf::Vector3f object.
+   * @param[in] theValue to parse for X,Y,Z vector values
+   * @param[in] theDefault color to use if the parser fails
+   * @return the color object created with the values obtained
+   */
+  sf::Vector3f ParseVector3f(const std::string theValue, const sf::Vector3f theDefault);
+
 } // namespace GQE
 
 #endif // CORE_STRING_UTIL_HPP_INCLUDED
