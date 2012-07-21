@@ -8,6 +8,7 @@
  * @date 20120616 - Added PropertyManager class
  * @date 20120618 - Added missing Entity classes
  * @date 20120623 - Added AnimationSystem class
+ * @date 20120720 - Moved PropertyManager to Core library
  */
 #ifndef ENTITY_HPP_INCLUDED
 #define ENTITY_HPP_INCLUDED
@@ -18,14 +19,11 @@
 #include <GQE/Config.hpp>
 
 // GQE Entity includes
-#include <GQE/Entity/classes/PropertyManager.hpp>
 #include <GQE/Entity/classes/PrototypeManager.hpp>
 #include <GQE/Entity/classes/Instance.hpp>
 #include <GQE/Entity/classes/Prototype.hpp>
 #include <GQE/Entity/interfaces/IEntity.hpp>
-#include <GQE/Entity/interfaces/IProperty.hpp>
 #include <GQE/Entity/interfaces/ISystem.hpp>
-#include <GQE/Entity/interfaces/TProperty.hpp>
 #include <GQE/Entity/systems/AnimationSystem.hpp>
 #include <GQE/Entity/systems/MovementSystem.hpp>
 #include <GQE/Entity/systems/RenderSystem.hpp>

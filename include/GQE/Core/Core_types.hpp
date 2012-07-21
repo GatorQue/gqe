@@ -15,6 +15,7 @@
  * @date 20120428 - Added new IAsset and IAssetHandler types
  * @date 20120630 - Added new GraphicRange enumeration
  * @date 20120702 - Add new EventManager and Event ID typedef
+ * @date 20120720 - Moved PropertyManager to Core library from Entity library
  */
 #ifndef   GQE_CORE_TYPES_HPP_INCLUDED
 #define   GQE_CORE_TYPES_HPP_INCLUDED
@@ -96,12 +97,14 @@ namespace GQE
   class IAssetHandler;
   class IEvent;
   class ILogger;
+  class IProperty;
   class IState;
 
   // Forward declare GQE core classes provided
   class AssetManager;
   class ConfigReader;
   class EventManager;
+  class PropertyManager;
   class StateManager;
 
   // Forward declare GQE core assets provided
@@ -135,6 +138,9 @@ namespace GQE
 
   /// Declare Event ID typedef which is used for identifying Event objects
   typedef std::string typeEventID;
+
+  /// Declare Property ID typedef which is used for identifying Properties
+  typedef std::string typePropertyID;
 
   /// Declare State ID typedef which is used for identifying State objects
   typedef std::string typeStateID;

@@ -8,6 +8,7 @@
  * @date 20120618 - Changed name from typeInstanceID to typeEntityID
  * @date 20120623 - Add forward declaration of ISystem derived classes
  * @date 20120627 - Add forward declaration of ActionSystem classes
+ * @date 20120720 - Moved PropertyManager to Core library
  */
 #ifndef ENTITY_TYPES_HPP_INCLUDED
 #define ENTITY_TYPES_HPP_INCLUDED
@@ -21,13 +22,11 @@ namespace GQE
   // Forward declare GQE Entity interfaces provided
   class IAction;
   class IEntity;
-  class IProperty;
   class ISystem;
 
   // Forward declare GQE Entity classes provided
   class Prototype;
   class Instance;
-  class PropertyManager;
   class PrototypeManager;
 
   // Forward declare GQE Entity systems provided
@@ -42,10 +41,7 @@ namespace GQE
   /// Declare Entity ID typedef which is used for identifying IEntity objects
   typedef Uint32 typeEntityID;
 
-  /// Declare Property ID typedef which is used for identifying Properties
-  typedef std::string typePropertyID;
-
-  /// Declare Prototype ID typedef which is used for identifying Entity Prototype objects
+  /// Declare Prototype ID typedef which is used for identifying Prototype objects
   typedef std::string typePrototypeID;
 
   /// Declare System ID typedef which is used for identifying ISystem objects

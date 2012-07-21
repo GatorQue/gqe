@@ -17,16 +17,19 @@ set(INC
     ${INCROOT}/Core/classes/AssetManager.hpp
     ${INCROOT}/Core/classes/ConfigReader.hpp
     ${INCROOT}/Core/classes/EventManager.hpp
+    ${INCROOT}/Core/classes/PropertyManager.hpp
     ${INCROOT}/Core/classes/StatManager.hpp
     ${INCROOT}/Core/classes/StateManager.hpp
     ${INCROOT}/Core/interfaces/IApp.hpp
     ${INCROOT}/Core/interfaces/IAssetHandler.hpp
     ${INCROOT}/Core/interfaces/IEvent.hpp
     ${INCROOT}/Core/interfaces/ILogger.hpp
+    ${INCROOT}/Core/interfaces/IProperty.hpp
     ${INCROOT}/Core/interfaces/IState.hpp
-    ${INCROOT}/Core/interfaces/TEvent.hpp
     ${INCROOT}/Core/interfaces/TAsset.hpp
     ${INCROOT}/Core/interfaces/TAssetHandler.hpp
+    ${INCROOT}/Core/interfaces/TEvent.hpp
+    ${INCROOT}/Core/interfaces/TProperty.hpp
     ${INCROOT}/Core/loggers/Log_macros.hpp
     ${INCROOT}/Core/loggers/FatalLogger.hpp
     ${INCROOT}/Core/loggers/FileLogger.hpp
@@ -53,12 +56,14 @@ set(SRC
     ${SRCROOT}/Core/classes/AssetManager.cpp
     ${SRCROOT}/Core/classes/ConfigReader.cpp
     ${SRCROOT}/Core/classes/EventManager.cpp
+    ${SRCROOT}/Core/classes/PropertyManager.cpp
     ${SRCROOT}/Core/classes/StatManager.cpp
     ${SRCROOT}/Core/classes/StateManager.cpp
     ${SRCROOT}/Core/interfaces/IApp.cpp
     ${SRCROOT}/Core/interfaces/IAssetHandler.cpp
     ${SRCROOT}/Core/interfaces/IEvent.cpp
     ${SRCROOT}/Core/interfaces/ILogger.cpp
+    ${SRCROOT}/Core/interfaces/IProperty.cpp
     ${SRCROOT}/Core/interfaces/IState.cpp
     ${SRCROOT}/Core/loggers/FatalLogger.cpp
     ${SRCROOT}/Core/loggers/FileLogger.cpp
