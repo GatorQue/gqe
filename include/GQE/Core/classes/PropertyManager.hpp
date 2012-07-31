@@ -65,7 +65,27 @@ namespace GQE
         TYPE anReturn=TYPE();
         return anReturn;
       }
-
+       /**
+       * GetProperty returns the property as TProperty<TYPE> with the ID of thePropertyID.
+       * @param[in] thePropertyID is the ID of the property to return.
+       * @return A reference to a TProperty<TYPE> object.
+       */
+      template<class TYPE>
+      TProperty<TYPE>& GetProperty(const typePropertyID thePropertyID)
+      {
+        if(mList.find(thePropertyID) != mList.end())
+        {
+          if(mList.at(thePropertyID)->GetType()->Name() == typeid(TYPE).name())
+            return static_cast<TProperty<TYPE>&>(mList[thePropertyID]);
+        }
+        else
+        {
+          WLOG() << "PropertyManager:Get() returning blank property("
+            << thePropertyID << ") type" << std::endl;
+        }
+        TYPE anReturn=TYPE();
+        return anReturn;
+      }
       /**
        * Set sets the property with the ID of thePropertyID to theValue.
        * @param[in] thePropertyID is the ID of the property to set.
