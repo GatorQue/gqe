@@ -1,3 +1,7 @@
+Version 0.22.2
+==============
+- Fix obscure gcc compiler issue in onullstream file
+
 Version 0.22.1
 ==============
 - Fix pure-virtual crash on game exit for ISystem::HandleCleanup call
