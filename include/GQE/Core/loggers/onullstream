@@ -7,6 +7,7 @@
  * @file include/GQE/Core/loggers/onullstream
  * @author Ryan Lindeman
  * @date 20110524 - Initial Release
+ * @date 20120829 - Fix obscure gcc compiler bug when calling basic_ios::init
  */
 #ifndef   STD_O_NULLSTREAM_INCLUDED
 #define   STD_O_NULLSTREAM_INCLUDED
@@ -31,7 +32,7 @@ namespace std
           std::basic_ios<cT, traits>(&m_sbuf),
           std::basic_ostream<cT, traits>(&m_sbuf)
       {
-        init(&m_sbuf);
+        this->init(&m_sbuf);
       }
 
       private:
