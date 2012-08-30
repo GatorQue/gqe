@@ -1,6 +1,10 @@
-Version 0.22.2
+Version 0.22.3
 ==============
 - Fix obscure gcc compiler issue in onullstream file
+
+Version 0.22.2
+==============
+- Fix missing Doxygen error message for linux builds
 
 Version 0.22.1
 ==============
