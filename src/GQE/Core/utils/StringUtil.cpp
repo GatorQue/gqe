@@ -7,6 +7,7 @@
  * @date 20110820 - Initial Release
  * @date 20110906 - Moved Util.cpp from Entities to here
  * @date 20120720 - Added several new Convert and Parse functions
+ * @date 20120904 - Fix SFML v1.6 issues
  */
 
 #include <sstream>
@@ -128,10 +129,10 @@ namespace GQE
 
     // Add theRect to the stringstream
 #if (SFML_VERSION_MAJOR < 2)
-    anResult << theColor.top << ", ";
-    anResult << theColor.left << ", ";
-    anResult << theColor.GetWidth() << ", ";
-    anResult << theColor.GetHeight();
+    anResult << theRect.Top << ", ";
+    anResult << theRect.Left << ", ";
+    anResult << theRect.GetWidth() << ", ";
+    anResult << theRect.GetHeight();
 #else
     anResult << theRect.top << ", ";
     anResult << theRect.left << ", ";
@@ -398,12 +399,20 @@ namespace GQE
     size_t anComma1Offset = theValue.find_first_of(',');
     if(anComma1Offset != std::string::npos)
     {
+#if (SFML_VERSION_MAJOR < 2)
+      sf::Int32 anLeft = ParseInt32(theValue.substr(0,anComma1Offset), theDefault.Left);
+#else
       sf::Int32 anLeft = ParseInt32(theValue.substr(0,anComma1Offset), theDefault.left);
+#endif
       // Try to find the next comma
       size_t anComma2Offset = theValue.find_first_of(',',anComma1Offset+1);
       if(anComma2Offset != std::string::npos)
       {
+#if (SFML_VERSION_MAJOR < 2)
+        sf::Int32 anTop = ParseInt32(theValue.substr(anComma1Offset+1,anComma2Offset), theDefault.Top);
+#else
         sf::Int32 anTop = ParseInt32(theValue.substr(anComma1Offset+1,anComma2Offset), theDefault.top);
+#endif
         // Try to find the next comma
         size_t anComma3Offset = theValue.find_first_of(',',anComma2Offset+1);
         if(anComma3Offset != std::string::npos)
@@ -414,10 +423,10 @@ namespace GQE
           sf::Int32 anHeight = ParseInt32(theValue.substr(anComma3Offset+1), theDefault.GetHeight());
 
           // Now that all 4 values have been parsed, return the color found
-          anResult.left = anLeft;
-          anResult.top = anTop;
-          anResult.right = anLeft+anWidth;
-          anResult.bottom = anTop+anHeight;
+          anResult.Left = anLeft;
+          anResult.Top = anTop;
+          anResult.Right = anLeft+anWidth;
+          anResult.Bottom = anTop+anHeight;
 #else
           // Get the width and height values
           sf::Int32 anWidth = ParseInt32(theValue.substr(anComma2Offset+1,anComma3Offset), theDefault.width);

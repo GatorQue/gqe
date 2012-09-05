@@ -1,3 +1,7 @@
+Version 0.22.4
+==============
+- Fix SFML v1.6 issues with Vector2u
+
 Version 0.22.3
 ==============
 - Fix obscure gcc compiler issue in onullstream file

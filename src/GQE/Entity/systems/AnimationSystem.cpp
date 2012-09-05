@@ -4,11 +4,20 @@
  * @file include/GQE/Entity/systems/AnimationSystem.cpp
  * @author Jacob Dix
  * @date 20120623 - Initial Release
+ * @date 20120904 - Fix SFML v1.6 issues with Vector2u
  */
 
 #include <SFML/System.hpp>
 #include <GQE/Entity/systems/AnimationSystem.hpp>
 #include <GQE/Entity/interfaces/IEntity.hpp>
+
+// Define Vector2u here since it was not defined for SFML 1.6
+#if (SFML_VERSION_MAJOR < 2)
+namespace sf
+{
+  typedef Vector2<unsigned int> Vector2u;
+}
+#endif
 
 namespace GQE
 {
@@ -69,7 +78,7 @@ namespace GQE
           sf::IntRect anSpriteRect = anEntity->mProperties.Get<sf::IntRect>("rSpriteRect");
 
           // Get some additional AnimationSystem properties
-          sf::Vector2i anFrameModifier = anEntity->mProperties.Get<sf::Vector2u>("wFrameModifier");
+          sf::Vector2u anFrameModifier = anEntity->mProperties.Get<sf::Vector2u>("wFrameModifier");
           sf::IntRect anFrameRect = anEntity->mProperties.Get<sf::IntRect>("rFrameRect");
 
           // Are we using a horizontal row of animation images?

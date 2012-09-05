@@ -35,7 +35,7 @@ set_option(SFMLDIR ${PROJECT_SOURCE_DIR}/extlibs/headers PATH "SFML include dire
 # setup version numbers
 set(GQE_VERSION_MAJOR 0)
 set(GQE_VERSION_MINOR 22)
-set(GQE_VERSION_PATCH 3)
+set(GQE_VERSION_PATCH 4)
 set(GQE_VERSION "${GQE_VERSION_MAJOR}.${GQE_VERSION_MINOR}.${GQE_VERSION_PATCH}")
 
 # define the path of our additional CMake modules

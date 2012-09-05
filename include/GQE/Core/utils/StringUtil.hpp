@@ -7,6 +7,7 @@
  * @date 20110820 - Initial Release
  * @date 20110906 - Moved Util.hpp from Entities to here
  * @date 20120720 - Added several new Convert and Parse functions
+ * @date 20120904 - Fix SFML v1.6 issues with Vector2u
  */
 #ifndef   CORE_STRING_UTIL_HPP_INCLUDED
 #define   CORE_STRING_UTIL_HPP_INCLUDED
@@ -14,6 +15,14 @@
 #include <string>
 #include <GQE/Core/Core_types.hpp>
 #include <SFML/Graphics.hpp>
+
+// Define Vector2u here since it was not defined for SFML 1.6
+#if (SFML_VERSION_MAJOR < 2)
+namespace sf
+{
+  typedef Vector2<unsigned int> Vector2u;
+}
+#endif
 
 namespace GQE
 {
