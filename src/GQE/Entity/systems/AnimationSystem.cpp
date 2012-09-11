@@ -5,6 +5,7 @@
  * @author Jacob Dix
  * @date 20120623 - Initial Release
  * @date 20120904 - Fix SFML v1.6 issues with Vector2u
+ * @date 20120910 - Fix SFML v1.6 issue with frame edge check
  */
 
 #include <SFML/System.hpp>
@@ -85,7 +86,7 @@ namespace GQE
           if(anFrameModifier.x > 0)
           {
             anSpriteRect.Offset(anSpriteRect.GetWidth()*anFrameModifier.x, 0);
-            if(anSpriteRect.Left > anFrameRect.Left+anFrameRect.GetWidth())
+            if(anSpriteRect.Left >= anFrameRect.Left+anFrameRect.GetWidth())
             {
               // Do Right first since GetWidth will change size if Left is done first
               anSpriteRect.Right = anFrameRect.Left + anSpriteRect.GetWidth();
@@ -96,7 +97,7 @@ namespace GQE
           if(anFrameModifier.y > 0)
           {
             anSpriteRect.Offset(0,anSpriteRect.GetHeight()*anFrameModifier.y);
-            if(anSpriteRect.Top > anFrameRect.Top+anFrameRect.GetHeight())
+            if(anSpriteRect.Top >= anFrameRect.Top+anFrameRect.GetHeight())
             {
               // Do Bottom first since GetHeight will change size if Top is done first
               anSpriteRect.Bottom = anFrameRect.Top + anSpriteRect.GetHeight();
