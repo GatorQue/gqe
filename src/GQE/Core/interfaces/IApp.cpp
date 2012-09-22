@@ -253,75 +253,91 @@ namespace GQE
   {
     SLOG(App_InitSettingsConfig, SeverityInfo) << std::endl;
     ConfigAsset anSettingsConfig(IApp::APP_SETTINGS);
+
+    // Convert specific settings into properties
+    mProperties.Add<bool>("bWindowConsole", 
+      anSettingsConfig.GetAsset().GetBool("window","console",false));
+    mProperties.Add<bool>("bWindowFullscreen", 
+      anSettingsConfig.GetAsset().GetBool("window","fullscreen",false));
+    mProperties.Add<Uint32>("uWindowWidth", 
+      anSettingsConfig.GetAsset().GetUint32("window","width",DEFAULT_VIDEO_WIDTH));
+    mProperties.Add<Uint32>("uWindowHeight", 
+      anSettingsConfig.GetAsset().GetUint32("window","height",DEFAULT_VIDEO_HEIGHT));
+    mProperties.Add<Uint32>("uWindowDepth", 
+      anSettingsConfig.GetAsset().GetUint32("window","depth",DEFAULT_VIDEO_BPP));
   }
 
   void IApp::InitRenderer(void)
   {
     SLOG(App_InitRenderer, SeverityInfo) << std::endl;
-    ConfigAsset anSettingsConfig(IApp::APP_SETTINGS);
 
-    // Are we in Fullscreen mode?
-    if(anSettingsConfig.GetAsset().GetBool("window","fullscreen",false))
+    // Not Console only?
+    if(!mProperties.Get<bool>("bWindowConsole"))
     {
-      mWindowStyle = sf::Style::Fullscreen;
-    }
+      // Are we in Fullscreen mode?
+      if(mProperties.Get<bool>("bWindowFullscreen"))
+      {
+        mWindowStyle = sf::Style::Fullscreen;
+      }
 
 #if (SFML_VERSION_MAJOR < 2)
-    // What size window does the user want?
-    mVideoMode.Width =
-      anSettingsConfig.GetAsset().GetUint32("window","width",DEFAULT_VIDEO_WIDTH);
-    mVideoMode.Height =
-      anSettingsConfig.GetAsset().GetUint32("window","height",DEFAULT_VIDEO_HEIGHT);
-    mVideoMode.BitsPerPixel =
-      anSettingsConfig.GetAsset().GetUint32("window","depth",DEFAULT_VIDEO_BPP);
+      // What size window does the user want?
+      mVideoMode.Width = mProperties.Get<Uint32>("uWindowWidth");
+      mVideoMode.Height = mProperties.Get<Uint32>("uWindowHeight");
+      mVideoMode.BitsPerPixel = mProperties.Get<Uint32>("uWindowDepth");
 
-    // For Fullscreen, verify valid VideoMode, otherwise revert to defaults for Fullscreen
-    if(sf::Style::Fullscreen == mWindowStyle && false == mVideoMode.IsValid())
-    {
-      mVideoMode.Width = DEFAULT_VIDEO_WIDTH;
-      mVideoMode.Height = DEFAULT_VIDEO_HEIGHT;
-      mVideoMode.BitsPerPixel = DEFAULT_VIDEO_BPP;
-    }
+      // For Fullscreen, verify valid VideoMode, otherwise revert to defaults for Fullscreen
+      if(sf::Style::Fullscreen == mWindowStyle && false == mVideoMode.IsValid())
+      {
+        mVideoMode.Width = DEFAULT_VIDEO_WIDTH;
+        mVideoMode.Height = DEFAULT_VIDEO_HEIGHT;
+        mVideoMode.BitsPerPixel = DEFAULT_VIDEO_BPP;
+      }
 
-    // Calculate and set GraphicRange value
-    SetGraphicRange(CalculateRange(mVideoMode.Height));
+      // Calculate and set GraphicRange value
+      SetGraphicRange(CalculateRange(mVideoMode.Height));
 
-    // Create a RenderWindow object using VideoMode object above
-    mWindow.Create(mVideoMode, mTitle, mWindowStyle, mWindowSettings);
+      // Create a RenderWindow object using VideoMode object above
+      mWindow.Create(mVideoMode, mTitle, mWindowStyle, mWindowSettings);
 
-    // Use Vertical Sync
-    mWindow.UseVerticalSync(true);
+      // Use Vertical Sync
+      mWindow.UseVerticalSync(true);
 #else
-    // What size window does the user want?
-    mVideoMode.width =
-      anSettingsConfig.GetAsset().GetUint32("window","width",DEFAULT_VIDEO_WIDTH);
-    mVideoMode.height =
-      anSettingsConfig.GetAsset().GetUint32("window","height",DEFAULT_VIDEO_HEIGHT);
-    mVideoMode.bitsPerPixel =
-      anSettingsConfig.GetAsset().GetUint32("window","depth",DEFAULT_VIDEO_BPP);
+      // What size window does the user want?
+      mVideoMode.width = mProperties.Get<Uint32>("uWindowWidth");
+      mVideoMode.height = mProperties.Get<Uint32>("uWindowHeight");
+      mVideoMode.bitsPerPixel = mProperties.Get<Uint32>("uWindowDepth");
 
-    // For Fullscreen, verify valid VideoMode, otherwise revert to defaults for Fullscreen
-    if(sf::Style::Fullscreen == mWindowStyle && false == mVideoMode.isValid())
-    {
-      mVideoMode.width = DEFAULT_VIDEO_WIDTH;
-      mVideoMode.height = DEFAULT_VIDEO_HEIGHT;
-      mVideoMode.bitsPerPixel = DEFAULT_VIDEO_BPP;
-    }
+      // For Fullscreen, verify valid VideoMode, otherwise revert to defaults for Fullscreen
+      if(sf::Style::Fullscreen == mWindowStyle && false == mVideoMode.isValid())
+      {
+        mVideoMode.width = DEFAULT_VIDEO_WIDTH;
+        mVideoMode.height = DEFAULT_VIDEO_HEIGHT;
+        mVideoMode.bitsPerPixel = DEFAULT_VIDEO_BPP;
+      }
 
-    // Calculate and set GraphicRange value
-    SetGraphicRange(CalculateRange(mVideoMode.height));
+      // Calculate and set GraphicRange value
+      SetGraphicRange(CalculateRange(mVideoMode.height));
 
-    // Create a RenderWindow object using VideoMode object above
-    mWindow.create(mVideoMode, mTitle, mWindowStyle, mContextSettings);
+      // Create a RenderWindow object using VideoMode object above
+      mWindow.create(mVideoMode, mTitle, mWindowStyle, mContextSettings);
 
-    // Use Vertical Sync
-    mWindow.setVerticalSyncEnabled(true);
+      // Use Vertical Sync
+      mWindow.setVerticalSyncEnabled(true);
 #endif
+    }
+    else
+    {
+      ILOG() << "IApp::InitRenderer() Console only application" << std::endl;
+    }
   }
 
   void IApp::GameLoop(void)
   {
     SLOG(App_GameLoop, SeverityInfo) << std::endl;
+
+    // Is this a Console Only game loop?
+    bool anConsoleOnly = mProperties.Get<bool>("bWindowConsole");
 
     // Clock used in restricting Update loop to a fixed rate
     sf::Clock anUpdateClock;
@@ -352,9 +368,11 @@ namespace GQE
 
     // Loop while IsRunning returns true
 #if (SFML_VERSION_MAJOR < 2)
-    while(IsRunning() && mWindow.IsOpened() && !mStateManager.IsEmpty())
+    while(IsRunning() && !mStateManager.IsEmpty() &&
+         (mWindow.IsOpened() || anConsoleOnly))
 #else
-    while(IsRunning() && mWindow.isOpen() && !mStateManager.IsEmpty())
+    while(IsRunning() && !mStateManager.IsEmpty() &&
+         (mWindow.isOpen() || anConsoleOnly))
 #endif
     {
       // Get the currently active state
@@ -419,7 +437,7 @@ namespace GQE
 
       // Give the state manager a chance to delete any pending states
       mStateManager.Cleanup(); 
-    } // while(IsRunning() && !mStates.empty())
+    } // while(IsRunning() && !mStates.empty() && (mWindow.isOpen() || anConsoleOnly))
   }
 
   void IApp::ProcessInput(IState& theState)
