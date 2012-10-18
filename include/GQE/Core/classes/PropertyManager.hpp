@@ -77,6 +77,9 @@ namespace GQE
         {
           if(mList.at(thePropertyID)->GetType()->Name() == typeid(TYPE).name())
             return static_cast<TProperty<TYPE>&>(mList[thePropertyID]);
+          else
+            WLOG() << "PropertyManager:Get() Incorrect type,"
+            << typeid(TYPE).name() << ", expected: "<< mList.at(thePropertyID)->GetType()->Name() << std::endl;
         }
         else
         {
@@ -99,6 +102,11 @@ namespace GQE
           if(mList.at(thePropertyID)->GetType()->Name() == typeid(TYPE).name())
           {
             static_cast<TProperty<TYPE>*>(mList[thePropertyID])->SetValue(theValue);
+          }
+          else
+          {
+            WLOG() << "PropertyManager:Set() Incorrect type,"
+            << typeid(TYPE).name() << ", expected: "<< mList.at(thePropertyID)->GetType()->Name() << std::endl;\
           }
         }
         else
