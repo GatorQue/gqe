@@ -12,6 +12,7 @@
  * @date 20120622 - Added EraseSystem and renamed DropEntity to DropAllSystems
  * @date 20120623 - Adjusted scope of some IEntity variables
  * @date 20120630 - Add virtual Destroy method to be called to destroy an IEntity class
+ * @date 20121108 - Fix warning: type qualifiers ignored on function return type
  */
 #ifndef IENTITY_HPP_INCLUDED
 #define IENTITY_HPP_INCLUDED
@@ -45,7 +46,7 @@ namespace GQE
        * GetID will return the Entity ID used by this IEntity class.
        * @return the entity ID for this IEntity class
        */
-      const typeEntityID GetID(void) const;
+      typeEntityID GetID(void) const;
 
       /**
        * UseNextID Gets the next available Entity ID.
@@ -59,7 +60,7 @@ namespace GQE
        * IEntity class assigned to a ISystem (see RenderSystem).
        * @return the z-order value assigned to this IEntity class
        */
-      const Uint32 GetOrder(void) const;
+      Uint32 GetOrder(void) const;
 
       /**
        * SetOrder will set the z-order value for this IEntity which can be used

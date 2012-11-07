@@ -13,6 +13,7 @@
  *                  EraseEntity.
  * @date 20120623 - Adjusted scope of some ISystem variables
  * @date 20120707 - Fix pure-virtual crash which calls HandleCleanup in dtor
+ * @date 20121108 - Fix warning: type qualifiers ignored on function return type
  */
 #ifndef ISYSTEM_HPP_INCLUDED
 #define ISYSTEM_HPP_INCLUDED
@@ -43,7 +44,7 @@ namespace GQE
        * GetID will return the ID used for this .
        * @return the system ID for this system
        */
-      const typeSystemID GetID(void) const;
+      const typeSystemID GetID(void);
 
       /**
        * AddEntity is responsible for adding a new IEntity class to be managed by
@@ -51,7 +52,7 @@ namespace GQE
        * @param[in] theEntity to add to this ISystem class
        * @return theEntityID of theEntity that was provided and added
        */
-      const typeEntityID AddEntity(IEntity* theEntity);
+      typeEntityID AddEntity (IEntity* theEntity);
 
       /**
        * AddProperties is responsible for adding the properties used by this

@@ -8,6 +8,7 @@
  * @date 20120618 - Moved ID from Instance class to this base class
  * @date 20120620 - Drop ourselves from registered ISystem classes
  * @date 20120622 - Fix issues with dropping ISystem classes
+ * @date 20121108 - Fix warning: type qualifiers ignored on function return type
  */
 #include <GQE/Entity/interfaces/IEntity.hpp>
 #include <GQE/Entity/interfaces/ISystem.hpp>
@@ -30,7 +31,7 @@ namespace GQE
     DropAllSystems();
   }
 
-  const typeEntityID IEntity::GetID(void) const
+  typeEntityID IEntity::GetID(void) const
   {
     return mEntityID;
   }
@@ -41,7 +42,7 @@ namespace GQE
     return ++mNextID;
   }
 
-  const Uint32 IEntity::GetOrder(void) const
+  Uint32 IEntity::GetOrder(void) const
   {
     return mOrder;
   }

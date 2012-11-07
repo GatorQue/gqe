@@ -10,6 +10,7 @@
  * @date 20120622 - Fix issues with dropping IEntity classes
  * @date 20120707 - Fix pure-virtual crash which calls HandleCleanup in dtor
  * @date 20121107 - Fix warning: unused variable
+ * @date 20121108 - Fix warning: type qualifiers ignored on function return type
  */
 #include <GQE/Entity/interfaces/ISystem.hpp>
 #include <GQE/Entity/interfaces/IEntity.hpp>
@@ -32,12 +33,12 @@ namespace GQE
     DropAllEntities();
   }
 
-  const typeSystemID ISystem::GetID(void) const
+  const typeSystemID ISystem::GetID(void)
   {
     return mSystemID;
   }
 
-  const typeEntityID ISystem::AddEntity(IEntity* theEntity)
+  typeEntityID ISystem::AddEntity(IEntity* theEntity)
   {
     typeEntityID anResult = 0;
 
