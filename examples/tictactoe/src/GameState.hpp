@@ -6,6 +6,7 @@
  * @date 20110704 - Initial Release
  * @date 20120421 - Use arial.ttf font since SFML 2 crashes on exit when using default font
  * @date 20120512 - Use new RAII Asset style
+ * @date 20121107 - Padding GameState class
  */
 
 #ifndef   GAME_STATE_HPP_INCLUDED
@@ -90,6 +91,7 @@ class GameState : public GQE::IState
     sf::Sprite      mBoardSprite[3][3];
     GQE::Uint8      mBoardPlayer[3][3];
     GQE::Uint8      mCurrentPlayer;
+    char            pad_[6];
 #if (SFML_VERSION_MAJOR < 2)
     /// Winner string
     sf::String*     mWinnerText;

@@ -6,6 +6,7 @@
  * @date 20120323 - Initial Release
  * @date 20120421 - Make sure SFML 2 doesn't use its default font since it will crash on exit
  * @date 20120512 - Use new RAII Asset style
+ * @date 20121107 - Padding GameState class
  */
 
 #ifndef   GAME_STATE_HPP_INCLUDED
@@ -127,6 +128,7 @@ class GameState : public GQE::IState
     GQE::Uint16     mSelectedCol;
     GQE::Uint16     mSelectedRow;
     GQE::Uint8      mCurrentPlayer;
+    char            pad_[3];
 #if (SFML_VERSION_MAJOR < 2)
     /// Winner string
     sf::String*     mWinnerText;
@@ -142,7 +144,7 @@ class GameState : public GQE::IState
 /**
  * @class GameState
  * @ingroup Examples
- * The TicTacToe GameState class provides the TicTacToe example game
+ * The SpaceDots GameState class provides the SpaceDots example game
  * implementation for the GQE library.
  *
  * Copyright (c) 2010-2011 Ryan Lindeman

@@ -9,6 +9,8 @@
  * @date 20120421 - Use arial.ttf font since SFML 2 crashes on exit when using default font
  * @date 20120512 - Use new RAII Asset style
  * @date 20120630 - Fix mouse image of X or O and SFML 2 and Window mode.
+ * @date 20121105 - Fix warning: suggest parentheses around '&&' within '||'
+ * @date 20121107 - Padding GameState class
  */
 #include "GameState.hpp"
 #include <GQE/Core/interfaces/IApp.hpp>
@@ -21,6 +23,7 @@ GameState::GameState(GQE::IApp& theApp) :
   mPlayer2("resources/Player2.png", GQE::AssetLoadNow),
   mEmpty("resources/Empty.png", GQE::AssetLoadNow),
   mCurrentPlayer(0),
+  pad_(),
   mWinnerText(NULL)
 {
 }
@@ -211,9 +214,9 @@ void GameState::UpdateFixed(void)
     }
 
     // Check for empty columns on each row
-    if(mBoardPlayer[row][0] == 0 ||
+    if((mBoardPlayer[row][0] == 0 ||
         mBoardPlayer[row][1] == 0 ||
-        mBoardPlayer[row][2] == 0 &&
+        mBoardPlayer[row][2] == 0) &&
         anWinner == 3)
     {
       // No tie game, there are still empty spaces

@@ -6,6 +6,7 @@
  * @date 20120323 - Initial Release
  * @date 20120421 - Make sure SFML 2 doesn't use its default font since it will crash on exit
  * @date 20120512 - Use new RAII Asset style
+ * @date 20121107 - Padding GameState class
  */
 #include "GameState.hpp"
 #include <GQE/Core/interfaces/IApp.hpp>
@@ -34,6 +35,7 @@ GameState::GameState(GQE::IApp& theApp) :
   mSelectedCol(1),
   mSelectedRow(1),
   mCurrentPlayer(0),
+  pad_(),
   mWinnerText(NULL)
 {
 }
