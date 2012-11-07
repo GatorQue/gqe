@@ -19,6 +19,8 @@
  *                  improved gameloop.
  * @date 20120630 - Add new SetGraphicRange and CalculateGraphicRange methods
  * @date 20120720 - Add new PropertyManager to IApp class for storing app wide properties
+ * @date 20121107 - Fix warning: type qualifiers ignored on function return type
+ * @date 20121107 - Padding IApp class
  */
 #ifndef   CORE_APP_HPP_INCLUDED
 #define   CORE_APP_HPP_INCLUDED
@@ -41,6 +43,35 @@ namespace GQE
   class GQE_API IApp
   {
     public:
+      // Variables
+      /////////////////////////////////////////////////////////////////////////
+      /// Title to use for Window
+      std::string               mTitle;
+      /// Window style to use when creating Render window
+      unsigned long             mWindowStyle;
+      /// Render window to draw to
+      sf::RenderWindow          mWindow;
+      /// Recommended Graphic Range to use based on screen height
+      GraphicRange              mGraphicRange;
+      /// Window settings to use when creating Render window
+#if (SFML_VERSION_MAJOR < 2)
+      sf::WindowSettings        mWindowSettings;
+      /// Input manager for Render window above
+      const sf::Input&          mInput;
+#else
+      sf::ContextSettings       mContextSettings;
+#endif
+      /// AssetManager for managing assets
+      AssetManager              mAssetManager;
+      /// PropertyManager for managing IApp properties
+      PropertyManager           mProperties;
+      /// StatManager for managing game statistics
+      StatManager               mStatManager;
+      /// StateManager for managing states
+      StateManager              mStateManager;
+      /// Video Mode to use (width, height, bpp)
+      sf::VideoMode             mVideoMode;
+      
       // Constants
       /////////////////////////////////////////////////////////////////////////
       /// Default Video Width to use if config file not found
@@ -51,37 +82,6 @@ namespace GQE
       static const unsigned int DEFAULT_VIDEO_BPP = 32;
       /// Default application wide settings file string
       static const char* APP_SETTINGS;
-
-      // Variables
-      /////////////////////////////////////////////////////////////////////////
-      /// Title to use for Window
-      std::string               mTitle;
-      /// Video Mode to use (width, height, bpp)
-      sf::VideoMode             mVideoMode;
-      /// Render window to draw to
-      sf::RenderWindow          mWindow;
-      /// Window settings to use when creating Render window
-#if (SFML_VERSION_MAJOR < 2)
-      sf::WindowSettings        mWindowSettings;
-#else
-      sf::ContextSettings       mContextSettings;
-#endif
-      /// Window style to use when creating Render window
-      unsigned long             mWindowStyle;
-      /// Recommended Graphic Range to use based on screen height
-      GraphicRange              mGraphicRange;
-      /// Input manager for Render window above
-#if (SFML_VERSION_MAJOR < 2)
-      const sf::Input&          mInput;
-#endif
-      /// AssetManager for managing assets
-      AssetManager              mAssetManager;
-      /// PropertyManager for managing IApp properties
-      PropertyManager           mProperties;
-      /// StatManager for managing game statistics
-      StatManager               mStatManager;
-      /// StateManager for managing states
-      StateManager              mStateManager;
 
       /**
        * IApp deconstructor
@@ -199,11 +199,11 @@ namespace GQE
     private:
       /// Instance variable assigned at construction time
       static IApp* gApp;
-
+      
+      /// Maximum sequential UpdateFixed calls allowed to still meet minimum frame rate
+      Uint32       mMaxUpdates;
       /// The exit code value that will be returned by the program
       int          mExitCode;
-      /// True if the Application is currently running
-      bool         mRunning;
 #if (SFML_VERSION_MAJOR < 2)
       /// Update rate in seconds to use for fixed update in game loop
       float        mUpdateRate;
@@ -211,8 +211,10 @@ namespace GQE
       /// Update rate in milliseconds to use for fixed update in game loop
       sf::Int32    mUpdateRate;
 #endif
-      /// Maximum sequential UpdateFixed calls allowed to still meet minimum frame rate
-      Uint32       mMaxUpdates;
+      /// True if the Application is currently running
+      bool         mRunning;
+      /// Padding
+      char         pad_[7];
 
       /**
        * CalculateRange is responsible for returning the best GraphicRange
@@ -220,7 +222,7 @@ namespace GQE
        * @param[in] theHeight to use as part of calculation.
        * @return a GraphicRange enum value computed
        */
-      const GraphicRange CalculateRange(Uint32 theHeight) const;
+      GraphicRange CalculateRange(Uint32 theHeight) const;
 
       /**
        * InitApplication is responsible for registering and loading the

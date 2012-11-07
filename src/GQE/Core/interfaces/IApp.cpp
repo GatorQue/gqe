@@ -28,6 +28,8 @@
  * @date 20120622 - Remove setting of show value of StatManager to false
  * @date 20120630 - Add new SetGraphicRange and CalculateGraphicRange methods
  * @date 20120702 - Call new IState::Cleanup method during game loop
+ * @date 20121107 - Fix warning: type qualifiers ignored on function return type
+ * @date 20121107 - Padding IApp class
  */
 
 #include <assert.h>
@@ -52,29 +54,29 @@ namespace GQE
 
   IApp::IApp(const std::string theTitle) :
     mTitle(theTitle),
-    mVideoMode(DEFAULT_VIDEO_WIDTH, DEFAULT_VIDEO_HEIGHT, DEFAULT_VIDEO_BPP),
+    mWindowStyle(sf::Style::Close | sf::Style::Resize),
     mWindow(),
+    mGraphicRange(LowRange),
 #if (SFML_VERSION_MAJOR < 2)
     mWindowSettings(),
+    mInput(mWindow.GetInput()),
 #else
     mContextSettings(),
 #endif
-    mWindowStyle(sf::Style::Close | sf::Style::Resize),
-    mGraphicRange(LowRange),
-#if (SFML_VERSION_MAJOR < 2)
-    mInput(mWindow.GetInput()),
-#endif
     mAssetManager(),
+    mProperties(),
     mStatManager(),
     mStateManager(),
+    mVideoMode(DEFAULT_VIDEO_WIDTH, DEFAULT_VIDEO_HEIGHT, DEFAULT_VIDEO_BPP),
+    mMaxUpdates(5),
     mExitCode(0),
-    mRunning(false),
 #if (SFML_VERSION_MAJOR < 2)
     mUpdateRate(1.0f / 20.0f), // 20 updates per second
 #else
     mUpdateRate((Uint32)(1000.0f / 20.0f)), // 20 updates per second
 #endif
-    mMaxUpdates(5)
+    mRunning(false),
+    pad_()
   {
     // Save our global App pointer
     gApp = this;
@@ -228,7 +230,7 @@ namespace GQE
     mRunning = false;
   }
 
-  const GraphicRange IApp::CalculateRange(Uint32 theHeight) const
+  GraphicRange IApp::CalculateRange(Uint32 theHeight) const
   {
     // Default to LowRange
     GraphicRange anResult = LowRange;

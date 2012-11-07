@@ -8,6 +8,7 @@
  * @date 20120426 - Change to ILogger::GetLogger call instead of gLogger
  * @date 20120504 - Fix segfault caused by SLOG taking over gInstance
  * @date 20120512 - Renamed App to IApp since it really is just an interface
+ * @date 20121107 - Padding ILogger class
  */
 #include <ctime>
 #include <ostream>
@@ -24,6 +25,7 @@ namespace GQE
 
   ILogger::ILogger(bool theDefault, int theExitCode) :
     mActive(false),
+    pad_(),
     mExitCode(StatusError)
   {
     // Make this the default logger?

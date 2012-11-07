@@ -6,6 +6,7 @@
  * @author Ryan Lindeman
  * @date 20120428 - Initial Release
  * @date 20120523 - Remove GQE_API from template classes to fix linker issues
+ * @date 20121107 - Padding typeAssetData struct
  */
 #ifndef   CORE_TASSET_HANDLER_HPP_INCLUDED
 #define   CORE_TASSET_HANDLER_HPP_INCLUDED
@@ -784,12 +785,13 @@ namespace GQE
       /// Structure holding information about each Resource
       struct typeAssetData {
         TYPE*          asset;     ///< The asset being shared
-        Uint32         count;     ///< Number of people referencing this Asset
-        bool           loaded;    ///< Is the Asset currently loaded?
+        std::string    filename;  ///< Filename to use when loading this asset
         AssetLoadStyle loadStyle; ///< Load type (File, Memory, Network, etc)
         AssetLoadTime  loadTime;  ///< Load time (Now, later)
         AssetDropTime  dropTime;  ///< Drop time at (Zero, Exit)
-        std::string    filename;  ///< Filename to use when loading this asset
+        Uint32         count;     ///< Number of people referencing this Asset
+        bool           loaded;    ///< Is the Asset currently loaded?
+        char           pad_[7];   ///< Padding
       };
 
       // Variables

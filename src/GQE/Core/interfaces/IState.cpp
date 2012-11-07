@@ -9,6 +9,7 @@
  * @date 20120322 - Support new SFML2 snapshot changes
  * @date 20120512 - Renamed App to IApp since it really is just an interface
  * @date 20120702 - Switched names of Cleanup and HandleCleanup and added cleanup events
+ * @date 20121107 - Padding IState class
  */
 
 #include <assert.h>
@@ -21,11 +22,14 @@ namespace GQE
   IState::IState(const typeStateID theStateID, IApp& theApp) :
     mApp(theApp),
     mStateID(theStateID),
+    mElapsedTime(0.0f),
+    mPausedTime(0.0f),
+    mElapsedClock(),
+    mPausedClock(),
     mInit(false),
     mPaused(false),
     mCleanup(false),
-    mElapsedTime(0.0f),
-    mPausedTime(0.0f)
+    pad_()
   {
     ILOG() << "IState::ctor(" << mStateID << ")" << std::endl;
   }

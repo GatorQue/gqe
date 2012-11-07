@@ -16,6 +16,7 @@
  * @date 20120322 - Support new SFML2 snapshot changes
  * @date 20120512 - Renamed App to IApp since it really is just an interface
  * @date 20120702 - Changed Cleanup to HandleCleanup
+ * @date 20121107 - Padding SplashState class
  */
 #include <GQE/Core/interfaces/IApp.hpp>
 #include <GQE/Core/states/SplashState.hpp>
@@ -27,9 +28,10 @@ namespace GQE
     IState("Splash", theApp),
     mSplashID(theSplashID),
     mSplashFilename(theFilename),
-    mSplashDelay(theDelay),
     mSplashImage(theFilename, AssetLoadNow, AssetLoadFromFile, AssetDropAtZero),
-    mSplashSprite(mSplashImage.GetAsset())
+    mSplashSprite(mSplashImage.GetAsset()),
+    mSplashDelay(theDelay),
+    pad_(0)
   {
   }
 

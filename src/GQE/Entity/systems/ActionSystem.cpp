@@ -4,6 +4,7 @@
  * @file src/GQE/Entity/systems/ActionSystem.cpp
  * @author Jacob Dix
  * @date 20120620 - Initial Release
+ * @date 20121107 - Fix warning: unused variable
  */
 #include <SFML/Graphics.hpp>
 #include <GQE/Entity/systems/ActionSystem.hpp>
@@ -134,7 +135,7 @@ namespace GQE
   void ActionSystem::EraseAction(std::map<const typeActionID, IAction*>::iterator theActionIter)
   {
     // Get our IEntity reference first
-    IAction* anEntity = theActionIter->second;
+    //IAction* anEntity = theActionIter->second;
 
     // First remove the IAction from our list
     mActions.erase(theActionIter);

@@ -7,6 +7,7 @@
  * @file include/GQE/Core/loggers/ScopeLogger.hpp
  * @author Ryan Lindeman
  * @date 20110610 - Initial Release
+ * @date 20121107 - Padding ScopeLogger class
  */
 #ifndef   CORE_SCOPE_LOGGER_HPP_INCLUDED
 #define   CORE_SCOPE_LOGGER_HPP_INCLUDED
@@ -85,12 +86,12 @@ namespace GQE
       /// The severity level defined at construction time or by the last call to
       /// the GetStream() or LogMessage() methods (see SLOGR).
       SeverityType mSeverity;
-      /// The source file defined at construction time or by the last call to the
-      /// GetStream() or LogMessage() methods (see SLOGR).
-      const char* mSourceFile;
       /// The source line defined at construction time or by the last call to the
       /// GetStream() or LogMessage() methods (see SLOGR).
       int mSourceLine;
+      /// The source file defined at construction time or by the last call to the
+      /// GetStream() or LogMessage() methods (see SLOGR).
+      const char* mSourceFile;
       /// The scope name to use when logging Result (see SLOGR) or Exit messages
       const char* mScopeName;
   }; // class ScopeLogger

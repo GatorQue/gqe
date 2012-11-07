@@ -20,6 +20,7 @@
  * @date 20120518 - Use sf::Font instead of FontAsset to remove circular dependency
  * @date 20120609 - Whitespace changes
  * @date 20120616 - Add std::nothrow to new commands for mFPS and mUPS
+ * @date 20121107 - Padding StatManager class
  */
 
 #include <assert.h>
@@ -33,11 +34,12 @@ namespace GQE
   StatManager::StatManager() :
     mApp(NULL),
     mShow(false),
+    pad_(),
     mFrames(0),
+    mUpdates(0),
     mFrameClock(),
     mDefaultFont(),
     mFPS(NULL),
-    mUpdates(0),
     mUpdateClock(),
     mUPS(NULL)
   {

@@ -9,6 +9,7 @@
  * @date 20110801 - Moved code to .cpp file due to circular dependencies
  * @date 20120426 - Change to ILogger::GetLogger call instead of gLogger
  * @date 20120504 - Fix segfault caused by SLOG taking over gInstance
+ * @date 20121107 - Padding ILogger class
  */
 #ifndef   CORE_ILOGGER_HPP_INCLUDED
 #define   CORE_ILOGGER_HPP_INCLUDED
@@ -123,6 +124,8 @@ namespace GQE
 
       /// Logger is currently active
       bool  mActive;
+      /// Padding
+      char pad_[3];
       /// The Exit value to use when FatalShutdown method is called
       int mExitCode;
 

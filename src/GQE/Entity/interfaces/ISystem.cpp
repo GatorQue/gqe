@@ -9,6 +9,7 @@
  * @date 20120620 - Drop ourselves from registered IEntity classes
  * @date 20120622 - Fix issues with dropping IEntity classes
  * @date 20120707 - Fix pure-virtual crash which calls HandleCleanup in dtor
+ * @date 20121107 - Fix warning: unused variable
  */
 #include <GQE/Entity/interfaces/ISystem.hpp>
 #include <GQE/Entity/interfaces/IEntity.hpp>
@@ -44,7 +45,7 @@ namespace GQE
     if(theEntity != NULL)
     {
       // This will be true if the IEntity was added
-      bool anAdded = false;
+      //bool anAdded = false;
 
       // See if this IEntity is already in this z-order class
       std::deque<IEntity*>::iterator anFind;

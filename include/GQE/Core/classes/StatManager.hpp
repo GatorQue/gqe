@@ -15,6 +15,7 @@
  * @date 20110627 - Removed extra ; from namespace
  * @date 20120421 - Use arial.ttf font since SFML 2 crashes on exit when using default font
  * @date 20120518 - Use sf::Font instead of FontAsset to remove circular dependency
+ * @date 20121107 - Padding StatManager class
  */
 #ifndef   CORE_STAT_MANAGER_HPP_INCLUDED
 #define   CORE_STAT_MANAGER_HPP_INCLUDED
@@ -108,8 +109,12 @@ namespace GQE
       IApp*       mApp;
       /// Allow the current statistics to be displayed?
       bool        mShow;
+      /// Padding
+      char        pad_[7];
       /// Total number of frames drawn since DoInit was called
       Uint32      mFrames;
+      /// Total number of updates done since DoInit was called
+      Uint32      mUpdates;
       /// Frame clock for displaying Frames per second value
       sf::Clock   mFrameClock;
       /// Default font for FPS and UPS
@@ -120,9 +125,6 @@ namespace GQE
 #else
       sf::Text*   mFPS;
 #endif
-
-      /// Total number of updates done since DoInit was called
-      Uint32      mUpdates;
       /// Update clock for displaying Updates per second value
       sf::Clock   mUpdateClock;
 #if (SFML_VERSION_MAJOR < 2)

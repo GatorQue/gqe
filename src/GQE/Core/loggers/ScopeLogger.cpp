@@ -10,6 +10,7 @@
  * @date 20120426 - Change to ILogger::GetLogger call instead of gLogger
  * @date 20120504 - Fix segfault caused by SLOG taking over gInstance
  * @date 20120504 - Fix segfault caused by SLOG taking over gInstance
+ * @date 20121107 - Padding ScopeLogger class
  */
 
 #include <GQE/Core/loggers/ScopeLogger.hpp>
@@ -21,8 +22,8 @@ namespace GQE
       const char* theScopeName, int theExitCode) :
     ILogger(false, theExitCode),
     mSeverity(theSeverity),
-    mSourceFile(theSourceFile),
     mSourceLine(theSourceLine),
+    mSourceFile(theSourceFile),
     mScopeName(theScopeName)
   {
     // Make sure our global logger is defined before using it

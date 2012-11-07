@@ -19,6 +19,7 @@
  * @date 20110627 - Removed extra ; from namespace
  * @date 20110801 - Moved code to .cpp file due to circular dependencies
  * @date 20120702 - Switched names of Cleanup and HandleCleanup and added cleanup events
+ * @date 20121107 - Padding IState class
  */
 #ifndef   CORE_ISTATE_HPP_INCLUDED
 #define   CORE_ISTATE_HPP_INCLUDED
@@ -151,20 +152,22 @@ namespace GQE
     private:
       /// The State ID
       const typeStateID     mStateID;
+      /// Total elapsed time since DoInit was called
+      float                 mElapsedTime;
+      /// Total elapsed time paused since DoInit was called
+      float                 mPausedTime;
+      /// Clock will help us keep track of running and paused elapsed time
+      sf::Clock             mElapsedClock;
+      /// Clock will help us keep track of time paused
+      sf::Clock             mPausedClock;
       /// Boolean that indicates that DoInit has been called
       bool                  mInit;
       /// State is currently paused (not active)
       bool                  mPaused;
       /// State needs to be cleaned up at the end of the next game loop
       bool                  mCleanup;
-      /// Clock will help us keep track of running and paused elapsed time
-      sf::Clock             mElapsedClock;
-      /// Total elapsed time since DoInit was called
-      float                 mElapsedTime;
-      /// Clock will help us keep track of time paused
-      sf::Clock             mPausedClock;
-      /// Total elapsed time paused since DoInit was called
-      float                 mPausedTime;
+      /// Padding
+      char                  pad_[5];
 
       /**
        * Our copy constructor is private because we do not allow copies of

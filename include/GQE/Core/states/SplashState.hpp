@@ -13,6 +13,7 @@
  * @date 20110627 - Removed extra ; from namespace
  * @date 20110906 - Change mApp from a pointer to an address reference
  * @date 20120702 - Changed Cleanup to HandleCleanup
+ * @date 20121107 - Padding SplashState class
  */
 #ifndef   CORE_SPLASH_STATE_HPP_INCLUDED
 #define   CORE_SPLASH_STATE_HPP_INCLUDED
@@ -92,12 +93,14 @@ namespace GQE
       typeAssetID         mSplashID;
       /// The filename of the splash image to load
       std::string         mSplashFilename;
-      /// The time in seconds to wait before continuing to next game state
-      float               mSplashDelay;
       /// Splash ImageAsset to load
       ImageAsset          mSplashImage;
       /// The sprite to hold the splash image being displayed
       sf::Sprite          mSplashSprite;
+      /// The time in seconds to wait before continuing to next game state
+      float               mSplashDelay;
+      /// Padding
+      int                 pad_;
   }; // class SplashState
 } // namespace GQE
 
