@@ -11,6 +11,7 @@
  * @date 20120707 - Fix pure-virtual crash which calls HandleCleanup in dtor
  * @date 20121107 - Fix warning: unused variable
  * @date 20121108 - Fix warning: type qualifiers ignored on function return type
+ * @date 20121222 - Added Entity functions to ISystem for handling entities individually.
  */
 #include <GQE/Entity/interfaces/ISystem.hpp>
 #include <GQE/Entity/interfaces/IEntity.hpp>
@@ -291,10 +292,6 @@ namespace GQE
       anIter++;
     }
   }
-  void ISystem::EntityHandleEvents(IEntity* theEntity,sf::Event theEvent){ }
-  void ISystem::EntityUpdateFixed(IEntity* theEntity){ }
-  void ISystem::EntityUpdateVariable(IEntity* theEntity,float theElapsedTime){ }
-  void ISystem::EntityDraw(IEntity* theEntity){ }
 } // namespace GQE
 
 /**

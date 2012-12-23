@@ -72,6 +72,34 @@ namespace GQE
        * class.
        */
       virtual void Draw(void);
+      
+            /**
+       * EntityHandleEvents is responsible handling SFML events per entity.
+       * @param[in] theEntity to handle
+       * @param[in] theEvent to handle
+       */
+      virtual void EntityHandleEvents(IEntity* theEntity,sf::Event theEvent);
+
+      /**
+       * EntityUpdateFixed is called for handling Updateing the given entity.
+       * @param[in] theEntity to update
+       */
+      virtual void EntityUpdateFixed(IEntity* theEntity);
+
+      /**
+       * EntityUpdateVariable is called for handling Updateing the given entity.
+       * @param[in] theEntity to update
+       * @param[in] theElapsedTime from last update.
+       */
+      virtual void EntityUpdateVariable(IEntity* theEntity,float theElapsedTime);
+
+      /**
+       * EntityDraw is called during the game loop after events and the fixed update
+       * loop calls are completed and depends largely on the speed of the
+       * computer to determine how frequently it will be called.
+       * @param[in] theEntity to update
+       */
+      virtual void EntityDraw(IEntity* theEntity);
     protected:
       /**
        * HandleInit is called to allow each derived ISystem to perform any

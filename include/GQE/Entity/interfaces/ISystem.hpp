@@ -14,6 +14,7 @@
  * @date 20120623 - Adjusted scope of some ISystem variables
  * @date 20120707 - Fix pure-virtual crash which calls HandleCleanup in dtor
  * @date 20121108 - Fix warning: type qualifiers ignored on function return type
+ * @date 20121222 - Added Entity functions to ISystem for handling entities individually.
  */
 #ifndef ISYSTEM_HPP_INCLUDED
 #define ISYSTEM_HPP_INCLUDED
@@ -142,7 +143,7 @@ namespace GQE
       //Variables
       /////////////////////////////////////////////////////////////
       /// A linked list of all IEntity classes managed by this ISystem
-      std::map<const Uint32, std::deque<IEntity*>> mEntities;
+      std::map<const Uint32, std::deque<IEntity*> > mEntities;
       /// The address to the IApp derived class
       IApp& mApp;
 
