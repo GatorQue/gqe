@@ -292,6 +292,22 @@ namespace GQE
       anIter++;
     }
   }
+  void ISystem::EntityHandleEvents(IEntity* theEntity,sf::Event theEvent)
+  {
+
+  }
+  void ISystem::EntityUpdateFixed(IEntity* theEntity)
+  {
+
+  }
+  void ISystem::EntityUpdateVariable(IEntity* theEntity,float theElapsedTime)
+  {
+
+  }
+  void ISystem::EntityDraw(IEntity* theEntity)
+  {
+
+  }
 } // namespace GQE
 
 /**

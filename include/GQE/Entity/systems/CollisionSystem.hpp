@@ -18,7 +18,6 @@ namespace GQE
   class GQE_API CollisionSystem : public ISystem
   {
     public:
-		EventManager mEventManager;
       /**
        * CollisionSystem Constructor.
        * @param[in] theApp is the current GQE app.
@@ -66,12 +65,13 @@ namespace GQE
        * EntityManager a chance to call the Draw method for each Instance
        * class.
        */
-      virtual void Draw(void);
+    virtual void Draw(void);
+    typeCollisionData CheckCollisionSide(sf::IntRect anRectA, sf::IntRect anRectB, typeCollisionData anCollisionData);
+    GQE::Uint8 CheckCollisionAbove(sf::IntRect anRectA, sf::IntRect anRectB, typeCollisionData anCollisionData);
+    GQE::Uint8 CheckCollisionBelow(sf::IntRect anRectA, sf::IntRect anRectB, typeCollisionData anCollisionData);
+    GQE::Uint8 CheckCollisionLeft(sf::IntRect anRectA, sf::IntRect anRectB, typeCollisionData anCollisionData);
+    GQE::Uint8 CheckCollisionRight(sf::IntRect anRectA, sf::IntRect anRectB, typeCollisionData anCollisionData);
     protected:
-			/**
-			 * DestroyEvent
-			 * 
-			 */
       /**
        * HandleInit is called to allow each derived ISystem to perform any
        * initialization steps when a new IEntity is added.
@@ -85,17 +85,10 @@ namespace GQE
        */
       virtual void HandleCleanup(IEntity* theEntity);
 
-      /**
-       * HandleScreenWrap is called by either UpdateFixed or UpdateVariable to
-       * perform the screen wrapping calculations. The screen will wrap if the
-       * IEntity has moved just beyond its SpriteRect width or height on left
-       * or top or just beyond the screen width or height on right and bottom.
-       * @param[in] theEntity to peform screen wrap calculation
-       * @param[in] thePosition is the current position of the sprite
-       */
-      virtual void HandleScreenWrap(IEntity* theEntity, sf::Vector2f* thePosition);
+      virtual void EntityCollision(IEntity* theMovingEntity,IEntity* theOtherEntity)=0;
     private:
       std::vector<IEntity*> mMovables;
+      
   }; // class CollisionSystem
 } // namespace GQE
 

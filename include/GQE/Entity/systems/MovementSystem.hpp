@@ -42,37 +42,6 @@ namespace GQE
        */
       virtual void AddProperties(IEntity* theEntity);
 
-      /**
-       * HandleEvents is responsible for letting each Instance class have a
-       * chance to handle theEvent specified.
-       * @param[in] theEvent to handle
-       */
-      virtual void HandleEvents(sf::Event theEvent);
-
-      /**
-       * UpdateFixed is called a specific number of times every game loop and
-       * this method will allow each Instance class a chance to have its
-       * UpdateFixed method called for each game loop iteration.
-       */
-      virtual void UpdateFixed(void);
-
-      /**
-       * UpdateVariable is called every time the game loop draws a frame and
-       * includes the elapsed time between the last UpdateVariable call for
-       * use with equations that use time as a variable. (e.g. physics velocity
-       * and acceleration equations).
-       */
-      virtual void UpdateVariable(float theElapsedTime);
-
-      /**
-       * Draw is called during the game loop after events and the fixed update
-       * loop calls are completed and depends largely on the speed of the
-       * computer to determine how frequently it will be called. This gives the
-       * EntityManager a chance to call the Draw method for each Instance
-       * class.
-       */
-      virtual void Draw(void);
-      
             /**
        * EntityHandleEvents is responsible handling SFML events per entity.
        * @param[in] theEntity to handle
