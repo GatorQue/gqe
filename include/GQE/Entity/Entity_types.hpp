@@ -23,7 +23,7 @@ namespace GQE
   class IAction;
   class IEntity;
   class ISystem;
-
+  class ICollisionSystem;
   // Forward declare GQE Entity classes provided
   class Prototype;
   class Instance;
@@ -47,48 +47,10 @@ namespace GQE
   /// Declare System ID typedef which is used for identifying ISystem objects
   typedef std::string typeSystemID;
 
-  enum typeCollisionSide
-  {
-    COL_NONE=0,
-    COL_TOP,
-    COL_BOTTOM,
-    COL_LEFT,
-    COL_RIGHT,
-    COLLISION
-  };
   struct typeCollisionData
   {
-    float DistanceAbove;
-    float DistanceBelow;
-    float DistanceLeft;
-    float DistanceRight;
     sf::IntRect IntersectRect;
-    typeCollisionSide Side;
-    typeCollisionData Inverce()
-    {
-      typeCollisionData anNewData;
-      if(Side==COL_TOP)
-      {
-        anNewData.Side=COL_BOTTOM;
-      }
-      else if(Side==COL_BOTTOM)
-      {
-        anNewData.Side=COL_TOP;
-      }
-      if(Side==COL_RIGHT)
-      {
-        anNewData.Side=COL_LEFT;
-      }
-      else if(Side==COL_LEFT)
-      {
-        anNewData.Side=COL_RIGHT;
-      }
-      anNewData.DistanceAbove=DistanceBelow;
-      anNewData.DistanceBelow=DistanceAbove;
-      anNewData.DistanceLeft=DistanceRight;
-      anNewData.DistanceRight=DistanceLeft;
-      return anNewData;
-    }
+    bool Collision;
   };
 }
 #endif // ENTITY_TYPES_HPP_INCLUDED

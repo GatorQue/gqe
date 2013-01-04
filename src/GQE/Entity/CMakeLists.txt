@@ -7,7 +7,6 @@ set(INC
     ${INCROOT}/Entity/systems/AnimationSystem.hpp
     ${INCROOT}/Entity/systems/MovementSystem.hpp
     ${INCROOT}/Entity/systems/RenderSystem.hpp
-    ${INCROOT}/Entity/systems/CollisionSystem.hpp
     ${INCROOT}/Entity/classes/ActionGroup.hpp
     ${INCROOT}/Entity/classes/PrototypeManager.hpp
     ${INCROOT}/Entity/classes/Instance.hpp
@@ -15,6 +14,7 @@ set(INC
     ${INCROOT}/Entity/interfaces/IAction.hpp
     ${INCROOT}/Entity/interfaces/IEntity.hpp
     ${INCROOT}/Entity/interfaces/ISystem.hpp
+    ${INCROOT}/Entity/interfaces/ICollisionSystem.hpp
     ${INCROOT}/Entity/Entity_types.hpp
 )
 
@@ -24,7 +24,6 @@ set(SRC
     ${SRCROOT}/Entity/systems/AnimationSystem.cpp
     ${SRCROOT}/Entity/systems/MovementSystem.cpp
     ${SRCROOT}/Entity/systems/RenderSystem.cpp
-    ${SRCROOT}/Entity/systems/CollisionSystem.cpp
     ${SRCROOT}/Entity/classes/ActionGroup.cpp
     ${SRCROOT}/Entity/classes/PrototypeManager.cpp
     ${SRCROOT}/Entity/classes/Instance.cpp
@@ -32,6 +31,7 @@ set(SRC
     ${SRCROOT}/Entity/interfaces/IAction.cpp
     ${SRCROOT}/Entity/interfaces/IEntity.cpp
     ${SRCROOT}/Entity/interfaces/ISystem.cpp
+    ${SRCROOT}/Entity/interfaces/ICollisionSystem.cpp
     ${SRCROOT}/Entity/Entity_types.cpp
 )
 

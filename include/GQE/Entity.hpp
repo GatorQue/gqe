@@ -24,6 +24,7 @@
 #include <GQE/Entity/classes/Prototype.hpp>
 #include <GQE/Entity/interfaces/IEntity.hpp>
 #include <GQE/Entity/interfaces/ISystem.hpp>
+#include <GQE/Entity/interfaces/ICollisionSystem.hpp>
 #include <GQE/Entity/systems/AnimationSystem.hpp>
 #include <GQE/Entity/systems/MovementSystem.hpp>
 #include <GQE/Entity/systems/RenderSystem.hpp>

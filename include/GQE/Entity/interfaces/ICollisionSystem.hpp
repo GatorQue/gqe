@@ -1,12 +1,12 @@
 /**
- * Provides the CollisionSystem class for handing AABB based Collisions between Entities.
+ * Provides the ICollisionSystem class for handing AABB based Collisions between Entities.
  *
- * @file include/GQE/Entity/systems/CollisionSystem.hpp
+ * @file include/GQE/Entity/systems/ICollisionSystem.hpp
  * @author Jacob Dix
  * @date
  */
-#ifndef COLLISION_SYSTEM_HPP_INCLUDED
-#define COLLISION_SYSTEM_HPP_INCLUDED
+#ifndef ICOLLISION_SYSTEM_HPP_INCLUDED
+#define ICOLLISION_SYSTEM_HPP_INCLUDED
 
 #include <SFML/System.hpp>
 #include <GQE/Entity/interfaces/ISystem.hpp>
@@ -14,20 +14,20 @@
 #include <GQE/Core/classes/EventManager.hpp>
 namespace GQE
 {
-  /// The CollisionSystem for managing all IEntity movement in a game
-  class GQE_API CollisionSystem : public ISystem
+  /// The ICollisionSystem for managing all IEntity movement in a game
+  class GQE_API ICollisionSystem : public ISystem
   {
     public:
       /**
-       * CollisionSystem Constructor.
+       * ICollisionSystem Constructor.
        * @param[in] theApp is the current GQE app.
        */
-      CollisionSystem(IApp& theApp);
+      ICollisionSystem(IApp& theApp);
 
       /**
-       * CollisionSystem Destructor.
+       * ICollisionSystem Destructor.
        */
-      virtual ~CollisionSystem();
+      virtual ~ICollisionSystem();
 
       /**
        * AddProperties is responsible for adding the properties used by this
@@ -66,11 +66,6 @@ namespace GQE
        * class.
        */
     virtual void Draw(void);
-    typeCollisionData CheckCollisionSide(sf::IntRect anRectA, sf::IntRect anRectB, typeCollisionData anCollisionData);
-    GQE::Uint8 CheckCollisionAbove(sf::IntRect anRectA, sf::IntRect anRectB, typeCollisionData anCollisionData);
-    GQE::Uint8 CheckCollisionBelow(sf::IntRect anRectA, sf::IntRect anRectB, typeCollisionData anCollisionData);
-    GQE::Uint8 CheckCollisionLeft(sf::IntRect anRectA, sf::IntRect anRectB, typeCollisionData anCollisionData);
-    GQE::Uint8 CheckCollisionRight(sf::IntRect anRectA, sf::IntRect anRectB, typeCollisionData anCollisionData);
     protected:
       /**
        * HandleInit is called to allow each derived ISystem to perform any
@@ -85,19 +80,19 @@ namespace GQE
        */
       virtual void HandleCleanup(IEntity* theEntity);
 
-      virtual void EntityCollision(IEntity* theMovingEntity,IEntity* theOtherEntity)=0;
+      virtual void EntityCollision(IEntity* theMovingEntity,IEntity* theOtherEntity, typeCollisionData theCollisionData)=0;
     private:
       std::vector<IEntity*> mMovables;
       
-  }; // class CollisionSystem
+  }; // class ICollisionSystem
 } // namespace GQE
 
-#endif // COLLISION_SYSTEM_HPP_INCLUDED
+#endif // ICOLLISION_SYSTEM_HPP_INCLUDED
 
 /**
- * @class GQE::CollisionSystem
+ * @class GQE::ICollisionSystem
  * @ingroup Entity
- * The CollisionSystem class is used to detect and react to collisions based on the
+ * The ICollisionSystem class is used as a base for collision systems.
  * following properties it provides:
  * - rBoundingBox: a rectangle for the size of the entity.
  * The MovementSystem class makes use of the following properties provided by the
