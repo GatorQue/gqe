@@ -16,6 +16,7 @@
  * @date 20120630 - Added new GraphicRange enumeration
  * @date 20120702 - Add new EventManager and Event ID typedef
  * @date 20120720 - Moved PropertyManager to Core library from Entity library
+ * @date 20130107 - Added new INetClient, INetPacket, INetServer, and IProcess classes
  */
 #ifndef   GQE_CORE_TYPES_HPP_INCLUDED
 #define   GQE_CORE_TYPES_HPP_INCLUDED
@@ -65,6 +66,14 @@ namespace GQE
     AssetLoadFromNetwork = 3  ///< Load the asset from the network
   };
 
+  /// Enumeration of all Network Protocols supported
+  enum NetProtocol
+  {
+    NetUnknown = 0, ///< Unknown network protocol
+    NetUdp     = 1, ///< UDP Ethernet protocol
+    NetTcp     = 2  ///< TCP Ethernet protocol
+  };
+
   /// Enumeration of all Logging severity types
   enum SeverityType
   {
@@ -97,6 +106,10 @@ namespace GQE
   class IAssetHandler;
   class IEvent;
   class ILogger;
+  class INetClient;
+  class INetPacket;
+  class INetServer;
+  class IProcess;
   class IProperty;
   class IState;
 

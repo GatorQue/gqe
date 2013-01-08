@@ -24,6 +24,10 @@ set(INC
     ${INCROOT}/Core/interfaces/IAssetHandler.hpp
     ${INCROOT}/Core/interfaces/IEvent.hpp
     ${INCROOT}/Core/interfaces/ILogger.hpp
+    ${INCROOT}/Core/interfaces/INetClient.hpp
+    ${INCROOT}/Core/interfaces/INetPacket.hpp
+    ${INCROOT}/Core/interfaces/INetServer.hpp
+    ${INCROOT}/Core/interfaces/IProcess.hpp
     ${INCROOT}/Core/interfaces/IProperty.hpp
     ${INCROOT}/Core/interfaces/IState.hpp
     ${INCROOT}/Core/interfaces/TAsset.hpp
@@ -63,6 +67,10 @@ set(SRC
     ${SRCROOT}/Core/interfaces/IAssetHandler.cpp
     ${SRCROOT}/Core/interfaces/IEvent.cpp
     ${SRCROOT}/Core/interfaces/ILogger.cpp
+    ${SRCROOT}/Core/interfaces/INetClient.cpp
+    ${SRCROOT}/Core/interfaces/INetPacket.cpp
+    ${SRCROOT}/Core/interfaces/INetServer.cpp
+    ${SRCROOT}/Core/interfaces/IProcess.cpp
     ${SRCROOT}/Core/interfaces/IProperty.cpp
     ${SRCROOT}/Core/interfaces/IState.cpp
     ${SRCROOT}/Core/loggers/FatalLogger.cpp
