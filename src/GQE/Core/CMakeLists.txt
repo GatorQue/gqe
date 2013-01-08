@@ -17,17 +17,13 @@ set(INC
     ${INCROOT}/Core/classes/AssetManager.hpp
     ${INCROOT}/Core/classes/ConfigReader.hpp
     ${INCROOT}/Core/classes/EventManager.hpp
-    ${INCROOT}/Core/classes/NetManager.hpp
     ${INCROOT}/Core/classes/PropertyManager.hpp
     ${INCROOT}/Core/classes/StatManager.hpp
     ${INCROOT}/Core/classes/StateManager.hpp
-    ${INCROOT}/Core/classes/TcpServer.hpp
-    ${INCROOT}/Core/classes/UdpServer.hpp
     ${INCROOT}/Core/interfaces/IApp.hpp
     ${INCROOT}/Core/interfaces/IAssetHandler.hpp
     ${INCROOT}/Core/interfaces/IEvent.hpp
     ${INCROOT}/Core/interfaces/ILogger.hpp
-    ${INCROOT}/Core/interfaces/IProcess.hpp
     ${INCROOT}/Core/interfaces/IProperty.hpp
     ${INCROOT}/Core/interfaces/IState.hpp
     ${INCROOT}/Core/interfaces/TAsset.hpp
@@ -60,17 +56,13 @@ set(SRC
     ${SRCROOT}/Core/classes/AssetManager.cpp
     ${SRCROOT}/Core/classes/ConfigReader.cpp
     ${SRCROOT}/Core/classes/EventManager.cpp
-    ${SRCROOT}/Core/classes/NetManager.cpp
     ${SRCROOT}/Core/classes/PropertyManager.cpp
     ${SRCROOT}/Core/classes/StatManager.cpp
     ${SRCROOT}/Core/classes/StateManager.cpp
-    ${SRCROOT}/Core/classes/TcpServer.cpp
-    ${SRCROOT}/Core/classes/UdpServer.cpp
     ${SRCROOT}/Core/interfaces/IApp.cpp
     ${SRCROOT}/Core/interfaces/IAssetHandler.cpp
     ${SRCROOT}/Core/interfaces/IEvent.cpp
     ${SRCROOT}/Core/interfaces/ILogger.cpp
-    ${SRCROOT}/Core/interfaces/IProcess.cpp
     ${SRCROOT}/Core/interfaces/IProperty.cpp
     ${SRCROOT}/Core/interfaces/IState.cpp
     ${SRCROOT}/Core/loggers/FatalLogger.cpp

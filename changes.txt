@@ -1,7 +1,3 @@
-Version 0.23.0
-==============
-- Add TcpServer and UdpServer for providing custom network servers
-
 Version 0.22.6
 ==============
 - Add better console only support to IApp

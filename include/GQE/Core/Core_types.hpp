@@ -97,7 +97,6 @@ namespace GQE
   class IAssetHandler;
   class IEvent;
   class ILogger;
-  class IProcess;
   class IProperty;
   class IState;
 
@@ -105,11 +104,8 @@ namespace GQE
   class AssetManager;
   class ConfigReader;
   class EventManager;
-  class NetManager;
   class PropertyManager;
   class StateManager;
-  class TcpServer;
-  class UdpServer;
 
   // Forward declare GQE core assets provided
   class ConfigAsset;

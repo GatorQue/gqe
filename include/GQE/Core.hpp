@@ -38,13 +38,10 @@
 #include <GQE/Core/classes/PropertyManager.hpp>
 #include <GQE/Core/classes/StatManager.hpp>
 #include <GQE/Core/classes/StateManager.hpp>
-#include <GQE/Core/classes/TcpServer.hpp>
-#include <GQE/Core/classes/UdpServer.hpp>
 #include <GQE/Core/interfaces/IApp.hpp>
 #include <GQE/Core/interfaces/IAssetHandler.hpp>
 #include <GQE/Core/interfaces/IEvent.hpp>
 #include <GQE/Core/interfaces/ILogger.hpp>
-#include <GQE/Core/interfaces/IProcess.hpp>
 #include <GQE/Core/interfaces/IProperty.hpp>
 #include <GQE/Core/interfaces/IState.hpp>
 #include <GQE/Core/interfaces/TAsset.hpp>
