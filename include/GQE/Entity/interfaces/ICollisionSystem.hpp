@@ -3,7 +3,7 @@
  *
  * @file include/GQE/Entity/systems/ICollisionSystem.hpp
  * @author Jacob Dix
- * @date
+ * @date 20120611 Initial release
  */
 #ifndef ICOLLISION_SYSTEM_HPP_INCLUDED
 #define ICOLLISION_SYSTEM_HPP_INCLUDED
@@ -12,6 +12,7 @@
 #include <GQE/Entity/interfaces/ISystem.hpp>
 #include <GQE/Entity/Entity_types.hpp>
 #include <GQE/Core/classes/EventManager.hpp>
+
 namespace GQE
 {
   /// The ICollisionSystem for managing all IEntity movement in a game
@@ -65,7 +66,7 @@ namespace GQE
        * EntityManager a chance to call the Draw method for each Instance
        * class.
        */
-    virtual void Draw(void);
+      virtual void Draw(void);
     protected:
       /**
        * HandleInit is called to allow each derived ISystem to perform any
@@ -83,7 +84,7 @@ namespace GQE
       virtual void EntityCollision(IEntity* theMovingEntity,IEntity* theOtherEntity, typeCollisionData theCollisionData)=0;
     private:
       std::vector<IEntity*> mMovables;
-      
+
   }; // class ICollisionSystem
 } // namespace GQE
 
