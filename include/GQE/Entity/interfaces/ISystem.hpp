@@ -14,6 +14,7 @@
  * @date 20120623 - Adjusted scope of some ISystem variables
  * @date 20120707 - Fix pure-virtual crash which calls HandleCleanup in dtor
  * @date 20121108 - Fix warning: type qualifiers ignored on function return type
+ * @date 20121222 - Added Entity functions to ISystem for handling entities individually.
  */
 #ifndef ISYSTEM_HPP_INCLUDED
 #define ISYSTEM_HPP_INCLUDED
@@ -86,14 +87,14 @@ namespace GQE
        * chance to handle theEvent specified.
        * @param[in] theEvent to handle
        */
-      virtual void HandleEvents(sf::Event theEvent) = 0;
+      virtual void HandleEvents(sf::Event theEvent);
 
       /**
        * UpdateFixed is called a specific number of times every game loop and
        * this method will allow each Instance class a chance to have its
        * UpdateFixed method called for each game loop iteration.
        */
-      virtual void UpdateFixed(void) = 0;
+      virtual void UpdateFixed(void);
 
       /**
        * UpdateVariable is called every time the game loop draws a frame and
@@ -101,7 +102,7 @@ namespace GQE
        * use with equations that use time as a variable. (e.g. physics velocity
        * and acceleration equations).
        */
-      virtual void UpdateVariable(float theElapsedTime) = 0;
+      virtual void UpdateVariable(float theElapsedTime);
 
       /**
        * Draw is called during the game loop after events and the fixed update
@@ -110,7 +111,34 @@ namespace GQE
        * EntityManager a chance to call the Draw method for each Instance
        * class.
        */
-      virtual void Draw(void) = 0;
+      virtual void Draw(void);
+      /**
+       * EntityHandleEvents is responsible handling SFML events per entity.
+       * @param[in] theEntity to handle
+       * @param[in] theEvent to handle
+       */
+      virtual void EntityHandleEvents(IEntity* theEntity,sf::Event theEvent);
+
+      /**
+       * EntityUpdateFixed is called for handling Updateing the given entity.
+       * @param[in] theEntity to update
+       */
+      virtual void EntityUpdateFixed(IEntity* theEntity);
+
+      /**
+       * EntityUpdateVariable is called for handling Updateing the given entity.
+       * @param[in] theEntity to update
+       * @param[in] theElapsedTime from last update.
+       */
+      virtual void EntityUpdateVariable(IEntity* theEntity,float theElapsedTime);
+
+      /**
+       * EntityDraw is called during the game loop after events and the fixed update
+       * loop calls are completed and depends largely on the speed of the
+       * computer to determine how frequently it will be called.
+       * @param[in] theEntity to update
+       */
+      virtual void EntityDraw(IEntity* theEntity);
     protected:
       //Variables
       /////////////////////////////////////////////////////////////

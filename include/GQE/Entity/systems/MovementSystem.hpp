@@ -42,36 +42,33 @@ namespace GQE
        */
       virtual void AddProperties(IEntity* theEntity);
 
-      /**
-       * HandleEvents is responsible for letting each Instance class have a
-       * chance to handle theEvent specified.
+            /**
+       * EntityHandleEvents is responsible handling SFML events per entity.
+       * @param[in] theEntity to handle
        * @param[in] theEvent to handle
        */
-      virtual void HandleEvents(sf::Event theEvent);
+      virtual void EntityHandleEvents(IEntity* theEntity,sf::Event theEvent);
 
       /**
-       * UpdateFixed is called a specific number of times every game loop and
-       * this method will allow each Instance class a chance to have its
-       * UpdateFixed method called for each game loop iteration.
+       * EntityUpdateFixed is called for handling Updateing the given entity.
+       * @param[in] theEntity to update
        */
-      virtual void UpdateFixed(void);
+      virtual void EntityUpdateFixed(IEntity* theEntity);
 
       /**
-       * UpdateVariable is called every time the game loop draws a frame and
-       * includes the elapsed time between the last UpdateVariable call for
-       * use with equations that use time as a variable. (e.g. physics velocity
-       * and acceleration equations).
+       * EntityUpdateVariable is called for handling Updateing the given entity.
+       * @param[in] theEntity to update
+       * @param[in] theElapsedTime from last update.
        */
-      virtual void UpdateVariable(float theElapsedTime);
+      virtual void EntityUpdateVariable(IEntity* theEntity,float theElapsedTime);
 
       /**
-       * Draw is called during the game loop after events and the fixed update
+       * EntityDraw is called during the game loop after events and the fixed update
        * loop calls are completed and depends largely on the speed of the
-       * computer to determine how frequently it will be called. This gives the
-       * EntityManager a chance to call the Draw method for each Instance
-       * class.
+       * computer to determine how frequently it will be called.
+       * @param[in] theEntity to update
        */
-      virtual void Draw(void);
+      virtual void EntityDraw(IEntity* theEntity);
     protected:
       /**
        * HandleInit is called to allow each derived ISystem to perform any

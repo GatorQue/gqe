@@ -57,6 +57,9 @@ namespace GQE
     if(mSystems.find(theSystem->GetID()) == mSystems.end())
     {
       mSystems[theSystem->GetID()] = theSystem;
+      // Make sure this entity has the correct properties added for this system
+      theSystem->AddProperties(this);
+
     }
   }
 

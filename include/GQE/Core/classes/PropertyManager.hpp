@@ -55,7 +55,14 @@ namespace GQE
         if(mList.find(thePropertyID) != mList.end())
         {
           if(mList.at(thePropertyID)->GetType()->Name() == typeid(TYPE).name())
+          {
             return static_cast<TProperty<TYPE>*>(mList[thePropertyID])->GetValue();
+					}
+					else
+          {
+            WLOG() << "PropertyManager:Get() Incorrect type for property:"<< thePropertyID << ". Given:"
+            << typeid(TYPE).name() << ", expected: "<< mList.at(thePropertyID)->GetType()->Name() << std::endl;
+          }
         }
         else
         {
@@ -76,10 +83,14 @@ namespace GQE
         if(mList.find(thePropertyID) != mList.end())
         {
           if(mList.at(thePropertyID)->GetType()->Name() == typeid(TYPE).name())
+          {
             return static_cast<TProperty<TYPE>&>(mList[thePropertyID]);
+          }
           else
-            WLOG() << "PropertyManager:Get() Incorrect type,"
+          {
+            WLOG() << "PropertyManager:GetProperty() Incorrect type for property:"<< thePropertyID << ". Given:"
             << typeid(TYPE).name() << ", expected: "<< mList.at(thePropertyID)->GetType()->Name() << std::endl;
+          }
         }
         else
         {
@@ -105,8 +116,8 @@ namespace GQE
           }
           else
           {
-            WLOG() << "PropertyManager:Set() Incorrect type,"
-            << typeid(TYPE).name() << ", expected: "<< mList.at(thePropertyID)->GetType()->Name() << std::endl;\
+            WLOG() << "PropertyManager:Set() Incorrect type for property:"<< thePropertyID << ". Given:"
+            << typeid(TYPE).name() << ", expected: "<< mList.at(thePropertyID)->GetType()->Name() << std::endl;
           }
         }
         else

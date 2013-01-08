@@ -11,6 +11,7 @@
  * @date 20120707 - Fix pure-virtual crash which calls HandleCleanup in dtor
  * @date 20121107 - Fix warning: unused variable
  * @date 20121108 - Fix warning: type qualifiers ignored on function return type
+ * @date 20121222 - Added Entity functions to ISystem for handling entities individually.
  */
 #include <GQE/Entity/interfaces/ISystem.hpp>
 #include <GQE/Entity/interfaces/IEntity.hpp>
@@ -204,7 +205,109 @@ namespace GQE
     // Return anResult iterator to caller which might be end()
     return anResult;
   }
+  void ISystem::HandleEvents(sf::Event theEvent)
+  {
+    // Search through each z-order map to find theEntityID provided
+    std::map<const Uint32, std::deque<IEntity*> >::iterator anIter;
+    anIter = mEntities.begin();
+    while(anIter != mEntities.end())
+    {
+      std::deque<IEntity*>::iterator anQueue = anIter->second.begin();
+      while(anQueue != anIter->second.end())
+      {
+        // Get the IEntity address first
+        GQE::IEntity* anEntity = *anQueue;
 
+        // Increment the IEntity iterator second
+        anQueue++;
+
+        //Prosses this entities Events.
+        EntityHandleEvents(anEntity,theEvent);
+      }
+      anIter++;
+    }
+  }
+  void ISystem::UpdateFixed(void)
+  {
+    // Search through each z-order map to find theEntityID provided
+    std::map<const Uint32, std::deque<IEntity*> >::iterator anIter;
+    anIter = mEntities.begin();
+    while(anIter != mEntities.end())
+    {
+      std::deque<IEntity*>::iterator anQueue = anIter->second.begin();
+      while(anQueue != anIter->second.end())
+      {
+        // Get the IEntity address first
+        GQE::IEntity* anEntity = *anQueue;
+
+        // Increment the IEntity iterator second
+        anQueue++;
+
+        //Update this entity.
+        EntityUpdateFixed(anEntity);
+      }
+      anIter++;
+    }
+  }
+  void ISystem::UpdateVariable(float theElapsedTime)
+  {
+    // Search through each z-order map to find theEntityID provided
+    std::map<const Uint32, std::deque<IEntity*> >::iterator anIter;
+    anIter = mEntities.begin();
+    while(anIter != mEntities.end())
+    {
+      std::deque<IEntity*>::iterator anQueue = anIter->second.begin();
+      while(anQueue != anIter->second.end())
+      {
+        // Get the IEntity address first
+        GQE::IEntity* anEntity = *anQueue;
+
+        // Increment the IEntity iterator second
+        anQueue++;
+
+        //Update this entity.
+        EntityUpdateVariable(anEntity,theElapsedTime);
+      }
+      anIter++;
+    }
+  }
+  void ISystem::Draw(void)
+  {
+        // Search through each z-order map to find theEntityID provided
+    std::map<const Uint32, std::deque<IEntity*> >::iterator anIter;
+    anIter = mEntities.begin();
+    while(anIter != mEntities.end())
+    {
+      std::deque<IEntity*>::iterator anQueue = anIter->second.begin();
+      while(anQueue != anIter->second.end())
+      {
+        // Get the IEntity address first
+        GQE::IEntity* anEntity = *anQueue;
+
+        // Increment the IEntity iterator second
+        anQueue++;
+        //Draw this entity.
+        EntityDraw(anEntity);
+      }
+      anIter++;
+    }
+  }
+  void ISystem::EntityHandleEvents(IEntity* theEntity,sf::Event theEvent)
+  {
+
+  }
+  void ISystem::EntityUpdateFixed(IEntity* theEntity)
+  {
+
+  }
+  void ISystem::EntityUpdateVariable(IEntity* theEntity,float theElapsedTime)
+  {
+
+  }
+  void ISystem::EntityDraw(IEntity* theEntity)
+  {
+
+  }
 } // namespace GQE
 
 /**

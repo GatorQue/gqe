@@ -23,7 +23,7 @@ namespace GQE
   class IAction;
   class IEntity;
   class ISystem;
-
+  class ICollisionSystem;
   // Forward declare GQE Entity classes provided
   class Prototype;
   class Instance;
@@ -46,6 +46,12 @@ namespace GQE
 
   /// Declare System ID typedef which is used for identifying ISystem objects
   typedef std::string typeSystemID;
+
+  struct typeCollisionData
+  {
+    sf::IntRect IntersectRect;
+    bool Collision;
+  };
 }
 #endif // ENTITY_TYPES_HPP_INCLUDED
 

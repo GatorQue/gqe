@@ -33,45 +33,32 @@ namespace GQE
     theEntity->mProperties.Add<bool>("bFixedMovement",true);
     theEntity->mProperties.Add<bool>("bScreenWrap",true);
     theEntity->mProperties.Add<bool>("bMovable",true);
+    theEntity->mProperties.Add<sf::IntRect>("bBoundingBox",sf::IntRect(0,0,0,0));
+    
   }
 
   void MovementSystem::HandleInit(IEntity* theEntity)
   {
     // Do nothing
   }
-
-  void MovementSystem::HandleEvents(sf::Event theEvent)
+  void MovementSystem::EntityHandleEvents(IEntity* theEntity,sf::Event theEvent)
+  { 
+		
+	}
+  void MovementSystem::EntityUpdateFixed(IEntity* theEntity)
   {
-  }
-
-  void MovementSystem::UpdateFixed()
-  {
-    // Search through each z-order map to find theEntityID provided
-    std::map<const Uint32, std::deque<IEntity*> >::iterator anIter;
-    anIter = mEntities.begin();
-    while(anIter != mEntities.end())
-    {
-      std::deque<IEntity*>::iterator anQueue = anIter->second.begin();
-      while(anQueue != anIter->second.end())
-      {
-        // Get the IEntity address first
-        GQE::IEntity* anEntity = *anQueue;
-
-        // Increment the IEntity iterator second
-        anQueue++;
-
-        // Are we using fixed movement mathematics?
-        if(anEntity->mProperties.Get<bool>("bFixedMovement"))
+		// Are we using fixed movement mathematics?
+        if(theEntity->mProperties.Get<bool>("bFixedMovement"))
         {
           // Get the RenderSystem properties
-          sf::Vector2f anPosition = anEntity->mProperties.Get<sf::Vector2f>("vPosition");
-          float anRotation = anEntity->mProperties.Get<float>("fRotation");
+          sf::Vector2f anPosition = theEntity->mProperties.Get<sf::Vector2f>("vPosition");
+          float anRotation = theEntity->mProperties.Get<float>("fRotation");
 
           // Get the MovementSystem properties
-          sf::Vector2f anVelocity = anEntity->mProperties.Get<sf::Vector2f>("vVelocity");
-          sf::Vector2f anAccelleration = anEntity->mProperties.Get<sf::Vector2f>("vAcceleration");
-          float anRotationalVelocity = anEntity->mProperties.Get<float>("fRotationalVelocity");
-          float anRotationalAccelleration = anEntity->mProperties.Get<float>("fRotationalAcceleration");
+          sf::Vector2f anVelocity = theEntity->mProperties.Get<sf::Vector2f>("vVelocity");
+          sf::Vector2f anAccelleration = theEntity->mProperties.Get<sf::Vector2f>("vAcceleration");
+          float anRotationalVelocity = theEntity->mProperties.Get<float>("fRotationalVelocity");
+          float anRotationalAccelleration = theEntity->mProperties.Get<float>("fRotationalAcceleration");
 
           // Now update the current movement properties
           anVelocity += anAccelleration;
@@ -80,55 +67,35 @@ namespace GQE
           anRotation += anRotationalVelocity;
 
           // If ScreenWrap is true, account for screen wrapping
-          if(anEntity->mProperties.Get<bool>("bScreenWrap"))
+          if(theEntity->mProperties.Get<bool>("bScreenWrap"))
           {
             // Call our universal HandleScreenWrap method to wrap this IEntity
-            HandleScreenWrap(anEntity, &anPosition);
+            HandleScreenWrap(theEntity, &anPosition);
           }
 
           // Now update the MovementSystem properties for this IEntity class
-          anEntity->mProperties.Set<sf::Vector2f>("vVelocity",anVelocity);
-          anEntity->mProperties.Set<float>("fRotationalVelocity",anRotationalVelocity);
+          theEntity->mProperties.Set<sf::Vector2f>("vVelocity",anVelocity);
+          theEntity->mProperties.Set<float>("fRotationalVelocity",anRotationalVelocity);
 
           // Now update the RenderSystem properties of this IEntity class
-          anEntity->mProperties.Set<sf::Vector2f>("vPosition",anPosition);
-          anEntity->mProperties.Set<float>("fRotation",anRotation);
-        } //if(anEntity->mProperties.Get<bool>("bFixedMovement"))
-      } // while(anQueue != anIter->second.end())
-
-      // Increment map iterator
-      anIter++;
-    } //while(anIter != mEntities.end())
+          theEntity->mProperties.Set<sf::Vector2f>("vPosition",anPosition);
+          theEntity->mProperties.Set<float>("fRotation",anRotation);
+        } //if(theEntity->mProperties.Get<bool>("bFixedMovement"))
   }
-
-  void MovementSystem::UpdateVariable(float theElapsedTime)
+  void MovementSystem::EntityUpdateVariable(IEntity* theEntity,float theElapsedTime)
   {
-    // Search through each z-order map to find theEntityID provided
-    std::map<const Uint32, std::deque<IEntity*> >::iterator anIter;
-    anIter = mEntities.begin();
-    while(anIter != mEntities.end())
-    {
-      std::deque<IEntity*>::iterator anQueue = anIter->second.begin();
-      while(anQueue != anIter->second.end())
-      {
-        // Get the IEntity address first
-        GQE::IEntity* anEntity = *anQueue;
-
-        // Increment the IEntity iterator second
-        anQueue++;
-
         // Are we NOT using fixed movement mathematics?
-        if(anEntity->mProperties.Get<bool>("bFixedMovement") == false)
+        if(theEntity->mProperties.Get<bool>("bFixedMovement") == false)
         {
           // Get the RenderSystem properties
-          sf::Vector2f anPosition = anEntity->mProperties.Get<sf::Vector2f>("vPosition");
-          float anRotation = anEntity->mProperties.Get<float>("fRotation");
+          sf::Vector2f anPosition = theEntity->mProperties.Get<sf::Vector2f>("vPosition");
+          float anRotation = theEntity->mProperties.Get<float>("fRotation");
 
           // Get the MovementSystem properties
-          sf::Vector2f anVelocity = anEntity->mProperties.Get<sf::Vector2f>("vVelocity");
-          sf::Vector2f anAccelleration = anEntity->mProperties.Get<sf::Vector2f>("vAcceleration");
-          float anRotationalVelocity = anEntity->mProperties.Get<float>("fRotationalVelocity");
-          float anRotationalAccelleration = anEntity->mProperties.Get<float>("fRotationalAcceleration");
+          sf::Vector2f anVelocity = theEntity->mProperties.Get<sf::Vector2f>("vVelocity");
+          sf::Vector2f anAccelleration = theEntity->mProperties.Get<sf::Vector2f>("vAcceleration");
+          float anRotationalVelocity = theEntity->mProperties.Get<float>("fRotationalVelocity");
+          float anRotationalAccelleration = theEntity->mProperties.Get<float>("fRotationalAcceleration");
 
           // Now update the current movement properties
           anVelocity += anAccelleration * theElapsedTime;
@@ -137,31 +104,24 @@ namespace GQE
           anRotation += anRotationalVelocity * theElapsedTime;
 
           // If ScreenWrap is true, account for screen wrapping
-          if(anEntity->mProperties.Get<bool>("bScreenWrap"))
+          if(theEntity->mProperties.Get<bool>("bScreenWrap"))
           {
             // Call our universal HandleScreenWrap method to wrap this IEntity
-            HandleScreenWrap(anEntity, &anPosition);
+            HandleScreenWrap(theEntity, &anPosition);
           }
 
           // Now update the MovementSystem properties for this IEntity class
-          anEntity->mProperties.Set<sf::Vector2f>("vVelocity", anVelocity);
-          anEntity->mProperties.Set<float>("fRotationalVelocity", anRotationalVelocity);
+          theEntity->mProperties.Set<sf::Vector2f>("vVelocity", anVelocity);
+          theEntity->mProperties.Set<float>("fRotationalVelocity", anRotationalVelocity);
 
           // Now update the RenderSystem properties of this IEntity class
-          anEntity->mProperties.Set<sf::Vector2f>("vPosition", anPosition);
-          anEntity->mProperties.Set<float>("fRotation", anRotation);
-        } //if(anEntity->mProperties.Get<bool>("bFixedMovement") == false)
-      } // while(anQueue != anIter->second.end())
-
-      // Increment map iterator
-      anIter++;
-    } //while(anIter != mEntities.end())
-  }
-
-  void MovementSystem::Draw()
+          theEntity->mProperties.Set<sf::Vector2f>("vPosition", anPosition);
+          theEntity->mProperties.Set<float>("fRotation", anRotation);
+        } //if(theEntity->mProperties.Get<bool>("bFixedMovement") == false)		
+	}
+  void MovementSystem::EntityDraw(IEntity* theEntity)
   {
-  }
-
+	}
   void MovementSystem::HandleCleanup(IEntity* theEntity)
   {
     // Do nothing
