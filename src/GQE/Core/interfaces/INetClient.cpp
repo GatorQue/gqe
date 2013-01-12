@@ -17,6 +17,7 @@
 namespace GQE
 {
   // Special constants that must be defined here in the CPP file
+  const float INetClient::MAX_RESEND_TIMEOUT_S = 15.0f;
   const float INetClient::RECEIVE_TIMEOUT_S = 0.5f;
   const float INetClient::CONNECT_RETRY_TIMEOUT_S = 1.0f;
   const float INetClient::CONNECT_TIMEOUT_S = 30.0f;
@@ -31,6 +32,7 @@ namespace GQE
                          const Uint16 theServerPort,
                          const Uint16 theClientPort,
                          const Int32 theResendTimeout,
+                         const float theMaxResendTimeout,
                          const float theReceiveTimeout,
                          const float theRetryTimeout,
                          const float theConnectTimeout) :
@@ -47,6 +49,7 @@ namespace GQE
     mHostID(0),
     mLastSN(0),
     mResendTimeout(theResendTimeout),
+    mMaxResendTimeout(theMaxResendTimeout),
     mReceiveTimeout(theReceiveTimeout),
     mDelay(0LL),
     mOffset(0LL)
@@ -58,8 +61,8 @@ namespace GQE
            << theServerAddress.toString() << "," << theServerPort << ","
 #endif
            << theClientPort << "," << theResendTimeout << ","
-           << theReceiveTimeout << "," << theRetryTimeout << ","
-           << theConnectTimeout << ")" << std::endl;
+           << theMaxResendTimeout << "," << theReceiveTimeout << ","
+           << theRetryTimeout << "," << theConnectTimeout << ")" << std::endl;
   }
 
   INetClient::~INetClient()
@@ -101,6 +104,9 @@ namespace GQE
         {
           // Assign a sequence number to each packet sent
           thePacket->SetSequenceNumber(++sSequenceNumber);
+
+          // Set our first sent timestamp for this packet
+          thePacket->SetFirstSent();
         }
 
         if(NetTcp == mProtocol)

@@ -5,7 +5,7 @@
  *
  * @file include/GQE/Core/interfaces/INetPool.hpp
  * @author Ryan Lindeman
- * @date 20121116 - Initial Release
+ * @date 20130111 - Initial Release
  */
 #ifndef   INET_POOL_HPP_INCLUDED
 #define   INET_POOL_HPP_INCLUDED

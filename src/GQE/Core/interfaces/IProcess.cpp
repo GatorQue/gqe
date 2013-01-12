@@ -5,6 +5,7 @@
  * @file src/GQE/Core/interfaces/IProcess.cpp
  * @author Ryan Lindeman
  * @date 20121124 - Initial Release
+ * @date 20130112 - Fix warnings in VS2010 using this pointer by inheriting for SFML v1.6
  */
 
 #include <GQE/Core/interfaces/IProcess.hpp>
@@ -13,11 +14,11 @@
 namespace GQE
 {
   IProcess::IProcess() :
-    mRunning(false),
+    mRunning(false)
 #if (SFML_VERSION_MAJOR < 2)
-    mThread(&IProcess::RunProcess, this)
+    // sf::Thread is inherited so Run method will be called using SFML v1.6
 #else
-    mThread(&IProcess::Process, this)
+    ,mThread(&IProcess::Process, this)
 #endif
   {
   }
@@ -49,7 +50,7 @@ namespace GQE
 
       // Launch the process thread now
 #if (SFML_VERSION_MAJOR < 2)
-      mThread.Launch();
+      Launch();
 #else
       mThread.launch();
 #endif
@@ -73,7 +74,7 @@ namespace GQE
 
       // Wait for the process thread to gracefully exit
 #if (SFML_VERSION_MAJOR < 2)
-      mThread.Wait();
+      Wait();
 #else
       mThread.wait();
 #endif
@@ -101,17 +102,10 @@ namespace GQE
   }
 
 #if (SFML_VERSION_MAJOR < 2)
-  void IProcess::RunProcess(void* theProcess)
+  void IProcess::Run(void)
   {
-    // Cast the argument as an IProcess derived class
-    IProcess* anProcess = static_cast<IProcess*>(theProcess);
-
-    // Verify the cast as necessary
-    if(anProcess)
-    {
-      // Call the virtual Process method in this thread context
-      anProcess->Process();
-    }
+    // Call the virtual Process method in this thread context
+    Process();
   }
 #endif
 } // namespace GQE

@@ -29,6 +29,8 @@ namespace GQE
       static const Int8 ALIVE_MAX = 3;
       /// How long to wait for acknowledgement messages before resending messages
       static const Int32 RESEND_TIMEOUT_MS = 33;  // about 30 Hz
+      /// How long to keep trying to resend ack required messages before failing
+      static const float MAX_RESEND_TIMEOUT_S;
       /// How long to wait for incoming messages before calling ProcessSend
       static const float RECEIVE_TIMEOUT_S;
       /// How long to wait for between connection retries for UDP and TCP clients
@@ -44,6 +46,7 @@ namespace GQE
        * @param[in] theServerPort to connect to
        * @param[in] theClientPort to send/listen on
        * @param[in] theResendTimeout to wait before resending messages
+       * @param[in] theMaxResendTimeout is how long to keep resending before giving up
        * @param[in] theReceiveTimeout to wait for new messages before checking resend pool
        * @param[in] theRetryTimeout to wait before retrying to connect to server
        * @param[in] theConnectTimeout to wait for connection to be established (TCP only)
@@ -58,6 +61,7 @@ namespace GQE
                  const Uint16 theServerPort = 10101,
                  const Uint16 theClientPort = 0,
                  const Int32 theResendTimeout = RESEND_TIMEOUT_MS,
+                 const float theMaxResendTimeout = MAX_RESEND_TIMEOUT_S,
                  const float theReceiveTimeout = RECEIVE_TIMEOUT_S,
                  const float theRetryTimeout = CONNECT_RETRY_TIMEOUT_S,
                  const float theConnectTimeout = CONNECT_TIMEOUT_S);
@@ -248,7 +252,8 @@ namespace GQE
        * @param[in] theDestTime2 client response for the Sync 2 message reply
        * @return pointer to INetPacket with Heartbeat message, NULL otherwise
        */
-      virtual INetPacket* CreateTimeSync2(Int64 theSourceTime1, Int64 theDestTime, Int64 theSourceTime2, Int64 theDestTime2);
+      virtual INetPacket* CreateTimeSync2(Int64 theSourceTime1, Int64 theDestTime,
+                                          Int64 theSourceTime2, Int64 theDestTime2);
 
       /**
        * GetTimeSync2Size is responsible for returning the size of the
@@ -317,6 +322,8 @@ namespace GQE
       std::queue<INetPacket*> mResend;
       /// Resend timeout (milliseconds) is used to determine when to resend messages that require acknowledgements
       Int32 mResendTimeout;
+      /// Maximum resend timeout (seconds) before stopping the resending of ack required messages
+      float mMaxResendTimeout;
       /// Receive timeout (seconds) is used to determine how long to wait for incoming messages
       float mReceiveTimeout;
       /// Clock for the source of all time synchronization messages

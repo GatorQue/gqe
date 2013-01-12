@@ -32,6 +32,8 @@ namespace GQE
       static const float TIME_SYNC_TIMEOUT_S;
       /// How long to wait for acknowledgement messages before resending messages
       static const Int32 RESEND_TIMEOUT_MS = 33;  // about 30 Hz
+      /// How long to keep trying to resend ack required messages before failing
+      static const float MAX_RESEND_TIMEOUT_S;
       /// How long to wait for incoming messages before calling ProcessSend
       static const float RECEIVE_TIMEOUT_S;
 
@@ -41,6 +43,7 @@ namespace GQE
        * @param[in] theProtocol to use for this NetServer class
        * @param[in] theServerPort to listen on for incoming UDP clients
        * @param[in] theResendTimeout is how long to wait before resending messages
+       * @param[in] theMaxResendTimeout is how long to keep resending before giving up
        * @param[in] theReceiveTimeout is how long to wait for incoming message
        * @param[in] theAliveMax is the maximum missed time sync messages
        */
@@ -49,6 +52,7 @@ namespace GQE
                  const Uint16 theServerPort = 10101,
                  const float theTimeSyncTimeout = TIME_SYNC_TIMEOUT_S,
                  const Int32 theResendTimeout = RESEND_TIMEOUT_MS,
+                 const float theMaxResendTimeout = MAX_RESEND_TIMEOUT_S,
                  const float theReceiveTimeout = RECEIVE_TIMEOUT_S,
                  const Int8 theAliveMax = ALIVE_MAX);
 
@@ -356,6 +360,8 @@ namespace GQE
       float mTimeSyncTimeout;
       /// Resend timeout (milliseconds) is used to determine when to resend messages that require acknowledgements
       Int32 mResendTimeout;
+      /// Maximum resend timeout (seconds) before stopping the resending of ack required messages
+      float mMaxResendTimeout;
       /// Receive timeout (seconds) is used to determine how long to wait for incoming messages
       float mReceiveTimeout;
       /// Alive counter maximum before client will be terminated

@@ -5,7 +5,7 @@
  *
  * @file src/GQE/Core/interfaces/INetPool.cpp
  * @author Ryan Lindeman
- * @date 20121116 - Initial Release
+ * @date 20130111 - Initial Release
  */
 #include <GQE/Core/interfaces/INetPool.hpp>
 #include <GQE/Core/loggers/Log_macros.hpp>

@@ -11,6 +11,7 @@
  * @author Ryan Lindeman
  * @date 20121227 - Initial Release
  * @date 20130111 - Added new Clear method, EndTransfer flag, and sort type enum
+ * @date 20130112 - Added new Clock for first sent
  */
 
 #include <GQE/Core/interfaces/INetPacket.hpp>
@@ -216,6 +217,27 @@ namespace GQE
     {
       ILOG() << "INetPacket::SetCapacity() invalid capacity(" << theCapacity << ") provided" << std::endl;
     }
+  }
+
+#if (SFML_VERSION_MAJOR < 2)
+  double INetPacket::GetFirstSent(void) const
+  {
+    return mFirstSent.GetElapsedTime();
+  }
+#else
+  sf::Time INetPacket::GetFirstSent(void) const
+  {
+    return mFirstSent.getElapsedTime();
+  }
+#endif
+
+  void INetPacket::SetFirstSent(void)
+  {
+#if (SFML_VERSION_MAJOR < 2)
+    mFirstSent.Reset();
+#else
+    mFirstSent.restart();
+#endif
   }
 
 #if (SFML_VERSION_MAJOR < 2)

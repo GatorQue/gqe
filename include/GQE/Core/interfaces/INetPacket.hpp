@@ -11,6 +11,7 @@
  * @author Ryan Lindeman
  * @date 20121227 - Initial Release
  * @date 20130111 - Added new Clear method, EndTransfer flag, and sort type enum
+ * @date 20130112 - Added new Clock for first sent
  */
 #ifndef INET_PACKET_HPP_INCLUDED
 #define INET_PACKET_HPP_INCLUDED
@@ -271,6 +272,24 @@ namespace GQE
        * @param[in] theCapacity in bytes to expand the array
        */
       void SetCapacity(std::size_t theCapacity);
+
+      /**
+       * GetFirstSent is responsible for returning the time this INetPacket
+       * was first sent which can be used to determine when to stop resending
+       * this INetPacket.
+       * @return the time this INetPacket was last sent.
+       */
+#if (SFML_VERSION_MAJOR < 2)
+      double GetFirstSent(void) const;
+#else
+      sf::Time GetFirstSent(void) const;
+#endif
+
+      /**
+       * SetFirstSent is responsible for resetting the first sent clock which
+       * can be used to determine when to stop resending the INetPacket.
+       */
+      void SetFirstSent(void);
 
       /**
        * GetLastSent is responsible for returning the last time this INetPacket
@@ -621,6 +640,8 @@ namespace GQE
       std::vector<char> mData;
       /// Read position for payload data being extracted from the INetPacket
       std::size_t mReadPosition;
+      /// Clock to keep track of when INetPacket was first sent
+      sf::Clock mFirstSent;
       /// Clock to keep track of when INetPacket was last sent
       sf::Clock mLastSent;
       /// Offset adjusted receive timestamp

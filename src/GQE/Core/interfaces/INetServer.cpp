@@ -20,12 +20,14 @@ namespace GQE
   // Special constants that must be defined here in the CPP file
   const float INetServer::TIME_SYNC_TIMEOUT_S = 1.0f;
   const float INetServer::RECEIVE_TIMEOUT_S = 0.5f;
+  const float INetServer::MAX_RESEND_TIMEOUT_S = 15.0f;
 
   INetServer::INetServer(INetPool& theNetPool,
                          const NetProtocol theProtocol,
                          const Uint16 theServerPort,
                          const float theTimeSyncTimeout,
                          const Int32 theResendTimeout,
+                         const float theMaxResendTimeout,
                          const float theReceiveTimeout,
                          const Int8 theAliveMax) :
     IProcess(),
@@ -34,13 +36,14 @@ namespace GQE
     mServerPort(theServerPort),
     mTimeSyncTimeout(theTimeSyncTimeout),
     mResendTimeout(theResendTimeout),
+    mMaxResendTimeout(theMaxResendTimeout),
     mReceiveTimeout(theReceiveTimeout),
     mAliveMax(theAliveMax)
   {
     ILOG() << "INetServer(" << (theProtocol == NetTcp ? "TCP" : "UDP") << ","
            << theServerPort << "," << theTimeSyncTimeout << ","
-           << theResendTimeout << "," << theReceiveTimeout << ","
-           << (Uint32)theAliveMax << ")" << std::endl;
+           << theResendTimeout << "," << theMaxResendTimeout << ","
+           << theReceiveTimeout << "," << (Uint32)theAliveMax << ")" << std::endl;
   }
 
   INetServer::~INetServer()
@@ -99,6 +102,9 @@ namespace GQE
           {
             // Assign a sequence number to each packet sent
             thePacket->SetSequenceNumber(++anIterator->second.sequence);
+
+            // Set our first sent timestamp for this packet
+            thePacket->SetFirstSent();
           }
 
           // Depending on the protocol will determine how we send our data
@@ -129,8 +135,24 @@ namespace GQE
           // Check to see if an Ack message is required for this message
           if(thePacket->GetFlag(INetPacket::FlagAckRequired))
           {
-            // Put this INetPacket on resend list for this client
-            anIterator->second.resend.push(thePacket);
+            // Check our first sent timer against our maximum resend timeout
+#if (SFML_VERSION_MAJOR < 2)
+            if(thePacket->GetFirstSent() < mMaxResendTimeout)
+#else
+            if(thePacket->GetFirstSent().asSeconds() < mMaxResendTimeout)
+#endif
+            {
+              // Put this INetPacket on resend list for this client
+              anIterator->second.resend.push(thePacket);
+            }
+            // We exceeded our maximum resend timeout, return the packet now
+            else
+            {
+              // TODO: Add event for packets who were never acknowledged
+
+              // Return the INetPacket since it is no longer needed
+              mNetPool.ReturnOutgoing(thePacket);
+            }
           }
           else
           {

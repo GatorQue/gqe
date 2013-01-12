@@ -5,6 +5,7 @@
  * @file include/GQE/Core/interfaces/IProcess.hpp
  * @author Ryan Lindeman
  * @date 20121124 - Initial Release
+ * @date 20130112 - Fix warnings in VS2010 using this pointer by inheriting for SFML v1.6
  */
 #ifndef IPROCESS_HPP_INCLUDED
 #define IPROCESS_HPP_INCLUDED
@@ -16,6 +17,9 @@ namespace GQE
 {
   /// Provides the IProcess interface class to run in its own thread
   class GQE_API IProcess
+#if (SFML_VERSION_MAJOR < 2)
+     : private sf::Thread
+#endif
   {
     public:
       /**
@@ -81,17 +85,17 @@ namespace GQE
       IProcess();
 
     private:
+#if (SFML_VERSION_MAJOR < 2)
+      /**
+       * Run will be called by our inherited sf::Thread class when the thread
+       * is running (SFML v1.6).
+       */
+      virtual void Run(void);
+#else
       // Variables
       ///////////////////////////////////////////////////////////////////////////
       /// Thread object for starting/stopping thread
       sf::Thread mThread;
-
-#if (SFML_VERSION_MAJOR < 2)
-      /**
-       * RunProcess will be called by mThread as the process thread when using
-       * SFML v1.6.
-       */
-      static void RunProcess(void* theProcess);
 #endif
   }; // IProcess class
 } // namespace GQE
