@@ -76,6 +76,9 @@ namespace GQE
         // Make sure one was returned
         if(anPacket)
         {
+          // Obtain a lock on our queue mutex before modifying our queues
+          sf::Lock anLock(mQueueMutex);
+
           // Add this packet to our list of all packets created
           mPackets.push_back(anPacket);
 
@@ -92,6 +95,9 @@ namespace GQE
     // Now attempt to retrieve a packet and return it to the caller
     if(mIncoming.size())
     {
+      // Obtain a lock on our queue mutex before modifying our queues
+      sf::Lock anLock(mQueueMutex);
+
       // Grab the packet on the front of the queue
       anResult = mIncoming.front();
 
@@ -110,6 +116,9 @@ namespace GQE
 
   void INetPool::ReturnIncoming(INetPacket* thePacket)
   {
+    // Obtain a lock on our queue mutex before modifying our queues
+    sf::Lock anLock(mQueueMutex);
+
     // Reset the packet during the return of every packet
     thePacket->Clear();
 
@@ -145,6 +154,9 @@ namespace GQE
         // Make sure one was returned
         if(anPacket)
         {
+          // Obtain a lock on our queue mutex before modifying our queues
+          sf::Lock anLock(mQueueMutex);
+
           // Add this packet to our list of all packets created
           mPackets.push_back(anPacket);
 
@@ -161,6 +173,9 @@ namespace GQE
     // Now attempt to retrieve a packet and return it to the caller
     if(mOutgoing.size())
     {
+      // Obtain a lock on our queue mutex before modifying our queues
+      sf::Lock anLock(mQueueMutex);
+
       // Grab the packet on the front of the queue
       anResult = mOutgoing.front();
 
@@ -179,6 +194,9 @@ namespace GQE
 
   void INetPool::ReturnOutgoing(INetPacket* thePacket)
   {
+    // Obtain a lock on our queue mutex before modifying our queues
+    sf::Lock anLock(mQueueMutex);
+
     // Reset the packet during the return of every packet
     thePacket->Clear();
 

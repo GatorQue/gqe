@@ -151,6 +151,8 @@ namespace GQE
       std::size_t mIncomingCapacity;
       /// The average size capacity to use for creating outgoing INetPacket classes
       std::size_t mOutgoingCapacity;
+      /// Mutex to protect our queues
+      sf::Mutex mQueueMutex;
       /// Queue of available incoming packet size messages
       std::queue<INetPacket*> mIncoming;
       /// Queue of available outgoing packet size messages
