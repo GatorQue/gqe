@@ -13,6 +13,7 @@
  * @date 20120702 - Add new EventManager and IEvent classes
  * @date 20120720 - Moved PropertyManager to Core library from Entity library
  * @date 20130107 - Added new INetClient, INetPacket, INetServer, and IProcess classes
+ * @date 20130111 - Added new INetPool class
  */
 #ifndef   GQE_CORE_HPP_INCLUDED
 #define   GQE_CORE_HPP_INCLUDED
@@ -45,6 +46,7 @@
 #include <GQE/Core/interfaces/ILogger.hpp>
 #include <GQE/Core/interfaces/INetClient.hpp>
 #include <GQE/Core/interfaces/INetPacket.hpp>
+#include <GQE/Core/interfaces/INetPool.hpp>
 #include <GQE/Core/interfaces/INetServer.hpp>
 #include <GQE/Core/interfaces/IProcess.hpp>
 #include <GQE/Core/interfaces/IProperty.hpp>

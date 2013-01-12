@@ -6,6 +6,7 @@
  * @file include/GQE/Core/interfaces/INetServer.hpp
  * @author Ryan Lindeman
  * @date 20130104 - Initial Release
+ * @date 20130111 - Generalized VerifyInternal, ProcessInternal, and better sequence number support
  */
 #ifndef INET_SERVER_HPP_INCLUDED
 #define INET_SERVER_HPP_INCLUDED
@@ -36,13 +37,15 @@ namespace GQE
 
       /**
        * INetServer default constructor
+       * @param[in] theNetPool derived class to use for getting INetPackets
        * @param[in] theProtocol to use for this NetServer class
        * @param[in] theServerPort to listen on for incoming UDP clients
        * @param[in] theResendTimeout is how long to wait before resending messages
        * @param[in] theReceiveTimeout is how long to wait for incoming message
        * @param[in] theAliveMax is the maximum missed time sync messages
        */
-      INetServer(const NetProtocol theProtocol = NetUdp,
+      INetServer(INetPool& theNetPool,
+                 const NetProtocol theProtocol = NetUdp,
                  const Uint16 theServerPort = 10101,
                  const float theTimeSyncTimeout = TIME_SYNC_TIMEOUT_S,
                  const Int32 theResendTimeout = RESEND_TIMEOUT_MS,
@@ -53,24 +56,6 @@ namespace GQE
        * INetServer deconstructor
        */
       virtual ~INetServer();
-
-      /**
-       * GetPacket is responsible for returning a INetPacket derived class
-       * to be used for either an Incoming message. ProcessTransaction will
-       * then be called to process the incoming message received and provide an
-       * optional immediate response to be sent for the incoming message.
-       * @param[in] theCapacity to use for the INetPacket provided
-       * @return a pointer to the packet to use for incoming/outgoing messages
-       */
-      virtual INetPacket* GetPacket(std::size_t theCapacity = INetPacket::HEADER_SIZE_B);
-
-      /**
-       * ReturnPacket will be called for both the incoming and outgoing
-       * packets provided by GetPacket and ProcessTransaction after it has
-       * completed the task of sending the immediate response.
-       * @param[in] thePacket to be returned
-       */
-      virtual void ReturnPacket(INetPacket* thePacket);
 
       /**
        * GetTimestamp will return the offset adjusted time in microsecocnds
@@ -100,6 +85,11 @@ namespace GQE
       void DisconnectClient(Uint32 theHostID);
 
     protected:
+      // Variables
+      ///////////////////////////////////////////////////////////////////////////
+      /// Network pool address to retrieve and return INetPacket derived classes from/to
+      INetPool& mNetPool;
+
       // Structures
       ///////////////////////////////////////////////////////////////////////////
       /// ClientInfo structure holds the data needed for each client
@@ -107,8 +97,12 @@ namespace GQE
       {
         /// Client is currently enabled
         bool                   enabled;
+        /// Client has connected
+        bool                   connected;
         /// Next sequence number to use for next message to client
         Uint32                 sequence;
+        /// Last sequence number processed from the client
+        Uint32                 lastSN;
 #if (SFML_VERSION_MAJOR < 2)
         /// Socket to use for TCP clients
         sf::SocketTCP*         socket;
@@ -129,12 +123,14 @@ namespace GQE
         /// The clock offset to use to when computing time values for this client
         Int64                  offset;
         /// A timer to determine when to send the next time sync to this client
-        sf::Clock              sync;
+        sf::Clock              timesync;
         /// The resend queue of NetPackets to be resent to client
         std::queue<INetPacket*> resend;
         ClientInfo(const Int8 theAliveMax = ALIVE_MAX) :
           enabled(true),
+          connected(false),
           sequence(0),
+          lastSN(0),
           socket(NULL),
 #if (SFML_VERSION_MAJOR < 2)
           address(sf::IPAddress::LocalHost),
@@ -151,14 +147,10 @@ namespace GQE
 
       /**
        * GetHostID is responsible for returning the HostID that will be used
-       * to identify each client. For UDP connections this will occur when the
-       * ProcessTransaction method returns a ServerNewClient event. If at a
-       * later time the derived class determines that the client should be
-       * forced to disconnect then the ProcessTransaction can return a
-       * DisconnectClient event code to force the client to be disconnected
-       * which will free up the HostID for another client to use at some
-       * later time if desired. The default implementation is to just return
-       * the next HostID and increment the HostID value for the next caller.
+       * to identify each client. This is called by either the
+       * ReceivePacketTcp or the ReceivePacketUdp methods. If the maximum
+       * possible HostID has been reached it will look through mClients to
+       * find the first disabled client and use its HostID instead.
        * @param[in] theReset flag to reset the HostID counter back to 1 again
        * @return theHostID to use for the current client (2 .. 2^32)
        */
@@ -200,6 +192,51 @@ namespace GQE
                                                bool theYesFlag = true);
 
       /**
+       * GetAcknowledgementSize is responsible for returning the size of the
+       * Acknowledgement message. This way someone can modify the
+       * CreateAcknowledgement method in INetClient and still have the
+       * INetServer base class validate each Acknowledgement message size
+       * correctly.
+       * @return the Acknowledgement message size
+       */
+      virtual std::size_t GetAcknowledgementSize(void) const;
+
+      /**
+       * ProcessAcknowledgement is responsible for processing each
+       * Acknowledgement message received.
+       * @param[in] thePacket containing the acknowledgement message
+       */
+      void ProcessAcknowledgement(INetPacket* thePacket);
+
+      /**
+       * GetConnectSize is responsible for returning the size of the Connect
+       * message. This way someone can modify the CreateConnect method in the
+       * INetClient class and still have the INetServer base class validate
+       * each Connect message size.
+       * @return the Connect message size (defaults to HEADER_SIZE_B)
+       */
+      virtual std::size_t GetConnectSize(void) const;
+
+      /**
+       * ProcessConnect is responsible for processing each connect message
+       * received. Typically this just checks to see if the client already
+       * exists and is not banned before calling CreateIdentity to send the
+       * Identity message reply.
+       * @param[in] thePacket containing the connect message
+       * @param[in] theHostID assigned when client was accepted (TCP only)
+       * @param[in] theAddress as was received (UDP only)
+       * @param[in] thePort as was received (UDP only)
+       */
+      bool ProcessConnect(INetPacket* thePacket,
+                          Uint32 theHostID = 0,
+#if (SFML_VERSION_MAJOR < 2)
+                          sf::IPAddress theAddress = sf::IPAddress::LocalHost,
+#else
+                          sf::IpAddress theAddress = sf::IpAddress::LocalHost,
+#endif
+                          Uint16 thePort = 0);
+
+      /**
        * CreateDisconnect is responsible for providing a custom Disconnect
        * message that will be sent to client when the UdpServer is about to
        * shutdown. The caller must return true and provide
@@ -207,6 +244,22 @@ namespace GQE
        * @return pointer to INetPacket with Disconnect message, NULL otherwise
        */
       virtual INetPacket* CreateDisconnect(void);
+
+      /**
+       * GetDisconnectSize is responsible for returning the size of the
+       * Disconnect message. This way someone can modify the CreateDisconnect
+       * method in the INetClient class and still have the INetServer base
+       * class validate each Disconnect message size.
+       * @return the Disconnect message size (defaults to HEADER_SIZE_B)
+       */
+      virtual std::size_t GetDisconnectSize(void) const;
+
+      /**
+       * ProcessDisconnect is responsible for processing each Disconnect
+       * message received. By default it calls DisconnectClient.
+       * @param[in] thePacket containing theDisconnect message
+       */
+      void ProcessDisconnect(INetPacket* thePacket);
 
       /**
        * CreateIdentity is responsible for creating a client message that will
@@ -226,6 +279,23 @@ namespace GQE
       virtual INetPacket* CreateTimeSync1(void);
 
       /**
+       * GetTimeSync1Size is responsible for returning the size of the
+       * Time Sync 1 message. This way someone can modify the CreateTimeSync1
+       * method in the INetClient class and still have the INetServer base
+       * class validate each Time Sync 1 message size.
+       * @return the Time Sync 1 message size
+       */
+      virtual std::size_t GetTimeSync1Size(void) const;
+
+      /**
+       * ProcessTimeSync1 is responsible for processing each Time Sync 1
+       * message received. By default it calls CreateTimeSync2 to create the
+       * Time Sync 2 message response.
+       * @param[in] thePacket containing theTimeSync1 client response message
+       */
+      void ProcessTimeSync1(INetPacket* thePacket);
+
+      /**
        * CreateTimeSync2 is responsible for creating the Sync 2 message that
        * is used to compute the round trip time between the server and each
        * client.
@@ -234,6 +304,25 @@ namespace GQE
        * @return pointer to INetPacket with TimeSync message, NULL otherwise
        */
       virtual INetPacket* CreateTimeSync2(Int64 theSourceTime, Int64 theDestTime);
+
+      /**
+       * GetTimeSync2Size is responsible for returning the size of the
+       * Time Sync 2 message. This way someone can modify the CreateTimeSync2
+       * method in the INetClient class and still have the INetServer base
+       * class validate each Time Sync 2 message size.
+       * @return the Time Sync 2 message size
+       */
+      virtual std::size_t GetTimeSync2Size(void) const;
+
+      /**
+       * ProcessTimeSync2 is responsible for processing each Time Sync 2
+       * message received. By default it calculates the delay between the
+       * server and the client and computes the timestamp offset to use for
+       * this client to provide a network wide timestamp that both sides can
+       * use to organize game time sensitive events.
+       * @param[in] thePacket containing theTimeSync2 client response message
+       */
+      void ProcessTimeSync2(INetPacket* thePacket);
 
     private:
       // Variables
@@ -350,6 +439,18 @@ namespace GQE
        * @param[in] theTimestamp in microseconds when the packet was received
        */
       void SetTimestamp(INetPacket* thePacket, const Int64 theTimestamp);
+
+      /**
+       * Our copy constructor is private because we do not allow copies of
+       * our INetServer derived classes
+       */
+      INetServer(const INetServer&);  // Intentionally undefined
+
+      /**
+       * Our assignment operator is private because we do not allow copies
+       * of our INetServer derived classes
+       */
+      INetServer& operator=(const INetServer&); // Intentionally undefined
   }; // INetServer class
 } // namespace GQE
 #endif // INET_SERVER_HPP_INCLUDED

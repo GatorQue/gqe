@@ -26,6 +26,7 @@ set(INC
     ${INCROOT}/Core/interfaces/ILogger.hpp
     ${INCROOT}/Core/interfaces/INetClient.hpp
     ${INCROOT}/Core/interfaces/INetPacket.hpp
+    ${INCROOT}/Core/interfaces/INetPool.hpp
     ${INCROOT}/Core/interfaces/INetServer.hpp
     ${INCROOT}/Core/interfaces/IProcess.hpp
     ${INCROOT}/Core/interfaces/IProperty.hpp
@@ -69,6 +70,7 @@ set(SRC
     ${SRCROOT}/Core/interfaces/ILogger.cpp
     ${SRCROOT}/Core/interfaces/INetClient.cpp
     ${SRCROOT}/Core/interfaces/INetPacket.cpp
+    ${SRCROOT}/Core/interfaces/INetPool.cpp
     ${SRCROOT}/Core/interfaces/INetServer.cpp
     ${SRCROOT}/Core/interfaces/IProcess.cpp
     ${SRCROOT}/Core/interfaces/IProperty.cpp

@@ -10,12 +10,14 @@
  * @file include/GQE/Core/interfaces/INetPacket.hpp
  * @author Ryan Lindeman
  * @date 20121227 - Initial Release
+ * @date 20130111 - Added new Clear method, EndTransfer flag, and sort type enum
  */
-#ifndef NET_PACKET_HPP_INCLUDED
-#define NET_PACKET_HPP_INCLUDED
+#ifndef INET_PACKET_HPP_INCLUDED
+#define INET_PACKET_HPP_INCLUDED
 
 #include <SFML/System.hpp>
 #include <GQE/Core/Core_types.hpp>
+#include <GQE/Core/loggers/Log_macros.hpp>
 
 namespace GQE
 {
@@ -26,6 +28,14 @@ namespace GQE
     typedef bool (INetPacket::*BoolType)(std::size_t);
 
     public:
+      /// Sort type enumeration for INetPacket <,>,<=,etc operators
+      enum SortType
+      {
+        SortSequenceNumber = 0, /// Sort by SequenceNumber
+        SortLastSent       = 1, /// Sort by LastSent timestamp value
+        SortTimestamp      = 2  /// Sort by Timestamp value
+      };
+
       // Constants
       ///////////////////////////////////////////////////////////////////////////
       /// Minimum header size constant in bytes is 16=sync+version+type+flags+hostID+seq#
@@ -52,7 +62,7 @@ namespace GQE
         FlagNone        = 0x00000000, ///< No flags enabled (can be used to clear all flags)
         FlagAckRequired = 0x00000001, ///< Acknowledgement required for this message
         FlagYesResponse = 0x00000002, ///< Yes response provided for this message
-        FlagReserved6   = 0x00000004, ///< Reserved flag 6
+        FlagEndTransfer = 0x00000004, ///< End transfer flag indicating the end of a series
         FlagReserved5   = 0x00000008, ///< Reserved flag 5
         FlagReserved4   = 0x00000010, ///< Reserved flag 4
         FlagReserved3   = 0x00000020, ///< Reserved flag 3
@@ -87,15 +97,27 @@ namespace GQE
 
       /**
        * INetPacket default constructor
-       * @param[in] theCapacity to use for each network packet
+       * @param[in] theCapacity or maximum size to allocate for each network packet
+       * @param[in] theMinimum size to use when clearing the network packet
+       * @param[in] theSortType to use when sorting INetPacket classes
        * @param[in] theSync to use for validating each network packet
        */
-      INetPacket(const std::size_t theCapacity = HEADER_SIZE_B, const Uint8 theSync = SYNC_BYTE);
+      INetPacket(const std::size_t theCapacity = HEADER_SIZE_B,
+                 const std::size_t theMinimum = HEADER_SIZE_B,
+                 const SortType theSortType = SortSequenceNumber,
+                 const Uint8 theSync = SYNC_BYTE);
 
       /**
        * INetPacket deconstructor
        */
       virtual ~INetPacket();
+
+      /**
+       * Clear is responsible for clearing/reseting this packet so it can be
+       * reused to send new data. This involves reseting the sync byte, version
+       * byte, and other values back to known default values.
+       */
+      void Clear(void);
 
       /**
        * HasSync will return true if the network data has a valid sync code
@@ -256,9 +278,9 @@ namespace GQE
        * @return the time this INetPacket was last sent.
        */
 #if (SFML_VERSION_MAJOR < 2)
-      double GetLastSent(void);
+      double GetLastSent(void) const;
 #else
-      sf::Time GetLastSent(void);
+      sf::Time GetLastSent(void) const;
 #endif
 
       /**
@@ -282,6 +304,22 @@ namespace GQE
        * a similar game clock.
        */
       void SetTimestamp(const Int64 theTimestamp);
+
+      /**
+       * GetSortType will return the correctly selected sort type for this
+       * INetPackets <,>,<=,etc operators. This might change as this INetPacket
+       * moves from one priority queue to another priority queue.
+       * @return the SortType previously selected
+       */
+      SortType GetSortType(void) const;
+
+      /**
+       * SetSortType will set theSortType specified for this INetPacket which
+       * affects the <,>,<=,etc operators. This might change as the INetPacket
+       * moves from one priority queue to another priority queue.
+       * @param[in] theSortType to use for the various INetPacket operators
+       */
+      void SetSortType(const SortType theSortType);
 
       /**
        * LogHeader is responsible for logging the header information using the
@@ -575,6 +613,10 @@ namespace GQE
     private:
       // Variables
       ///////////////////////////////////////////////////////////////////////////
+      /// Sort technique to use for the <,>,<=,etc operators
+      SortType mSortType;
+      /// Minimum size to use when clearing the packet
+      std::size_t mMinimum;
       /// Vector holding the payload of each INetPacket
       std::vector<char> mData;
       /// Read position for payload data being extracted from the INetPacket
@@ -645,7 +687,42 @@ namespace GQE
    */
   inline bool operator< (const INetPacket& theLeft, const INetPacket& theRight)
   {
-    return theLeft.GetSequenceNumber() < theRight.GetSequenceNumber();
+    // Default to false if the two INetPacket types don't agree on a sort type
+    bool anResult = false;
+
+    // Both sides must share the same sort type
+    if(theLeft.GetSortType() == theRight.GetSortType())
+    {
+      // Which sort type are we using to sort these INetPackets?
+      switch(theLeft.GetSortType())
+      {
+        // Default to SequenceNumber if SortType is unknown
+        default:
+          WLOG() << "INetPacket::operator<() unknown sort type("
+                 << theLeft.GetSortType() << ")" << std::endl;
+        case INetPacket::SortSequenceNumber:
+          anResult = theLeft.GetSequenceNumber() < theRight.GetSequenceNumber();
+          break;
+        case INetPacket::SortLastSent:
+#if (SFML_VERSION_MAJOR < 2)
+          anResult = theLeft.GetLastSent() < theRight.GetLastSent();
+#else
+          anResult = theLeft.GetLastSent().asSeconds() < theRight.GetLastSent().asSeconds();
+#endif
+          break;
+        case INetPacket::SortTimestamp:
+          anResult = theLeft.GetTimestamp() < theRight.GetTimestamp();
+          break;
+      }
+    }
+    else
+    {
+      WLOG() << "INetPacket::operator<() mismatched sort type("
+             << (Uint32)theLeft.GetSortType() << "!="
+             << (Uint32)theRight.GetSortType() << ")" << std::endl;
+    }
+
+    return anResult;
   }
 
   /**
@@ -681,7 +758,7 @@ namespace GQE
     return !operator< (theLeft,theRight);
   }
 } // namespace GQE
-#endif // NET_PACKET_HPP_INCLUDED
+#endif // INET_PACKET_HPP_INCLUDED
 
 /**
  * @class GQE::INetPacket

@@ -17,6 +17,7 @@
  * @date 20120702 - Add new EventManager and Event ID typedef
  * @date 20120720 - Moved PropertyManager to Core library from Entity library
  * @date 20130107 - Added new INetClient, INetPacket, INetServer, and IProcess classes
+ * @date 20130111 - Added new INetPool class
  */
 #ifndef   GQE_CORE_TYPES_HPP_INCLUDED
 #define   GQE_CORE_TYPES_HPP_INCLUDED
@@ -108,6 +109,7 @@ namespace GQE
   class ILogger;
   class INetClient;
   class INetPacket;
+  class INetPool;
   class INetServer;
   class IProcess;
   class IProperty;

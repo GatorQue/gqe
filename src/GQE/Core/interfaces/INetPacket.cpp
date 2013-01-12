@@ -10,10 +10,10 @@
  * @file src/GQE/Core/interfaces/INetPacket.cpp
  * @author Ryan Lindeman
  * @date 20121227 - Initial Release
+ * @date 20130111 - Added new Clear method, EndTransfer flag, and sort type enum
  */
 
 #include <GQE/Core/interfaces/INetPacket.hpp>
-#include <GQE/Core/loggers/Log_macros.hpp>
 #include <cstring>
 #include <iomanip>
 #include <sstream>
@@ -21,22 +21,49 @@
 
 namespace GQE
 {
-  INetPacket::INetPacket(const std::size_t theCapacity, const Uint8 theSync) :
+  INetPacket::INetPacket(const std::size_t theCapacity, const std::size_t theMinimum,
+                         const SortType theSortType, const Uint8 theSync) :
     mSync(theSync), // defaults to 0x5A = 'Z' = 90 in decimal
-    mValid(true),
+    mValid(false),
+    mSortType(theSortType),
+    mMinimum(theMinimum < HEADER_SIZE_B ? HEADER_SIZE_B : theMinimum),
     mData(theCapacity < HEADER_SIZE_B ? HEADER_SIZE_B : theCapacity, 0),
     mReadPosition(HEADER_SIZE_B), // Read/Write cursor starts after header
-    mTimestamp(0LL)
+    mTimestamp(~0LL)
   {
-    // Assign sync byte to this data array
-    mData[SYNC_POSITION_B] = mSync;
-
-    // Assign version byte to this data array
-    mData[VERSION_POSITION_B] = VERSION_BYTE;
+    // Call our Clear method to intialize this packet
+    Clear();
   }
 
   INetPacket::~INetPacket()
   {
+  }
+
+  void INetPacket::Clear(void)
+  {
+    // Start by making the packet invalid (to avoid someone reading it while we work)
+    mValid = false;
+
+    // Clear the data of its contents
+    mData.clear();
+
+    // Resize the data using theCapacity provided
+    mData.resize(mMinimum);
+
+    // Reset our read position variable
+    mReadPosition = HEADER_SIZE_B;
+
+    // Assign the sync byte
+    mData[SYNC_POSITION_B] = mSync;
+
+    // Assign the version byte to this data array
+    mData[VERSION_POSITION_B] = VERSION_BYTE;
+
+    // Reset our timestamp value
+    mTimestamp = ~0LL;
+
+    // Make the packet valid at the end
+    mValid = true;
   }
 
   bool INetPacket::HasSync(void) const
@@ -192,12 +219,12 @@ namespace GQE
   }
 
 #if (SFML_VERSION_MAJOR < 2)
-  double INetPacket::GetLastSent(void)
+  double INetPacket::GetLastSent(void) const
   {
     return mLastSent.GetElapsedTime();
   }
 #else
-  sf::Time INetPacket::GetLastSent(void)
+  sf::Time INetPacket::GetLastSent(void) const
   {
     return mLastSent.getElapsedTime();
   }
@@ -222,11 +249,33 @@ namespace GQE
     mTimestamp = theTimestamp;
   }
 
+  INetPacket::SortType INetPacket::GetSortType(void) const
+  {
+    return mSortType;
+  }
+
+  void INetPacket::SetSortType(const SortType theSortType)
+  {
+    // Did they provide a valid sort type? then use it
+    switch(theSortType)
+    {
+      case SortSequenceNumber:
+      case SortLastSent:
+      case SortTimestamp:
+        mSortType = theSortType;
+        break;
+      default:
+        /* Unknown sort type specified */
+        break;
+    }
+  }
+
   void INetPacket::LogHeader(void)
   {
     ILOG() << "v" << (GetVersion() >> 4) << "." << (GetVersion() & 0x0F) << ",type="
            << GetType() << ",flags=" << std::hex << GetFlags() << std::dec << ",id="
-           << GetHostID() << ",sn=" << GetSequenceNumber() << ",sz=" << GetSize() << std::endl;
+           << GetHostID() << ",sn=" << GetSequenceNumber() << ",sz=" << GetSize() << ",cap="
+           << GetCapacity() << std::endl;
   }
 
   void INetPacket::LogPayload(void)
