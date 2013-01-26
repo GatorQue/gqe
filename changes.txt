@@ -1,0 +1,166 @@
+Version 0.22.6
+==============
+- Add better console only support to IApp
+
+Version 0.22.5
+==============
+- Fix AnimationSystem issue with SFML v1.6
+
+Version 0.22.4
+==============
+- Fix SFML v1.6 issues with Vector2u
+
+Version 0.22.3
+==============
+- Fix obscure gcc compiler issue in onullstream file
+
+Version 0.22.2
+==============
+- Fix missing Doxygen error message for linux builds
+
+Version 0.22.1
+==============
+- Fix pure-virtual crash on game exit for ISystem::HandleCleanup call
+
+Version 0.22.0
+==============
+- Improved screen wrap around in MovementSystem
+- Added GetInstance method to Prototype class
+- Added ActionSystem and its associated classes
+
+Version 0.21.0
+==============
+- Created PropertyManager class
+- New entities architecture to improve performance
+- Fixed missing assignment operator for TAsset class
+
+Version 0.20.0
+==============
+- Revamp of game loop algorithm and default to windowed mode
+
+Version 0.19.0
+==============
+- New AssetManager and Asset handling techniques (using RAII)
+- Rename gqe-entities as gqe-entity
+- Added gqe-entity class and method documentation
+
+Version 0.18.1
+==============
+- Fix inability to find SFML when SFML files are in extlibs directory
+
+Version 0.18.0
+==============
+- Fixed SFML 2 issues and set_option CMake 2.8 issue (#21)
+- Use arial.ttf font until default font issue is fixed in SFML 2
+
+Version 0.17.0
+==============
+- Added gqe-entities
+- Added SpaceDots example program
+- Other SFML2 changes and bug fixes
+- Added logo graphics files for inclusion in programs made by GQE
+
+Version 0.16.0
+==============
+- Support externally defined CMAKE_MODULE_PATH values
+- Replace references to CMAKE_SOURCE_DIR and CMAKE_BINARY_DIR
+- Replace install absolute paths with relative paths
+- Fix missing stdint.h problem with Visual Studio 2005/2008
+- Fix SFML2 method call case changes
+
+Version 0.15.0
+==============
+- Fix missing stdint.h when using Visual Studio 2005/2008
+
+Version 0.14.0
+==============
+- Fix install to check for files before including them to be installed
+- Fix cmake install path case mismatch
+- Fix unusual, subtle bug preventing Core.hpp from being installed
+- Fix Reset and GetElapsedTime SFML 2 call changes
+
+Version 0.13.0
+==============
+- Fix link order of SFML libraries for GCC compiler problems
+- Fix destination path for CMake FindGQE.cmake module file
+
+Version 0.12.0
+==============
+- Fix -ansi compiler issue
+- Fix FindSFML issue when using MinGW compiler 
+
+Version 0.11.0
+==============
+- Update support for latest SFML2 snapshot (8-31-2011)
+
+Version 0.10.1
+==============
+- Fixed some build issues when SFML has both debug and release and CMake is
+  configured for NMake Makefiles.
+- Made TAssets.hpp return TYPE& instead of TYPE* since that is what SFML is
+  usually expecting.
+
+Version 0.10.0
+==============
+- Fixed copying of resources to build directory
+- Fixed copying of examples to install directory
+- Fixed copying of documentation to install directory
+- Added TicTacToe example
+- Made App class abstract, requires that you subclass it
+
+Version 0.9.0
+==============
+- Fix SFML find issues with linux and build warnings
+
+Version 0.8.1
+==============
+- Fixed SFML 2.0 Clock.GetElapsedTime() changes (float->Uint32)
+
+Version 0.8.0
+==============
+- Provide pre-compiled extlibs for SFML 2.0 and 1.6
+- More shared/static build CMake fixes (should work now)
+
+Version 0.7.0
+==============
+- New logging technique using macros and C++ logger classes
+- Static build CMake fixes
+
+Version 0.6.1
+==============
+- Quick build issue fix
+
+Version 0.6.0
+==============
+- Use system level include style
+- Better CMake support for building code
+
+Version 0.5.0
+==============
+- Added ConfigAsset class
+- Added ReInit method to IState class
+- Added InactivateActiveState and ResetActiveState methods to StateManager
+- Call HandleCleanup from DoInit in IState for dropped active states
+
+Version 0.4.0
+==============
+- First GoogleCode project posting
+- CMake build scripts
+- Documentation fixes and other fixes
+
+Version 0.3.0
+==============
+- Bug fixes for Linux compiler
+
+Version 0.2.0
+==============
+- Bug fixes for compiler problems
+- Bug fixes for Active/Inactive states
+
+Version 0.1.0
+==============
+- Initial release to SFML Tutorial Wiki
+- Builds fine on Linux.
+- Qt Modules detected and included.
+- BUilds out of the box; packaging needs rework.
+- Tested to work on Linux.
