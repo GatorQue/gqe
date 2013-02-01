@@ -77,13 +77,31 @@ namespace GQE
 #if SFML_VERSION_MAJOR<2
           anSprite.SetPosition(anEntity->mProperties.Get<sf::Vector2f>("vPosition"));
           anSprite.SetRotation(anEntity->mProperties.Get<float>("fRotation"));
-          anSprite.SetSubRect(anEntity->mProperties.Get<sf::IntRect>("rSpriteRect"));
+          sf::IntRect anRect=anEntity->mProperties.Get<sf::IntRect>("rSpriteRect");
+          if(anRect.GetWidth()==0)
+          {
+            anRect.right=anRect.left+anSprite.getTexture()->getSize().x;
+          }
+          if(anRect.GetHeight()==0)
+          {
+            anRect.bottom=anRect.top+anSprite.getTexture()->getSize().y;
+          }
+          anSprite.SetSubRect(anRect);
           anSprite.SetCenter(anEntity->mProperties.Get<sf::Vector2f>("vOrigin"));
           mApp.mWindow.Draw(anSprite);
 #else
           anSprite.setPosition(anEntity->mProperties.Get<sf::Vector2f>("vPosition"));
           anSprite.setRotation(anEntity->mProperties.Get<float>("fRotation"));
-          anSprite.setTextureRect(anEntity->mProperties.Get<sf::IntRect>("rSpriteRect"));
+          sf::IntRect anRect=anEntity->mProperties.Get<sf::IntRect>("rSpriteRect");
+          if(anRect.width==0)
+          {
+            anRect.width=anSprite.getTexture()->getSize().x;
+          }
+          if(anRect.height==0)
+          {
+            anRect.height=anSprite.getTexture()->getSize().y;
+          }
+          anSprite.setTextureRect(anRect);
           anSprite.setOrigin(anEntity->mProperties.Get<sf::Vector2f>("vOrigin"));
           mApp.mWindow.draw(anSprite);
           if(anShape!=NULL)
