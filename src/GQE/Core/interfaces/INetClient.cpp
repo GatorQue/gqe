@@ -22,7 +22,9 @@ namespace GQE
   const float INetClient::CONNECT_RETRY_TIMEOUT_S = 1.0f;
   const float INetClient::CONNECT_TIMEOUT_S = 30.0f;
 
-  INetClient::INetClient(INetPool& theNetPool,
+  INetClient::INetClient(const typeClientID theClientID,
+                         const typeVersionInfo theClientVersion,
+                         INetPool& theNetPool,
                          const NetProtocol theProtocol,
 #if (SFML_VERSION_MAJOR < 2)
                          const sf::IPAddress theServerAddress,
@@ -37,8 +39,11 @@ namespace GQE
                          const float theRetryTimeout,
                          const float theConnectTimeout) :
     IProcess(),
+    mClientID(theClientID),
+    mClientVersion(theClientVersion),
     mNetPool(theNetPool),
     mProtocol(theProtocol),
+    mHostID(0),
     mServerAddress(theServerAddress),
     mServerPort(theServerPort),
     mClientPort(theClientPort),
@@ -46,7 +51,6 @@ namespace GQE
     mConnected(false),
     mConnectTimeout(theConnectTimeout),
     mRetryTimeout(theRetryTimeout),
-    mHostID(0),
     mLastSN(0),
     mResendTimeout(theResendTimeout),
     mMaxResendTimeout(theMaxResendTimeout),
@@ -54,7 +58,11 @@ namespace GQE
     mDelay(0LL),
     mOffset(0LL)
   {
-    ILOG() << "INetClient(" << (theProtocol == NetTcp ? "TCP" : "UDP") << ","
+    ILOG() << "INetClient(" << theClientID << ","
+           << (Uint32)theClientVersion.major << "."
+           << (Uint32)theClientVersion.minor << "."
+           << (Uint32)theClientVersion.patch << ","
+           << (theProtocol == NetTcp ? "TCP" : "UDP") << ","
 #if (SFML_VERSION_MAJOR < 2)
            << theServerAddress.ToString() << "," << theServerPort << ","
 #else
@@ -72,6 +80,86 @@ namespace GQE
   Uint32 INetClient::GetHostID(void) const
   {
     return mHostID;
+  }
+
+  typeClientID INetClient::GetClientID(void) const
+  {
+    return mClientID;
+  }
+
+  void INetClient::SetClientID(const typeClientID theClientID)
+  {
+    if(false == IsRunning())
+    {
+      mClientID = theClientID;
+    }
+    else
+    {
+      WLOG() << "INetClient::SetClientID() can't change ID when client is running" << std::endl;
+    }
+  }
+
+  void INetClient::SetServerAddress(
+#if (SFML_VERSION_MAJOR < 2)
+                                    const sf::IPAddress theAddress
+#else
+                                    const sf::IpAddress theAddress
+#endif
+                                   )
+  {
+    if(false == IsRunning())
+    {
+      mServerAddress = theAddress;
+    }
+    else
+    {
+      WLOG() << "INetClient::SetServerAddress() can't change address when client is running" << std::endl;
+    }
+  }
+
+  void INetClient::SetServerPort(const Uint16 thePort)
+  {
+    if(false == IsRunning())
+    {
+      mServerPort = thePort;
+    }
+    else
+    {
+      WLOG() << "INetClient::SetServerPort() can't change port when client is running" << std::endl;
+    }
+  }
+
+  void INetClient::AcceptServer(const typeServerID theServerID)
+  {
+    // Obtain a lock on our server mutex accepting the selected server
+    sf::Lock anLock(mServerMutex);
+
+    typeServerMapIter anIterator;
+    anIterator = mServers.find(theServerID);
+    if(anIterator != mServers.end())
+    {
+      // Assign the server address that was selected
+      mServerAddress = anIterator->second.address;
+
+      // Log which server was accepted
+      ILOG() << "INetClient::AcceptServer(" << theServerID << ") server accepted" << std::endl;
+
+      // Clear the list of servers after accepting the selected server
+      mServers.clear();
+    }
+    else
+    {
+      ELOG() << "INetClient::AcceptServer(" << theServerID << ") doesn't exist" << std::endl;
+    }
+  }
+
+  typeServerMap INetClient::GetServers(void)
+  {
+    // Obtain a lock on our server mutex before copying our mServers map
+    sf::Lock anLock(mServerMutex);
+
+    // Return a copy of the mServers map
+    return mServers;
   }
 
   bool INetClient::IsConnected(void) const
@@ -200,13 +288,18 @@ namespace GQE
     return anResult;
   }
 
-  INetPacket* INetClient::ProcessIncoming(INetPacket& thePacket)
+  INetPacket* INetClient::ProcessIncoming(INetPacket* thePacket)
   {
     // Default to no response necessary
     INetPacket* anResult = NULL;
 
     // Return the response result decided above
     return anResult;
+  }
+
+  void INetClient::ProcessOutgoing(void)
+  {
+    // Do nothing
   }
 
   INetPacket* INetClient::CreateAcknowledgement(const Uint16 theType, const Uint32 theSequenceNumber, bool theYesFlag)
@@ -298,6 +391,105 @@ namespace GQE
     } //for(std::size_t iloop=0;iloop<mResend.size();iloop++)
   }
 
+  INetPacket* INetClient::CreateBroadcast(void)
+  {
+    // Get a packet for our Broadcast message
+    INetPacket* anResult = mNetPool.GetOutgoing();
+
+    // Make sure a valid packet was returned
+    if(anResult)
+    {
+      // Assign the message type and add the assigned HostID to the message
+      anResult->SetType(INetPacket::NET_BROADCAST);
+
+      // The client doesn't have a HostID yet so default to 0
+      anResult->SetHostID(0);
+    }
+
+    // Return the response result created above
+    return anResult;
+  }
+
+  std::size_t INetClient::GetBroadcastSize(void) const
+  {
+    // Header + max clients + active clients + version info + string length + 1 character
+    return INetPacket::HEADER_SIZE_B + sizeof(Uint16)*2 + sizeof(Uint8)*3 + sizeof(Uint32) + sizeof(Uint8);
+  }
+
+  void INetClient::ProcessBroadcast(INetPacket* thePacket,
+#if (SFML_VERSION_MAJOR < 2)
+                                   sf::IPAddress theAddress
+#else
+                                   sf::IpAddress theAddress
+#endif
+                                   )
+  {
+    // Obtain a lock on our server mutex before adding the received server
+    sf::Lock anLock(mServerMutex);
+
+    // Maximum number of clients for this server
+    Uint16 anMaxClients = 0;
+
+    // Active number of clients on this server now
+    Uint16 anActiveClients = 0;
+
+    // Version information for this server
+    typeVersionInfo anServerVersion;
+
+    // ServerID as provided by the server
+    std::string anServerID;
+
+    // Retrieve the maximum number of clients
+    *thePacket >> anMaxClients;
+
+    // Retrieve the number of active clients
+    *thePacket >> anActiveClients;
+
+    // Retrieve the server version information
+    *thePacket >> anServerVersion.major;
+    *thePacket >> anServerVersion.minor;
+    *thePacket >> anServerVersion.patch;
+
+    // Retrieve the ServerID as provided by the server
+    *thePacket >> anServerID;
+
+    // See if we can find the ServerID provided
+    typeServerMapIter anIterator;
+    anIterator = mServers.find(anServerID);
+
+    // If no ServerID was found and the ServerID length is not empty then add it now
+    if(anIterator == mServers.end() && anServerID.length() > 0)
+    {
+      // Fill in the server info for this new server
+      typeServerInfo anServerInfo;
+
+      // Fill in the address and port information
+      anServerInfo.address = theAddress;
+      anServerInfo.port = mServerPort;
+
+      // Fill in the client information from above
+      anServerInfo.maxClients = anMaxClients;
+      anServerInfo.activeClients = anActiveClients;
+
+      // Fill in the version information from above
+      anServerInfo.version = anServerVersion;
+
+      // Now add the new ServerInfo to our map of servers available
+      mServers.insert(typeServerMapPair(anServerID, anServerInfo));
+    }
+    // Otherwise just update the number of active clients for this server
+    else if(anIterator != mServers.end())
+    {
+      // Update the client information for this server
+      anIterator->second.maxClients = anMaxClients;
+      anIterator->second.activeClients = anActiveClients;
+    }
+    else
+    {
+      WLOG() << "INetClient::ProcessBroadcast() invalid server ID(" << anServerID << ")" << std::endl;
+    }
+  }
+
   INetPacket* INetClient::CreateConnect(void)
   {
     // Get a packet for our Connect message
@@ -311,6 +503,14 @@ namespace GQE
 
       // The client doesn't have a HostID yet so default to 0
       anResult->SetHostID(0);
+
+      // Add the client version information to the connect message
+      *anResult << mClientVersion.major;
+      *anResult << mClientVersion.minor;
+      *anResult << mClientVersion.patch;
+
+      // Add the client ID (alias) to the connect message
+      *anResult << mClientID;
     }
 
     // Return the response result created above
@@ -373,16 +573,16 @@ namespace GQE
   void INetClient::ProcessIdentity(INetPacket* thePacket)
   {
     // Client assigned HostID from the server
-    Uint32 anDestID = 0;
+    Uint32 anHostID = 0;
 
     // Retrieve the assigned Host ID
-    *thePacket >> anDestID;
+    *thePacket >> anHostID;
 
     // Set our HostID from Identity message
-    SetHostID(anDestID);
+    SetHostID(anHostID);
 
     // Log identity event
-    ILOG() << "INetClient::ProcessIdentity() Client assigned HostID(" << anDestID << ")" << std::endl;
+    ILOG() << "INetClient::ProcessIdentity() Client assigned HostID(" << anHostID << ")" << std::endl;
 
     // Indicate that our connection to the server has been established
     mConnected = true;
@@ -588,7 +788,7 @@ namespace GQE
           if(NULL != anIncoming)
           {
             // Process incoming message and immediate send any responses returned
-            SendPacket(ProcessIncoming(*anIncoming));
+            SendPacket(ProcessIncoming(anIncoming));
 
             // Return the incoming message packet
             mNetPool.ReturnIncoming(anIncoming);
@@ -658,15 +858,25 @@ namespace GQE
     // Main process loop
     while(mRunning)
     {
-      // Send Connection message to server every 1 second until connection is made
+      // Send Broadcast or Connection message to server every mRetryTimeout
+      // seconds until connection is made
 #if (SFML_VERSION_MAJOR < 2)
       if(!mConnected && anConnect.GetElapsedTime() > mRetryTimeout)
 #else
       if(!mConnected && anConnect.getElapsedTime().asSeconds() > mRetryTimeout)
 #endif
       {
-        // Send Connect message to the server
-        SendPacket(CreateConnect());
+        // Broadcast address in use now? then send Broadcast message instead
+        if(mServerAddress == 0xffffffff)
+        {
+          // Send Broadcast message to all servers
+          SendPacket(CreateBroadcast());
+        }
+        else
+        {
+          // Send Connect message to the server
+          SendPacket(CreateConnect());
+        }
 
         // Reset our connect timer
 #if (SFML_VERSION_MAJOR < 2)
@@ -690,7 +900,7 @@ namespace GQE
         if(NULL != anIncoming)
         {
           // Process incoming message and immediate send any responses returned
-          SendPacket(ProcessIncoming(*anIncoming));
+          SendPacket(ProcessIncoming(anIncoming));
 
           // Return the incoming message packet
           mNetPool.ReturnIncoming(anIncoming);
@@ -742,6 +952,9 @@ namespace GQE
       // Send the outgoing packet (which will return it to the resend queue
       SendPacket(anOutgoing);
     }
+
+    // Give the derived class a chance to send messages too
+    ProcessOutgoing();
   }
 
   bool INetClient::VerifyInternal(INetPacket& thePacket, std::size_t theSize)
@@ -755,63 +968,75 @@ namespace GQE
     // Validate the known message types according to size
     switch(anSourceType)
     {
-      case INetPacket::NET_DISCONNECT:
-        if(GetDisconnectSize() == theSize)
+      case INetPacket::NET_BROADCAST:
+        if(GetBroadcastSize() <= theSize)
         {
           // Message type is correct as far as we can tell
           anResult = true;
         }
         else
         {
-          ELOG() << "INetClient::VerifyInternal() invalid disconnect message size("
+          ELOG() << "INetClient::VerifyInternal() invalid Broadcast message size("
+                 << (Uint32)GetBroadcastSize() << "!=" << theSize << ")" << std::endl;
+        }
+        break;
+      case INetPacket::NET_DISCONNECT:
+        if(GetDisconnectSize() <= theSize)
+        {
+          // Message type is correct as far as we can tell
+          anResult = true;
+        }
+        else
+        {
+          ELOG() << "INetClient::VerifyInternal() invalid Disconnect message size("
                  << (Uint32)GetDisconnectSize() << "!=" << theSize << ")" << std::endl;
         }
         break;
       case INetPacket::NET_IDENTITY:
-        if(GetIdentitySize() == theSize)
+        if(GetIdentitySize() <= theSize)
         {
           // Message type is correct as far as we can tell
           anResult = true;
         }
         else
         {
-          ELOG() << "INetClient::VerifyInternal() invalid identity message size("
+          ELOG() << "INetClient::VerifyInternal() invalid Identity message size("
                  << (Uint32)GetIdentitySize() << "!=" << theSize << ")" << std::endl;
         }
         break;
       case INetPacket::NET_ACKNOWLEDGE:
-        if(GetAcknowledgementSize() == theSize)
+        if(GetAcknowledgementSize() <= theSize)
         {
           // Message type is correct as far as we can tell
           anResult = true;
         }
         else
         {
-          ELOG() << "INetClient::VerifyInternal() invalid acknowledge message size("
+          ELOG() << "INetClient::VerifyInternal() invalid Acknowledgement message size("
                  << (Uint32)GetAcknowledgementSize() << "!=" << theSize << ")" << std::endl;
         }
         break;
       case INetPacket::NET_SYNC_1:
-        if(GetTimeSync1Size() == theSize)
+        if(GetTimeSync1Size() <= theSize)
         {
           // Message type is correct as far as we can tell
           anResult = true;
         }
         else
         {
-          ELOG() << "INetClient::VerifyInternal() invalid TimeSync pass 1 message size("
+          ELOG() << "INetClient::VerifyInternal() invalid Sync1 message size("
                  << (Uint32)GetTimeSync1Size() << "!=" << theSize << ")" << std::endl;
         }
         break;
       case INetPacket::NET_SYNC_2:
-        if(GetTimeSync2Size() == theSize)
+        if(GetTimeSync2Size() <= theSize)
         {
           // Message type is correct as far as we can tell
           anResult = true;
         }
         else
         {
-          ELOG() << "INetClient::VerifyInternal() invalid TimeSync pass 2 message size("
+          ELOG() << "INetClient::VerifyInternal() invalid Sync2 message size("
                  << (Uint32)GetTimeSync2Size() << "!=" << theSize << ")" << std::endl;
         }
         break;
@@ -940,8 +1165,9 @@ namespace GQE
       anTimestamp = (Int64)(mTimeSync.GetElapsedTime() * 1000000.0f);
 
       // Perform a quick address check for UDP protocols
-      anAddressCheck = (anAddress.ToInteger() == mServerAddress.ToInteger() &&
-                        anPort == mServerPort);
+      anAddressCheck = (anPort == mServerPort &&
+                        (mServerAddress.ToInteger() == 0xffffffff /* Broadcast */ ||
+                         anAddress.ToInteger() == mServerAddress.ToInteger()));
 #else
       // Attempt to receive data from our UDP client socket
       anStatus = mClientUdp.receive(anResult->GetData(), anResult->GetCapacity(), anReceived,
@@ -951,8 +1177,9 @@ namespace GQE
       anTimestamp = mTimeSync.getElapsedTime().asMicroseconds();
 
       // Perform a quick address check for UDP protocols
-      anAddressCheck = (anAddress.toInteger() == mServerAddress.toInteger() &&
-                        anPort == mServerPort);
+      anAddressCheck = (anPort == mServerPort &&
+                        (mServerAddress.toInteger() == sf::IpAddress::Broadcast ||
+                         anAddress.toInteger() == mServerAddress.toInteger()));
 #endif
     }
 
@@ -979,18 +1206,35 @@ namespace GQE
       // Valid message
       else
       {
-        // See what ProcessInternal returns
-        INetPacket* anInternal = ProcessInternal(anResult);
-
-        // If NULL then return the incoming message
-        if(NULL == anInternal)
+        Uint16 anType = anResult->GetType();
+        // NET_BROADCAST message type are handled here for UDP messages
+        if(INetPacket::NET_BROADCAST == anType)
         {
-          // Return the incoming message it has now been processed
-          mNetPool.ReturnIncoming(anResult);
-        }
+          // Call ProcessBroadcast here so we can provide the address and port information
+          ProcessBroadcast(anResult, anAddress);
 
-        // Return the result of ProcessInternal
-        anResult = anInternal;
+          // Return the incoming message
+          mNetPool.ReturnIncoming(anResult);
+
+          // No need for further processing of the incoming message
+          anResult = NULL;
+        }
+        // Otherwise process the message through ProcessInternal
+        else
+        {
+          // See what ProcessInternal returns
+          INetPacket* anInternal = ProcessInternal(anResult);
+
+          // If NULL then return the incoming message
+          if(NULL == anInternal)
+          {
+            // Return the incoming message it has now been processed
+            mNetPool.ReturnIncoming(anResult);
+          }
+
+          // Return the result of ProcessInternal
+          anResult = anInternal;
+        }
       }
     }
     else

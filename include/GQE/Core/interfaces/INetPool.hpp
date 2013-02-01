@@ -10,6 +10,7 @@
 #ifndef   INET_POOL_HPP_INCLUDED
 #define   INET_POOL_HPP_INCLUDED
 
+#include <SFML/System.hpp>
 #include <GQE/Core/Core_types.hpp>
 #include <GQE/Core/interfaces/INetPacket.hpp>
 #include <list>

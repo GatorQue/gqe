@@ -32,6 +32,8 @@ namespace GQE
       static const float TIME_SYNC_TIMEOUT_S;
       /// How long to wait for acknowledgement messages before resending messages
       static const Int32 RESEND_TIMEOUT_MS = 33;  // about 30 Hz
+      /// How many clients are allowed to connect
+      static const Uint16 MAX_CLIENTS = 64;
       /// How long to keep trying to resend ack required messages before failing
       static const float MAX_RESEND_TIMEOUT_S;
       /// How long to wait for incoming messages before calling ProcessSend
@@ -39,6 +41,8 @@ namespace GQE
 
       /**
        * INetServer default constructor
+       * @param[in] theServerID (title) to use for this server
+       * @param[in] theServerVersion to use for this server
        * @param[in] theNetPool derived class to use for getting INetPackets
        * @param[in] theProtocol to use for this NetServer class
        * @param[in] theServerPort to listen on for incoming UDP clients
@@ -47,9 +51,12 @@ namespace GQE
        * @param[in] theReceiveTimeout is how long to wait for incoming message
        * @param[in] theAliveMax is the maximum missed time sync messages
        */
-      INetServer(INetPool& theNetPool,
+      INetServer(const typeServerID theServerID,
+                 const typeVersionInfo theServerVersion,
+                 INetPool& theNetPool,
                  const NetProtocol theProtocol = NetUdp,
                  const Uint16 theServerPort = 10101,
+                 const Uint16 theMaxClients = MAX_CLIENTS,
                  const float theTimeSyncTimeout = TIME_SYNC_TIMEOUT_S,
                  const Int32 theResendTimeout = RESEND_TIMEOUT_MS,
                  const float theMaxResendTimeout = MAX_RESEND_TIMEOUT_S,
@@ -62,6 +69,14 @@ namespace GQE
       virtual ~INetServer();
 
       /**
+       * GetServerInfo is responsible for providing the server information
+       * structure for this server. This includes the server ID (title),
+       * address, port, and number of active clients and maximum clients.
+       * @return theServerInfo structure with the server details
+       */
+      typeServerInfo GetServerInfo(void) const;
+
+      /**
        * GetTimestamp will return the offset adjusted time in microsecocnds
        * of the specified client using theHostID that can be used for comparing
        * to the timestamp received from the INetPacket class (see
@@ -71,6 +86,21 @@ namespace GQE
        * @return the client offset adjusted timestamp
        */
       Int64 GetTimestamp(Uint32 theHostID) const;
+
+      /**
+       * GetServerID is responsible for returning theServerID to use for this
+       * server.
+       * @return theServerID for this server
+       */
+      typeServerID GetServerID(void) const;
+
+      /**
+       * SetServerID is responsible for setting theServerID to use for this
+       * server. This can only be done if the server is not running (see
+       * IsRunning).
+       * @param[in] theServerID to use for the server
+       */
+      void SetServerID(const typeServerID theServerID);
 
       /**
        * SendPacket is the central method used to send all NetPackets. The
@@ -91,63 +121,12 @@ namespace GQE
     protected:
       // Variables
       ///////////////////////////////////////////////////////////////////////////
+      /// The ServerID (title) to use for this server
+      typeServerID mServerID;
+      /// Server Version information
+      typeVersionInfo mServerVersion;
       /// Network pool address to retrieve and return INetPacket derived classes from/to
       INetPool& mNetPool;
-
-      // Structures
-      ///////////////////////////////////////////////////////////////////////////
-      /// ClientInfo structure holds the data needed for each client
-      struct ClientInfo
-      {
-        /// Client is currently enabled
-        bool                   enabled;
-        /// Client has connected
-        bool                   connected;
-        /// Next sequence number to use for next message to client
-        Uint32                 sequence;
-        /// Last sequence number processed from the client
-        Uint32                 lastSN;
-#if (SFML_VERSION_MAJOR < 2)
-        /// Socket to use for TCP clients
-        sf::SocketTCP*         socket;
-        /// IPv4 address to UDP or TCP client
-        sf::IPAddress          address;
-#else
-        /// Socket to use for TCP clients
-        sf::TcpSocket*         socket;
-        /// IPv4 address to UDP client
-        sf::IpAddress          address;
-#endif
-        /// Port number to UDP client
-        Uint16                 port;
-        /// Alive confidence counter
-        Int8                   alive;
-        /// The delay or ping time to this client from the server in microseconds
-        Int64                  delay;
-        /// The clock offset to use to when computing time values for this client
-        Int64                  offset;
-        /// A timer to determine when to send the next time sync to this client
-        sf::Clock              timesync;
-        /// The resend queue of NetPackets to be resent to client
-        std::queue<INetPacket*> resend;
-        ClientInfo(const Int8 theAliveMax = ALIVE_MAX) :
-          enabled(true),
-          connected(false),
-          sequence(0),
-          lastSN(0),
-          socket(NULL),
-#if (SFML_VERSION_MAJOR < 2)
-          address(sf::IPAddress::LocalHost),
-#else
-          address(sf::IpAddress::LocalHost),
-#endif
-          port(0),
-          alive(theAliveMax),
-          delay(0LL),
-          offset(0LL)
-        {
-        }
-      };
 
       /**
        * GetHostID is responsible for returning the HostID that will be used
@@ -171,14 +150,22 @@ namespace GQE
       virtual bool VerifyIncoming(INetPacket& thePacket, std::size_t theSize);
 
       /**
-       * ProcessTransaction is responsible for processing all incoming network
+       * ProcessIncoming is responsible for processing all incoming network
        * packet messages from each UDP client and providing an optional
        * immediate network packet message response (theTransaction.outgoing is
        * no longer null).
        * @param[in] theIncoming INetPacket to be processed
        * @return pointer to outgoing INetPacket response, NULL otherwise
        */
-      virtual INetPacket* ProcessIncoming(INetPacket& theIncoming);
+      virtual INetPacket* ProcessIncoming(INetPacket* theIncoming);
+
+      /**
+       * ProcessOutgoing is responsible for creating any outgoing network
+       * packet messages from this server to the clients. A custom protocol who
+       * wishes to generate outgoing network packets should redefine this
+       * method and provide that functionality.
+       */
+      virtual void ProcessOutgoing(void);
 
       /**
        * CreateAcknowledgement is responsible for creating the acknowledgement
@@ -211,6 +198,23 @@ namespace GQE
        * @param[in] thePacket containing the acknowledgement message
        */
       void ProcessAcknowledgement(INetPacket* thePacket);
+
+      /**
+       * CreateBroadcast is responsible for creating the Broadcast message
+       * reply to a broadcast message request from a local client. The reply
+       * includes the ServerID specified.
+       * @return pointer to outgoing INetPacket response, NULL otherwise
+       */
+      virtual INetPacket* CreateBroadcast(void);
+
+      /**
+       * GetBroadcastSize is responsible for returning the size of the
+       * Broadcast message. This way someone can modify the CreateBroadcast
+       * method in INetClient and still have the INetServer base class
+       * validate each Broadcast message size correctly.
+       * @return the Broadcast message size
+       */
+      virtual std::size_t GetBroadcastSize(void) const;
 
       /**
        * GetConnectSize is responsible for returning the size of the Connect
@@ -272,7 +276,7 @@ namespace GQE
        * @param[in] theHostID that the client is being told to use
        * @return pointer to INetPacket with Identity message, NULL otherwise
        */
-      virtual INetPacket* CreateIdentity(Uint32 theHostID);
+      virtual INetPacket* CreateIdentity(const Uint32 theHostID);
 
       /**
        * CreateTimeSync1 is responsible for creating the Sync 1 message that
@@ -329,6 +333,65 @@ namespace GQE
       void ProcessTimeSync2(INetPacket* thePacket);
 
     private:
+      // Structures
+      ///////////////////////////////////////////////////////////////////////////
+      /// ClientInfo structure holds the data needed for each client
+      struct ClientInfo
+      {
+        /// Client is currently enabled
+        bool                   enabled;
+        /// Client has connected
+        bool                   connected;
+        /// Next sequence number to use for next message to client
+        Uint32                 sequence;
+        /// Last sequence number processed from the client
+        Uint32                 lastSN;
+#if (SFML_VERSION_MAJOR < 2)
+        /// Socket to use for TCP clients
+        sf::SocketTCP*         socket;
+        /// IPv4 address to UDP or TCP client
+        sf::IPAddress          address;
+#else
+        /// Socket to use for TCP clients
+        sf::TcpSocket*         socket;
+        /// IPv4 address to UDP client
+        sf::IpAddress          address;
+#endif
+        /// Client ID to identify this client
+        typeClientID           clientID;
+        /// Client version info
+        typeVersionInfo        version;
+        /// Port number to UDP client
+        Uint16                 port;
+        /// Alive confidence counter
+        Int8                   alive;
+        /// The delay or ping time to this client from the server in microseconds
+        Int64                  delay;
+        /// The clock offset to use to when computing time values for this client
+        Int64                  offset;
+        /// A timer to determine when to send the next time sync to this client
+        sf::Clock              timesync;
+        /// The resend queue of NetPackets to be resent to client
+        std::queue<INetPacket*> resend;
+        ClientInfo(const Int8 theAliveMax = ALIVE_MAX) :
+          enabled(true),
+          connected(false),
+          sequence(0),
+          lastSN(0),
+          socket(NULL),
+#if (SFML_VERSION_MAJOR < 2)
+          address(sf::IPAddress::LocalHost),
+#else
+          address(sf::IpAddress::LocalHost),
+#endif
+          port(0),
+          alive(theAliveMax),
+          delay(0LL),
+          offset(0LL)
+        {
+        }
+      };
+
       // Variables
       ///////////////////////////////////////////////////////////////////////////
       /// Protocol flag for this NetServer
@@ -336,6 +399,8 @@ namespace GQE
       /// Server port to listen for incoming UDP clients
       Uint16 mServerPort;
 #if (SFML_VERSION_MAJOR < 2)
+      /// Server public address for use with GetServerInfo
+      sf::IPAddress mServerAddress;
       /// UDP Listener server socket for incoming/outgoing Server UDP packets
       sf::SocketUDP mListenerUdp;
       /// TCP Listener server socket for incoming TCP clients
@@ -345,6 +410,8 @@ namespace GQE
       /// UDP Socket selector for monitoring all client connections
       sf::SelectorUDP mSelectorUdp;
 #else
+      /// Server public address for use with GetServerInfo
+      sf::IpAddress mServerAddress;
       /// UDP Listener server socket for incoming/outgoing Server UDP packets
       sf::UdpSocket mListenerUdp;
       /// TCP Listener server socket for incoming TCP clients
@@ -354,6 +421,10 @@ namespace GQE
 #endif
       /// Map of clients using the Host ID returned
       std::map<const Uint32, ClientInfo> mClients;
+      /// Maximum number of active clients allowed
+      Uint16 mMaxClients;
+      /// Number of active clients currently connected
+      Uint16 mActiveClients;
       /// Clock for the source of all time synchronization messages
       sf::Clock mTimeSync;
       /// Time sync send timeout (seconds) determines how frequent to send time sync messages

@@ -12,6 +12,7 @@
 #define INET_CLIENT_HPP_INCLUDED
 
 #include <SFML/Network.hpp>
+#include <SFML/System.hpp>
 #include <GQE/Core/Core_types.hpp>
 #include <GQE/Core/interfaces/INetPacket.hpp>
 #include <GQE/Core/interfaces/IProcess.hpp>
@@ -19,7 +20,7 @@
 
 namespace GQE
 {
-  /// Provides the UdpClient class for providing a UDP Client service
+  /// Provides the INetClient class for providing a UDP/TCP Client services
   class GQE_API INetClient : public IProcess
   {
     public:
@@ -40,6 +41,7 @@ namespace GQE
 
       /**
        * INetClient default constructor
+       * @param[in] theClientID (alias) to use for this client
        * @param[in] theNetPool derived class to use for getting INetPackets
        * @param[in] theProtocol to use for this client
        * @param[in] theServerAddress to connect to
@@ -51,12 +53,14 @@ namespace GQE
        * @param[in] theRetryTimeout to wait before retrying to connect to server
        * @param[in] theConnectTimeout to wait for connection to be established (TCP only)
        */
-      INetClient(INetPool& theNetPool,
+      INetClient(const typeClientID theClientID,
+                 const typeVersionInfo theClientVersion,
+                 INetPool& theNetPool,
                  const NetProtocol theProtocol = NetUdp,
 #if (SFML_VERSION_MAJOR < 2)
-                 const sf::IPAddress theServerAddress = sf::IPAddress::LocalHost,
+                 const sf::IPAddress theServerAddress = 0xffffffff /* broadcast */,
 #else
-                 const sf::IpAddress theServerAddress = sf::IpAddress::LocalHost,
+                 const sf::IpAddress theServerAddress = sf::IpAddress::Broadcast,
 #endif
                  const Uint16 theServerPort = 10101,
                  const Uint16 theClientPort = 0,
@@ -79,6 +83,59 @@ namespace GQE
        * @return theHostID for this client
        */
       GQE::Uint32 GetHostID(void) const;
+
+      /**
+       * GetClientID is responsible for returning theClientID to use for this
+       * client.
+       * @return theClientID for this client
+       */
+      typeClientID GetClientID(void) const;
+
+      /**
+       * SetClientID is responsible for setting theClientID to use for this
+       * client. This can only be done if the client is not running (see
+       * IsRunning).
+       * @param[in] theClientID to use for the client
+       */
+      void SetClientID(const typeClientID theClientID);
+
+      /**
+       * SetServerAddress is responsible for setting the Server address to use
+       * for this client. This can only be done if the client is not running
+       * (see IsRunning).
+       * @param[in] theAddress to use for the server
+       */
+      void SetServerAddress(
+#if (SFML_VERSION_MAJOR < 2)
+                 const sf::IPAddress theAddress
+#else
+                 const sf::IpAddress theAddress
+#endif
+                           );
+
+      /**
+       * SetServerPort is responsible for setting the Server port to use
+       * for this client. This can only be done if the client is not running
+       * (see IsRunning).
+       * @param[in] thePort to use for contacting the server
+       */
+      void SetServerPort(const Uint16 thePort);
+
+      /**
+       * AcceptServer is responsible selecting a server identified by
+       * theServerID from among all the servers that responded to a Broadcast
+       * message. The client can view the list of available servers (see
+       * GetServers) to determine which server to join.
+       * @param theServerID of the server to accept and connect to
+       */
+      void AcceptServer(const typeServerID theServerID);
+
+      /**
+       * GetServers is responsible for providing a list of available game
+       * servers so the client can connect to one of them.
+       * @return copy of the contents of mServers.
+       */
+      typeServerMap GetServers(void);
 
       /**
        * IsConnected will return true if the client has connected to the
@@ -112,8 +169,21 @@ namespace GQE
     protected:
       // Variables
       ///////////////////////////////////////////////////////////////////////////
+      /// The ClientID (username) to use for this client
+      typeClientID mClientID;
+      /// The Client version to use for this client
+      typeVersionInfo mClientVersion;
       /// Network pool address to retrieve and return INetPacket derived classes from/to
       INetPool& mNetPool;
+      /// Protocol flag for this NetServer
+      NetProtocol mProtocol;
+      /// The HostID to use for this client
+      Uint32 mHostID;
+      /// Map of all the servers who have responded to our Connect message (UDP broadcast)
+      typeServerMap mServers;
+      /// Mutex to protect our server map above
+      sf::Mutex mServerMutex;
+
 
       /**
        * VerifyIncoming is responsible for verifying the incoming INetPacket
@@ -126,14 +196,21 @@ namespace GQE
       virtual bool VerifyIncoming(INetPacket& thePacket, std::size_t theSize);
 
       /**
-       * ProcessTransaction is responsible for processing all incoming network
-       * packet messages from each UDP client and providing an optional
-       * immediate network packet message response (theTransaction.outgoing is
-       * no longer null).
+       * ProcessIncoming is responsible for processing all incoming network
+       * packet messages from each client and providing an optional
+       * immediate network packet message response.
        * @param[in] theIncoming INetPacket to be processed
        * @return pointer to outgoing INetPacket response, NULL otherwise
        */
-      virtual INetPacket* ProcessIncoming(INetPacket& theIncoming);
+      virtual INetPacket* ProcessIncoming(INetPacket* theIncoming);
+
+      /**
+       * ProcessOutgoing is responsible for creating any outgoing network
+       * packet messages from this client to the server. A custom protocol who
+       * wishes to generate outgoing network packets should redefine this
+       * method and provide that functionality.
+       */
+      virtual void ProcessOutgoing(void);
 
       /**
        * CreateAcknowledgement is responsible for creating the acknowledgement
@@ -165,7 +242,40 @@ namespace GQE
        * Acknowledgement message received.
        * @param[in] thePacket containing theAcknowledgement message
        */
-      void ProcessAcknowledgement(INetPacket* thePacket);
+      virtual void ProcessAcknowledgement(INetPacket* thePacket);
+
+      /**
+       * CreateBroadcast is responsible for providing a custom Broadcast
+       * message that will be sent from the client to all available local
+       * servers to find a server to connect to.
+       * @return pointer to INetPacket with Broadcast message, NULL otherwise
+       */
+      virtual INetPacket* CreateBroadcast(void);
+
+      /**
+       * GetBroadcastSize is responsible for returning the size of the
+       * Broadcast message. This way someone can modify the CreateBroadcast
+       * method in INetServer and still have the INetClient base class
+       * validate each Broadcast message size correctly.
+       * @return the Broadcast message size
+       */
+      virtual std::size_t GetBroadcastSize(void) const;
+
+      /**
+       * ProcessBroadcast is responsible for processing each Broadcast message
+       * response received from each server. The message contains the ServerID
+       * of each server which can be used to determine which server to connect
+       * to.
+       * @param[in] thePacket containing theBroadcast message
+       * @param[in] theAddress of the server who responded (UDP only)
+       */
+      virtual void ProcessBroadcast(INetPacket* thePacket,
+#if (SFML_VERSION_MAJOR < 2)
+                                   sf::IPAddress theAddress
+#else
+                                   sf::IpAddress theAddress
+#endif
+                                   );
 
       /**
        * CreateConnect is responsible for providing a custom Connect message
@@ -198,7 +308,7 @@ namespace GQE
        * message received. By default it calls DisconnectClient.
        * @param[in] thePacket containing theDisconnect message
        */
-      void ProcessDisconnect(INetPacket* thePacket);
+      virtual void ProcessDisconnect(INetPacket* thePacket);
 
       /**
        * GetIdentitySize is responsible for returning the size of the Identity
@@ -213,8 +323,9 @@ namespace GQE
        * ProcessIdentity is responsible for processing each Identity message
        * received. By default it calls the SetHostID method with the new
        * HostID assigned to this client from the server.
+       * @param[in] thePacket containing theIdentity message
        */
-      void ProcessIdentity(INetPacket* thePacket);
+      virtual void ProcessIdentity(INetPacket* thePacket);
 
       /**
        * CreateTimeSync1 is responsible for creating the Sync 1 message reply
@@ -240,7 +351,7 @@ namespace GQE
        * Time Sync 2 message response.
        * @param[in] thePacket containing theTimeSync1 client response message
        */
-      void ProcessTimeSync1(INetPacket* thePacket);
+      virtual void ProcessTimeSync1(INetPacket* thePacket);
 
       /**
        * CreateTimeSync2 is responsible for creating the Sync 2 message reply
@@ -272,13 +383,11 @@ namespace GQE
        * use to organize game time sensitive events.
        * @param[in] thePacket containing theTimeSync2 client response message
        */
-      void ProcessTimeSync2(INetPacket* thePacket);
+      virtual void ProcessTimeSync2(INetPacket* thePacket);
 
     private:
       // Variables
       ///////////////////////////////////////////////////////////////////////////
-      /// Protocol flag for this NetServer
-      NetProtocol mProtocol;
       /// Server address to connect this client to
 #if (SFML_VERSION_MAJOR < 2)
       sf::IPAddress mServerAddress;
@@ -314,8 +423,6 @@ namespace GQE
       float mConnectTimeout;
       /// Retry timeout between connection messages for UDP clients
       float mRetryTimeout;
-      /// The HostID to use for this client
-      Uint32 mHostID;
       /// The last sequence number processed from the server
       Uint32 mLastSN;
       /// The resend queue for resending each message

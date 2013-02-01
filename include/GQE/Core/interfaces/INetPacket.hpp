@@ -39,22 +39,36 @@ namespace GQE
 
       // Constants
       ///////////////////////////////////////////////////////////////////////////
-      /// Minimum header size constant in bytes is 16=sync+version+type+flags+hostID+seq#
+      /// Minimum header size constant in bytes is 16=sync(1)+version(1)+type(2)+flags(4)+hostID(4)+seq#(4)
       static const Uint8 HEADER_SIZE_B    = 16;
       /// Default SYNC value to use
       static const Uint8 SYNC_BYTE        = 0x5A;
+
+      // INetClient/INetServer message types
+      ///////////////////////////////////////////////////////////////////////////
+      /// Broadcast message type value
+      static const Uint16 NET_BROADCAST         = 0x0001;
       /// Connect message type value
-      static const Uint16 NET_CONNECT     = 1;
+      static const Uint16 NET_CONNECT           = 0x0002;
       /// Disconnect message type value
-      static const Uint16 NET_DISCONNECT  = 2;
+      static const Uint16 NET_DISCONNECT        = 0x0003;
       /// Identity message type value
-      static const Uint16 NET_IDENTITY    = 3;
+      static const Uint16 NET_IDENTITY          = 0x0004;
       /// Acknowledge message type value
-      static const Uint16 NET_ACKNOWLEDGE = 4;
+      static const Uint16 NET_ACKNOWLEDGE       = 0x0005;
       /// Time synchronization pass 1
-      static const Uint16 NET_SYNC_1      = 5;
+      static const Uint16 NET_SYNC_1            = 0x0006;
       /// Time synchronization pass 2
-      static const Uint16 NET_SYNC_2      = 6;
+      static const Uint16 NET_SYNC_2            = 0x0007;
+
+      // DirectoryClient/DirectoryServer message types
+      ///////////////////////////////////////////////////////////////////////////
+      /// Directory Register application message type
+      static const Uint16 NET_REGISTER_APP      = 0x0020;
+      /// Directory Register server message type
+      static const Uint16 NET_REGISTER_SERVER   = 0x0021;
+      /// Directory Unregister server message type
+      static const Uint16 NET_UNREGISTER_SERVER = 0x0022;
 
       // Enumerations
       ///////////////////////////////////////////////////////////////////////////
