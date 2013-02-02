@@ -1,3 +1,7 @@
+Version 0.23.0
+==============
+- Publish new networking code
+
 Version 0.22.6
 ==============
 - Add better console only support to IApp

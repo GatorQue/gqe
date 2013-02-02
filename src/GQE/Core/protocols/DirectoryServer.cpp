@@ -8,23 +8,22 @@
  * @date 20130112 - Initial Release
  */
 #include <GQE/Core/protocols/DirectoryServer.hpp>
+#include <GQE/Core/interfaces/INetPacket.hpp>
+#include <GQE/Core/interfaces/INetPool.hpp>
 #include <GQE/Core/loggers/Log_macros.hpp>
 
 namespace GQE
 {
   const float DirectoryServer::DIRECTORY_TIME_SYNC_TIMEOUT_S = 60.0f;
 
-  DirectoryServer::DirectoryServer(const typeServerID theServerID,
-                                   const typeVersionInfo theServerVersion,
+  DirectoryServer::DirectoryServer(const typeNetAlias theNetAlias,
+                                   const typeVersionInfo theVersionInfo,
                                    INetPool& theNetPool,
-                                   const DirectoryScope theScope,
+                                   const NetProtocol theProtocol,
                                    const Uint16 theServerPort) :
-    INetServer(theServerID, theServerVersion, theNetPool,
-               theScope == ScopeLocal ? NetUdp : NetTcp,
-               theServerPort,
-               MAX_DIRECTORY_CLIENTS,
-               DIRECTORY_TIME_SYNC_TIMEOUT_S),
-    mScope(theScope)
+    INetServer(theNetAlias, theVersionInfo, theNetPool, theProtocol,
+               theServerPort, MAX_DIRECTORY_CLIENTS,
+               DIRECTORY_TIME_SYNC_TIMEOUT_S)
   {
   }
 
@@ -78,7 +77,7 @@ namespace GQE
           anServerIter++)
       {
         // Is this the same server? then indicate we found an identical server
-        if(theServerInfo.id == anServerIter->id)
+        if(theServerInfo.alias == anServerIter->alias)
         {
           // We found a duplicate server
           anFound = true;
@@ -91,6 +90,19 @@ namespace GQE
       // Did we not find a duplicate? then add the server now
       if(false == anFound)
       {
+        // Iterator for each subscriber registered
+        std::list<typeNetID>::iterator anSubscriberIter;
+
+        // Loop through each subscriber to send new server info
+        for(anSubscriberIter = anIter->second.subscribers.begin();
+            anSubscriberIter != anIter->second.subscribers.end();
+            anSubscriberIter++)
+        {
+          // Send new server info to this subscriber now
+          SendPacket(CreateServerInfo(theAppID, theServerInfo),
+                     *anSubscriberIter);
+        }
+
         // Add the new server to the list of registered servers for this application
         anIter->second.servers.push_back(theServerInfo);
       }
@@ -98,7 +110,7 @@ namespace GQE
       {
         // Log a duplicate server found error
         ELOG() << "DirectoryServer::RegisterServer(" << theAppID
-               << ") already has server(" << theServerInfo.id << ")"
+               << ") already has server(" << theServerInfo.alias << ")"
                << std::endl;
       }
     }
@@ -109,7 +121,7 @@ namespace GQE
     }
   }
 
-  void DirectoryServer::UnregisterServer(const typeAppID theAppID, const typeServerID theServerID)
+  void DirectoryServer::UnregisterServer(const typeAppID theAppID, const typeNetAlias theNetAlias)
   {
     // Obtain a lock on our directory mutex before unregistering the server
     sf::Lock anLock(mDirectoryMutex);
@@ -133,7 +145,7 @@ namespace GQE
           anServerIter++)
       {
         // Is this the same server? then indicate we found an identical server
-        if(theServerID == anServerIter->id)
+        if(theNetAlias == anServerIter->alias)
         {
           // We found the server to unregister
           anFound = true;
@@ -146,6 +158,19 @@ namespace GQE
       // Did we find the server to unregister? then unregister it now
       if(true == anFound)
       {
+        // Iterator for each subscriber registered
+        std::list<typeNetID>::iterator anSubscriberIter;
+
+        // Loop through each subscriber to send a delete server info message
+        for(anSubscriberIter = anIter->second.subscribers.begin();
+            anSubscriberIter != anIter->second.subscribers.end();
+            anSubscriberIter++)
+        {
+          // Send new server info to this subscriber now
+          SendPacket(CreateServerInfo(theAppID, *anServerIter, true),
+                     *anSubscriberIter);
+        }
+
         // Use the iterator from above to remove the server now
         anIter->second.servers.erase(anServerIter);
       }
@@ -153,7 +178,7 @@ namespace GQE
       {
         // Log a warning if the server wasn't found
         WLOG() << "DirectoryServer::UnregisterServer(" << theAppID
-               << ") server(" << theServerID << ") not found"
+               << ") server(" << theNetAlias << ") not found"
                << std::endl;
       }
     }
@@ -164,21 +189,143 @@ namespace GQE
     }
   }
 
+  void DirectoryServer::RegisterSubscriber(const typeAppID theAppID, const typeNetID theNetID)
+  {
+    // Obtain a lock on our directory mutex before registering a new subscriber
+    sf::Lock anLock(mDirectoryMutex);
+
+    // Iterator pointing to the registered application
+    std::map<const typeAppID, DirectoryInfo>::iterator anIter;
+    anIter = mDirectory.find(theAppID);
+
+    // If the application exists, add the server now otherwise register an error
+    if(anIter != mDirectory.end())
+    {
+      // Boolean flag indicating a duplicate subscriber was found
+      bool anFound = false;
+
+      // Iterate through each subscriber and see if we already have this one
+      std::list<typeNetID>::iterator anSubscriberIter;
+
+      // Loop through each subscriber to look for duplicates before adding new one
+      for(anSubscriberIter = anIter->second.subscribers.begin();
+          anSubscriberIter != anIter->second.subscribers.end();
+          anSubscriberIter++)
+      {
+        // Is this the same server? then indicate we found an identical server
+        if(theNetID == *anSubscriberIter)
+        {
+          // We found a duplicate server
+          anFound = true;
+
+          // Exit for loop, duplicate already found
+          break;
+        }
+      }
+
+      // Did we not find a duplicate? then add the subscriber now
+      if(false == anFound)
+      {
+        // Iterator for each server registered
+        std::list<typeServerInfo>::iterator anServerIter;
+
+        // Loop through each server to look for duplicates before adding new one
+        for(anServerIter = anIter->second.servers.begin();
+            anServerIter != anIter->second.servers.end();
+            anServerIter++)
+        {
+          // Send existing server info to this subscriber now
+          SendPacket(CreateServerInfo(theAppID, *anServerIter), theNetID);
+        }
+
+        // Add the new subscriber to this application
+        anIter->second.subscribers.push_back(theNetID);
+      }
+      else
+      {
+        // Log a duplicate server found error
+        ELOG() << "DirectoryServer::RegisterSubscriber(" << theAppID
+               << ") already has subscriber(" << theNetID << ")"
+               << std::endl;
+      }
+    }
+    else
+    {
+      ELOG() << "DirectoryServer::RegisterSubscriber(" << theAppID
+             << ") application doesn't exist" << std::endl;
+    }
+  }
+
+  void DirectoryServer::UnregisterSubscriber(const typeAppID theAppID, const typeNetID theNetID)
+  {
+    // Obtain a lock on our directory mutex before unregistering the server
+    sf::Lock anLock(mDirectoryMutex);
+
+    // Iterator pointing to the registered application
+    std::map<const typeAppID, DirectoryInfo>::iterator anIter;
+    anIter = mDirectory.find(theAppID);
+
+    // If the application exists, add the subscriber now otherwise register an error
+    if(anIter != mDirectory.end())
+    {
+      // Boolean flag indicating a duplicate server was found
+      bool anFound = false;
+
+      // Iterate through each server and see if we already have this one
+      std::list<typeNetID>::iterator anSubscriberIter;
+
+      // Loop through each subscriber to look for duplicates before adding new one
+      for(anSubscriberIter = anIter->second.subscribers.begin();
+          anSubscriberIter != anIter->second.subscribers.end();
+          anSubscriberIter++)
+      {
+        // Is this the same subscriber? then indicate we found an identical subscriber
+        if(theNetID == *anSubscriberIter)
+        {
+          // We found the subscriber to unregister
+          anFound = true;
+
+          // Exit for loop, subscriber was found
+          break;
+        }
+      }
+
+      // Did we find the server to unregister? then unregister it now
+      if(true == anFound)
+      {
+        // Use the iterator from above to remove the server now
+        anIter->second.subscribers.erase(anSubscriberIter);
+      }
+      else
+      {
+        // Log a warning if the server wasn't found
+        WLOG() << "DirectoryServer::UnregisterSubscriber(" << theAppID
+               << ") subscriber(" << theNetID << ") not found"
+               << std::endl;
+      }
+    }
+    else
+    {
+      ELOG() << "DirectoryServer::UnregisterSubscriber(" << theAppID
+             << ") application doesn't exist" << std::endl;
+    }
+  }
+
   bool DirectoryServer::VerifyIncoming(INetPacket& thePacket, std::size_t theSize)
   {
     // Default implementation is to make all messages valid
     bool anResult = false;
 
-    // Get the message type now and verify the size
-    Uint16 anSourceType = thePacket.GetType();
+    // Get the message label now and verify the size
+    typeNetLabel anSourceNetLabel = thePacket.GetNetLabel();
 
     // Validate the known message types according to size
-    switch(anSourceType)
+    switch(anSourceNetLabel)
     {
       case INetPacket::NET_REGISTER_APP:
         if(GetRegisterAppSize() <= theSize)
         {
-          // Message type is correct as far as we can tell
+          // Message label is correct as far as we can tell
           anResult = true;
         }
         else
@@ -190,7 +337,7 @@ namespace GQE
       case INetPacket::NET_REGISTER_SERVER:
         if(GetRegisterServerSize() <= theSize)
         {
-          // Message type is correct as far as we can tell
+          // Message label is correct as far as we can tell
           anResult = true;
         }
         else
@@ -202,7 +349,7 @@ namespace GQE
       case INetPacket::NET_UNREGISTER_SERVER:
         if(GetUnregisterServerSize() <= theSize)
         {
-          // Message type is correct as far as we can tell
+          // Message label is correct as far as we can tell
           anResult = true;
         }
         else
@@ -225,11 +372,11 @@ namespace GQE
     // Default to no response necessary
     INetPacket* anResult = NULL;
 
-    // Retrieve the source message type
-    Uint16 anSourceType = thePacket->GetType();
+    // Retrieve the source message label
+    typeNetLabel anSourceNetLabel = thePacket->GetNetLabel();
 
     // Switch on the known message types
-    switch(anSourceType)
+    switch(anSourceNetLabel)
     {
       case INetPacket::NET_REGISTER_APP:
         // Call ProcessRegisterApp to process this message
@@ -242,6 +389,14 @@ namespace GQE
       case INetPacket::NET_UNREGISTER_SERVER:
         // Call ProcessUnregisterServer to process this message
         ProcessUnregisterServer(thePacket);
+        break;
+      case INetPacket::NET_REGISTER_SUBSCRIBER:
+        // Call ProcessRegisterServer to process this message
+        ProcessRegisterSubscriber(thePacket);
+        break;
+      case INetPacket::NET_UNREGISTER_SUBSCRIBER:
+        // Call ProcessUnregisterServer to process this message
+        ProcessUnregisterSubscriber(thePacket);
         break;
       default: // Unknown message types receive a Disconnect message as a response
         // Create a Disconnect client response message
@@ -278,8 +433,8 @@ namespace GQE
 
   std::size_t DirectoryServer::GetRegisterServerSize(void) const
   {
-    // Header + app ID + address + port + max and active clients + version + title size and string
-    return INetPacket::HEADER_SIZE_B + sizeof(Uint32)*3 + sizeof(Uint16)*3 + sizeof(Uint8)*4;
+    // Header + app ID + address + port + max and active clients + version + alias size and string
+    return INetPacket::HEADER_SIZE_B + sizeof(Uint32)*5 + sizeof(Uint16) + sizeof(Uint8)*4;
   }
 
   void DirectoryServer::ProcessRegisterServer(INetPacket* thePacket)
@@ -304,7 +459,7 @@ namespace GQE
     *thePacket >> anServerInfo.version.major;
     *thePacket >> anServerInfo.version.minor;
     *thePacket >> anServerInfo.version.patch;
-    *thePacket >> anServerInfo.id;
+    *thePacket >> anServerInfo.alias;
 
     // Now convert the integer address into an sf::IPAddress
     anServerInfo.address = anServerAddress;
@@ -325,16 +480,108 @@ namespace GQE
     typeAppID anAppID;
 
     // The server ID (title) to match against
-    typeServerID anServerID;
+    typeNetAlias anNetAlias;
 
     // Retrieve the application ID from the RegisterServer message
     *thePacket >> anAppID;
 
     // Retrieve the server ID (title)
-    *thePacket >> anServerID;
+    *thePacket >> anNetAlias;
 
     // Now attempt to unregister this server by server ID (title)
-    UnregisterServer(anAppID, anServerID);
+    UnregisterServer(anAppID, anNetAlias);
+  }
+
+  std::size_t DirectoryServer::GetRegisterSubscriberSize(void) const
+  {
+    // Header + app ID
+    return INetPacket::HEADER_SIZE_B + sizeof(Uint32);
+  }
+
+  void DirectoryServer::ProcessRegisterSubscriber(INetPacket* thePacket)
+  {
+    // Retrieve the NetID from thePacket
+    typeNetID anNetID = thePacket->GetNetID();
+
+    // The application ID to register this server under
+    typeAppID anAppID;
+
+    // Retrieve the application ID from the RegisterServer message
+    *thePacket >> anAppID;
+
+    // Now attempt to register this subscriber with AppID and NetID
+    RegisterSubscriber(anAppID, anNetID);
+  }
+
+  std::size_t DirectoryServer::GetUnregisterSubscriberSize(void) const
+  {
+    // Header + app ID
+    return INetPacket::HEADER_SIZE_B + sizeof(Uint32);
+  }
+
+  void DirectoryServer::ProcessUnregisterSubscriber(INetPacket* thePacket)
+  {
+    // Retrieve the NetID from thePacket
+    typeNetID anNetID = thePacket->GetNetID();
+
+    // The application ID to register this server under
+    typeAppID anAppID;
+
+    // Retrieve the application ID from the UnregisterSubscriber message
+    *thePacket >> anAppID;
+
+    // Now attempt to unregister this subscriber using the AppID and NetID
+    UnregisterSubscriber(anAppID, anNetID);
+  }
+
+  INetPacket* DirectoryServer::CreateServerInfo(const typeAppID theAppID,
+                                                const typeServerInfo theServerInfo,
+                                                bool theDeleteFlag)
+  {
+    // Get a packet for our ServerInfo message
+    INetPacket* anResult = mNetPool.GetOutgoing();
+
+    // Make sure a valid packet was returned
+    if(anResult)
+    {
+      // Assign the message label and Yes/No flag value
+      anResult->SetNetLabel(INetPacket::NET_SERVER_INFO);
+
+      // Ack required for UDP protocol messages
+      anResult->SetFlag(INetPacket::FlagAckRequired,
+                        mProtocol == NetTcp ? false : true);
+      // Set the Yes/No flag as the Delete flag
+      anResult->SetFlag(INetPacket::FlagYesResponse, theDeleteFlag);
+
+      // Set server NetID as 1
+      anResult->SetNetID(1);
+
+      // Add the application ID provided
+      *anResult << theAppID;
+
+      // Add the server contact information
+#if (SFML_VERSION_MAJOR < 2)
+      *anResult << theServerInfo.address.ToInteger();
+#else
+      *anResult << theServerInfo.address.toInteger();
+#endif
+      *anResult << theServerInfo.port;
+
+      // Add the server client information
+      *anResult << theServerInfo.maxClients;
+      *anResult << theServerInfo.activeClients;
+
+      // Add the server version information next
+      *anResult << theServerInfo.version.major;
+      *anResult << theServerInfo.version.minor;
+      *anResult << theServerInfo.version.patch;
+
+      // Add the server alias next
+      *anResult << theServerInfo.alias;
+    }
+
+    // Return the message result created above
+    return anResult;
   }
 } // namespace GQE
 

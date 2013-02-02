@@ -20,7 +20,7 @@ namespace GQE
   {
     public:
       // Constants
-      ///////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////
       /// The maximum number of Directory Clients for this server
       static const Uint16 MAX_DIRECTORY_CLIENTS = 1024;
       /// The number of seconds between time sync messages to each DirectoryClient
@@ -28,17 +28,17 @@ namespace GQE
 
       /**
        * DirectoryServer default constructor
-       * @param[in] theServerID to use for this Directory Server
-       * @param[in] theServerVersion to use for this Directory Server
+       * @param[in] theNetAlias to use for this Directory Server
+       * @param[in] theVersionInfo to use for this Directory Server
        * @param[in] theNetPool derived class to use for getting INetPackets
        * @param[in] theScope to use for this Directory protocol
        * @param[in] theServerPort to listen on for incoming UDP clients
        */
-      DirectoryServer(const typeServerID theServerID,
-                      const typeVersionInfo theServerVersion,
+      DirectoryServer(const typeNetAlias theNetAlias,
+                      const typeVersionInfo theVersionInfo,
                       INetPool& theNetPool,
-                      const DirectoryScope theScope = ScopeLocal,
-                      const Uint16 theServerPort = 10101);
+                      const NetProtocol theProtocol,
+                      const Uint16 theServerPort = DIRECTORY_SERVER_PORT);
 
       /**
        * DirectoryServer deconstructor
@@ -64,17 +64,35 @@ namespace GQE
 
       /**
        * UnregisterServer is responsible for removing the registered server ID
-       * sepecified from theAppID indicated. Its possible the server will still be
-       * running but no future clients will see the registered server after it has
-       * been unregistered.
+       * sepecified from theAppID indicated. Its possible the server will
+       * still be running but no future clients will see the registered server
+       * after it has been unregistered.
        * @param[in] theAppID to register theServerInfo under
-       * @param[in] theServerID of the server to unregister
+       * @param[in] theNetAlias of the server to unregister
        */
-      void UnregisterServer(const typeAppID theAppID, const typeServerID theServerID);
+      void UnregisterServer(const typeAppID theAppID, const typeNetAlias theNetAlias);
+
+      /**
+       * RegisterSubscriber is responsible for registering theNetID client
+       * subscriber provided under theAppID specified. This will make it so
+       * the server information changes registered under theAppID specified is
+       * broadcast to this client.
+       * @param[in] theAppID to register theNetID under
+       * @param[in] theNetID of the client subscriber to register
+       */
+      void RegisterSubscriber(const typeAppID theAppID, const typeNetID theNetID);
+
+      /**
+       * UnregisterSubscriber is responsible for removing theNetID of the
+       * client subscriber from theAppID indicated.
+       * @param[in] theAppID to register theServerInfo under
+       * @param[in] theNetID of the client subscriber to unregister
+       */
+      void UnregisterSubscriber(const typeAppID theAppID, const typeNetID theNetID);
 
     protected:
       // Variables
-      ///////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////
 
       /**
        * VerifyIncoming is responsible for verifying the incoming INetPacket
@@ -146,27 +164,65 @@ namespace GQE
        */
       void ProcessUnregisterServer(INetPacket* thePacket);
 
+      /**
+       * GetRegisterSubscriberSize is responsible for returning the size of
+       * the RegisterSubscriber message. This way someone can modify the
+       * CreateRegisterSubscriber method in DirectoryClient and still have the
+       * DirectoryServer base class validate each RegisterSubscriber message
+       * size correctly.
+       * @return the RegisterSubscriber message size
+       */
+      virtual std::size_t GetRegisterSubscriberSize(void) const;
+
+      /**
+       * ProcessRegisterSubscriber is responsible for processing each
+       * RegisterSubscriber message received.
+       * @param[in] thePacket containing the RegisterSubscriber message
+       */
+      void ProcessRegisterSubscriber(INetPacket* thePacket);
+
+      /**
+       * GetUnregisterSubscriberSize is responsible for returning the size of
+       * the UnregisterSubscriber message. This way someone can modify the
+       * CreateUnregisterSubscriber method in DirectoryClient and still have
+       * the DirectoryServer base class validate each RegisterSubscriber
+       * message size correctly.
+       * @return the UnregisterSubscriber message size
+       */
+      virtual std::size_t GetUnregisterSubscriberSize(void) const;
+
+      /**
+       * ProcessUnregisterSubscriber is responsible for processing each
+       * UnregisterSubscriber message received.
+       * @param[in] thePacket containing the UnregisterSubscriber message
+       */
+      void ProcessUnregisterSubscriber(INetPacket* thePacket);
+
+      /**
+       * CreateServerInfo is responsible for providing a Server Info message
+       * that will be sent to a subscriber with theServerInfo data provided.
+       * @param[in] theAppID of the application theServerInfo is under
+       * @param[in] theServerInfo of the server being published
+       * @param[in] theDeleteFlag to indicate server is now unregistered
+       * @return pointer to INetPacket with Server Info message, NULL otherwise
+       */
+      virtual INetPacket* CreateServerInfo(const typeAppID theAppID,
+                                           const typeServerInfo theServerInfo,
+                                           bool theDeleteFlag = false);
+
     private:
       // Structures
-      ///////////////////////////////////////////////////////////////////////////
-      /// SubscriberInfo typedef structure holds each subscribers information
-      typedef struct
-      {
-        Uint32 hostID; ///< Client HostID for this subscriber
-      } typeSubscriberInfo;
-
+      ////////////////////////////////////////////////////////////////////////
       /// DirectoryInfo structure holds the data needed for each registered application
       struct DirectoryInfo
       {
         typeAppInfo app;  ///< Application information
-        std::list<typeServerInfo>     servers;     ///< List of servers available for this app
-        std::list<typeSubscriberInfo> subscribers; ///< List of subscribers for this app
+        std::list<typeServerInfo> servers;     ///< List of servers available for this app
+        std::list<typeNetID>      subscribers; ///< List of subscribers for this app
       };
 
       // Variables
-      ///////////////////////////////////////////////////////////////////////////
-      /// Scope to use for this Directory protocol
-      DirectoryScope mScope;
+      ////////////////////////////////////////////////////////////////////////
       /// Map of each registered application with this DirectoryServer
       std::map<const typeAppID, DirectoryInfo> mDirectory;
       /// Mutex to protect our directory map above

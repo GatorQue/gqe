@@ -41,11 +41,12 @@ namespace GQE
 
       /**
        * INetClient default constructor
-       * @param[in] theClientID (alias) to use for this client
+       * @param[in] theNetAlias to use for this client
+       * @param[in] theVersionInfo to use for this client
        * @param[in] theNetPool derived class to use for getting INetPackets
        * @param[in] theProtocol to use for this client
-       * @param[in] theServerAddress to connect to
        * @param[in] theServerPort to connect to
+       * @param[in] theServerAddress to connect to
        * @param[in] theClientPort to send/listen on
        * @param[in] theResendTimeout to wait before resending messages
        * @param[in] theMaxResendTimeout is how long to keep resending before giving up
@@ -53,16 +54,16 @@ namespace GQE
        * @param[in] theRetryTimeout to wait before retrying to connect to server
        * @param[in] theConnectTimeout to wait for connection to be established (TCP only)
        */
-      INetClient(const typeClientID theClientID,
-                 const typeVersionInfo theClientVersion,
+      INetClient(const typeNetAlias theClientAlias,
+                 const typeVersionInfo theVersionInfo,
                  INetPool& theNetPool,
                  const NetProtocol theProtocol = NetUdp,
+                 const Uint16 theServerPort = DEFAULT_SERVER_PORT,
 #if (SFML_VERSION_MAJOR < 2)
                  const sf::IPAddress theServerAddress = 0xffffffff /* broadcast */,
 #else
                  const sf::IpAddress theServerAddress = sf::IpAddress::Broadcast,
 #endif
-                 const Uint16 theServerPort = 10101,
                  const Uint16 theClientPort = 0,
                  const Int32 theResendTimeout = RESEND_TIMEOUT_MS,
                  const float theMaxResendTimeout = MAX_RESEND_TIMEOUT_S,
@@ -76,28 +77,28 @@ namespace GQE
       virtual ~INetClient();
 
       /**
-       * GetHostID is responsible for returning the HostID that has been
-       * assigned by the server for this client. The caller should also use the
-       * IsConnected method to determine if the value returned can be
+       * GetNetID is responsible for returning the NetID that has been
+       * assigned by the server for this client. The caller should also use
+       * the IsConnected method to determine if the value returned can be
        * considered legal.
-       * @return theHostID for this client
+       * @return theNetID for this client
        */
-      GQE::Uint32 GetHostID(void) const;
+      typeNetID GetNetID(void) const;
 
       /**
-       * GetClientID is responsible for returning theClientID to use for this
+       * GetNetAlias is responsible for returning theNetAlias to use for this
        * client.
-       * @return theClientID for this client
+       * @return theNetAlias for this client
        */
-      typeClientID GetClientID(void) const;
+      typeNetAlias GetNetAlias(void) const;
 
       /**
-       * SetClientID is responsible for setting theClientID to use for this
+       * SetNetAlias is responsible for setting theNetAlias to use for this
        * client. This can only be done if the client is not running (see
        * IsRunning).
-       * @param[in] theClientID to use for the client
+       * @param[in] theNetAlias to use for the client
        */
-      void SetClientID(const typeClientID theClientID);
+      void SetNetAlias(const typeNetAlias theNetAlias);
 
       /**
        * SetServerAddress is responsible for setting the Server address to use
@@ -123,12 +124,12 @@ namespace GQE
 
       /**
        * AcceptServer is responsible selecting a server identified by
-       * theServerID from among all the servers that responded to a Broadcast
+       * theNetAlias from among all the servers that responded to a Broadcast
        * message. The client can view the list of available servers (see
        * GetServers) to determine which server to join.
-       * @param theServerID of the server to accept and connect to
+       * @param theNetAlias of the server to accept and connect to
        */
-      void AcceptServer(const typeServerID theServerID);
+      void AcceptServer(const typeNetAlias theNetAlias);
 
       /**
        * GetServers is responsible for providing a list of available game
@@ -168,18 +169,18 @@ namespace GQE
 
     protected:
       // Variables
-      ///////////////////////////////////////////////////////////////////////////
-      /// The ClientID (username) to use for this client
-      typeClientID mClientID;
-      /// The Client version to use for this client
-      typeVersionInfo mClientVersion;
+      ////////////////////////////////////////////////////////////////////////
+      /// The net alias to use for this client
+      typeNetAlias mNetAlias;
+      /// The version number to use for this client
+      typeVersionInfo mVersion;
       /// Network pool address to retrieve and return INetPacket derived classes from/to
       INetPool& mNetPool;
       /// Protocol flag for this NetServer
       NetProtocol mProtocol;
-      /// The HostID to use for this client
-      Uint32 mHostID;
-      /// Map of all the servers who have responded to our Connect message (UDP broadcast)
+      /// The net ID to use for this client
+      typeNetID mNetID;
+      /// Map of all the servers who have responded to our Broadcast message (UDP broadcast)
       typeServerMap mServers;
       /// Mutex to protect our server map above
       sf::Mutex mServerMutex;
@@ -215,16 +216,16 @@ namespace GQE
       /**
        * CreateAcknowledgement is responsible for creating the acknowledgement
        * message for those messages received with the FlagAckRequired set. The
-       * message includes the message type and sequence number as well as a
+       * message includes the message label and sequence number as well as a
        * boolean yes/no flag indicating a positive or negative acknowledgement
        * response as needed.
-       * @param[in] theType of the message being acknowledged
-       * @param[in] theSequenceNumber of the message being acknowledged
+       * @param[in] theNetLabel of the message label being acknowledged
+       * @param[in] theNetSequence number of the message being acknowledged
        * @param[in] theYesFlag to use in the acknowledgement message
        * @return pointer to outgoing INetPacket response, NULL otherwise
        */
-      virtual INetPacket* CreateAcknowledgement(const Uint16 theType,
-                                                const Uint32 theSequenceNumber,
+      virtual INetPacket* CreateAcknowledgement(const typeNetLabel theNetLabel,
+                                                const typeNetSequence theNetSequence,
                                                 bool theYesFlag = true);
 
       /**
@@ -263,7 +264,7 @@ namespace GQE
 
       /**
        * ProcessBroadcast is responsible for processing each Broadcast message
-       * response received from each server. The message contains the ServerID
+       * response received from each server. The message contains the NetAlias
        * of each server which can be used to determine which server to connect
        * to.
        * @param[in] thePacket containing theBroadcast message
@@ -280,7 +281,7 @@ namespace GQE
       /**
        * CreateConnect is responsible for providing a custom Connect message
        * that will be sent from the client to the server when the client first
-       * establishes contact with the server to request a HostID.
+       * establishes contact with the server to request a NetID.
        * @return pointer to INetPacket with Connect message, NULL otherwise
        */
       virtual INetPacket* CreateConnect(void);
@@ -321,8 +322,8 @@ namespace GQE
 
       /**
        * ProcessIdentity is responsible for processing each Identity message
-       * received. By default it calls the SetHostID method with the new
-       * HostID assigned to this client from the server.
+       * received. By default it calls the SetNetID method with the new
+       * NetID assigned to this client from the server.
        * @param[in] thePacket containing theIdentity message
        */
       virtual void ProcessIdentity(INetPacket* thePacket);
@@ -387,7 +388,7 @@ namespace GQE
 
     private:
       // Variables
-      ///////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////
       /// Server address to connect this client to
 #if (SFML_VERSION_MAJOR < 2)
       sf::IPAddress mServerAddress;
@@ -424,7 +425,7 @@ namespace GQE
       /// Retry timeout between connection messages for UDP clients
       float mRetryTimeout;
       /// The last sequence number processed from the server
-      Uint32 mLastSN;
+      typeNetSequence mLastSN;
       /// The resend queue for resending each message
       std::queue<INetPacket*> mResend;
       /// Resend timeout (milliseconds) is used to determine when to resend messages that require acknowledgements
@@ -497,13 +498,13 @@ namespace GQE
       INetPacket* ReceivePacket(void);
 
       /**
-       * SetHostID is responsible for setting the HostID that will be used to
-       * identify this client. This HostID is assigned by the server during the
+       * SetNetID is responsible for setting the NetID that will be used to
+       * identify this client. This NetID is assigned by the server during the
        * connection process and will be used in all future messages to and from
        * the server.
-       * @param[in] theHostID received by the server for this client
+       * @param[in] theNetID received by the server for this client
        */
-      void SetHostID(const Uint32 theHostID);
+      void SetNetID(const typeNetID theNetID);
 
       /**
        * Our copy constructor is private because we do not allow copies of

@@ -22,20 +22,20 @@ namespace GQE
   const float INetServer::RECEIVE_TIMEOUT_S = 0.5f;
   const float INetServer::MAX_RESEND_TIMEOUT_S = 15.0f;
 
-  INetServer::INetServer(const typeServerID theServerID,
-                         const typeVersionInfo theServerVersion,
+  INetServer::INetServer(const typeNetAlias theNetAlias,
+                         const typeVersionInfo theVersionInfo,
                          INetPool& theNetPool,
                          const NetProtocol theProtocol,
                          const Uint16 theServerPort,
-                         const Uint16 theMaxClients,
+                         const Uint32 theMaxClients,
                          const float theTimeSyncTimeout,
                          const Int32 theResendTimeout,
                          const float theMaxResendTimeout,
                          const float theReceiveTimeout,
                          const Int8 theAliveMax) :
     IProcess(),
-    mServerID(theServerID),
-    mServerVersion(theServerVersion),
+    mNetAlias(theNetAlias),
+    mVersion(theVersionInfo),
     mNetPool(theNetPool),
     mProtocol(theProtocol),
     mServerPort(theServerPort),
@@ -47,10 +47,10 @@ namespace GQE
     mReceiveTimeout(theReceiveTimeout),
     mAliveMax(theAliveMax)
   {
-    ILOG() << "INetServer(" << theServerID << ","
-           << (Uint32)theServerVersion.major << "."
-           << (Uint32)theServerVersion.minor << "."
-           << (Uint32)theServerVersion.patch << ","
+    ILOG() << "INetServer(" << theNetAlias << ","
+           << (Uint32)theVersionInfo.major << "."
+           << (Uint32)theVersionInfo.minor << "."
+           << (Uint32)theVersionInfo.patch << ","
            << (theProtocol == NetTcp ? "TCP" : "UDP") << ","
            << theServerPort << ","
            << theMaxClients << ","
@@ -71,20 +71,20 @@ namespace GQE
     typeServerInfo anResult;
 
     // Build Server Info structure
-    anResult.id = mServerID;
+    anResult.alias = mNetAlias;
     anResult.address = mServerAddress;
     anResult.port = mServerPort;
     anResult.maxClients = mMaxClients;
     anResult.activeClients = mActiveClients;
-    anResult.version = mServerVersion;
+    anResult.version = mVersion;
 
     // Return Server Info structure compiled above
     return anResult;
   }
 
-  Int64 INetServer::GetTimestamp(Uint32 theHostID) const
+  Int64 INetServer::GetTimestamp(const typeNetID theNetID) const
   {
-    // Default to the server timestamp even if theHostID does't exist
+    // Default to the server timestamp even if theNetID does't exist
 #if (SFML_VERSION_MAJOR < 2)
     Int64 anResult = (Int64)(mTimeSync.GetElapsedTime() * 1000000.0f);
 #else
@@ -92,11 +92,11 @@ namespace GQE
 #endif
 
     // Do they want the server timestamp value? then return that
-    if(1 != theHostID)
+    if(1 != theNetID)
     {
-      // Attempt to find theHostID provided in our client map
-      std::map<const Uint32, ClientInfo>::const_iterator anIterator;
-      anIterator = mClients.find(theHostID);
+      // Attempt to find theNetID provided in our client map
+      std::map<const typeNetID, ClientInfo>::const_iterator anIterator;
+      anIterator = mClients.find(theNetID);
 
       // Only return the timestamp offset if the client exists and is enabled
       if(anIterator != mClients.end() && anIterator->second.enabled)
@@ -106,7 +106,7 @@ namespace GQE
       }
       else
       {
-        ELOG() << "INetServer::GetTimestamp(" << theHostID << ") client doesn't exist or is disabled" << std::endl;
+        ELOG() << "INetServer::GetTimestamp(" << theNetID << ") client doesn't exist or is disabled" << std::endl;
       }
     }
 
@@ -114,31 +114,31 @@ namespace GQE
     return anResult;
   }
 
-  typeServerID INetServer::GetServerID(void) const
+  typeNetAlias INetServer::GetNetAlias(void) const
   {
-    return mServerID;
+    return mNetAlias;
   }
 
-  void INetServer::SetServerID(const typeServerID theServerID)
+  void INetServer::SetNetAlias(const typeNetAlias theNetAlias)
   {
     if(false == IsRunning())
     {
-      mServerID = theServerID;
+      mNetAlias = theNetAlias;
     }
     else
     {
-      WLOG() << "INetServer::SetServerID() can't change ID when server is running" << std::endl;
+      WLOG() << "INetServer::SetNetAlias() can't change ID when server is running" << std::endl;
     }
   }
 
-  void INetServer::SendPacket(INetPacket* thePacket, const Uint32 theHostID)
+  void INetServer::SendPacket(INetPacket* thePacket, const typeNetID theNetID)
   {
     // Ignore NULL NetPackets so SendPacket can be chained with CreateIdentity, CreateDisconnect, etc
     if(NULL != thePacket)
     {
-      // Attempt to find theHostID provided in our client map
-      std::map<const Uint32, ClientInfo>::iterator anIterator;
-      anIterator = mClients.find(theHostID);
+      // Attempt to find theNetID provided in our client map
+      std::map<const typeNetID, ClientInfo>::iterator anIterator;
+      anIterator = mClients.find(theNetID);
 
       // Only send message if client was found
       if(anIterator != mClients.end())
@@ -147,10 +147,10 @@ namespace GQE
         if(anIterator->second.enabled)
         {
           // Assign a sequence number to each packet sent if not assigned
-          if(thePacket->GetSequenceNumber() == 0)
+          if(thePacket->GetNetSequence() == 0)
           {
             // Assign a sequence number to each packet sent
-            thePacket->SetSequenceNumber(++anIterator->second.sequence);
+            thePacket->SetNetSequence(++anIterator->second.sequence);
 
             // Set our first sent timestamp for this packet
             thePacket->SetFirstSent();
@@ -211,7 +211,7 @@ namespace GQE
         }
         else
         {
-          ELOG() << "INetServer::SendPacket(" << theHostID << ") client is disabled" << std::endl;
+          ELOG() << "INetServer::SendPacket(" << theNetID << ") client is disabled" << std::endl;
 
           // Return the INetPacket since it is no longer needed
           mNetPool.ReturnOutgoing(thePacket);
@@ -219,7 +219,7 @@ namespace GQE
       }
       else
       {
-        ELOG() << "INetServer::SendPacket(" << theHostID << ") client doesn't exist" << std::endl;
+        ELOG() << "INetServer::SendPacket(" << theNetID << ") client doesn't exist" << std::endl;
 
         // Return the INetPacket since the client doesn't exist
         mNetPool.ReturnOutgoing(thePacket);
@@ -227,13 +227,13 @@ namespace GQE
     }
   }
 
-  void INetServer::DisconnectClient(Uint32 theHostID)
+  void INetServer::DisconnectClient(const typeNetID theNetID)
   {
-    // Attempt to find theHostID provided in our client map
-    std::map<const Uint32, ClientInfo>::iterator anIterator;
+    // Attempt to find theNetID provided in our client map
+    std::map<const typeNetID, ClientInfo>::iterator anIterator;
 
     // Now find the client in our map and flag him as disconnected
-    anIterator = mClients.find(theHostID);
+    anIterator = mClients.find(theNetID);
 
     // If found, disable the client
     if(anIterator != mClients.end())
@@ -242,7 +242,7 @@ namespace GQE
       if(anIterator->second.enabled)
       {
         // Create and send the Disconnect message to the client
-        SendPacket(CreateDisconnect(), theHostID);
+        SendPacket(CreateDisconnect(), theNetID);
 
         // Disable this client from processing further messages
         anIterator->second.enabled = false;
@@ -274,39 +274,39 @@ namespace GQE
       }
       else
       {
-        WLOG() << "INetServer::DisconnectClient(" << theHostID << ") client already disconnecting" << std::endl;
+        WLOG() << "INetServer::DisconnectClient(" << theNetID << ") client already disconnecting" << std::endl;
       }
     }
     else
     {
-      ELOG() << "INetServer::DisconnectClient(" << theHostID << ") host not found" << std::endl;
+      ELOG() << "INetServer::DisconnectClient(" << theNetID << ") host not found" << std::endl;
     }
   }
 
-  Uint32 INetServer::GetHostID(bool theReset)
+  typeNetID INetServer::GetNetID(bool theReset)
   {
-    static Uint32 sHostID = 1; // As the server, we are always HostID 1, clients will be 2 .. 2^32
+    static typeNetID sNetID = 1; // As the server, we are always NetID 1, clients will be 2 .. 2^32
 
-    // Default to unknown HostID value
-    Uint32 anResult = 0;
+    // Default to unknown NetID value
+    typeNetID anResult = 0;
 
-    // Reset our client HostID counter?
+    // Reset our client NetID counter?
     if(theReset)
     {
-      sHostID = 1;
+      sNetID = 1;
     }
 
-    // Have we hit the maximum possible HostID value? then look for a disabled client
-    if(sHostID == ~0)
+    // Have we hit the maximum possible NetID value? then look for a disabled client
+    if(~0U == sNetID)
     {
-      // Attempt to find theHostID provided in our client map
-      std::map<const Uint32, ClientInfo>::iterator anIterator;
+      // Attempt to find theNetID provided in our client map
+      std::map<const typeNetID, ClientInfo>::iterator anIterator;
       for(anIterator = mClients.begin(); anIterator != mClients.end(); anIterator++)
       {
-        // Look for a disabled client so we can steal its HostID value
+        // Look for a disabled client so we can steal its NetID value
         if(false == anIterator->second.enabled)
         {
-          // Reuse its HostID value
+          // Reuse its NetID value
           anResult = anIterator->first;
 
           // Now erase the client from our map so a new client can be added in its place
@@ -317,19 +317,19 @@ namespace GQE
         }
       }
 
-      // An available HostID was not found above
-      if(anResult == 0)
+      // An available NetID was not found above
+      if(0 == anResult)
       {
-        ELOG() << "INetServer::GetHostID() unable to find a HostID to assign" << std::endl;
+        ELOG() << "INetServer::GetNetID() unable to find a NetID to assign" << std::endl;
       }
     }
     else
     {
-      // Just increment the HostID value and return it
-      anResult = ++sHostID;
+      // Just increment the NetID value and return it
+      anResult = ++sNetID;
     }
 
-    // Return the assigned client HostID value obtained above
+    // Return the assigned client NetID value obtained above
     return anResult;
   }
 
@@ -356,7 +356,9 @@ namespace GQE
     // Do nothing
   }
 
-  INetPacket* INetServer::CreateAcknowledgement(const Uint16 theType, const Uint32 theSequenceNumber, bool theYesFlag)
+  INetPacket* INetServer::CreateAcknowledgement(const typeNetLabel theNetLabel,
+                                                const typeNetSequence theNetSequence,
+                                                bool theYesFlag)
   {
     // Get a packet for our Acknowledgement message
     INetPacket* anResult = mNetPool.GetOutgoing();
@@ -364,16 +366,16 @@ namespace GQE
     // Make sure a valid packet was returned
     if(anResult)
     {
-      // Assign the message type and Yes/No flag value
-      anResult->SetType(INetPacket::NET_ACKNOWLEDGE);
+      // Assign the message label and Yes/No flag value
+      anResult->SetNetLabel(INetPacket::NET_ACKNOWLEDGE);
       anResult->SetFlag(INetPacket::FlagYesResponse, theYesFlag);
-      anResult->SetHostID(1); // Server HostID is always 1
+      anResult->SetNetID(1); // Server NetID is always 1
 
-      // Add the message type being acknowledged
-      *anResult << theType;
+      // Add the message label being acknowledged
+      *anResult << theNetLabel;
 
       // Add the sequence number being acknowledged
-      *anResult << theSequenceNumber;
+      *anResult << theNetSequence;
     }
 
     // Return the response result created above
@@ -388,22 +390,22 @@ namespace GQE
   void INetServer::ProcessAcknowledgement(INetPacket* thePacket)
   {
     // An iterator for finding the client message
-    std::map<const Uint32, ClientInfo>::iterator anIterator;
+    std::map<const typeNetID, ClientInfo>::iterator anIterator;
 
-    // Client/Source HostID number
-    Uint32 anSourceID = thePacket->GetHostID();
+    // Client/Source NetID number
+    typeNetID anSourceID = thePacket->GetNetID();
 
-    // Original message type to be acknowledged
-    Uint16 anDestType = 0;
+    // Original message label to be acknowledged
+    typeNetLabel anDestNetLabel = 0;
 
     // Original message sequence number to be acknowledged
-    Uint32 anDestSequenceNumber = 0;
+    typeNetSequence anDestNetSequence = 0;
 
-    // Retrieve the source message type
-    *thePacket >> anDestType;
+    // Retrieve the source message label
+    *thePacket >> anDestNetLabel;
 
     // Retrieve the source sequence number
-    *thePacket >> anDestSequenceNumber;
+    *thePacket >> anDestNetSequence;
 
     // Find the client resend queue to use
     anIterator = mClients.find(anSourceID);
@@ -422,12 +424,12 @@ namespace GQE
         // Erase this message from our resend queue
         anIterator->second.resend.pop();
 
-        // Get the message type and sequence number from the packet
-        Uint16 anType = anPacket->GetType();
-        Uint32 anSequenceNumber = anPacket->GetSequenceNumber();
+        // Get the message label and sequence number from the packet
+        typeNetLabel anNetLabel = anPacket->GetNetLabel();
+        typeNetSequence anNetSequence = anPacket->GetNetSequence();
 
         // Does this message match the one we are looking for?
-        if(!anFound && anType == anDestType && anSequenceNumber == anDestSequenceNumber)
+        if(!anFound && anNetLabel == anDestNetLabel && anNetSequence == anDestNetSequence)
         {
           // Return the packet now that it has been processed
           mNetPool.ReturnOutgoing(anPacket);
@@ -468,14 +470,14 @@ namespace GQE
     // Make sure a valid packet was returned
     if(anResult)
     {
-      // Assign the message type and Yes/No flag value
-      anResult->SetType(INetPacket::NET_BROADCAST);
+      // Assign the message label and Yes/No flag value
+      anResult->SetNetLabel(INetPacket::NET_BROADCAST);
 
       // Ack never required for Broadcast messages
       anResult->SetFlag(INetPacket::FlagAckRequired, false);
 
-      // Set server HostID as 1
-      anResult->SetHostID(1);
+      // Set server NetID as 1
+      anResult->SetNetID(1);
 
       // Add the maximum number of clients
       *anResult << mMaxClients;
@@ -484,12 +486,12 @@ namespace GQE
       *anResult << mActiveClients;
 
       // Add the version information next
-      *anResult << mServerVersion.major;
-      *anResult << mServerVersion.minor;
-      *anResult << mServerVersion.patch;
+      *anResult << mVersion.major;
+      *anResult << mVersion.minor;
+      *anResult << mVersion.patch;
 
-      // Add the ServerID value
-      *anResult << mServerID;
+      // Add the NetAlias value
+      *anResult << mNetAlias;
     }
 
     // Return the response result created above
@@ -508,7 +510,7 @@ namespace GQE
   }
 
   bool INetServer::ProcessConnect(INetPacket* thePacket,
-                                  Uint32 theHostID,
+                                  const typeNetID theNetID,
 #if (SFML_VERSION_MAJOR < 2)
                                   sf::IPAddress theAddress,
 #else
@@ -521,11 +523,11 @@ namespace GQE
     // Are we using the TCP protocol?
     if(mProtocol == NetTcp)
     {
-      // Attempt to find theHostID provided in our client map
-      std::map<const Uint32, ClientInfo>::iterator anIterator;
+      // Attempt to find theNetID provided in our client map
+      std::map<const typeNetID, ClientInfo>::iterator anIterator;
 
       // Now find the client in our map and flag him as disconnected
-      anIterator = mClients.find(theHostID);
+      anIterator = mClients.find(theNetID);
 
       // Did we find the TCP client that was previously accepted
       if(anIterator != mClients.end())
@@ -536,7 +538,7 @@ namespace GQE
         *thePacket >> anIterator->second.version.patch;
 
         // Retrieve the Client ID from the connect packet
-        *thePacket >> anIterator->second.clientID;
+        *thePacket >> anIterator->second.alias;
 
         // Change this client to connected
         anIterator->second.connected = true;
@@ -547,14 +549,14 @@ namespace GQE
       else
       {
         WLOG() << "INetServer::ProcessConnect() TCP Client("
-               << theHostID << ") doesn't exist" << std::endl;
+               << theNetID << ") doesn't exist" << std::endl;
       }
     }
     // Protocol is UDP
     else
     {
       // An iterator for finding the client message
-      std::map<const Uint32, ClientInfo>::iterator anIterator;
+      std::map<const typeNetID, ClientInfo>::iterator anIterator;
 
       // Look through each client and see if we can find this client
       for(anIterator = mClients.begin(); anIterator != mClients.end(); anIterator++)
@@ -601,14 +603,14 @@ namespace GQE
     // Make sure a valid packet was returned
     if(anResult)
     {
-      // Assign the message type and add the assigned HostID as the payload
-      anResult->SetType(INetPacket::NET_DISCONNECT);
+      // Assign the message label and add the assigned NetID as the payload
+      anResult->SetNetLabel(INetPacket::NET_DISCONNECT);
 
       // Ack required if using anything except TCP protocol
       anResult->SetFlag(INetPacket::FlagAckRequired, NetTcp != mProtocol);
 
-      // Server is always HostID 1
-      anResult->SetHostID(1);
+      // Server is always NetID 1
+      anResult->SetNetID(1);
     }
 
     // Return the response result created above
@@ -622,7 +624,7 @@ namespace GQE
 
   void INetServer::ProcessDisconnect(INetPacket* thePacket)
   {
-    Uint32 anSourceID = thePacket->GetHostID();
+    typeNetID anSourceID = thePacket->GetNetID();
 
     // Log disconnect event
     ILOG() << "INetServer::ProcessDisconnect() Client (" << anSourceID << ") being disconnected" << std::endl;
@@ -631,7 +633,7 @@ namespace GQE
     DisconnectClient(anSourceID);
   }
 
-  INetPacket* INetServer::CreateIdentity(const Uint32 theHostID)
+  INetPacket* INetServer::CreateIdentity(const typeNetID theNetID)
   {
     // Retrieve a INetPacket to create an Identity message to the client
     INetPacket* anResult = mNetPool.GetOutgoing();
@@ -639,17 +641,17 @@ namespace GQE
     // Make sure a valid packet was returned
     if(anResult)
     {
-      // Assign the message type and add the assigned HostID as the payload
-      anResult->SetType(INetPacket::NET_IDENTITY);
+      // Assign the message label and add the assigned NetID as the payload
+      anResult->SetNetLabel(INetPacket::NET_IDENTITY);
 
       // Ack required if using anything except TCP protocol
       anResult->SetFlag(INetPacket::FlagAckRequired, NetTcp != mProtocol);
 
-      // Server is always HostID 1
-      anResult->SetHostID(1);
+      // Server is always NetID 1
+      anResult->SetNetID(1);
 
-      // Return the HostID assigned to this client
-      *anResult << theHostID;
+      // Return the NetID assigned to this client
+      *anResult << theNetID;
     }
 
     // Return the INetPacket created above
@@ -671,11 +673,11 @@ namespace GQE
     // Make sure a valid packet was returned
     if(anResult)
     {
-      // Assign the time synchronization message type and the time sync payload
-      anResult->SetType(INetPacket::NET_SYNC_1);
+      // Assign the time synchronization message label and the time sync payload
+      anResult->SetNetLabel(INetPacket::NET_SYNC_1);
 
-      // Server is always HostID 1
-      anResult->SetHostID(1);
+      // Server is always NetID 1
+      anResult->SetNetID(1);
 
       // Start with a time stamp from us in microseconds
       *anResult << anSourceTime;
@@ -692,9 +694,9 @@ namespace GQE
 
   void INetServer::ProcessTimeSync1(INetPacket* thePacket)
   {
-    Uint32 anSourceID = thePacket->GetHostID();
-    Int64 anSourceTime1 = 0LL;
-    Int64 anDestTime1 = 0LL;
+    typeNetID anSourceID = thePacket->GetNetID();
+    Int64 anSourceTime1 = 0;
+    Int64 anDestTime1 = 0;
 
     // Retrieve the source time from the Sync 1 message
     *thePacket >> anSourceTime1;
@@ -721,11 +723,11 @@ namespace GQE
     // Make sure a valid packet was returned
     if(anResult)
     {
-      // Assign the time synchronization message type and the time sync payload
-      anResult->SetType(INetPacket::NET_SYNC_2);
+      // Assign the time synchronization message label and the time sync payload
+      anResult->SetNetLabel(INetPacket::NET_SYNC_2);
 
-      // Server is always HostID 1
-      anResult->SetHostID(1);
+      // Server is always NetID 1
+      anResult->SetNetID(1);
 
       // Return the original time stamp from us in microseconds
       *anResult << theSourceTime;
@@ -749,22 +751,22 @@ namespace GQE
   void INetServer::ProcessTimeSync2(INetPacket* thePacket)
   {
     // An iterator for finding the client message
-    std::map<const Uint32, ClientInfo>::iterator anIterator;
+    std::map<const typeNetID, ClientInfo>::iterator anIterator;
 
-    // Client/Source HostID number
-    Uint32 anSourceID = thePacket->GetHostID();
+    // Client/Source NetID number
+    typeNetID anSourceID = thePacket->GetNetID();
 
     // Server timestamp from Time Sync 1 message
-    Int64 anSourceTime1 = 0LL;
+    Int64 anSourceTime1 = 0;
 
     // Client timestamp from Time Sync 1 client reply
-    Int64 anDestTime1 = 0LL;
+    Int64 anDestTime1 = 0;
 
     // Server timestamp from Time Sync 2 message
-    Int64 anSourceTime2 = 0LL;
+    Int64 anSourceTime2 = 0;
 
     // Client timestamp from Time Sync 2 client reply
-    Int64 anDestTime2 = 0LL;
+    Int64 anDestTime2 = 0;
 
     // Retrieve the source time from the Sync 1 message
     *thePacket >> anSourceTime1;
@@ -886,13 +888,13 @@ namespace GQE
           if (mListenerTcp.accept(*anClient.socket) == sf::Socket::Done)
 #endif
           {
-            // Get the HostID to use for this client
-            Uint32 anHostID = GetHostID();
+            // Get the NetID to use for this client
+            typeNetID anNetID = GetNetID();
 
-            ILOG() << "INetSever::ProcessTcp() accepting client(" << anHostID << ") connection" << std::endl;
+            ILOG() << "INetSever::ProcessTcp() accepting client(" << anNetID << ") connection" << std::endl;
 
             // Insert the client into our map
-            mClients.insert(std::pair<const Uint32, ClientInfo>(anHostID, anClient));
+            mClients.insert(std::pair<const typeNetID, ClientInfo>(anNetID, anClient));
 
 #if (SFML_VERSION_MAJOR < 2)
             // Add new client to our selector
@@ -910,7 +912,7 @@ namespace GQE
         // Check all our client sockets next
         else
         {
-          std::map<const Uint32, ClientInfo>::iterator anIterator;
+          std::map<const typeNetID, ClientInfo>::iterator anIterator;
           for(anIterator = mClients.begin(); anIterator != mClients.end(); anIterator++)
           {
             ClientInfo anClient = anIterator->second;
@@ -926,11 +928,11 @@ namespace GQE
               // Is there a packet that needs to be processed now?
               if(NULL != anIncoming)
               {
-                // Retrieve the HostID from the incoming message for events processed below
-                Uint32 anHostID = anIncoming->GetHostID();
+                // Retrieve the NetID from the incoming message for events processed below
+                typeNetID anNetID = anIncoming->GetNetID();
 
                 // Process incoming message and immediate send any responses returned
-                SendPacket(ProcessIncoming(anIncoming), anHostID);
+                SendPacket(ProcessIncoming(anIncoming), anNetID);
 
                 // Return the incoming message packet
                 mNetPool.ReturnIncoming(anIncoming);
@@ -967,7 +969,7 @@ namespace GQE
     if(!mClients.empty())
     {
       // Client list iterator
-      std::map<const Uint32, ClientInfo>::iterator anIterator;
+      std::map<const typeNetID, ClientInfo>::iterator anIterator;
 
       // Loop through each client and send a disconnect message
       for(anIterator = mClients.begin(); anIterator != mClients.end(); anIterator++)
@@ -1024,11 +1026,11 @@ namespace GQE
         // Is there a packet that needs to be processed now?
         if(NULL != anIncoming)
         {
-          // Retrieve the HostID from the incoming message for events processed below
-          Uint32 anHostID = anIncoming->GetHostID();
+          // Retrieve the NetID from the incoming message for events processed below
+          typeNetID anNetID = anIncoming->GetNetID();
 
           // Process incoming message and immediate send any responses returned
-          SendPacket(ProcessIncoming(anIncoming), anHostID);
+          SendPacket(ProcessIncoming(anIncoming), anNetID);
 
           // Return the incoming message packet
           mNetPool.ReturnIncoming(anIncoming);
@@ -1048,7 +1050,7 @@ namespace GQE
     if(!mClients.empty())
     {
       // Client list iterator
-      std::map<const Uint32, ClientInfo>::iterator anIterator;
+      std::map<const typeNetID, ClientInfo>::iterator anIterator;
 
       // Loop through each client and send a disconnect message
       for(anIterator = mClients.begin(); anIterator != mClients.end(); anIterator++)
@@ -1072,7 +1074,7 @@ namespace GQE
   void INetServer::ProcessSend(void)
   {
     // Client list iterator
-    std::map<const Uint32, ClientInfo>::iterator anIterator;
+    std::map<const typeNetID, ClientInfo>::iterator anIterator;
 
     // Loop through each client and resend any messages that are waiting to be resent
     for(anIterator = mClients.begin(); anIterator != mClients.end(); anIterator++)
@@ -1138,16 +1140,16 @@ namespace GQE
     // Default to invalid message until proven valid
     bool anResult = false;
 
-    // Get the message type now and verify the size
-    Uint16 anSourceType = thePacket.GetType();
+    // Get the message label now and verify the size
+    typeNetLabel anSourceNetLabel = thePacket.GetNetLabel();
 
     // Validate the known message types according to size
-    switch(anSourceType)
+    switch(anSourceNetLabel)
     {
       case INetPacket::NET_BROADCAST:
         if(GetBroadcastSize() <= theSize)
         {
-          // Message type is correct as far as we can tell
+          // Message label is correct as far as we can tell
           anResult = true;
         }
         else
@@ -1159,7 +1161,7 @@ namespace GQE
       case INetPacket::NET_CONNECT:
         if(GetConnectSize() <= theSize)
         {
-          // Message type is correct as far as we can tell
+          // Message label is correct as far as we can tell
           anResult = true;
         }
         else
@@ -1171,7 +1173,7 @@ namespace GQE
       case INetPacket::NET_DISCONNECT:
         if(GetDisconnectSize() <= theSize)
         {
-          // Message type is correct as far as we can tell
+          // Message label is correct as far as we can tell
           anResult = true;
         }
         else
@@ -1183,7 +1185,7 @@ namespace GQE
       case INetPacket::NET_ACKNOWLEDGE:
         if(GetAcknowledgementSize() <= theSize)
         {
-          // Message type is correct as far as we can tell
+          // Message label is correct as far as we can tell
           anResult = true;
         }
         else
@@ -1195,7 +1197,7 @@ namespace GQE
       case INetPacket::NET_SYNC_1:
         if(GetTimeSync1Size() <= theSize)
         {
-          // Message type is correct as far as we can tell
+          // Message label is correct as far as we can tell
           anResult = true;
         }
         else
@@ -1207,7 +1209,7 @@ namespace GQE
       case INetPacket::NET_SYNC_2:
         if(GetTimeSync2Size() <= theSize)
         {
-          // Message type is correct as far as we can tell
+          // Message label is correct as far as we can tell
           anResult = true;
         }
         else
@@ -1231,38 +1233,38 @@ namespace GQE
   INetPacket* INetServer::ProcessInternal(INetPacket* thePacket)
   {
     // Client list iterator
-    std::map<const Uint32, ClientInfo>::iterator anIterator;
+    std::map<const typeNetID, ClientInfo>::iterator anIterator;
 
     // Default to returning thePacket address as our return result
     INetPacket* anResult = NULL;
 
-    // Get the INetPacket message type
-    Uint16 anSourceType = thePacket->GetType();
+    // Get the INetPacket message label
+    typeNetLabel anSourceNetLabel = thePacket->GetNetLabel();
 
-    // Source HostID to use for various messages below
-    Uint32 anSourceID = thePacket->GetHostID();
+    // Source NetID to use for various messages below
+    typeNetID anSourceID = thePacket->GetNetID();
 
-    // Source SequenceNumber to use for Acknowledgement message
-    Uint32 anSourceSequenceNumber = thePacket->GetSequenceNumber();
+    // Source NetSequence to use for Acknowledgement message
+    typeNetSequence anSourceNetSequence = thePacket->GetNetSequence();
 
     // Does thePacket require an acknowledgement?
     if(true == thePacket->GetFlag(INetPacket::FlagAckRequired))
     {
       // Send the Acknowledgement message now
-      SendPacket(CreateAcknowledgement(anSourceType, anSourceSequenceNumber), anSourceID);
+      SendPacket(CreateAcknowledgement(anSourceNetLabel, anSourceNetSequence), anSourceID);
     }
 
-    // Try to find the source HostID in our client map
+    // Try to find the source NetID in our client map
     anIterator = mClients.find(anSourceID);
 
     // Not the last one we processed? then process it now
-    if(anIterator == mClients.end() || anSourceSequenceNumber != anIterator->second.lastSN)
+    if(anIterator == mClients.end() || anSourceNetSequence != anIterator->second.lastSN)
     {
       // Update our lastSN value first
-      anIterator->second.lastSN = anSourceSequenceNumber;
+      anIterator->second.lastSN = anSourceNetSequence;
 
       // Switch on the known message types
-      switch(anSourceType)
+      switch(anSourceNetLabel)
       {
         case INetPacket::NET_DISCONNECT:
           // Call the ProcessDisconnect method to handle this message
@@ -1295,9 +1297,9 @@ namespace GQE
   }
 
 #if (SFML_VERSION_MAJOR < 2)
-  INetPacket* INetServer::ReceivePacketTcp(const Uint32 theHostID, sf::SocketTCP& theSocket)
+  INetPacket* INetServer::ReceivePacketTcp(const typeNetID theNetID, sf::SocketTCP& theSocket)
 #else
-  INetPacket* INetServer::ReceivePacketTcp(const Uint32 theHostID, sf::TcpSocket& theSocket)
+  INetPacket* INetServer::ReceivePacketTcp(const typeNetID theNetID, sf::TcpSocket& theSocket)
 #endif
   {
     // INetPacket return result to store response to be received
@@ -1340,12 +1342,12 @@ namespace GQE
       else
       {
         // NET_CONNECT message types are handled here for TCP
-        if(INetPacket::NET_CONNECT == anResult->GetType())
+        if(INetPacket::NET_CONNECT == anResult->GetNetLabel())
         {
           // See if ProcessConnect accepts this client
-          bool anAccept = ProcessConnect(anResult, theHostID);
+          bool anAccept = ProcessConnect(anResult, theNetID);
 
-          // Was the client accepted? then send client his HostID value now
+          // Was the client accepted? then send client his NetID value now
           if(anAccept)
           {
             // Are we under our maximum client count? then add the new client
@@ -1355,15 +1357,15 @@ namespace GQE
               mActiveClients++;
 
               // Create and send the Identity message response for this new client
-              SendPacket(CreateIdentity(theHostID), theHostID);
+              SendPacket(CreateIdentity(theNetID), theNetID);
 
               // Log connect event
-              ILOG() << "INetServer::ReceivePacketTcp() New client (" << theHostID << ")" << std::endl;
+              ILOG() << "INetServer::ReceivePacketTcp() New client (" << theNetID << ")" << std::endl;
             }
             else
             {
               // Create and send the Disconnect message response for this new client
-              SendPacket(CreateDisconnect(), theHostID);
+              SendPacket(CreateDisconnect(), theNetID);
 
               // Log disconnect event
               ILOG() << "INetServer::ReceivePacketTcp() too many clients" << std::endl;
@@ -1405,7 +1407,7 @@ namespace GQE
       anResult = NULL;
 
       // Disconnect the client
-      DisconnectClient(theHostID);
+      DisconnectClient(theNetID);
     }
 
     // Return the INetPacket if it is still valid and hasn't been processed yet
@@ -1458,9 +1460,9 @@ namespace GQE
       // Valid message
       else
       {
-        Uint16 anType = anResult->GetType();
+        typeNetLabel anNetLabel = anResult->GetNetLabel();
         // NET_BROADCAST message types are handled here for UDP
-        if(INetPacket::NET_BROADCAST == anType)
+        if(INetPacket::NET_BROADCAST == anNetLabel)
         {
           // Create a Broadcast message reply
           INetPacket* anPacket = CreateBroadcast();
@@ -1486,7 +1488,7 @@ namespace GQE
           anResult = NULL;
         }
         // NET_CONNECT message types are handled here for UDP
-        else if(INetPacket::NET_CONNECT == anType)
+        else if(INetPacket::NET_CONNECT == anNetLabel)
         {
           // See if ProcessConnect accepts this client
           bool anAccept = ProcessConnect(anResult, 0, anClient.address, anClient.port);
@@ -1500,8 +1502,8 @@ namespace GQE
               // Set the connected flag to true
               anClient.connected = true;
 
-              // Assign a HostID for this new client
-              Uint32 anSourceID = GetHostID();
+              // Assign a NetID for this new client
+              typeNetID anSourceID = GetNetID();
 
               // Retrieve the client version from the connect packet
               *anResult >> anClient.version.major;
@@ -1509,10 +1511,10 @@ namespace GQE
               *anResult >> anClient.version.patch;
 
               // Retrieve the Client ID from the connect packet
-              *anResult >> anClient.clientID;
+              *anResult >> anClient.alias;
 
               // Insert the client into our map
-              mClients.insert(std::pair<const Uint32, ClientInfo>(anSourceID, anClient));
+              mClients.insert(std::pair<const typeNetID, ClientInfo>(anSourceID, anClient));
 
               // Add one to our active count
               mActiveClients++;
@@ -1553,7 +1555,7 @@ namespace GQE
           // No need for further processing of the incoming message
           anResult = NULL;
         }
-        // Otherwise call ProcessInternal to handle every other message type
+        // Otherwise call ProcessInternal to handle every other message label
         else
         {
           // See what ProcessInternal returns
@@ -1590,13 +1592,13 @@ namespace GQE
   void INetServer::SetTimestamp(INetPacket* thePacket, const Int64 theTimestamp)
   {
     // An iterator for finding the client message
-    std::map<const Uint32, ClientInfo>::iterator anIterator;
+    std::map<const typeNetID, ClientInfo>::iterator anIterator;
 
     // Was a valid INetPacket provided?
     if(NULL != thePacket)
     {
-      // Attempt to find the client using the HostID from thePacket
-      anIterator = mClients.find(thePacket->GetHostID());
+      // Attempt to find the client using the NetID from thePacket
+      anIterator = mClients.find(thePacket->GetNetID());
 
       // Did we find the client? then get the offset and set the timestamp
       if(anIterator != mClients.end())

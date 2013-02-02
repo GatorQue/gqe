@@ -25,7 +25,7 @@ namespace GQE
   {
     public:
       // Constants
-      ///////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////
       /// How many Time Sync 2 messages can we miss before client is disconnected?
       static const Int8 ALIVE_MAX = 3;
       /// How long to wait before sending time sync messages
@@ -33,7 +33,7 @@ namespace GQE
       /// How long to wait for acknowledgement messages before resending messages
       static const Int32 RESEND_TIMEOUT_MS = 33;  // about 30 Hz
       /// How many clients are allowed to connect
-      static const Uint16 MAX_CLIENTS = 64;
+      static const Uint32 MAX_CLIENTS = 64;
       /// How long to keep trying to resend ack required messages before failing
       static const float MAX_RESEND_TIMEOUT_S;
       /// How long to wait for incoming messages before calling ProcessSend
@@ -41,8 +41,8 @@ namespace GQE
 
       /**
        * INetServer default constructor
-       * @param[in] theServerID (title) to use for this server
-       * @param[in] theServerVersion to use for this server
+       * @param[in] theNetAlias (title) to use for this server
+       * @param[in] theVersionInfo to use for this server
        * @param[in] theNetPool derived class to use for getting INetPackets
        * @param[in] theProtocol to use for this NetServer class
        * @param[in] theServerPort to listen on for incoming UDP clients
@@ -51,12 +51,12 @@ namespace GQE
        * @param[in] theReceiveTimeout is how long to wait for incoming message
        * @param[in] theAliveMax is the maximum missed time sync messages
        */
-      INetServer(const typeServerID theServerID,
-                 const typeVersionInfo theServerVersion,
+      INetServer(const typeNetAlias theNetAlias,
+                 const typeVersionInfo theVersionInfo,
                  INetPool& theNetPool,
                  const NetProtocol theProtocol = NetUdp,
-                 const Uint16 theServerPort = 10101,
-                 const Uint16 theMaxClients = MAX_CLIENTS,
+                 const Uint16 theServerPort = DEFAULT_SERVER_PORT,
+                 const Uint32 theMaxClients = MAX_CLIENTS,
                  const float theTimeSyncTimeout = TIME_SYNC_TIMEOUT_S,
                  const Int32 theResendTimeout = RESEND_TIMEOUT_MS,
                  const float theMaxResendTimeout = MAX_RESEND_TIMEOUT_S,
@@ -78,66 +78,68 @@ namespace GQE
 
       /**
        * GetTimestamp will return the offset adjusted time in microsecocnds
-       * of the specified client using theHostID that can be used for comparing
+       * of the specified client using theNetID that can be used for comparing
        * to the timestamp received from the INetPacket class (see
-       * INetPacket::GetTimestamp()). If theHostID is 1 then the server
+       * INetPacket::GetTimestamp()). If theNetID is 1 then the server
        * timestamp value will be immediately returned instead.
-       * @param[in] theHostID of the client to retrieve timestamp for
+       * @param[in] theNetID of the client to retrieve timestamp for
        * @return the client offset adjusted timestamp
        */
-      Int64 GetTimestamp(Uint32 theHostID) const;
+      Int64 GetTimestamp(const typeNetID theNetID) const;
 
       /**
-       * GetServerID is responsible for returning theServerID to use for this
+       * GetNetAlias is responsible for returning theNetAlias to use for this
        * server.
-       * @return theServerID for this server
+       * @return theNetAlias for this server
        */
-      typeServerID GetServerID(void) const;
+      typeNetAlias GetNetAlias(void) const;
 
       /**
-       * SetServerID is responsible for setting theServerID to use for this
+       * SetNetAlias is responsible for setting theNetAlias to use for this
        * server. This can only be done if the server is not running (see
        * IsRunning).
-       * @param[in] theServerID to use for the server
+       * @param[in] theNetAlias to use for the server
        */
-      void SetServerID(const typeServerID theServerID);
+      void SetNetAlias(const typeNetAlias theNetAlias);
 
       /**
        * SendPacket is the central method used to send all NetPackets. The
        * reason for centralizing this is so that NetPackets that require
        * acknowledgements can be resent when the ACK messages fail to come in.
        * @param[in] thePacket to be sent
-       * @param[in] theHostID of the client to send the message to
+       * @param[in] theNetID of the client to send the message to
        */
-      void SendPacket(INetPacket* thePacket, const Uint32 theHostID);
+      void SendPacket(INetPacket* thePacket, const typeNetID theNetID);
 
       /**
        * DisconnectClient is responsible for disconnecting client identified by
-       * theHostID provided.
-       * @param[in] theHostID to be disconnected
+       * theNetID provided.
+       * @param[in] theNetID to be disconnected
        */
-      void DisconnectClient(Uint32 theHostID);
+      void DisconnectClient(const typeNetID theNetID);
 
     protected:
       // Variables
-      ///////////////////////////////////////////////////////////////////////////
-      /// The ServerID (title) to use for this server
-      typeServerID mServerID;
+      ////////////////////////////////////////////////////////////////////////
+      /// The NetAlias (title) to use for this server
+      typeNetAlias mNetAlias;
       /// Server Version information
-      typeVersionInfo mServerVersion;
+      typeVersionInfo mVersion;
       /// Network pool address to retrieve and return INetPacket derived classes from/to
       INetPool& mNetPool;
+      /// Protocol flag for this NetServer
+      NetProtocol mProtocol;
 
       /**
-       * GetHostID is responsible for returning the HostID that will be used
+       * GetNetID is responsible for returning the NetID that will be used
        * to identify each client. This is called by either the
        * ReceivePacketTcp or the ReceivePacketUdp methods. If the maximum
-       * possible HostID has been reached it will look through mClients to
-       * find the first disabled client and use its HostID instead.
-       * @param[in] theReset flag to reset the HostID counter back to 1 again
-       * @return theHostID to use for the current client (2 .. 2^32)
+       * possible NetID has been reached it will look through mClients to
+       * find the first disabled client and use its NetID instead.
+       * @param[in] theReset flag to reset the NetID counter back to 1 again
+       * @return theNetID to use for the current client (2 .. 2^32)
        */
-      virtual GQE::Uint32 GetHostID(bool theReset = false);
+      virtual typeNetID GetNetID(bool theReset = false);
 
       /**
        * VerifyIncoming is responsible for verifying the incoming INetPacket
@@ -170,16 +172,16 @@ namespace GQE
       /**
        * CreateAcknowledgement is responsible for creating the acknowledgement
        * message for those messages received with the FlagAckRequired set. The
-       * message includes the message type and sequence number as well as a
+       * message includes the message label and sequence number as well as a
        * boolean yes/no flag indicating a positive or negative acknowledgement
        * response as needed.
-       * @param[in] theType of the message being acknowledged
-       * @param[in] theSequenceNumber of the message being acknowledged
+       * @param[in] theNetLabel of the message being acknowledged
+       * @param[in] theNetSequence of the message being acknowledged
        * @param[in] theYesFlag to use in the acknowledgement message
        * @return pointer to outgoing INetPacket response, NULL otherwise
        */
-      virtual INetPacket* CreateAcknowledgement(const Uint16 theType,
-                                               const Uint32 theSequenceNumber,
+      virtual INetPacket* CreateAcknowledgement(const typeNetLabel theNetLabel,
+                                               const typeNetSequence theNetSequence,
                                                bool theYesFlag = true);
 
       /**
@@ -202,7 +204,7 @@ namespace GQE
       /**
        * CreateBroadcast is responsible for creating the Broadcast message
        * reply to a broadcast message request from a local client. The reply
-       * includes the ServerID specified.
+       * includes the NetAlias specified.
        * @return pointer to outgoing INetPacket response, NULL otherwise
        */
       virtual INetPacket* CreateBroadcast(void);
@@ -231,12 +233,12 @@ namespace GQE
        * exists and is not banned before calling CreateIdentity to send the
        * Identity message reply.
        * @param[in] thePacket containing the connect message
-       * @param[in] theHostID assigned when client was accepted (TCP only)
+       * @param[in] theNetID assigned when client was accepted (TCP only)
        * @param[in] theAddress as was received (UDP only)
        * @param[in] thePort as was received (UDP only)
        */
       bool ProcessConnect(INetPacket* thePacket,
-                          Uint32 theHostID = 0,
+                          const typeNetID theNetID = 0,
 #if (SFML_VERSION_MAJOR < 2)
                           sf::IPAddress theAddress = sf::IPAddress::LocalHost,
 #else
@@ -246,7 +248,7 @@ namespace GQE
 
       /**
        * CreateDisconnect is responsible for providing a custom Disconnect
-       * message that will be sent to client when the UdpServer is about to
+       * message that will be sent to client when the INetServer is about to
        * shutdown. The caller must return true and provide
        * theTransaction.outgoing INetPacket.
        * @return pointer to INetPacket with Disconnect message, NULL otherwise
@@ -271,12 +273,12 @@ namespace GQE
 
       /**
        * CreateIdentity is responsible for creating a client message that will
-       * let the client know the HostID it should use for further messages to
+       * let the client know the NetID it should use for further messages to
        * the server.
-       * @param[in] theHostID that the client is being told to use
+       * @param[in] theNetID that the client is being told to use
        * @return pointer to INetPacket with Identity message, NULL otherwise
        */
-      virtual INetPacket* CreateIdentity(const Uint32 theHostID);
+      virtual INetPacket* CreateIdentity(const typeNetID theNetID);
 
       /**
        * CreateTimeSync1 is responsible for creating the Sync 1 message that
@@ -343,9 +345,9 @@ namespace GQE
         /// Client has connected
         bool                   connected;
         /// Next sequence number to use for next message to client
-        Uint32                 sequence;
+        typeNetSequence        sequence;
         /// Last sequence number processed from the client
-        Uint32                 lastSN;
+        typeNetSequence        lastSN;
 #if (SFML_VERSION_MAJOR < 2)
         /// Socket to use for TCP clients
         sf::SocketTCP*         socket;
@@ -357,8 +359,8 @@ namespace GQE
         /// IPv4 address to UDP client
         sf::IpAddress          address;
 #endif
-        /// Client ID to identify this client
-        typeClientID           clientID;
+        /// Net alias to identify this client
+        typeNetAlias           alias;
         /// Client version info
         typeVersionInfo        version;
         /// Port number to UDP client
@@ -386,16 +388,14 @@ namespace GQE
 #endif
           port(0),
           alive(theAliveMax),
-          delay(0LL),
-          offset(0LL)
+          delay(0),
+          offset(0)
         {
         }
       };
 
       // Variables
-      ///////////////////////////////////////////////////////////////////////////
-      /// Protocol flag for this NetServer
-      NetProtocol mProtocol;
+      ////////////////////////////////////////////////////////////////////////
       /// Server port to listen for incoming UDP clients
       Uint16 mServerPort;
 #if (SFML_VERSION_MAJOR < 2)
@@ -420,11 +420,11 @@ namespace GQE
       sf::SocketSelector mSelector;
 #endif
       /// Map of clients using the Host ID returned
-      std::map<const Uint32, ClientInfo> mClients;
+      std::map<const typeNetID, ClientInfo> mClients;
       /// Maximum number of active clients allowed
-      Uint16 mMaxClients;
+      Uint32 mMaxClients;
       /// Number of active clients currently connected
-      Uint16 mActiveClients;
+      Uint32 mActiveClients;
       /// Clock for the source of all time synchronization messages
       sf::Clock mTimeSync;
       /// Time sync send timeout (seconds) determines how frequent to send time sync messages
@@ -490,14 +490,14 @@ namespace GQE
        * using the TCP server protocol. The reason for centralizing this is so
        * that Acknowledgements can be processed without cluttering up the
        * ProcessTcp thread.
-       * @param[in] theHostID assigned to this client (for disconnect purposes)
+       * @param[in] theNetID assigned to this client (for disconnect purposes)
        * @param[in] theSocket to use to receive the incoming INetPacket from
        * @return pointer to INetPacket to process, NULL otherwise
        */
 #if (SFML_VERSION_MAJOR < 2)
-      INetPacket* ReceivePacketTcp(const Uint32 theHostID, sf::SocketTCP& theSocket);
+      INetPacket* ReceivePacketTcp(const typeNetID theNetID, sf::SocketTCP& theSocket);
 #else
-      INetPacket* ReceivePacketTcp(const Uint32 theHostID, sf::TcpSocket& theSocket);
+      INetPacket* ReceivePacketTcp(const typeNetID theNetID, sf::TcpSocket& theSocket);
 #endif
 
       /**

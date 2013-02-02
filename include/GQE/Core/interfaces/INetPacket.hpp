@@ -4,8 +4,8 @@
  * classes. Many of the method implementations were borrowed from the
  * sf::Packet class provided by the SFML Network library. The primary
  * difference between the two classes is the addition of some header data to
- * allow for a TCP like implementation using the UDP protocol and other similar
- * improvements.
+ * allow for a TCP like implementation using the UDP protocol and other
+ * similar improvements.
  *
  * @file include/GQE/Core/interfaces/INetPacket.hpp
  * @author Ryan Lindeman
@@ -32,46 +32,52 @@ namespace GQE
       /// Sort type enumeration for INetPacket <,>,<=,etc operators
       enum SortType
       {
-        SortSequenceNumber = 0, /// Sort by SequenceNumber
+        SortNetSequence = 0, /// Sort by NetSequence
         SortLastSent       = 1, /// Sort by LastSent timestamp value
         SortTimestamp      = 2  /// Sort by Timestamp value
       };
 
       // Constants
-      ///////////////////////////////////////////////////////////////////////////
-      /// Minimum header size constant in bytes is 16=sync(1)+version(1)+type(2)+flags(4)+hostID(4)+seq#(4)
+      ////////////////////////////////////////////////////////////////////////
+      /// Minimum header size constant in bytes is 16=sync(1)+version(1)+label(2)+flags(4)+netID(4)+seq#(4)
       static const Uint8 HEADER_SIZE_B    = 16;
       /// Default SYNC value to use
       static const Uint8 SYNC_BYTE        = 0x5A;
 
       // INetClient/INetServer message types
-      ///////////////////////////////////////////////////////////////////////////
-      /// Broadcast message type value
-      static const Uint16 NET_BROADCAST         = 0x0001;
-      /// Connect message type value
-      static const Uint16 NET_CONNECT           = 0x0002;
-      /// Disconnect message type value
-      static const Uint16 NET_DISCONNECT        = 0x0003;
-      /// Identity message type value
-      static const Uint16 NET_IDENTITY          = 0x0004;
-      /// Acknowledge message type value
-      static const Uint16 NET_ACKNOWLEDGE       = 0x0005;
+      ////////////////////////////////////////////////////////////////////////
+      /// Broadcast message label value
+      static const typeNetLabel NET_BROADCAST             = 0x0001;
+      /// Connect message label value
+      static const typeNetLabel NET_CONNECT               = 0x0002;
+      /// Disconnect message label value
+      static const typeNetLabel NET_DISCONNECT            = 0x0003;
+      /// Identity message label value
+      static const typeNetLabel NET_IDENTITY              = 0x0004;
+      /// Acknowledge message label value
+      static const typeNetLabel NET_ACKNOWLEDGE           = 0x0005;
       /// Time synchronization pass 1
-      static const Uint16 NET_SYNC_1            = 0x0006;
+      static const typeNetLabel NET_SYNC_1                = 0x0006;
       /// Time synchronization pass 2
-      static const Uint16 NET_SYNC_2            = 0x0007;
+      static const typeNetLabel NET_SYNC_2                = 0x0007;
 
       // DirectoryClient/DirectoryServer message types
-      ///////////////////////////////////////////////////////////////////////////
-      /// Directory Register application message type
-      static const Uint16 NET_REGISTER_APP      = 0x0020;
-      /// Directory Register server message type
-      static const Uint16 NET_REGISTER_SERVER   = 0x0021;
-      /// Directory Unregister server message type
-      static const Uint16 NET_UNREGISTER_SERVER = 0x0022;
+      ////////////////////////////////////////////////////////////////////////
+      /// Directory Register application message label
+      static const typeNetLabel NET_REGISTER_APP          = 0x0020;
+      /// Directory Register server message label
+      static const typeNetLabel NET_REGISTER_SERVER       = 0x0021;
+      /// Directory Unregister server message label
+      static const typeNetLabel NET_UNREGISTER_SERVER     = 0x0022;
+      /// Directory Register subscriber message label
+      static const typeNetLabel NET_REGISTER_SUBSCRIBER   = 0x0023;
+      /// Directory Unregister subscriber message label
+      static const typeNetLabel NET_UNREGISTER_SUBSCRIBER = 0x0024;
+      /// Directory Server Info message label
+      static const typeNetLabel NET_SERVER_INFO           = 0x0025;
 
       // Enumerations
-      ///////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////
       enum NetFlag
       {
         FlagNone        = 0x00000000, ///< No flags enabled (can be used to clear all flags)
@@ -119,7 +125,7 @@ namespace GQE
        */
       INetPacket(const std::size_t theCapacity = HEADER_SIZE_B,
                  const std::size_t theMinimum = HEADER_SIZE_B,
-                 const SortType theSortType = SortSequenceNumber,
+                 const SortType theSortType = SortNetSequence,
                  const Uint8 theSync = SYNC_BYTE);
 
       /**
@@ -161,7 +167,7 @@ namespace GQE
        * validating this INetPacket.
        * @return the sync assigned for validating each INetPacket
        */
-      GQE::Uint8 GetSync(void) const;
+      Uint8 GetSync(void) const;
 
       /**
        * SetSync is responsible for setting theSync value that will be used in
@@ -175,21 +181,21 @@ namespace GQE
        * INetPacket.
        * @return the version assigned to this INetPacket
        */
-      GQE::Uint8 GetVersion(void) const;
+      Uint8 GetVersion(void) const;
 
       /**
-       * GetType is responsible for returning the message type assigned to this
-       * INetPacket.
-       * @return the message type assigned to this INetPacket
+       * GetNetLabel is responsible for returning the message label assigned
+       * to this INetPacket.
+       * @return the message label assigned to this INetPacket
        */
-      GQE::Uint16 GetType(void) const;
+      typeNetLabel GetNetLabel(void) const;
 
       /**
-       * SetType is responsible for setting the message type assigned to this
-       * INetPacket.
-       * @param[in] theType to be assigned to this INetPacket
+       * SetNetLabel is responsible for setting the message label assigned to
+       * this INetPacket.
+       * @param[in] theNetLabel to be assigned to this INetPacket
        */
-      void SetType(const Uint16 theType);
+      void SetNetLabel(const typeNetLabel theNetLabel);
 
       /**
        * GetFlag is responsible for returning the flag specified from this
@@ -215,35 +221,35 @@ namespace GQE
       void SetFlag(const NetFlag theFlag, const bool theValue = true);
 
       /**
-       * GetHostID is responsible for returning the source HostID that
-       * has been assigned to this INetPacket.
-       * @return theHostID assigned to this packet
+       * GetNetID is responsible for returning the source NetID that has been
+       * assigned to this INetPacket.
+       * @return theNetID assigned to this packet
        */
-      GQE::Uint32 GetHostID(void) const;
+      typeNetID GetNetID(void) const;
 
       /**
-       * SetHostID is responsible for setting the source HostID that will be
-       * used for this INetPacket. If the source HostID is not known at the
+       * SetNetID is responsible for setting the source NetID that will be
+       * used for this INetPacket. If the source NetID is not known at the
        * time this INetPacket is completed then a 0 will be used instead.
-       * @param[in] theHostID source to be used for this INetPacket
+       * @param[in] theNetID source to be used for this INetPacket
        */
-      void SetHostID(const Uint32 theHostID);
+      void SetNetID(const typeNetID theNetID);
 
       /**
-       * GetSequenceNumber is responsible for returning the sequence number
-       * that has been assigned to this INetPacket.
-       * @return theSequenceNumber assigned to this packet
+       * GetNetSequence is responsible for returning the sequence number that
+       * has been assigned to this INetPacket.
+       * @return theNetSequence number assigned to this packet
        */
-      GQE::Uint32 GetSequenceNumber(void) const;
+      typeNetSequence GetNetSequence(void) const;
 
       /**
-       * SetSequenceNumber is responsible for setting the sequence number that
+       * SetNetSequence is responsible for setting the sequence number that
        * will be used for this INetPacket. This helps with ordering NetPackets
-       * that arrive out of order like UDP NetPackets and can be used for other
-       * purposes for TCP NetPackets.
-       * @param[in] theSequenceNumber to be used for this INetPacket
+       * that arrive out of order like UDP NetPackets and acknowledging
+       * specific messages sent.
+       * @param[in] theNetSequence to be used for this INetPacket
        */
-      void SetSequenceNumber(const Uint32 theSequenceNumber);
+      void SetNetSequence(const typeNetSequence theNetSequence);
 
       /**
        * GetData is responsible for returning the address to the array of
@@ -618,7 +624,7 @@ namespace GQE
 
     protected:
       // Constants
-      ///////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////
       /// Version byte that is empty
       static const Uint8 VERSION_NONE = 0x00;
       /// Version byte to use for all NetPackets (to be incremented when INetPacket changes)
@@ -627,17 +633,17 @@ namespace GQE
       static const std::size_t SYNC_POSITION_B = 0;
       /// Array position for version in header in bytes
       static const std::size_t VERSION_POSITION_B = 1;
-      /// Array position for message type in header in bytes
-      static const std::size_t TYPE_POSITION_B = 2;
+      /// Array position for message label in header in bytes
+      static const std::size_t LABEL_POSITION_B = 2;
       /// Array position for flags in header in bytes
       static const std::size_t FLAG_POSITION_B = 4;
-      /// Array position for source hostID in header in bytes
-      static const std::size_t HOSTID_POSITION_B = 8;
+      /// Array position for source net ID in header in bytes
+      static const std::size_t NETID_POSITION_B = 8;
       /// Array position for sequence number in header in bytes
       static const std::size_t SEQUENCE_POSITION_B = 12;
 
       // Variables
-      ///////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////
       /// The sync to use for validating network packets
       Uint8  mSync;
       /// Boolean value indicating data is valid
@@ -645,7 +651,7 @@ namespace GQE
 
     private:
       // Variables
-      ///////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////
       /// Sort technique to use for the <,>,<=,etc operators
       SortType mSortType;
       /// Minimum size to use when clearing the packet
@@ -683,7 +689,7 @@ namespace GQE
 
   /**
    * operator== as a non-member method for comparing two INetPacket objects to
-   * each other. Only the Type, Flags, HostID, and Sequence Number fields will
+   * each other. Only the NetLabel, Flags, NetID, and Sequence Number fields will
    * be compared to each other to prove equality. All other fields are assumed
    * to be the same.
    * @return true if above fields match, false otherwise
@@ -691,11 +697,11 @@ namespace GQE
   inline bool operator==(const INetPacket& theLeft, const INetPacket& theRight)
   {
     // Start with a comparison of the Sequence Number fields
-    bool anResult = theLeft.GetSequenceNumber() == theRight.GetSequenceNumber();
+    bool anResult = theLeft.GetNetSequence() == theRight.GetNetSequence();
 
     // Compare the other fields next
-    anResult = anResult && theLeft.GetType() == theRight.GetType();
-    anResult = anResult && theLeft.GetHostID() == theRight.GetHostID();
+    anResult = anResult && theLeft.GetNetLabel() == theRight.GetNetLabel();
+    anResult = anResult && theLeft.GetNetID() == theRight.GetNetID();
     anResult = anResult && theLeft.GetFlags() == theRight.GetFlags();
 
     // Return anResult produced above
@@ -704,7 +710,7 @@ namespace GQE
 
   /**
    * operator!= as a non-member method for comparing two INetPacket objects to
-   * each other. Only the Type, Flags, HostID, and Sequence Number fields will
+   * each other. Only the NetLabel, Flags, NetID, and Sequence Number fields will
    * be compared to each other to prove equality. All other fields are assumed
    * to be the same.
    * @return true if above fields don't match, false otherwise
@@ -731,12 +737,12 @@ namespace GQE
       // Which sort type are we using to sort these INetPackets?
       switch(theLeft.GetSortType())
       {
-        // Default to SequenceNumber if SortType is unknown
+        // Default to NetSequence if SortType is unknown
         default:
           WLOG() << "INetPacket::operator<() unknown sort type("
                  << theLeft.GetSortType() << ")" << std::endl;
-        case INetPacket::SortSequenceNumber:
-          anResult = theLeft.GetSequenceNumber() < theRight.GetSequenceNumber();
+        case INetPacket::SortNetSequence:
+          anResult = theLeft.GetNetSequence() < theRight.GetNetSequence();
           break;
         case INetPacket::SortLastSent:
 #if (SFML_VERSION_MAJOR < 2)
@@ -801,7 +807,7 @@ namespace GQE
  * The INetPacket class is the base class for all network packets used in
  * GQE. The INetPacket class provides a simple header that consists of an 8
  * byte sync code (to validate each message), 8 bits of on/off flags, message
- * type, and source HostID for identification and verification purposes.
+ * label, and source NetID for identification and verification purposes.
  *
  * Copyright (c) 2010-2012 Ryan Lindeman
  * Permission is hereby granted, free of charge, to any person obtaining a copy

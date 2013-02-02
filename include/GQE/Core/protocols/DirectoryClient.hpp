@@ -21,19 +21,19 @@ namespace GQE
     public:
       /**
        * DirectoryClient default constructor
-       * @param[in] theClientID (alias) to use for this client
+       * @param[in] theNetAlias (alias) to use for this client
        * @param[in] theClientVersion to use for this client
        * @param[in] theAppInfo to use for this client
        * @param[in] theNetPool derived class to use for getting INetPackets
-       * @param[in] theScope to use for this Directory protocol
+       * @param[in] theProtocol to use for this Directory protocol
        * @param[in] theServerPort to connect to
        */
-      DirectoryClient(const typeClientID theClientID,
+      DirectoryClient(const typeNetAlias theNetAlias,
                       const typeVersionInfo theClientVersion,
                       const typeAppInfo theAppInfo,
                       INetPool& theNetPool,
-                      const DirectoryScope theScope = ScopeLocal,
-                      const Uint16 theServerPort = 10101);
+                      const NetProtocol theProtocol,
+                      const Uint16 theServerPort = DIRECTORY_SERVER_PORT);
 
       /**
        * DirectoryClient deconstructor
@@ -65,7 +65,30 @@ namespace GQE
        * local scope it will disconnect the internal DirectoryServer that is
        * running.
        */
-      void UnregisterServer(void);
+      void UnregisterServer(const typeNetAlias theNetAlias);
+
+      /**
+       * RegisterSubscriber is responsible for registering this client to
+       * receive server info messages for theAppID specified. This way a
+       * client can receive regular server updates and pick which server to
+       * connect to.
+       */
+      void RegisterSubscriber(void);
+
+      /**
+       * UnregisterSubscriber is responsible for unregistering this client
+       * from theAppID specified. This will prevent future server info
+       * messages from being sent to this DirectoryClient.
+       */
+      void UnregisterSubscriber(void);
+
+      /**
+       * GetSubscriberList will return a copy of the current list of servers
+       * for theAppID specified. The caller can then use this list to pick
+       * a server to connect to.
+       * @returns a copy of theServerMap for theAppID specified
+       */
+      typeServerMap GetSubscriberList(void);
 
     protected:
       /**
@@ -116,22 +139,55 @@ namespace GQE
        * be able to see the server. This can be done to make the server private
        * after a game has started or other reasons.
        * @param[in] theAppID of the registered application to unregister this server for
-       * @param[in] theServerID of the server to unregister
+       * @param[in] theNetAlias of the server to unregister
        */
       virtual INetPacket* CreateUnregisterServer(const typeAppID theAppID,
-                                                 const typeServerID theServerID);
+                                                 const typeNetAlias theNetAlias);
+
+      /**
+       * CreateRegisterSubscriber is responsible for creating the
+       * RegisterSubscriber message that will be sent to the DirectoryServer
+       * by this client. This will cause this client to receive all
+       * server info changes for theAppID provided.
+       * @param[in] theAppID of the registered application to register for
+       */
+      virtual INetPacket* CreateRegisterSubscriber(const typeAppID theAppID);
+
+      /**
+       * CreateUnregisterSubscriber is responsible for creating the
+       * UnregisterSubscriber message that will be sent to the DirectoryServer
+       * by this client. This will cause this client subscriber to be removed
+       * from theAppID specified so no further server info messages will be
+       * received.
+       * @param[in] theAppID of the registered application to unregister for
+       */
+      virtual INetPacket* CreateUnregisterSubscriber(const typeAppID theAppID);
+
+      /**
+       * GetServerInfoSize is responsible for returning the size of the
+       * ServerInfo message. This way someone can modify the CreateServerInfo
+       * method in DirectoryServer and still have the DirectoryClient base
+       * class validate each ServerInfo message size correctly.
+       * @return the ServerInfo message size
+       */
+      virtual std::size_t GetServerInfoSize(void) const;
+
+      /**
+       * ProcessServerInfo is responsible for processing each ServerInfo
+       * message received.
+       * @param[in] thePacket containing the ServerInfo message
+       */
+      void ProcessServerInfo(INetPacket* thePacket);
 
     private:
       // Variables
       ///////////////////////////////////////////////////////////////////////////
       /// The application information for this client to report under
       typeAppInfo mAppInfo;
-      /// Scope to use for this Directory protocol
-      DirectoryScope mScope;
-      /// DirectoryServer for running local servers
-      DirectoryServer* mDirectoryServer;
-      /// ServerID of the server that was registered
-      typeServerID mServerID;
+      /// Map of servers for each subscribed application
+      std::map<const typeAppID, typeServerMap> mSubscriptions;
+      /// Mutex to protect our subscription map above
+      sf::Mutex mSubscriptionMutex;
 
       /**
        * Our copy constructor is private because we do not allow copies of

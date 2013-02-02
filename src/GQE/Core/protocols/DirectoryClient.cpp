@@ -15,51 +15,19 @@
 
 namespace GQE
 {
-  DirectoryClient::DirectoryClient(const typeClientID theClientID,
-                                   const typeVersionInfo theClientVersion,
+  DirectoryClient::DirectoryClient(const typeNetAlias theNetAlias,
+                                   const typeVersionInfo theVersionInfo,
                                    const typeAppInfo theAppInfo,
                                    INetPool& theNetPool,
-                                   const DirectoryScope theScope,
+                                   const NetProtocol theProtocol,
                                    const Uint16 theServerPort) :
-    INetClient(theClientID, theClientVersion, theNetPool,
-               // Use UDP for LAN servers and TCP for WAN servers
-               theScope == ScopeLocal ? NetUdp : NetTcp),
-    mAppInfo(theAppInfo),
-    mScope(theScope),
-    mDirectoryServer(NULL)
+    INetClient(theNetAlias, theVersionInfo, theNetPool, theProtocol, theServerPort),
+    mAppInfo(theAppInfo)
   {
-    // Set the Server address depending on theScope provided
-    if(theScope == ScopeLocal)
-    {
-#if (SFML_VERSION_MAJOR < 2)
-      SetServerAddress(0xffffffff);
-#else
-      SetServerAddress(sf::IpAddress::Broadcast);
-#endif
-    }
-    else
-    {
-      SetServerAddress("gqe.noip.com");
-    }
-
-    // Set the Server port
-    SetServerPort(theServerPort);
   }
 
   DirectoryClient::~DirectoryClient()
   {
-    // Do we have a local directory server running? then delete it
-    if(mDirectoryServer)
-    {
-      // Unregister the server before deleting it
-      mDirectoryServer->UnregisterServer(mAppInfo.id, mServerID);
-
-      // Delete the directory server now (which will disconnect all clients)
-      delete mDirectoryServer;
-
-      // Don't keep pointers around we aren't using
-      mDirectoryServer = NULL;
-    }
   }
 
   void DirectoryClient::SetAppInfo(const typeAppInfo theAppInfo)
@@ -76,107 +44,108 @@ namespace GQE
 
   void DirectoryClient::RegisterServer(const typeServerInfo theServerInfo)
   {
-    // Are we a local server and not already running a local DirectoryServer? then create one now
-    if(ScopeLocal == mScope)
+    if(IsConnected())
     {
-      if(NULL == mDirectoryServer)
-      {
-        // Record our server ID for this local server
-        mServerID = theServerInfo.id;
+      // Make sure our application is registered with the remote DirectoryServer
+      SendPacket(CreateRegisterApp(mAppInfo));
 
-        // Attempt to create a local DirectoryServer
-        mDirectoryServer = new (std::nothrow) DirectoryServer(
-            theServerInfo.id, theServerInfo.version, mNetPool, mScope,
-            theServerInfo.port);
-        assert(mDirectoryServer);
-
-        // Start the local DirectoryServer
-        if(mDirectoryServer)
-        {
-          // Register this application with the local DirectoryServer
-          mDirectoryServer->RegisterApp(mAppInfo);
-
-          // Register this server with the local DirectoryServer
-          mDirectoryServer->RegisterServer(mAppInfo.id, theServerInfo);
-
-          // Start the local directory server to publish the local server
-          mDirectoryServer->Start();
-        }
-        else
-        {
-          // Register a fatal error due to memory allocation problems
-          FLOG(StatusError) << "DirectoryClient::RegisterServer() unable to allocate memory" << std::endl;
-        }
-      }
-      else
-      {
-        // Log an error indicating a local server is already running
-        ELOG() << "DirectoryClient::RegisterServer() local server already running" << std::endl;
-      }
+      // Register this server with the remote DirectoryServer
+      SendPacket(CreateRegisterServer(mAppInfo.id, theServerInfo));
     }
     else
     {
-      if(IsConnected())
-      {
-        // Make sure our application is registered with the remote DirectoryServer
-        SendPacket(CreateRegisterApp(mAppInfo));
-
-        // Register this server with the remote DirectoryServer
-        SendPacket(CreateRegisterServer(mAppInfo.id, theServerInfo));
-      }
-      else
-      {
-        // Log an error indicating we aren't connected to a DirectoryServer
-        ELOG() << "DirectoryClient::RegisterServer() not connected to DirectoryServer" << std::endl;
-      }
+      // Log an error indicating we aren't connected to a DirectoryServer
+      ELOG() << "DirectoryClient::RegisterServer() not connected to DirectoryServer" << std::endl;
     }
   }
 
-  void DirectoryClient::UnregisterServer(void)
+  void DirectoryClient::UnregisterServer(const typeNetAlias theNetAlias)
   {
-    // Are we running in local scope? then stop the local directory server from running
-    if(ScopeLocal == mScope)
+    if(IsConnected())
     {
-      // Are we running a local directory server?
-      if(NULL != mDirectoryServer)
-      {
-        // Unregister the server before deleting it
-        mDirectoryServer->UnregisterServer(mAppInfo.id, mServerID);
-
-        // Delete the local directory server
-        delete mDirectoryServer;
-
-        // Don't keep around pointers that aren't valid anymore
-        mDirectoryServer = NULL;
-      }
-      else
-      {
-        // Log a warning that no directory server is currently running
-        WLOG() << "DirectoryClient::UnregisterServer() no local server is running" << std::endl;
-      }
+      // Unregister this server with the remote DirectoryServer
+      SendPacket(CreateUnregisterServer(mAppInfo.id, theNetAlias));
     }
     else
     {
-      if(IsConnected())
-      {
-        // Unregister this server with the remote DirectoryServer
-        SendPacket(CreateUnregisterServer(mAppInfo.id, mServerID));
-      }
-      else
-      {
-        // Log an error indicating we aren't connected to a DirectoryServer
-        ELOG() << "DirectoryClient::UnegisterServer() not connected to DirectoryServer" << std::endl;
-      }
+      // Log an error indicating we aren't connected to a DirectoryServer
+      ELOG() << "DirectoryClient::UnegisterServer() not connected to DirectoryServer" << std::endl;
+    }
+  }
+
+  void DirectoryClient::RegisterSubscriber(void)
+  {
+    if(IsConnected())
+    {
+      // Make sure our application is registered with the remote DirectoryServer
+      SendPacket(CreateRegisterApp(mAppInfo));
+
+      // Register this DirectoryClient for theAppID specified
+      SendPacket(CreateRegisterSubscriber(mAppInfo.id));
+    }
+  }
+
+  void DirectoryClient::UnregisterSubscriber(void)
+  {
+    if(IsConnected())
+    {
+      // Unregister this DirectoryClient for theAppID specified
+      SendPacket(CreateUnregisterSubscriber(mAppInfo.id));
+    }
+  }
+
+  typeServerMap DirectoryClient::GetSubscriberList(void)
+  {
+    // Obtain a lock on our subscription mutex before getting server map
+    sf::Lock anLock(mSubscriptionMutex);
+
+    // Create an empty server map to return
+    typeServerMap anResult;
+
+    // Iterator to find our application subscription
+    std::map<const typeAppID, typeServerMap>::iterator anIter;
+
+    // Attempt to find our application subscription
+    anIter = mSubscriptions.find(mAppInfo.id);
+
+    // Did we find our application subscription?
+    if(anIter != mSubscriptions.end())
+    {
+      // Make a copy of the server map
+      anResult = anIter->second;
     }
 
-    // Clear our registered server ID
-    mServerID.clear();
+    // Return the server map found above or an empty one by default
+    return anResult;
   }
 
   bool DirectoryClient::VerifyIncoming(INetPacket& thePacket, std::size_t theSize)
   {
     // Default implementation is to make all messages valid
-    bool anResult = true;
+    bool anResult = false;
+
+    // Get the message label now and verify the size
+    typeNetLabel anSourceNetLabel = thePacket.GetNetLabel();
+
+    // Validate the known message types according to size
+    switch(anSourceNetLabel)
+    {
+      case INetPacket::NET_SERVER_INFO:
+        if(GetServerInfoSize() <= theSize)
+        {
+          // Message label is correct as far as we can tell
+          anResult = true;
+        }
+        else
+        {
+          ELOG() << "DirectoryClient::VerifyIncoming() invalid ServerInfo message size("
+                 << (Uint32)GetServerInfoSize() << "!=" << theSize << ")" << std::endl;
+        }
+        break;
+      default: // Unknown message types are accepted with a DisconnectClient response
+        anResult = true;
+        break;
+    }
 
     // Return the result determined above
     return anResult;
@@ -186,6 +155,22 @@ namespace GQE
   {
     // Default to no response necessary
     INetPacket* anResult = NULL;
+
+    // Retrieve the source message label
+    typeNetLabel anSourceNetLabel = thePacket->GetNetLabel();
+
+    // Switch on the known message types
+    switch(anSourceNetLabel)
+    {
+      case INetPacket::NET_SERVER_INFO:
+        // Call ProcessServerInfo to process this message
+        ProcessServerInfo(thePacket);
+        break;
+      default: // Unknown message types receive a Disconnect message as a response
+        // Create a Disconnect client response message
+        anResult = CreateDisconnect();
+        break;
+    }
 
     // Return the response result decided above
     return anResult;
@@ -199,23 +184,34 @@ namespace GQE
     // Make sure a valid packet was returned
     if(anResult)
     {
-      // Assign the message type and add the assigned HostID to the message
-      anResult->SetType(INetPacket::NET_REGISTER_APP);
-      anResult->SetFlag(INetPacket::FlagAckRequired, mProtocol == NetTcp ? false : true);
-      anResult->SetHostID(mHostID);
+      // Obtain a lock on our subscription mutex and add new AppID
+      sf::Lock anLock(mSubscriptionMutex);
+
+      // An empty server map to use when adding new AppID
+      typeServerMap anServerMap;
+
+      // Assign the message label and add the assigned NetID to the message
+      anResult->SetNetLabel(INetPacket::NET_REGISTER_APP);
+      anResult->SetFlag(INetPacket::FlagAckRequired,
+                        mProtocol == NetTcp ? false : true);
+      anResult->SetNetID(mNetID);
 
       // Add the application ID, title, description and website to the message
       *anResult << theAppInfo.id;
       *anResult << theAppInfo.title;
       *anResult << theAppInfo.description;
       *anResult << theAppInfo.website;
+
+      // Add an empty server map for this new AppID
+      mSubscriptions.insert(std::pair<const typeAppID, typeServerMap>(theAppInfo.id, anServerMap));
     }
 
     // Return the response result created above
     return anResult;
   }
 
-  INetPacket* DirectoryClient::CreateRegisterServer(const typeAppID theAppID, const typeServerInfo theServerInfo)
+  INetPacket* DirectoryClient::CreateRegisterServer(const typeAppID theAppID,
+                                                    const typeServerInfo theServerInfo)
   {
     // Get a packet for our Register App message
     INetPacket* anResult = mNetPool.GetOutgoing();
@@ -223,10 +219,11 @@ namespace GQE
     // Make sure a valid packet was returned
     if(anResult)
     {
-      // Assign the message type and add the assigned HostID to the message
-      anResult->SetType(INetPacket::NET_REGISTER_SERVER);
-      anResult->SetFlag(INetPacket::FlagAckRequired, mProtocol == NetTcp ? false : true);
-      anResult->SetHostID(mHostID);
+      // Assign the message label and add the assigned NetID to the message
+      anResult->SetNetLabel(INetPacket::NET_REGISTER_SERVER);
+      anResult->SetFlag(INetPacket::FlagAckRequired,
+                        mProtocol == NetTcp ? false : true);
+      anResult->SetNetID(mNetID);
 
       // Add the application ID to this message first
       *anResult << theAppID;
@@ -243,14 +240,14 @@ namespace GQE
       *anResult << theServerInfo.version.major;
       *anResult << theServerInfo.version.minor;
       *anResult << theServerInfo.version.patch;
-      *anResult << theServerInfo.id;
+      *anResult << theServerInfo.alias;
     }
 
     // Return the response result created above
     return anResult;
   }
 
-  INetPacket* DirectoryClient::CreateUnregisterServer(const typeAppID theAppID, const typeServerID theServerID)
+  INetPacket* DirectoryClient::CreateUnregisterServer(const typeAppID theAppID, const typeNetAlias theNetAlias)
   {
     // Get a packet for our Register App message
     INetPacket* anResult = mNetPool.GetOutgoing();
@@ -258,20 +255,152 @@ namespace GQE
     // Make sure a valid packet was returned
     if(anResult)
     {
-      // Assign the message type and add the assigned HostID to the message
-      anResult->SetType(INetPacket::NET_UNREGISTER_SERVER);
-      anResult->SetFlag(INetPacket::FlagAckRequired, mProtocol == NetTcp ? false : true);
-      anResult->SetHostID(mHostID);
+      // Assign the message label and add the assigned NetID to the message
+      anResult->SetNetLabel(INetPacket::NET_UNREGISTER_SERVER);
+      anResult->SetFlag(INetPacket::FlagAckRequired,
+                        mProtocol == NetTcp ? false : true);
+      anResult->SetNetID(mNetID);
 
       // Add the application ID to this message first
       *anResult << theAppID;
 
       // Add the server ID to this message last
-      *anResult << theServerID;
+      *anResult << theNetAlias;
     }
 
     // Return the response result created above
     return anResult;
+  }
+
+  INetPacket* DirectoryClient::CreateRegisterSubscriber(const typeAppID theAppID)
+  {
+    // Get a packet for our Register App message
+    INetPacket* anResult = mNetPool.GetOutgoing();
+
+    // Make sure a valid packet was returned
+    if(anResult)
+    {
+      // Assign the message label and add the assigned NetID to the message
+      anResult->SetNetLabel(INetPacket::NET_REGISTER_SUBSCRIBER);
+      anResult->SetFlag(INetPacket::FlagAckRequired,
+                        mProtocol == NetTcp ? false : true);
+      anResult->SetNetID(mNetID);
+
+      // Add the application ID to this message first
+      *anResult << theAppID;
+    }
+
+    // Return the response result created above
+    return anResult;
+  }
+
+  INetPacket* DirectoryClient::CreateUnregisterSubscriber(const typeAppID theAppID)
+  {
+    // Get a packet for our Register App message
+    INetPacket* anResult = mNetPool.GetOutgoing();
+
+    // Make sure a valid packet was returned
+    if(anResult)
+    {
+      // Assign the message label and add the assigned NetID to the message
+      anResult->SetNetLabel(INetPacket::NET_UNREGISTER_SUBSCRIBER);
+      anResult->SetFlag(INetPacket::FlagAckRequired,
+                        mProtocol == NetTcp ? false : true);
+      anResult->SetNetID(mNetID);
+
+      // Add the application ID to this message first
+      *anResult << theAppID;
+    }
+
+    // Return the response result created above
+    return anResult;
+  }
+
+  std::size_t DirectoryClient::GetServerInfoSize(void) const
+  {
+    // Header + app ID + address + port + max and active clients + version + alias size and string
+    return INetPacket::HEADER_SIZE_B + sizeof(Uint32)*5 + sizeof(Uint16) + sizeof(Uint8)*4;
+  }
+
+  void DirectoryClient::ProcessServerInfo(INetPacket* thePacket)
+  {
+    // Obtain a lock on our subscription mutex updating server info
+    sf::Lock anLock(mSubscriptionMutex);
+
+    // The application ID to register this server under
+    typeAppID anAppID;
+
+    // Iterator to find our application subscription
+    std::map<const typeAppID, typeServerMap>::iterator anIter;
+
+    // Retrieve the application ID from the RegisterServer message
+    *thePacket >> anAppID;
+
+    // Attempt to find our application subscription
+    anIter = mSubscriptions.find(anAppID);
+
+    // Did we find our application subscription?
+    if(anIter != mSubscriptions.end())
+    {
+      // The server info structure to build
+      typeServerInfo anServerInfo;
+
+      // The server address information as an integer
+      Uint32 anServerAddress;
+
+      // Retrieve the address, port, client info, version and id
+      *thePacket >> anServerAddress;
+      *thePacket >> anServerInfo.port;
+      *thePacket >> anServerInfo.maxClients;
+      *thePacket >> anServerInfo.activeClients;
+      *thePacket >> anServerInfo.version.major;
+      *thePacket >> anServerInfo.version.minor;
+      *thePacket >> anServerInfo.version.patch;
+      *thePacket >> anServerInfo.alias;
+
+      // Now convert the integer address into an sf::IPAddress
+      anServerInfo.address = anServerAddress;
+
+      // Is the Yes/No flag set? then delete this server info
+      if(thePacket->GetFlag(INetPacket::FlagYesResponse))
+      {
+        // See if we can find the server using the alias provided
+        typeServerMapIter anServerIter = anIter->second.find(anServerInfo.alias);
+
+        // Did we find the server, then remove it from our subscription list
+        if(anServerIter != anIter->second.end())
+        {
+          anIter->second.erase(anServerIter);
+        }
+        else
+        {
+          WLOG() << "DirectoryClient::ProcessServerInfo() server("
+                 << anServerInfo.alias << ") not found" << std::endl;
+        }
+      }
+      else
+      {
+        // See if we can find the server using the alias provided
+        typeServerMapIter anServerIter = anIter->second.find(anServerInfo.alias);
+
+        // Did we not find the server? then add it now
+        if(anServerIter == anIter->second.end())
+        {
+          // Add the new server to our subscriptions list
+          anIter->second.insert(typeServerMapPair(anServerInfo.alias, anServerInfo));
+        }
+        else
+        {
+          // Update the existing server with the new information provided
+          anServerIter->second = anServerInfo;
+        }
+      }
+    }
+    else
+    {
+      WLOG() << "DirectoryClient::ProcessServerInfo() subscription for app("
+             << anAppID << ") not found" << std::endl;
+    }
   }
 } // namespace GQE
 
