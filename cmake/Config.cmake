@@ -68,7 +68,7 @@ if(WINDOWS)
     endif()
 
     # require proper c++
-    ADD_DEFINITIONS("-Wall -pedantic -lstdc++")
+    ADD_DEFINITIONS("-Wall -lstdc++")
   elseif(COMPILER_MSVC)
     # Specify where to find DLL and LIB files according to 32bit or 64bit compiling
     if(ARCH_32BITS)
@@ -97,12 +97,12 @@ elseif(LINUX)
   set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "${PROJECT_SOURCE_DIR}/extlibs/libs-gcc")
 
   # require proper c++
-  ADD_DEFINITIONS("-Wall -pedantic")
+  ADD_DEFINITIONS("-Wall")
 elseif(MACOSX)
   set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "${PROJECT_SOURCE_DIR}/extlibs/libs-osx/lib/")
 
   # require proper c++
-  ADD_DEFINITIONS("-Wall -pedantic")
+  ADD_DEFINITIONS("-Wall")
 endif()
 
 # offer the user the choice of overriding the installation directories

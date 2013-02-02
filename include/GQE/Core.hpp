@@ -61,6 +61,8 @@
 #include <GQE/Core/loggers/ScopeLogger.hpp>
 #include <GQE/Core/loggers/StringLogger.hpp>
 #include <GQE/Core/loggers/onullstream>
+#include <GQE/Core/protocols/DirectoryClient.hpp>
+#include <GQE/Core/protocols/DirectoryServer.hpp>
 #include <GQE/Core/states/SplashState.hpp>
 #include <GQE/Core/utils/StringUtil.hpp>
 

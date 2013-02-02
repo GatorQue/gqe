@@ -41,6 +41,8 @@ set(INC
     ${INCROOT}/Core/loggers/ScopeLogger.hpp
     ${INCROOT}/Core/loggers/StringLogger.hpp
     ${INCROOT}/Core/loggers/onullstream
+    ${INCROOT}/Core/protocols/DirectoryClient.hpp
+    ${INCROOT}/Core/protocols/DirectoryServer.hpp
     ${INCROOT}/Core/states/SplashState.hpp
     ${INCROOT}/Core/utils/StringUtil.hpp
 )
@@ -79,6 +81,8 @@ set(SRC
     ${SRCROOT}/Core/loggers/FileLogger.cpp
     ${SRCROOT}/Core/loggers/ScopeLogger.cpp
     ${SRCROOT}/Core/loggers/StringLogger.cpp
+    ${SRCROOT}/Core/protocols/DirectoryClient.cpp
+    ${SRCROOT}/Core/protocols/DirectoryServer.cpp
     ${SRCROOT}/Core/states/SplashState.cpp
     ${SRCROOT}/Core/utils/StringUtil.cpp
 )

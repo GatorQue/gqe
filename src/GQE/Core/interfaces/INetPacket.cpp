@@ -103,18 +103,18 @@ namespace GQE
     return mData[VERSION_POSITION_B];
   }
 
-  Uint16 INetPacket::GetType(void) const
+  typeNetLabel INetPacket::GetNetLabel(void) const
   {
-    // Return the type in our character array
-    return ntohs(*reinterpret_cast<const Uint16*>(&mData[TYPE_POSITION_B]));
+    // Return the label in our character array
+    return ntohs(*reinterpret_cast<const typeNetLabel*>(&mData[LABEL_POSITION_B]));
   }
 
-  void INetPacket::SetType(const Uint16 theType)
+  void INetPacket::SetNetLabel(const typeNetLabel theNetLabel)
   {
-    Uint16* anType = (Uint16*)&mData[TYPE_POSITION_B];
+    typeNetLabel* anNetLabel = (typeNetLabel*)&mData[LABEL_POSITION_B];
 
-    // Assign the type to our character array
-    *anType = htons(theType);
+    // Assign the label to our character array
+    *anNetLabel = htons(theNetLabel);
   }
 
   bool INetPacket::GetFlag(const NetFlag theFlag) const
@@ -157,32 +157,32 @@ namespace GQE
     }
   }
 
-  Uint32 INetPacket::GetHostID(void) const
+  typeNetID INetPacket::GetNetID(void) const
   {
     // Return the hostID from our character array
-    return ntohl(*reinterpret_cast<const Uint32*>(&mData[HOSTID_POSITION_B]));
+    return ntohl(*reinterpret_cast<const typeNetID*>(&mData[NETID_POSITION_B]));
   }
 
-  void INetPacket::SetHostID(const Uint32 theHostID)
+  void INetPacket::SetNetID(const typeNetID theNetID)
   {
-    Uint32* anHostID = (Uint32*)&mData[HOSTID_POSITION_B];
+    typeNetID* anNetID = (typeNetID*)&mData[NETID_POSITION_B];
 
     // Assign the hostID to our character array
-    *anHostID = htonl(theHostID);
+    *anNetID = htonl(theNetID);
   }
 
-  Uint32 INetPacket::GetSequenceNumber(void) const
+  typeNetSequence INetPacket::GetNetSequence(void) const
   {
     // Return the sequence number from our character array
-    return ntohl(*reinterpret_cast<const Uint32*>(&mData[SEQUENCE_POSITION_B]));
+    return ntohl(*reinterpret_cast<const typeNetSequence*>(&mData[SEQUENCE_POSITION_B]));
   }
 
-  void INetPacket::SetSequenceNumber(const Uint32 theSequenceNumber)
+  void INetPacket::SetNetSequence(const typeNetSequence theNetSequence)
   {
-    Uint32* anSequenceNumber = (Uint32*)&mData[SEQUENCE_POSITION_B];
+    typeNetSequence* anNetSequence = (typeNetSequence*)&mData[SEQUENCE_POSITION_B];
 
-    // Assign theSequenceNumber to our character array
-    *anSequenceNumber = htonl(theSequenceNumber);
+    // Assign theNetSequence to our character array
+    *anNetSequence = htonl(theNetSequence);
   }
 
   void* INetPacket::GetData(void)
@@ -281,7 +281,7 @@ namespace GQE
     // Did they provide a valid sort type? then use it
     switch(theSortType)
     {
-      case SortSequenceNumber:
+      case SortNetSequence:
       case SortLastSent:
       case SortTimestamp:
         mSortType = theSortType;
@@ -294,9 +294,9 @@ namespace GQE
 
   void INetPacket::LogHeader(void)
   {
-    ILOG() << "v" << (GetVersion() >> 4) << "." << (GetVersion() & 0x0F) << ",type="
-           << GetType() << ",flags=" << std::hex << GetFlags() << std::dec << ",id="
-           << GetHostID() << ",sn=" << GetSequenceNumber() << ",sz=" << GetSize() << ",cap="
+    ILOG() << "v" << (GetVersion() >> 4) << "." << (GetVersion() & 0x0F) << ",label="
+           << GetNetLabel() << ",flags=" << std::hex << GetFlags() << std::dec << ",id="
+           << GetNetID() << ",sn=" << GetNetSequence() << ",sz=" << GetSize() << ",cap="
            << GetCapacity() << std::endl;
   }
 

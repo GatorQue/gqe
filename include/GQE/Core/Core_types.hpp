@@ -22,10 +22,13 @@
 #ifndef   GQE_CORE_TYPES_HPP_INCLUDED
 #define   GQE_CORE_TYPES_HPP_INCLUDED
 
+#include <list>
 #include <map>
+#include <queue>
 #include <string>
 #include <vector>
 #include <GQE/Config.hpp>
+#include <SFML/Network.hpp>
 
 #define INFO_LEVEL   0  ///< Defines the value for GQE::SeverityInfo
 #define WARN_LEVEL   1  ///< Defines the value for GQE::SeverityWarning
@@ -35,13 +38,11 @@
 
 namespace GQE
 {
-  /// Enumeration of recommended Graphic Range
-  enum GraphicRange
-  {
-    LowRange  = 0, ///< Recommend using LowRange graphics (32x32 pixels)
-    MidRange  = 1, ///< Recommend using MidRange graphics (64x64 pixels)
-    HighRange = 2  ///< Recommend using HighRange graphics (128x128 pixels)
-  };
+  /// Default server port for most games
+  static const Uint16 DEFAULT_SERVER_PORT = 10101;
+
+  /// Default port for Directory protocol
+  static const Uint16 DIRECTORY_SERVER_PORT = 10202;
 
   /// Enumeration of AssetLoadTime
   enum AssetLoadTime
@@ -65,6 +66,14 @@ namespace GQE
     AssetLoadFromFile    = 1, ///< Load the asset from a file
     AssetLoadFromMemory  = 2, ///< Load the asset from memory
     AssetLoadFromNetwork = 3  ///< Load the asset from the network
+  };
+
+  /// Enumeration of recommended Graphic Range
+  enum GraphicRange
+  {
+    LowRange  = 0, ///< Recommend using LowRange graphics (32x32 pixels)
+    MidRange  = 1, ///< Recommend using MidRange graphics (64x64 pixels)
+    HighRange = 2  ///< Recommend using HighRange graphics (128x128 pixels)
   };
 
   /// Enumeration of all Network Protocols supported
@@ -141,9 +150,16 @@ namespace GQE
   class ScopeLogger;
   class StringLogger;
 
+  // Forward declare GQE core protocols provided
+  class DirectoryClient;
+  class DirectoryServer;
+
   // Forward declare GQE core states provided
   class MenuState;
   class SplashState;
+
+  /// Declare App ID typedef which is used for identifying each registered application
+  typedef Uint32 typeAppID;
 
   /// Declare Asset ID typedef which is used for identifying Asset objects
   typedef std::string typeAssetID;
@@ -153,6 +169,18 @@ namespace GQE
 
   /// Declare Event ID typedef which is used for identifying Event objects
   typedef std::string typeEventID;
+
+  /// Declare Net Alias typedef which is a text version for each client/server
+  typedef std::string typeNetAlias;
+
+  /// Declare Net ID typedef which is a unique ID assigned to each client/server
+  typedef Uint32 typeNetID;
+
+  /// Declare Net Label typedef which is a unique net packet message label
+  typedef Uint16 typeNetLabel;
+
+  /// Declare Net Sequence typedef which is a unique ID for each net message
+  typedef Uint32 typeNetSequence;
 
   /// Declare Property ID typedef which is used for identifying Properties
   typedef std::string typePropertyID;
@@ -165,6 +193,45 @@ namespace GQE
 
   /// Declare NameValueIter typedef which is used for name,value pair maps
   typedef std::map<const std::string, const std::string>::iterator typeNameValueIter;
+
+  /// Declare VersionInfo typedef structure to hold client and server version information
+  typedef struct
+  {
+    Uint8 major;              ///< Major version number
+    Uint8 minor;              ///< Minor version number
+    Uint8 patch;              ///< Patch version number
+  } typeVersionInfo;
+
+  /// Declare ServerInfo typedef structure to hold each registered server
+  typedef struct
+  {
+    typeNetAlias  alias;      ///< Server alias
+#if (SFML_VERSION_MAJOR < 2)
+    sf::IPAddress address;    ///< Server public address
+#else
+    sf::IpAddress address;    ///< Server public address
+#endif
+    Uint16 port;              ///< Server port
+    Uint32 maxClients;        ///< Maximum number of clients
+    Uint32 activeClients;     ///< Current number of active clients
+    typeVersionInfo version;  ///< Server version information
+  } typeServerInfo;
+
+  /// Declare ServerMap typedef which is used for maps of typeServerInfo structures
+  typedef std::map<const typeNetAlias, typeServerInfo> typeServerMap;
+  /// Declare ServerMapPair typedef which is used to add to the typeServerMap
+  typedef std::pair<const typeNetAlias, typeServerInfo> typeServerMapPair;
+  /// Declare ServerMapIter typedef which is used to process typeServerMap
+  typedef std::map<const typeNetAlias, typeServerInfo>::iterator typeServerMapIter;
+
+  /// Declare AppInfo typedef structure to hold information about an application
+  typedef struct
+  {
+    typeAppID   id;           ///< ID to uniquely identify this registerd application
+    std::string title;        ///< Title for this registered application
+    std::string description;  ///< Description for this registered application
+    std::string website;      ///< Website for this registered application
+  } typeAppInfo;
 } // namespace GQE
 #endif // GQE_CORE_TYPES_HPP_INCLUDED
 
