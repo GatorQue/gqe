@@ -55,7 +55,7 @@ namespace GQE
        * @param[in] theConnectTimeout to wait for connection to be established (TCP only)
        */
       INetClient(const typeNetAlias theClientAlias,
-                 const typeVersionInfo theVersionInfo,
+                 const VersionInfo theVersionInfo,
                  INetPool& theNetPool,
                  const NetProtocol theProtocol = NetUdp,
                  const Uint16 theServerPort = DEFAULT_SERVER_PORT,
@@ -173,7 +173,7 @@ namespace GQE
       /// The net alias to use for this client
       typeNetAlias mNetAlias;
       /// The version number to use for this client
-      typeVersionInfo mVersion;
+      VersionInfo mVersion;
       /// Network pool address to retrieve and return INetPacket derived classes from/to
       INetPool& mNetPool;
       /// Protocol flag for this NetServer

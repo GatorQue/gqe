@@ -20,6 +20,7 @@ set(INC
     ${INCROOT}/Core/classes/PropertyManager.hpp
     ${INCROOT}/Core/classes/StatManager.hpp
     ${INCROOT}/Core/classes/StateManager.hpp
+    ${INCROOT}/Core/classes/VersionInfo.hpp
     ${INCROOT}/Core/interfaces/IApp.hpp
     ${INCROOT}/Core/interfaces/IAssetHandler.hpp
     ${INCROOT}/Core/interfaces/IEvent.hpp
@@ -66,6 +67,7 @@ set(SRC
     ${SRCROOT}/Core/classes/PropertyManager.cpp
     ${SRCROOT}/Core/classes/StatManager.cpp
     ${SRCROOT}/Core/classes/StateManager.cpp
+    ${SRCROOT}/Core/classes/VersionInfo.cpp
     ${SRCROOT}/Core/interfaces/IApp.cpp
     ${SRCROOT}/Core/interfaces/IAssetHandler.cpp
     ${SRCROOT}/Core/interfaces/IEvent.cpp

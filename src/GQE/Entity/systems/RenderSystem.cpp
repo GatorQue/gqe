@@ -7,6 +7,7 @@
  * @date 20120616 - Adjustments for new PropertyManager class
  * @date 20120622 - Small adjustments to implementation and Handle methods
  * @date 20120623 - Improved documentation and adjusted some properties
+ * @date 20130202 - Fix SFML v1.6 compiler issues
  */
 #include <SFML/Graphics.hpp>
 #include <GQE/Entity/systems/RenderSystem.hpp>
@@ -80,15 +81,22 @@ namespace GQE
           sf::IntRect anRect=anEntity->mProperties.Get<sf::IntRect>("rSpriteRect");
           if(anRect.GetWidth()==0)
           {
-            anRect.right=anRect.left+anSprite.getTexture()->getSize().x;
+            anRect.Right=anRect.Left+anSprite.GetImage()->GetWidth();
           }
           if(anRect.GetHeight()==0)
           {
-            anRect.bottom=anRect.top+anSprite.getTexture()->getSize().y;
+            anRect.Bottom=anRect.Top+anSprite.GetImage()->GetHeight();
           }
           anSprite.SetSubRect(anRect);
           anSprite.SetCenter(anEntity->mProperties.Get<sf::Vector2f>("vOrigin"));
           mApp.mWindow.Draw(anSprite);
+          if(anShape!=NULL)
+          {
+            anShape->SetPosition(anSprite.GetPosition());
+            anShape->SetRotation(anSprite.GetRotation());
+            anShape->SetCenter(anSprite.GetCenter());
+            mApp.mWindow.Draw(*anShape);
+          }
 #else
           anSprite.setPosition(anEntity->mProperties.Get<sf::Vector2f>("vPosition"));
           anSprite.setRotation(anEntity->mProperties.Get<float>("fRotation"));
@@ -111,7 +119,6 @@ namespace GQE
             anShape->setOrigin(anSprite.getOrigin());
             mApp.mWindow.draw(*anShape);
           }
-          
 #endif
         } // if(anEntity->mProperties.Get<bool>("bVisible"))
       } // while(anQueue != anIter->second.end())

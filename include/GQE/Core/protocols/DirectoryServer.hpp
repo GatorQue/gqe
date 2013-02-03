@@ -35,7 +35,7 @@ namespace GQE
        * @param[in] theServerPort to listen on for incoming UDP clients
        */
       DirectoryServer(const typeNetAlias theNetAlias,
-                      const typeVersionInfo theVersionInfo,
+                      const VersionInfo theVersionInfo,
                       INetPool& theNetPool,
                       const NetProtocol theProtocol,
                       const Uint16 theServerPort = DIRECTORY_SERVER_PORT);

@@ -29,10 +29,10 @@ namespace GQE
        * @param[in] theServerPort to connect to
        */
       DirectoryClient(const typeNetAlias theNetAlias,
-                      const typeVersionInfo theClientVersion,
+                      const VersionInfo theVersionInfo,
                       const typeAppInfo theAppInfo,
                       INetPool& theNetPool,
-                      const NetProtocol theProtocol,
+                      const NetProtocol theProtocol = NetTcp,
                       const Uint16 theServerPort = DIRECTORY_SERVER_PORT);
 
       /**

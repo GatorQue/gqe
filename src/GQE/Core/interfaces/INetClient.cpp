@@ -23,7 +23,7 @@ namespace GQE
   const float INetClient::CONNECT_TIMEOUT_S = 30.0f;
 
   INetClient::INetClient(const typeNetAlias theNetAlias,
-                         const typeVersionInfo theVersionInfo,
+                         const VersionInfo theVersionInfo,
                          INetPool& theNetPool,
                          const NetProtocol theProtocol,
                          const Uint16 theServerPort,
@@ -59,9 +59,7 @@ namespace GQE
     mOffset(0)
   {
     ILOG() << "INetClient(" << theNetAlias << ","
-           << (Uint32)theVersionInfo.major << "."
-           << (Uint32)theVersionInfo.minor << "."
-           << (Uint32)theVersionInfo.patch << ","
+           << theVersionInfo.ToString() << ","
            << (theProtocol == NetTcp ? "TCP" : "UDP") << ","
 #if (SFML_VERSION_MAJOR < 2)
            << theServerPort << "," << theServerAddress.ToString() << ","
@@ -417,7 +415,7 @@ namespace GQE
   std::size_t INetClient::GetBroadcastSize(void) const
   {
     // Header + max clients + active clients + version info + string length + 1 character
-    return INetPacket::HEADER_SIZE_B + sizeof(Uint32)*3 + sizeof(Uint8)*4;
+    return INetPacket::HEADER_SIZE_B + sizeof(Uint32)*3 + sizeof(Uint16) + sizeof(Uint8)*3;
   }
 
   void INetClient::ProcessBroadcast(INetPacket* thePacket,
@@ -438,7 +436,7 @@ namespace GQE
     Uint32 anActiveClients = 0;
 
     // Version information for this server
-    typeVersionInfo anServerVersion;
+    VersionInfo anServerVersion;
 
     // NetAlias as provided by the server
     typeNetAlias anNetAlias;
@@ -450,9 +448,9 @@ namespace GQE
     *thePacket >> anActiveClients;
 
     // Retrieve the server version information
-    *thePacket >> anServerVersion.major;
-    *thePacket >> anServerVersion.minor;
-    *thePacket >> anServerVersion.patch;
+    *thePacket >> anServerVersion.mMajor;
+    *thePacket >> anServerVersion.mMinor;
+    *thePacket >> anServerVersion.mPatchBuild;
 
     // Retrieve the NetAlias as provided by the server
     *thePacket >> anNetAlias;
@@ -509,9 +507,9 @@ namespace GQE
       anResult->SetNetID(0);
 
       // Add the client version information to the connect message
-      *anResult << mVersion.major;
-      *anResult << mVersion.minor;
-      *anResult << mVersion.patch;
+      *anResult << mVersion.mMajor;
+      *anResult << mVersion.mMinor;
+      *anResult << mVersion.mPatchBuild;
 
       // Add the client net alias to the connect message
       *anResult << mNetAlias;

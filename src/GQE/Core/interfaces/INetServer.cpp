@@ -23,7 +23,7 @@ namespace GQE
   const float INetServer::MAX_RESEND_TIMEOUT_S = 15.0f;
 
   INetServer::INetServer(const typeNetAlias theNetAlias,
-                         const typeVersionInfo theVersionInfo,
+                         const VersionInfo theVersionInfo,
                          INetPool& theNetPool,
                          const NetProtocol theProtocol,
                          const Uint16 theServerPort,
@@ -48,9 +48,7 @@ namespace GQE
     mAliveMax(theAliveMax)
   {
     ILOG() << "INetServer(" << theNetAlias << ","
-           << (Uint32)theVersionInfo.major << "."
-           << (Uint32)theVersionInfo.minor << "."
-           << (Uint32)theVersionInfo.patch << ","
+           << theVersionInfo.ToString() << ","
            << (theProtocol == NetTcp ? "TCP" : "UDP") << ","
            << theServerPort << ","
            << theMaxClients << ","
@@ -486,9 +484,9 @@ namespace GQE
       *anResult << mActiveClients;
 
       // Add the version information next
-      *anResult << mVersion.major;
-      *anResult << mVersion.minor;
-      *anResult << mVersion.patch;
+      *anResult << mVersion.mMajor;
+      *anResult << mVersion.mMinor;
+      *anResult << mVersion.mPatchBuild;
 
       // Add the NetAlias value
       *anResult << mNetAlias;
@@ -506,7 +504,7 @@ namespace GQE
   std::size_t INetServer::GetConnectSize(void) const
   {
     // Header + version info + string length + 1 character
-    return INetPacket::HEADER_SIZE_B + sizeof(Uint8)*3 + sizeof(Uint32) + sizeof(Uint8);
+    return INetPacket::HEADER_SIZE_B + sizeof(Uint32) + sizeof(Uint16) + sizeof(Uint8)*3;
   }
 
   bool INetServer::ProcessConnect(INetPacket* thePacket,
@@ -533,9 +531,9 @@ namespace GQE
       if(anIterator != mClients.end())
       {
         // Retrieve the client version from the connect packet
-        *thePacket >> anIterator->second.version.major;
-        *thePacket >> anIterator->second.version.minor;
-        *thePacket >> anIterator->second.version.patch;
+        *thePacket >> anIterator->second.version.mMajor;
+        *thePacket >> anIterator->second.version.mMinor;
+        *thePacket >> anIterator->second.version.mPatchBuild;
 
         // Retrieve the Client ID from the connect packet
         *thePacket >> anIterator->second.alias;
@@ -1506,9 +1504,9 @@ namespace GQE
               typeNetID anSourceID = GetNetID();
 
               // Retrieve the client version from the connect packet
-              *anResult >> anClient.version.major;
-              *anResult >> anClient.version.minor;
-              *anResult >> anClient.version.patch;
+              *anResult >> anClient.version.mMajor;
+              *anResult >> anClient.version.mMinor;
+              *anResult >> anClient.version.mPatchBuild;
 
               // Retrieve the Client ID from the connect packet
               *anResult >> anClient.alias;

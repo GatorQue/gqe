@@ -40,6 +40,7 @@
 #include <GQE/Core/classes/PropertyManager.hpp>
 #include <GQE/Core/classes/StatManager.hpp>
 #include <GQE/Core/classes/StateManager.hpp>
+#include <GQE/Core/classes/VersionInfo.hpp>
 #include <GQE/Core/interfaces/IApp.hpp>
 #include <GQE/Core/interfaces/IAssetHandler.hpp>
 #include <GQE/Core/interfaces/IEvent.hpp>

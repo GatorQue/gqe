@@ -52,7 +52,7 @@ namespace GQE
        * @param[in] theAliveMax is the maximum missed time sync messages
        */
       INetServer(const typeNetAlias theNetAlias,
-                 const typeVersionInfo theVersionInfo,
+                 const VersionInfo theVersionInfo,
                  INetPool& theNetPool,
                  const NetProtocol theProtocol = NetUdp,
                  const Uint16 theServerPort = DEFAULT_SERVER_PORT,
@@ -124,7 +124,7 @@ namespace GQE
       /// The NetAlias (title) to use for this server
       typeNetAlias mNetAlias;
       /// Server Version information
-      typeVersionInfo mVersion;
+      VersionInfo mVersion;
       /// Network pool address to retrieve and return INetPacket derived classes from/to
       INetPool& mNetPool;
       /// Protocol flag for this NetServer
@@ -362,7 +362,7 @@ namespace GQE
         /// Net alias to identify this client
         typeNetAlias           alias;
         /// Client version info
-        typeVersionInfo        version;
+        VersionInfo            version;
         /// Port number to UDP client
         Uint16                 port;
         /// Alive confidence counter

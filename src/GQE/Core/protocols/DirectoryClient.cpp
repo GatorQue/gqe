@@ -16,7 +16,7 @@
 namespace GQE
 {
   DirectoryClient::DirectoryClient(const typeNetAlias theNetAlias,
-                                   const typeVersionInfo theVersionInfo,
+                                   const VersionInfo theVersionInfo,
                                    const typeAppInfo theAppInfo,
                                    INetPool& theNetPool,
                                    const NetProtocol theProtocol,
@@ -237,9 +237,9 @@ namespace GQE
       *anResult << theServerInfo.port;
       *anResult << theServerInfo.maxClients;
       *anResult << theServerInfo.activeClients;
-      *anResult << theServerInfo.version.major;
-      *anResult << theServerInfo.version.minor;
-      *anResult << theServerInfo.version.patch;
+      *anResult << theServerInfo.version.mMajor;
+      *anResult << theServerInfo.version.mMinor;
+      *anResult << theServerInfo.version.mPatchBuild;
       *anResult << theServerInfo.alias;
     }
 
@@ -319,7 +319,7 @@ namespace GQE
   std::size_t DirectoryClient::GetServerInfoSize(void) const
   {
     // Header + app ID + address + port + max and active clients + version + alias size and string
-    return INetPacket::HEADER_SIZE_B + sizeof(Uint32)*5 + sizeof(Uint16) + sizeof(Uint8)*4;
+    return INetPacket::HEADER_SIZE_B + sizeof(Uint32)*5 + sizeof(Uint16)*2 + sizeof(Uint8)*3;
   }
 
   void DirectoryClient::ProcessServerInfo(INetPacket* thePacket)
@@ -353,9 +353,9 @@ namespace GQE
       *thePacket >> anServerInfo.port;
       *thePacket >> anServerInfo.maxClients;
       *thePacket >> anServerInfo.activeClients;
-      *thePacket >> anServerInfo.version.major;
-      *thePacket >> anServerInfo.version.minor;
-      *thePacket >> anServerInfo.version.patch;
+      *thePacket >> anServerInfo.version.mMajor;
+      *thePacket >> anServerInfo.version.mMinor;
+      *thePacket >> anServerInfo.version.mPatchBuild;
       *thePacket >> anServerInfo.alias;
 
       // Now convert the integer address into an sf::IPAddress

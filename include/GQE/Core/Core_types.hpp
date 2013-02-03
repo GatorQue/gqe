@@ -28,6 +28,7 @@
 #include <string>
 #include <vector>
 #include <GQE/Config.hpp>
+#include <GQE/Core/classes/VersionInfo.hpp>
 #include <SFML/Network.hpp>
 
 #define INFO_LEVEL   0  ///< Defines the value for GQE::SeverityInfo
@@ -194,27 +195,19 @@ namespace GQE
   /// Declare NameValueIter typedef which is used for name,value pair maps
   typedef std::map<const std::string, const std::string>::iterator typeNameValueIter;
 
-  /// Declare VersionInfo typedef structure to hold client and server version information
-  typedef struct
-  {
-    Uint8 major;              ///< Major version number
-    Uint8 minor;              ///< Minor version number
-    Uint8 patch;              ///< Patch version number
-  } typeVersionInfo;
-
   /// Declare ServerInfo typedef structure to hold each registered server
   typedef struct
   {
-    typeNetAlias  alias;      ///< Server alias
+    typeNetAlias  alias;   ///< Server alias
 #if (SFML_VERSION_MAJOR < 2)
-    sf::IPAddress address;    ///< Server public address
+    sf::IPAddress address; ///< Server public address
 #else
-    sf::IpAddress address;    ///< Server public address
+    sf::IpAddress address; ///< Server public address
 #endif
-    Uint16 port;              ///< Server port
-    Uint32 maxClients;        ///< Maximum number of clients
-    Uint32 activeClients;     ///< Current number of active clients
-    typeVersionInfo version;  ///< Server version information
+    Uint16 port;           ///< Server port
+    Uint32 maxClients;     ///< Maximum number of clients
+    Uint32 activeClients;  ///< Current number of active clients
+    VersionInfo version;   ///< Server version information
   } typeServerInfo;
 
   /// Declare ServerMap typedef which is used for maps of typeServerInfo structures

@@ -17,7 +17,7 @@ namespace GQE
   const float DirectoryServer::DIRECTORY_TIME_SYNC_TIMEOUT_S = 60.0f;
 
   DirectoryServer::DirectoryServer(const typeNetAlias theNetAlias,
-                                   const typeVersionInfo theVersionInfo,
+                                   const VersionInfo theVersionInfo,
                                    INetPool& theNetPool,
                                    const NetProtocol theProtocol,
                                    const Uint16 theServerPort) :
@@ -434,7 +434,7 @@ namespace GQE
   std::size_t DirectoryServer::GetRegisterServerSize(void) const
   {
     // Header + app ID + address + port + max and active clients + version + alias size and string
-    return INetPacket::HEADER_SIZE_B + sizeof(Uint32)*5 + sizeof(Uint16) + sizeof(Uint8)*4;
+    return INetPacket::HEADER_SIZE_B + sizeof(Uint32)*5 + sizeof(Uint16)*2 + sizeof(Uint8)*3;
   }
 
   void DirectoryServer::ProcessRegisterServer(INetPacket* thePacket)
@@ -456,9 +456,9 @@ namespace GQE
     *thePacket >> anServerInfo.port;
     *thePacket >> anServerInfo.maxClients;
     *thePacket >> anServerInfo.activeClients;
-    *thePacket >> anServerInfo.version.major;
-    *thePacket >> anServerInfo.version.minor;
-    *thePacket >> anServerInfo.version.patch;
+    *thePacket >> anServerInfo.version.mMajor;
+    *thePacket >> anServerInfo.version.mMinor;
+    *thePacket >> anServerInfo.version.mPatchBuild;
     *thePacket >> anServerInfo.alias;
 
     // Now convert the integer address into an sf::IPAddress
@@ -572,9 +572,9 @@ namespace GQE
       *anResult << theServerInfo.activeClients;
 
       // Add the server version information next
-      *anResult << theServerInfo.version.major;
-      *anResult << theServerInfo.version.minor;
-      *anResult << theServerInfo.version.patch;
+      *anResult << theServerInfo.version.mMajor;
+      *anResult << theServerInfo.version.mMinor;
+      *anResult << theServerInfo.version.mPatchBuild;
 
       // Add the server alias next
       *anResult << theServerInfo.alias;
