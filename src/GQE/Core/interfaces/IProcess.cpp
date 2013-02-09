@@ -6,6 +6,7 @@
  * @author Ryan Lindeman
  * @date 20121124 - Initial Release
  * @date 20130112 - Fix warnings in VS2010 using this pointer by inheriting for SFML v1.6
+ * @date 20130208 - Fix warnings in VS2010 using this pointer for SFML v2.0
  */
 
 #include <GQE/Core/interfaces/IProcess.hpp>
@@ -18,9 +19,14 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
     // sf::Thread is inherited so Run method will be called using SFML v1.6
 #else
-    ,mThread(&IProcess::Process, this)
+    ,mThread(NULL)
 #endif
   {
+#if (SFML_VERSION_MAJOR < 2)
+    // Nothing here for SFML 1.6
+#else
+    mThread = new(std::nothrow) sf::Thread(&IProcess::Process, this);
+#endif
   }
 
   IProcess::~IProcess()
@@ -29,6 +35,11 @@ namespace GQE
     {
       Stop();
     }
+#if (SFML_VERSION_MAJOR < 2)
+    // Nothing here for SFML 1.6
+#else
+    delete mThread;
+#endif
   }
 
   bool IProcess::IsRunning(void) const
@@ -52,7 +63,7 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
       Launch();
 #else
-      mThread.launch();
+      mThread->launch();
 #endif
     }
     else
@@ -76,7 +87,7 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
       Wait();
 #else
-      mThread.wait();
+      mThread->wait();
 #endif
     }
     else

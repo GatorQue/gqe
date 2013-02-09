@@ -7,6 +7,7 @@
  * @author Ryan Lindeman
  * @date 20130104 - Initial Release
  * @date 20130111 - Generalized VerifyInternal, ProcessInternal, and better sequence number support
+ * @date 20130208 - Fix SFML 2.0 issues
  */
 
 #include <SFML/System.hpp>
@@ -804,7 +805,7 @@ namespace GQE
 #if (SFML_VERSION_MAJOR < 2)
     mServerAddress = sf::IPAddress::GetPublicAddress(60.0f);
 #else
-    mServerAddress = sf::IpAddress::getPublicAddress(60.0f);
+    mServerAddress = sf::IpAddress::getPublicAddress(sf::seconds(60.0f));
 #endif
 
     // Which process loop we run depends on the Protocol specified

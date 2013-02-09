@@ -7,6 +7,7 @@
  * @author Ryan Lindeman
  * @date 20121206 - Initial Release
  * @date 20130111 - Generalized VerifyInternal, ProcessInternal, and better sequence number support
+ * @date 20130208 - Fix SFML 2.0 issues
  */
 #include <SFML/System.hpp>
 #include <GQE/Core/interfaces/INetClient.hpp>
@@ -870,7 +871,11 @@ namespace GQE
 #endif
       {
         // Broadcast address in use now? then send Broadcast message instead
-        if(mServerAddress == 0xffffffff)
+#if (SFML_VERSION_MAJOR < 2)
+        if(mServerAddress.ToInteger() == 0xffffffff)
+#else
+        if(mServerAddress.toInteger() == 0xffffffff)
+#endif
         {
           // Send Broadcast message to all servers
           SendPacket(CreateBroadcast());
@@ -1181,7 +1186,7 @@ namespace GQE
 
       // Perform a quick address check for UDP protocols
       anAddressCheck = (anPort == mServerPort &&
-                        (mServerAddress.toInteger() == sf::IpAddress::Broadcast ||
+                        (mServerAddress == sf::IpAddress::Broadcast ||
                          anAddress.toInteger() == mServerAddress.toInteger()));
 #endif
     }

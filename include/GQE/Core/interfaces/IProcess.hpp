@@ -6,6 +6,7 @@
  * @author Ryan Lindeman
  * @date 20121124 - Initial Release
  * @date 20130112 - Fix warnings in VS2010 using this pointer by inheriting for SFML v1.6
+ * @date 20130208 - Fix warnings in VS2010 using this pointer for SFML v2.0
  */
 #ifndef IPROCESS_HPP_INCLUDED
 #define IPROCESS_HPP_INCLUDED
@@ -95,7 +96,7 @@ namespace GQE
       // Variables
       ///////////////////////////////////////////////////////////////////////////
       /// Thread object for starting/stopping thread
-      sf::Thread mThread;
+      sf::Thread* mThread;
 #endif
   }; // IProcess class
 } // namespace GQE

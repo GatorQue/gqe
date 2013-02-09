@@ -6,6 +6,7 @@
  * @file src/GQE/Core/protocols/DirectoryServer.cpp
  * @author Ryan Lindeman
  * @date 20130112 - Initial Release
+ * @date 20130208 - Fix SFML 2.0 issues
  */
 #include <GQE/Core/protocols/DirectoryServer.hpp>
 #include <GQE/Core/interfaces/INetPacket.hpp>
@@ -462,7 +463,11 @@ namespace GQE
     *thePacket >> anServerInfo.alias;
 
     // Now convert the integer address into an sf::IPAddress
+#if (SFML_VERSION_MAJOR < 2)
     anServerInfo.address = anServerAddress;
+#else
+    anServerInfo.address = sf::IpAddress(anServerAddress);
+#endif
 
     // Now attempt to register this server
     RegisterServer(anAppID, anServerInfo);
