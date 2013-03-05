@@ -44,14 +44,14 @@ namespace GQE
        * chance to handle theEvent specified.
        * @param[in] theEvent to handle
        */
-      virtual void HandleEvents(sf::Event theEvent);
+      virtual void EntityHandleEvents(IEntity* theEntity,sf::Event theEvent);
 
       /**
        * UpdateFixed is called a specific number of times every game loop and
        * this method will allow each Instance class a chance to have its
        * UpdateFixed method called for each game loop iteration.
        */
-      virtual void UpdateFixed(void);
+      virtual void EntityUpdateFixed(IEntity* theEntity);
 
       /**
        * UpdateVariable is called every time the game loop draws a frame and
@@ -59,7 +59,7 @@ namespace GQE
        * use with equations that use time as a variable. (e.g. physics velocity
        * and acceleration equations).
        */
-      virtual void UpdateVariable(float theElapsedTime);
+      virtual void EntityUpdateVariable(IEntity* theEntity,float theElapsedTime);
 
       /**
        * Draw is called during the game loop after events and the fixed update
@@ -68,7 +68,7 @@ namespace GQE
        * EntityManager a chance to call the Draw method for each Instance
        * class.
        */
-      virtual void Draw(void);
+      virtual void EntityDraw(IEntity* theEntity);
 
     protected:
       /**
