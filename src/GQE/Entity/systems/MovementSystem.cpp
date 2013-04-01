@@ -31,7 +31,7 @@ namespace GQE
     theEntity->mProperties.Add<float>("fRotationalVelocity",0);
     theEntity->mProperties.Add<float>("fRotationalAcceleration",0);
     theEntity->mProperties.Add<bool>("bFixedMovement",true);
-    theEntity->mProperties.Add<bool>("bScreenWrap",true);
+    theEntity->mProperties.Add<bool>("bScreenWrap",false);
     theEntity->mProperties.Add<bool>("bMovable",true);
     theEntity->mProperties.Add<sf::IntRect>("bBoundingBox",sf::IntRect(0,0,0,0));
     

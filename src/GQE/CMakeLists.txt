@@ -17,6 +17,7 @@ add_definitions(-DGQE_EXPORTS)
 # add the modules subdirectories
 add_subdirectory(Core)
 add_subdirectory(Entity)
+add_subdirectory(Script)
 
 # install Config header include file
 install(FILES ${INCROOT}/Config.hpp
