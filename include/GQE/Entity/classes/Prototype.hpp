@@ -71,6 +71,10 @@ namespace GQE
        * @return a pointer to the Instance class created.
        */
       Instance* MakeInstance(void);
+
+      virtual void Write(std::fstream& theFileStream);
+
+      virtual void Read(std::fstream& theFileStream);
     private:
       // Variables
       ///////////////////////////////////////////////////////////////////////////

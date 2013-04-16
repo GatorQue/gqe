@@ -95,6 +95,9 @@ namespace GQE
        */
       void DropSystem(const typeSystemID theSystemID);
 
+      virtual void Write(std::fstream& theFileStream);
+
+      virtual void Read(std::fstream& theFileStream);
     protected:
       // Variables
       ///////////////////////////////////////////////////////////////////////////

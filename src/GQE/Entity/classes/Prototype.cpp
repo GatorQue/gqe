@@ -174,6 +174,14 @@ namespace GQE
     // Now clear our Cleanup list
     mCleanup.clear();
   }
+  void Prototype::Write(std::fstream& theFileStream)
+  {
+
+  }
+  void Prototype::Read(std::fstream& theFileStream)
+  {
+
+  }
 } // namespace GQE
 
 /**
