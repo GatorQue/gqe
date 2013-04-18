@@ -15,6 +15,7 @@ set(INC
     ${INCROOT}/Entity/interfaces/IEntity.hpp
     ${INCROOT}/Entity/interfaces/ISystem.hpp
     ${INCROOT}/Entity/interfaces/ICollisionSystem.hpp
+	${INCROOT}/Entity/interfaces/ISystemManager.hpp
     ${INCROOT}/Entity/Entity_types.hpp
 )
 
@@ -32,6 +33,7 @@ set(SRC
     ${SRCROOT}/Entity/interfaces/IEntity.cpp
     ${SRCROOT}/Entity/interfaces/ISystem.cpp
     ${SRCROOT}/Entity/interfaces/ICollisionSystem.cpp
+	${SRCROOT}/Entity/interfaces/ISystemManager.cpp
     ${SRCROOT}/Entity/Entity_types.cpp
 )
 
