@@ -112,18 +112,26 @@ namespace GQE
         sf::RenderStates anRenderStates=sf::RenderStates::Default;
         anRenderStates.shader=anShader;
         mApp.mWindow.draw(anSprite,anRenderStates);
+        if(anShape!=NULL)
+        {
+          anShape->setPosition(anSprite.getPosition());
+          anShape->setRotation(anSprite.getRotation());
+          anShape->setOrigin(anSprite.getOrigin());
+          mApp.mWindow.draw(*anShape,anRenderStates);
+        }
       }
       else
       {
         mApp.mWindow.draw(anSprite);
+        if(anShape!=NULL)
+        {
+          anShape->setPosition(anSprite.getPosition());
+          anShape->setRotation(anSprite.getRotation());
+          anShape->setOrigin(anSprite.getOrigin());
+          mApp.mWindow.draw(*anShape);
+        }
       }
-      if(anShape!=NULL)
-      {
-        anShape->setPosition(anSprite.getPosition());
-        anShape->setRotation(anSprite.getRotation());
-        anShape->setOrigin(anSprite.getOrigin());
-        mApp.mWindow.draw(*anShape);
-      }
+
 #endif
     } // if(theEntity->mProperties.Get<bool>("bVisible"))
   }
