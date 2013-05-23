@@ -21,6 +21,7 @@ set(INC
     ${INCROOT}/Core/classes/StatManager.hpp
     ${INCROOT}/Core/classes/StateManager.hpp
     ${INCROOT}/Core/classes/VersionInfo.hpp
+	${INCROOT}/Core/classes/ReferenceCount.hpp
     ${INCROOT}/Core/interfaces/IApp.hpp
     ${INCROOT}/Core/interfaces/IAssetHandler.hpp
     ${INCROOT}/Core/interfaces/IEvent.hpp
@@ -35,6 +36,7 @@ set(INC
     ${INCROOT}/Core/interfaces/TAsset.hpp
     ${INCROOT}/Core/interfaces/TAssetHandler.hpp
     ${INCROOT}/Core/interfaces/TEvent.hpp
+	${INCROOT}/Core/interfaces/TSmartPointer.hpp
     ${INCROOT}/Core/interfaces/TProperty.hpp
     ${INCROOT}/Core/loggers/Log_macros.hpp
     ${INCROOT}/Core/loggers/FatalLogger.hpp
@@ -68,6 +70,7 @@ set(SRC
     ${SRCROOT}/Core/classes/StatManager.cpp
     ${SRCROOT}/Core/classes/StateManager.cpp
     ${SRCROOT}/Core/classes/VersionInfo.cpp
+	${SRCROOT}/Core/classes/ReferenceCount.cpp
     ${SRCROOT}/Core/interfaces/IApp.cpp
     ${SRCROOT}/Core/interfaces/IAssetHandler.cpp
     ${SRCROOT}/Core/interfaces/IEvent.cpp
