@@ -605,9 +605,24 @@ namespace GQE
         anResult.z = anZ;
       }
     }
-
     // Return the result found or theDefault assigned above
     return anResult;
+  }
+
+  std::string StringToLowercase(std::string theString)
+  {
+    std::string anLowerString=theString;
+    //from STL's algorithm header
+    std::transform(anLowerString.begin(), anLowerString.end(), anLowerString.begin(), ::tolower);
+    return anLowerString;
+  }
+
+  std::string StringToUppercase(std::string theString)
+  {
+    std::string anLowerString=theString;
+    //from STL's algorithm header
+    std::transform(anLowerString.begin(), anLowerString.end(), anLowerString.begin(), ::toupper);
+    return anLowerString;
   }
 } // namespace GQE
 

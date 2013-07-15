@@ -32,6 +32,7 @@ namespace GQE
     theEntity->mProperties.Add<sf::Vector2f>("vScale",sf::Vector2f(1,1));
     theEntity->mProperties.Add<sf::Vector2f>("vOrigin",sf::Vector2f(0,0));
     theEntity->mProperties.Add<sf::Vector2f>("vPosition",sf::Vector2f(0,0));
+    theEntity->mProperties.Add<sf::Color>("cColor",sf::Color(255,255,255,255));
     theEntity->mProperties.Add<float>("fRotation", 0.0f);
     theEntity->mProperties.Add<bool>("bVisible", true);
     theEntity->mProperties.Add<sf::Shader*>("Shader",NULL);
@@ -88,6 +89,7 @@ namespace GQE
 #else
       anSprite.setPosition(theEntity->mProperties.Get<sf::Vector2f>("vPosition"));
       anSprite.setRotation(theEntity->mProperties.Get<float>("fRotation"));
+      anSprite.setColor(theEntity->mProperties.Get<sf::Color>("cColor"));
       sf::IntRect anRect=theEntity->mProperties.Get<sf::IntRect>("rSpriteRect");
       if(anRect.width==0)
       {

@@ -328,7 +328,19 @@ namespace GQE
    * @return the color object created with the values obtained
    */
   sf::Vector3i GQE_API ParseVector3i(const std::string theValue, const sf::Vector3i theDefault);
+  /** 
+  * StringToLower will convert theString to all lowercase letters.
+  * @param[in] theString is the string to change case.
+  * @return theString with all lowercase.
+  **/
+  std::string GQE_API StringToLowercase(std::string theString);
 
+  /** 
+  * StringToLower will convert theString to all uppercase letters.
+  * @param[in] theString is the string to change case.
+  * @return theString with all uppercase.
+  **/
+  std::string GQE_API StringToUppercase(std::string theString);
 } // namespace GQE
 
 #endif // CORE_STRING_UTIL_HPP_INCLUDED

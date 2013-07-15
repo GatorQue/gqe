@@ -156,6 +156,9 @@ namespace GQE
        * @param[in] thePropertyManager to clone into ourselves
        */
       void Clone(const PropertyManager& thePropertyManager);
+
+      void ParseProperty(std::string thePropertyName, std::string thePropertyValue);
+      void ParseProperty(std::string thePropertyName, std::string thePropertyValue, std::string thePropertyType);
     protected:
 
     private:
