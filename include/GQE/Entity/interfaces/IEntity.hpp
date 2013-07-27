@@ -21,7 +21,7 @@
 #include <SFML/Window/Event.hpp>
 #include <GQE/Core/classes/PropertyManager.hpp>
 #include <GQE/Entity/Entity_types.hpp>
-
+#include <GQE/Core/classes/EventManager.hpp>
 namespace GQE
 {
   /// The IEntity base class to be managed by the EntityManager class
@@ -32,6 +32,7 @@ namespace GQE
       ///////////////////////////////////////////////////////////////////////////
       PropertyManager mProperties;
 
+	  EventManager mEventManager;
       /**
        * IEntity default constructor
        */
