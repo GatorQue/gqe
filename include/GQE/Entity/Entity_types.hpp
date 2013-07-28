@@ -51,6 +51,8 @@ namespace GQE
   {
     sf::IntRect IntersectRect;
     bool Collision;
+		GQE::IEntity* MovingEntity;
+		GQE::IEntity* OtherEntity;
   };
 }
 #endif // ENTITY_TYPES_HPP_INCLUDED

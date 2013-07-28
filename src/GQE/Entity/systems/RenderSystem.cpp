@@ -89,6 +89,7 @@ namespace GQE
 #else
       anSprite.setPosition(theEntity->mProperties.Get<sf::Vector2f>("vPosition"));
       anSprite.setRotation(theEntity->mProperties.Get<float>("fRotation"));
+			anSprite.setScale(theEntity->mProperties.Get<sf::Vector2f>("vScale"));
       anSprite.setColor(theEntity->mProperties.Get<sf::Color>("cColor"));
       sf::IntRect anRect=theEntity->mProperties.Get<sf::IntRect>("rSpriteRect");
       if(anRect.width==0)

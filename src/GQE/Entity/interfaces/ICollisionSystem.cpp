@@ -93,6 +93,8 @@ namespace GQE
               typeCollisionData anData;
               anData.Collision = true;
               anData.IntersectRect = anIntersectRect;
+							anData.MovingEntity = anMovableEntity;
+							anData.OtherEntity = anEntity;
               anMovableEntity->mProperties.Set<typeCollisionData>("CollisionData",anData);
               anEntity->mProperties.Set<typeCollisionData>("CollisionData",anData);
               EntityCollision(anMovableEntity,anEntity,anData);
