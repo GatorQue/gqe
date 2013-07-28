@@ -26,7 +26,7 @@ namespace GQE
     theEntity->mProperties.Add<typeEventID>("sCollisionReaction","");
     theEntity->mProperties.Add<typeEventID>("sCollisionEffect","");
     theEntity->mProperties.Add<typeCollisionData>("CollisionData",typeCollisionData());
-    theEntity->mProperties.Add<bool>("dDebugDraw",false);
+    theEntity->mProperties.Add<bool>("bDebugDraw",false);
   }
 
   void ICollisionSystem::HandleInit(IEntity* theEntity)
@@ -166,6 +166,7 @@ namespace GQE
           mApp.mWindow.Draw(anShape);
 #else
           sf::RectangleShape anShape(sf::Vector2f(anBoundingBox.width,anBoundingBox.height));
+					anShape.setOrigin(anEntity->mProperties.Get<sf::Vector2f>("vOrgigin"));
           anShape.setPosition(anBoundingBox.left+anPosition.x,anBoundingBox.top+anPosition.y);
           mApp.mWindow.draw(anShape);
 #endif

@@ -49,8 +49,8 @@ namespace GQE
 
   struct typeCollisionData
   {
-    sf::IntRect IntersectRect;
-    bool Collision;
+		sf::IntRect IntersectRect;
+		bool Collision;
 		GQE::IEntity* MovingEntity;
 		GQE::IEntity* OtherEntity;
   };
