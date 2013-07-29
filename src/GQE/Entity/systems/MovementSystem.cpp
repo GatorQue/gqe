@@ -28,13 +28,13 @@ namespace GQE
   {
     theEntity->mProperties.Add<sf::Vector2f>("vVelocity",sf::Vector2f(0,0));
     theEntity->mProperties.Add<sf::Vector2f>("vAcceleration",sf::Vector2f(0,0));
+		theEntity->mProperties.Add<sf::Vector2f>("vDrag",sf::Vector2f(0,0));
     theEntity->mProperties.Add<float>("fRotationalVelocity",0);
     theEntity->mProperties.Add<float>("fRotationalAcceleration",0);
     theEntity->mProperties.Add<bool>("bFixedMovement",true);
     theEntity->mProperties.Add<bool>("bScreenWrap",false);
     theEntity->mProperties.Add<bool>("bMovable",true);
-    theEntity->mProperties.Add<sf::IntRect>("bBoundingBox",sf::IntRect(0,0,0,0));
-    
+		
   }
 
   void MovementSystem::HandleInit(IEntity* theEntity)
@@ -63,7 +63,23 @@ namespace GQE
           // Now update the current movement properties
           anVelocity += anAccelleration;
           anPosition += anVelocity;
-          anRotationalVelocity += anRotationalAccelleration;
+					if(anVelocity.x>0)
+					{
+						anVelocity.x-=theEntity->mProperties.Get<sf::Vector2f>("vDrag").x;
+					}
+					else
+					{
+						anVelocity.x+=theEntity->mProperties.Get<sf::Vector2f>("vDrag").x;
+					}
+					if(anVelocity.y>0)
+					{
+						anVelocity.y-=theEntity->mProperties.Get<sf::Vector2f>("vDrag").y;
+					}
+					else
+					{
+						anVelocity.y+=theEntity->mProperties.Get<sf::Vector2f>("vDrag").y;
+					}
+					anRotationalVelocity += anRotationalAccelleration;
           anRotation += anRotationalVelocity;
 
           // If ScreenWrap is true, account for screen wrapping
@@ -80,6 +96,8 @@ namespace GQE
           // Now update the RenderSystem properties of this IEntity class
           theEntity->mProperties.Set<sf::Vector2f>("vPosition",anPosition);
           theEntity->mProperties.Set<float>("fRotation",anRotation);
+					//reset acceleration so its only applyed when needed.
+					theEntity->mProperties.Set<sf::Vector2f>("vAcceleration",sf::Vector2f(0,0));
         } //if(theEntity->mProperties.Get<bool>("bFixedMovement"))
   }
   void MovementSystem::EntityUpdateVariable(IEntity* theEntity,float theElapsedTime)

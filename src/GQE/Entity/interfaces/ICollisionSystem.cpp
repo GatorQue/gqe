@@ -158,6 +158,9 @@ namespace GQE
         {
           sf::IntRect anBoundingBox = anEntity->mProperties.Get<sf::IntRect>("rBoundingBox");
           sf::Vector2f anPosition = anEntity->mProperties.Get<sf::Vector2f>("vPosition");
+					sf::Vector2f anOrigin = anEntity->mProperties.Get<sf::Vector2f>("vOrigin");
+					sf::Vector2f anScale = anEntity->mProperties.Get<sf::Vector2f>("vScale");
+					anPosition-=anEntity->mProperties.Get<sf::Vector2f>("vOrigin");
 #if (SFML_VERSION_MAJOR < 2)
           sf::Shape anShape = sf::Shape::Rectangle(sf::Vector2f(0,0),
                                                    sf::Vector2f(anBoundingBox.GetWidth(),anBoundingBox.GetHeight()),
@@ -166,8 +169,9 @@ namespace GQE
           mApp.mWindow.Draw(anShape);
 #else
           sf::RectangleShape anShape(sf::Vector2f(anBoundingBox.width,anBoundingBox.height));
-					anShape.setOrigin(anEntity->mProperties.Get<sf::Vector2f>("vOrgigin"));
-          anShape.setPosition(anBoundingBox.left+anPosition.x,anBoundingBox.top+anPosition.y);
+          anShape.setPosition(anPosition.x,anPosition.y);
+					//anShape.setOrigin(anOrigin);
+					anShape.setScale(anScale);
           mApp.mWindow.draw(anShape);
 #endif
         } //if(anEntity->mProperties.Get<bool>("bFixedMovement") == false)
