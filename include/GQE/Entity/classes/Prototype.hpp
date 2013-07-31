@@ -71,7 +71,14 @@ namespace GQE
        * @return a pointer to the Instance class created.
        */
       Instance* MakeInstance(void);
-
+			/**
+       * MakeInstance is responsible for creating an Instance of this Prototype
+       * class using the MakeClone methods provided by the IComponent and
+       * IProperty derived classes.
+			 * @param[in] thePropertyManager is added to the instances properties after it is created.
+       * @return a pointer to the Instance class created.
+       */
+			Instance* MakeInstance(PropertyManager& theProperties);
       virtual void Write(std::fstream& theFileStream);
 
       virtual void Read(std::fstream& theFileStream);

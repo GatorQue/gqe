@@ -26,16 +26,18 @@ namespace GQE
 
   void RenderSystem::AddProperties(IEntity* theEntity)
   {
+		theEntity->mProperties.Add<GQE::Uint8>("RenderFlags",RENDER_SPRITE);
     theEntity->mProperties.Add<sf::Sprite>("Sprite",sf::Sprite());
-    theEntity->mProperties.Add<sf::Shape*>("Shape",NULL);
-    theEntity->mProperties.Add<sf::IntRect>("rSpriteRect",sf::IntRect(0,0,0,0));
+		theEntity->mProperties.Add<sf::RectangleShape>("RectangleShape",sf::RectangleShape());
+		theEntity->mProperties.Add<sf::VertexArray>("VertexArray",sf::VertexArray());
+		theEntity->mProperties.Add<sf::IntRect>("rSpriteRect",sf::IntRect(0,0,0,0));
     theEntity->mProperties.Add<sf::Vector2f>("vScale",sf::Vector2f(1,1));
     theEntity->mProperties.Add<sf::Vector2f>("vOrigin",sf::Vector2f(0,0));
     theEntity->mProperties.Add<sf::Vector2f>("vPosition",sf::Vector2f(0,0));
     theEntity->mProperties.Add<sf::Color>("cColor",sf::Color(255,255,255,255));
     theEntity->mProperties.Add<float>("fRotation", 0.0f);
     theEntity->mProperties.Add<bool>("bVisible", true);
-    theEntity->mProperties.Add<sf::Shader*>("Shader",NULL);
+    
   }
 
   void RenderSystem::HandleInit(IEntity* theEntity)
@@ -49,6 +51,7 @@ namespace GQE
 
   void RenderSystem::EntityUpdateFixed(IEntity* theEntity)
   {
+
   }
 
   void RenderSystem::EntityUpdateVariable(IEntity* theEntity,float theElapsedTime)
@@ -57,86 +60,66 @@ namespace GQE
 
   void RenderSystem::EntityDraw(IEntity* theEntity)
   {
-    // See if this IEntity is visible, if so draw it now
-    if(theEntity->mProperties.Get<bool>("bVisible"))
-    {
-      // Get the other RenderSystem properties now
-      sf::Sprite anSprite=theEntity->mProperties.Get<sf::Sprite>("Sprite");
-      sf::Shape* anShape=theEntity->mProperties.Get<sf::Shape*>("Shape");
-      sf::Shader* anShader=theEntity->mProperties.Get<sf::Shader*>("Shader");
-#if SFML_VERSION_MAJOR<2
-      anSprite.SetPosition(theEntity->mProperties.Get<sf::Vector2f>("vPosition"));
-      anSprite.SetRotation(theEntity->mProperties.Get<float>("fRotation"));
-      sf::IntRect anRect=theEntity->mProperties.Get<sf::IntRect>("rSpriteRect");
-      if(anRect.GetWidth()==0)
-      {
-        anRect.Right=anRect.Left+anSprite.GetImage()->GetWidth();
-      }
-      if(anRect.GetHeight()==0)
-      {
-        anRect.Bottom=anRect.Top+anSprite.GetImage()->GetHeight();
-      }
-      anSprite.SetSubRect(anRect);
-      anSprite.SetCenter(theEntity->mProperties.Get<sf::Vector2f>("vOrigin"));
-      mApp.mWindow.Draw(anSprite);
-      if(anShape!=NULL)
-      {
-        anShape->SetPosition(anSprite.GetPosition());
-        anShape->SetRotation(anSprite.GetRotation());
-        anShape->SetCenter(anSprite.GetCenter());
-        mApp.mWindow.Draw(*anShape);
-      }
-#else
-      anSprite.setPosition(theEntity->mProperties.Get<sf::Vector2f>("vPosition"));
-      anSprite.setRotation(theEntity->mProperties.Get<float>("fRotation"));
-			anSprite.setScale(theEntity->mProperties.Get<sf::Vector2f>("vScale"));
-      anSprite.setColor(theEntity->mProperties.Get<sf::Color>("cColor"));
-      sf::IntRect anRect=theEntity->mProperties.Get<sf::IntRect>("rSpriteRect");
-      if(anRect.width==0)
-      {
-        const sf::Texture* anTexture=anSprite.getTexture();
-        if(anTexture!=NULL)
-        {
-          anRect.width=anTexture->getSize().x;
-        }
-      }
-      if(anRect.height==0)
-      {
-        const sf::Texture* anTexture=anSprite.getTexture();
-        if(anTexture!=NULL)
-        {
-          anRect.height=anTexture->getSize().y;
-        }
-      }
-      anSprite.setTextureRect(anRect);
-      anSprite.setOrigin(theEntity->mProperties.Get<sf::Vector2f>("vOrigin"));
-      if(anShader!=NULL)
-      {
-        sf::RenderStates anRenderStates=sf::RenderStates::Default;
-        anRenderStates.shader=anShader;
-        mApp.mWindow.draw(anSprite,anRenderStates);
-        if(anShape!=NULL)
-        {
-          anShape->setPosition(anSprite.getPosition());
-          anShape->setRotation(anSprite.getRotation());
-          anShape->setOrigin(anSprite.getOrigin());
-          mApp.mWindow.draw(*anShape,anRenderStates);
-        }
-      }
-      else
-      {
-        mApp.mWindow.draw(anSprite);
-        if(anShape!=NULL)
-        {
-          anShape->setPosition(anSprite.getPosition());
-          anShape->setRotation(anSprite.getRotation());
-          anShape->setOrigin(anSprite.getOrigin());
-          mApp.mWindow.draw(*anShape);
-        }
-      }
+		//This code renders offscreen entitys invisible.
+		if(theEntity!=NULL)
+		{
+			const sf::View& anCurrentView=mApp.mWindow.getView();
+			sf::Vector2f anViewCenter=anCurrentView.getCenter();
+			sf::Vector2f anViewSize=anCurrentView.getSize();
+			sf::FloatRect anViewRect(anViewCenter,anViewSize);
+			// See if this IEntity is visible, if so draw it now
+			if(theEntity->mProperties.Get<bool>("bVisible"))
+			{
+				GQE::Uint8 anRenderFlags=theEntity->mProperties.Get<GQE::Uint8>("RenderFlags");
+				// Get the other RenderSystem properties now
+				sf::Sprite anSprite=theEntity->mProperties.Get<sf::Sprite>("Sprite");
+				sf::RectangleShape anShape=theEntity->mProperties.Get<sf::RectangleShape>("RectangleShape");
+				sf::VertexArray anVertexArray=theEntity->mProperties.Get<sf::VertexArray>("VertexArray");
+				anSprite.setPosition(theEntity->mProperties.Get<sf::Vector2f>("vPosition"));
+				anSprite.setRotation(theEntity->mProperties.Get<float>("fRotation"));
+				anSprite.setScale(theEntity->mProperties.Get<sf::Vector2f>("vScale"));
+				anSprite.setColor(theEntity->mProperties.Get<sf::Color>("cColor"));
+				sf::IntRect anRect=theEntity->mProperties.Get<sf::IntRect>("rSpriteRect");
+				if(anRect.width==0)
+				{
+					const sf::Texture* anTexture=anSprite.getTexture();
+					if(anTexture!=NULL)
+					{
+						anRect.width=anTexture->getSize().x;
+					}
+				}
+				if(anRect.height==0)
+				{
+					const sf::Texture* anTexture=anSprite.getTexture();
+					if(anTexture!=NULL)
+					{
+						anRect.height=anTexture->getSize().y;
+					}
+				}
+				anSprite.setTextureRect(anRect);
+				anSprite.setOrigin(theEntity->mProperties.Get<sf::Vector2f>("vOrigin"));
+				if(anViewRect.intersects(anSprite.getGlobalBounds()))
+				{
+					if(anRenderFlags=anRenderFlags & RENDER_SPRITE)
+					{
+						mApp.mWindow.draw(anSprite);
+					}
+					if(anRenderFlags=anRenderFlags & RENDER_RECTANGLE && anShape.getSize().x!=0 && anShape.getSize().y!=0)
+					{
+						anShape.setPosition(anSprite.getPosition());
+						anShape.setRotation(anSprite.getRotation());
+						anShape.setOrigin(anSprite.getOrigin());
+						mApp.mWindow.draw(anShape);
+					}
 
-#endif
-    } // if(theEntity->mProperties.Get<bool>("bVisible"))
+					if(anRenderFlags=anRenderFlags & RENDER_VERTEX_ARRAY && anVertexArray.getVertexCount()>0)
+					{
+						sf::RenderStates anState(anSprite.getTexture());
+						mApp.mWindow.draw(anVertexArray,anState);
+					}
+				}
+			} // if(theEntity->mProperties.Get<bool>("bVisible"))
+		}
   }
 
   void RenderSystem::HandleCleanup(IEntity* theEntity)

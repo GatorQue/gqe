@@ -21,6 +21,13 @@ namespace GQE
   class GQE_API RenderSystem : public ISystem
   {
     public:
+			enum RENDER_FLAGS
+			{
+				RENDER_NONE=0x00,
+				RENDER_SPRITE=0x01,
+				RENDER_RECTANGLE=0x02,
+				RENDER_VERTEX_ARRAY=0x04
+			};
       /**
        * RenderSystem Constructor.
        * @param[in] theApp is the current GQE app.

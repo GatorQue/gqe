@@ -63,6 +63,7 @@ namespace GQE
       Add(anProperty->MakeClone());
     }
   }
+
   void PropertyManager::ParseProperty(std::string thePropertyName, std::string thePropertyValue)
   {
     std::string anLowerName=GQE::StringToLowercase(thePropertyName);
