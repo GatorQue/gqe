@@ -37,7 +37,6 @@ namespace GQE
     theEntity->mProperties.Add<sf::Color>("cColor",sf::Color(255,255,255,255));
     theEntity->mProperties.Add<float>("fRotation", 0.0f);
     theEntity->mProperties.Add<bool>("bVisible", true);
-    
   }
 
   void RenderSystem::HandleInit(IEntity* theEntity)
@@ -60,18 +59,19 @@ namespace GQE
 
   void RenderSystem::EntityDraw(IEntity* theEntity)
   {
-		//This code renders offscreen entitys invisible.
+		
 		if(theEntity!=NULL)
 		{
 			const sf::View& anCurrentView=mApp.mWindow.getView();
-			sf::Vector2f anViewCenter=anCurrentView.getCenter();
+			
 			sf::Vector2f anViewSize=anCurrentView.getSize();
-			sf::FloatRect anViewRect(anViewCenter,anViewSize);
+			sf::Vector2f anViewPosition=anCurrentView.getCenter();
+			sf::FloatRect anViewRect(anViewPosition-sf::Vector2f(anViewSize.x/2,anViewSize.y/2),anViewSize);
 			// See if this IEntity is visible, if so draw it now
 			if(theEntity->mProperties.Get<bool>("bVisible"))
 			{
-				GQE::Uint8 anRenderFlags=theEntity->mProperties.Get<GQE::Uint8>("RenderFlags");
 				// Get the other RenderSystem properties now
+				GQE::Uint8 anRenderFlags=theEntity->mProperties.Get<GQE::Uint8>("RenderFlags");
 				sf::Sprite anSprite=theEntity->mProperties.Get<sf::Sprite>("Sprite");
 				sf::RectangleShape anShape=theEntity->mProperties.Get<sf::RectangleShape>("RectangleShape");
 				sf::VertexArray anVertexArray=theEntity->mProperties.Get<sf::VertexArray>("VertexArray");
@@ -98,13 +98,14 @@ namespace GQE
 				}
 				anSprite.setTextureRect(anRect);
 				anSprite.setOrigin(theEntity->mProperties.Get<sf::Vector2f>("vOrigin"));
+				//This code ensures that offscreen entities will not be renderd.
 				if(anViewRect.intersects(anSprite.getGlobalBounds()))
 				{
-					if(anRenderFlags=anRenderFlags & RENDER_SPRITE)
+					if(anRenderFlags & RENDER_SPRITE)
 					{
 						mApp.mWindow.draw(anSprite);
 					}
-					if(anRenderFlags=anRenderFlags & RENDER_RECTANGLE && anShape.getSize().x!=0 && anShape.getSize().y!=0)
+					if(anRenderFlags & RENDER_RECTANGLE && anShape.getSize().x!=0 && anShape.getSize().y!=0)
 					{
 						anShape.setPosition(anSprite.getPosition());
 						anShape.setRotation(anSprite.getRotation());
@@ -112,7 +113,7 @@ namespace GQE
 						mApp.mWindow.draw(anShape);
 					}
 
-					if(anRenderFlags=anRenderFlags & RENDER_VERTEX_ARRAY && anVertexArray.getVertexCount()>0)
+					if(anRenderFlags & RENDER_VERTEX_ARRAY && anVertexArray.getVertexCount()>0)
 					{
 						sf::RenderStates anState(anSprite.getTexture());
 						mApp.mWindow.draw(anVertexArray,anState);
