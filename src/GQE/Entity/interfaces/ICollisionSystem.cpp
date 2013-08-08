@@ -66,10 +66,18 @@ namespace GQE
             //Detect Collision
             sf::Vector2f anPositionA=anMovableEntity->mProperties.Get<sf::Vector2f>("vPosition");
             sf::IntRect anRectA=anMovableEntity->mProperties.Get<sf::IntRect>("rBoundingBox");
-
+						sf::Vector2f anScaleA(1,1);
+						if(anMovableEntity->HasSystem("RenderSystem"))
+						{
+							anScaleA=anMovableEntity->mProperties.Get<sf::Vector2f>("vScale");
+						}
             sf::Vector2f anPositionB=anEntity->mProperties.Get<sf::Vector2f>("vPosition");
             sf::IntRect anRectB=anEntity->mProperties.Get<sf::IntRect>("rBoundingBox");
-
+						sf::Vector2f anScaleB(1,1);
+						if(anEntity->HasSystem("RenderSystem"))
+						{
+							anScaleB=anEntity->mProperties.Get<sf::Vector2f>("vScale");
+						}
             sf::IntRect anIntersectRect;
 #if (SFML_VERSION_MAJOR < 2)
             anRectA.Left+=anPositionA.x;
@@ -84,8 +92,13 @@ namespace GQE
 #else
             anRectA.left+=anPositionA.x;
             anRectA.top+=anPositionA.y;
-            anRectB.left+=anPositionB.x;
+						anRectA.width*=anScaleA.x;
+						anRectA.height*=anScaleA.y;
+						anRectB.left+=anPositionB.x;
             anRectB.top+=anPositionB.y;
+						anRectB.width*=anScaleB.x;
+						anRectB.height*=anScaleB.y;
+						
 
             if(anRectA.intersects(anRectB,anIntersectRect))
 #endif
@@ -160,7 +173,6 @@ namespace GQE
           sf::Vector2f anPosition = anEntity->mProperties.Get<sf::Vector2f>("vPosition");
 					sf::Vector2f anOrigin = anEntity->mProperties.Get<sf::Vector2f>("vOrigin");
 					sf::Vector2f anScale = anEntity->mProperties.Get<sf::Vector2f>("vScale");
-					anPosition-=anEntity->mProperties.Get<sf::Vector2f>("vOrigin");
 #if (SFML_VERSION_MAJOR < 2)
           sf::Shape anShape = sf::Shape::Rectangle(sf::Vector2f(0,0),
                                                    sf::Vector2f(anBoundingBox.GetWidth(),anBoundingBox.GetHeight()),
@@ -170,8 +182,9 @@ namespace GQE
 #else
           sf::RectangleShape anShape(sf::Vector2f(anBoundingBox.width,anBoundingBox.height));
           anShape.setPosition(anPosition.x,anPosition.y);
-					//anShape.setOrigin(anOrigin);
 					anShape.setScale(anScale);
+					anShape.setOrigin(anOrigin);
+
           mApp.mWindow.draw(anShape);
 #endif
         } //if(anEntity->mProperties.Get<bool>("bFixedMovement") == false)
