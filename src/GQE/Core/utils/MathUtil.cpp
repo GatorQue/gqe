@@ -1,4 +1,4 @@
-#include <GQE/Core/utils/MathUtils.hpp>
+#include <GQE/Core/utils/MathUtil.hpp>
 
 namespace GQE
 {

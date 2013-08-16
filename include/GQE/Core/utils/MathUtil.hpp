@@ -8,18 +8,18 @@
  */
 #ifndef   CORE_MATH_UTIL_HPP_INCLUDED
 #define   CORE_MATH_UTIL_HPP_INCLUDED
-
+#define PI 3.14159265
 #include <math.h>
 #include <GQE/Core/Core_types.hpp>
 namespace GQE
 {
-void SetSeed(GQE::Uint32 theSeed);
+void GQE_API SetSeed(GQE::Uint32 theSeed);
 
-float Random(float theMin, float theMax);
+float GQE_API Random(float theMin, float theMax);
 
-int Random(int theMin, int theMax);
+int GQE_API Random(int theMin, int theMax);
 
-GQE::Uint32 Random(GQE::Uint32 theMin, GQE::Uint32 theMax);
+GQE::Uint32 GQE_API Random(GQE::Uint32 theMin, GQE::Uint32 theMax);
 }
 
 #endif // CORE_MATH_UTIL_HPP_INCLUDED

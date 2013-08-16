@@ -48,6 +48,7 @@ set(INC
     ${INCROOT}/Core/protocols/DirectoryServer.hpp
     ${INCROOT}/Core/states/SplashState.hpp
     ${INCROOT}/Core/utils/StringUtil.hpp
+	${INCROOT}/Core/utils/MathUtil.hpp
 )
 
 # core library source files
@@ -90,6 +91,7 @@ set(SRC
     ${SRCROOT}/Core/protocols/DirectoryServer.cpp
     ${SRCROOT}/Core/states/SplashState.cpp
     ${SRCROOT}/Core/utils/StringUtil.cpp
+	${SRCROOT}/Core/utils/MathUtil.cpp
 )
 
 # add platform specific sources
