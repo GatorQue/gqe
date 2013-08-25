@@ -32,7 +32,7 @@ namespace GQE
   // Forward declare GQE Entity systems provided
   class ActionSystem;
   class AnimationSystem;
-  class MovementSystem;
+	class TransformSystem;
   class RenderSystem;
 
   /// Declare Action ID typedef which is used for identifying IAction objects

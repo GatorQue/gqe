@@ -5,7 +5,7 @@ set(Entity_HEADER ${INCROOT}/Entity.hpp)
 set(INC
     ${INCROOT}/Entity/systems/ActionSystem.hpp
     ${INCROOT}/Entity/systems/AnimationSystem.hpp
-    ${INCROOT}/Entity/systems/MovementSystem.hpp
+    ${INCROOT}/Entity/systems/TransformSystem.hpp
     ${INCROOT}/Entity/systems/RenderSystem.hpp
     ${INCROOT}/Entity/classes/ActionGroup.hpp
     ${INCROOT}/Entity/classes/PrototypeManager.hpp
@@ -23,7 +23,7 @@ set(INC
 set(SRC
     ${SRCROOT}/Entity/systems/ActionSystem.cpp
     ${SRCROOT}/Entity/systems/AnimationSystem.cpp
-    ${SRCROOT}/Entity/systems/MovementSystem.cpp
+    ${SRCROOT}/Entity/systems/TransformSystem.cpp
     ${SRCROOT}/Entity/systems/RenderSystem.cpp
     ${SRCROOT}/Entity/classes/ActionGroup.cpp
     ${SRCROOT}/Entity/classes/PrototypeManager.cpp

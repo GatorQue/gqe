@@ -21,13 +21,7 @@ namespace GQE
   class GQE_API RenderSystem : public ISystem
   {
     public:
-			enum RENDER_FLAGS
-			{
-				RENDER_NONE=0x00,
-				RENDER_SPRITE=0x01,
-				RENDER_RECTANGLE=0x02,
-				RENDER_VERTEX_ARRAY=0x04
-			};
+
       /**
        * RenderSystem Constructor.
        * @param[in] theApp is the current GQE app.
@@ -90,7 +84,6 @@ namespace GQE
        * to perform any custom work before the IEntity is deleted.
        */
       virtual void HandleCleanup(IEntity* theEntity);
-
     private:
   }; // class RenderSystem
 } // namespace GQE
@@ -104,11 +97,11 @@ namespace GQE
  * provides the following properties (which are used in other ISystem classes):
  * - bVisible: A boolean indicating this IEntity is currently visible
  * - fRotation: The float representing the current IEntity rotation
- * - rSpriteRect: The sf::IntRect to use on the Image provided
+ * - rTextureRect: The sf::IntRect to use on the Texture provided
  * - vOrigin: The sf::Vector2f representing the origin for all transformations
  * - vPosition: The sf::Vector2f representing the current IEntity position
  * - vScale: The sf::Vector2f representing the scale to apply to the Image (defaults to 1.0,1.0)
- * - Sprite: The sf::Sprite that represents this IEntity
+ * - Texture: The sf::Texture to display
  * The RenderSystem can be combined with the MovementSystem to cause each
  * IEntity to be moved around in the game.
  *

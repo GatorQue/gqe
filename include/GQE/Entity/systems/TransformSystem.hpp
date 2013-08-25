@@ -1,18 +1,19 @@
 /**
- * Provides the MovementSystem class for handing all entity movement in a game.
+ * Provides the TransformSystem class for handing all entity movement in a game.
  *
- * @file include/GQE/Entity/systems/MovementSystem.hpp
+ * @file src/GQE/Entity/systems/TransformSystem.cpp
  * @author Jacob Dix
  * @date 20120611 - Initial Release
  * @date 20120616 - Adjustments for new PropertyManager class
  * @date 20120618 - Use IEntity not Instance and changed AddPrototype to AddProperties
- * @date 20120620 - Fix typo in destructor method description
- * @date 20120622 - Changed HandleInit and HandleCleanup
+ * @date 20120622 - Small adjustments to implementation and Handle methods
  * @date 20120623 - Improved documentation and adjusted some properties
- * @date 20120630 - Added SpriteRect to list of dependent properties
+ * @date 20120630 - Improve ScreenWrap functionality using SpriteRect values
+ * @date 20130622 - Renamed TransformSystem to TransformSystem. vPosition, fRotation and vScale now properties of TransformSystem.
  */
-#ifndef MOVEMENT_SYSTEM_HPP_INCLUDED
-#define MOVEMENT_SYSTEM_HPP_INCLUDED
+
+#ifndef TRANSFORM_SYSTEM_HPP_INCLUDED
+#define TRANSFORM_SYSTEM_HPP_INCLUDED
 
 #include <SFML/System.hpp>
 #include <GQE/Entity/interfaces/ISystem.hpp>
@@ -20,20 +21,20 @@
 
 namespace GQE
 {
-  /// The MovementSystem for managing all IEntity movement in a game
-  class GQE_API MovementSystem : public ISystem
+  /// The TransformSystem for managing all IEntity movement in a game
+  class GQE_API TransformSystem : public ISystem
   {
     public:
       /**
-       * MovementSystem Constructor.
+       * TransformSystem Constructor.
        * @param[in] theApp is the current GQE app.
        */
-      MovementSystem(IApp& theApp);
+      TransformSystem(IApp& theApp);
 
       /**
-       * MovementSystem Destructor.
+       * TransformSystem Destructor.
        */
-      virtual ~MovementSystem();
+      virtual ~TransformSystem();
 
       /**
        * AddProperties is responsible for adding the properties used by this
@@ -93,15 +94,15 @@ namespace GQE
        */
       virtual void HandleScreenWrap(IEntity* theEntity, sf::Vector2f* thePosition);
     private:
-  }; // class MovementSystem
+  }; // class TransformSystem
 } // namespace GQE
 
-#endif // MOVEMENT_SYSTEM_HPP_INCLUDED
+#endif // TRANSFORM_SYSTEM_HPP_INCLUDED
 
 /**
- * @class GQE::MovementSystem
+ * @class GQE::TransformSystem
  * @ingroup Entity
- * The MovementSystem class is used to update the IElement position based on the
+ * The TransformSystem class is used to update the IElement position based on the
  * following properties it provides:
  * - bFixedMovement: A boolean indicating fixed movement math should be used
  * - bScreenWrap: A boolean indicating that the position should wrap from one side to the other
@@ -109,7 +110,7 @@ namespace GQE
  * - fRotationalAcceleration: The float representing the rotational velocity of this IEntity
  * - vAcceleration: The sf::Vector2f representing the acceleration of this IEntity
  * - vVelocity: The sf::Vector2f representing the velocity of this IEntity
- * The MovementSystem class makes use of the following properties provided by the
+ * The TransformSystem class makes use of the following properties provided by the
  * RenderSystem class:
  * - fRotation: The float representing the current IEntity rotation
  * - rSpriteRect: To determine when to perform screen wrap around

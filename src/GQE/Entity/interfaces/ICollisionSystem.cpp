@@ -64,21 +64,18 @@ namespace GQE
           if(anEntity!=anMovableEntity)
           {
             //Detect Collision
-            sf::Vector2f anPositionA=anMovableEntity->mProperties.Get<sf::Vector2f>("vPosition");
+						sf::Transformable anTransformableA,anTransformableB;
+						anTransformableA.setPosition(anMovableEntity->mProperties.Get<sf::Vector2f>("vPosition"));
             sf::IntRect anRectA=anMovableEntity->mProperties.Get<sf::IntRect>("rBoundingBox");
 						sf::Vector2f anScaleA(1,1);
-						if(anMovableEntity->HasSystem("RenderSystem"))
-						{
-							anScaleA=anMovableEntity->mProperties.Get<sf::Vector2f>("vScale");
-						}
-            sf::Vector2f anPositionB=anEntity->mProperties.Get<sf::Vector2f>("vPosition");
+						anScaleA=anMovableEntity->mProperties.Get<sf::Vector2f>("vScale");
+						anTransformableA.setScale(anScaleA);
+						anTransformableB.setPosition(anEntity->mProperties.Get<sf::Vector2f>("vPosition"));
             sf::IntRect anRectB=anEntity->mProperties.Get<sf::IntRect>("rBoundingBox");
 						sf::Vector2f anScaleB(1,1);
-						if(anEntity->HasSystem("RenderSystem"))
-						{
-							anScaleB=anEntity->mProperties.Get<sf::Vector2f>("vScale");
-						}
-            sf::IntRect anIntersectRect;
+						anScaleB=anEntity->mProperties.Get<sf::Vector2f>("vScale");
+						anTransformableB.setScale(anScaleB);
+            sf::FloatRect anIntersectRect;
 #if (SFML_VERSION_MAJOR < 2)
             anRectA.Left+=anPositionA.x;
             anRectA.Right+=anPositionA.x;
@@ -89,23 +86,13 @@ namespace GQE
             anRectB.Top+=anPositionB.y;
             anRectB.Bottom+=anPositionB.y;
             if(anRectA.Intersects(anRectB,&anIntersectRect))
-#else
-            anRectA.left+=anPositionA.x;
-            anRectA.top+=anPositionA.y;
-						anRectA.width*=anScaleA.x;
-						anRectA.height*=anScaleA.y;
-						anRectB.left+=anPositionB.x;
-            anRectB.top+=anPositionB.y;
-						anRectB.width*=anScaleB.x;
-						anRectB.height*=anScaleB.y;
-						
-
-            if(anRectA.intersects(anRectB,anIntersectRect))
+#else			
+						if(anTransformableA.getTransform().transformRect(sf::FloatRect(anRectA)).intersects(anTransformableB.getTransform().transformRect(sf::FloatRect(anRectB)),anIntersectRect))
 #endif
             {
               typeCollisionData anData;
               anData.Collision = true;
-              anData.IntersectRect = anIntersectRect;
+							anData.IntersectRect = sf::IntRect(anIntersectRect);
 							anData.MovingEntity = anMovableEntity;
 							anData.OtherEntity = anEntity;
               anMovableEntity->mProperties.Set<typeCollisionData>("CollisionData",anData);
@@ -181,9 +168,8 @@ namespace GQE
           mApp.mWindow.Draw(anShape);
 #else
           sf::RectangleShape anShape(sf::Vector2f(anBoundingBox.width,anBoundingBox.height));
-          anShape.setPosition(anPosition.x,anPosition.y);
+					anShape.setPosition(anPosition.x+anBoundingBox.left*anScale.x,anPosition.y+anBoundingBox.top*anScale.y);
 					anShape.setScale(anScale);
-					anShape.setOrigin(anOrigin);
 
           mApp.mWindow.draw(anShape);
 #endif

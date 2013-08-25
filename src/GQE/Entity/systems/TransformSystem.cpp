@@ -1,7 +1,7 @@
 /**
- * Provides the MovementSystem class for handing all entity movement in a game.
+ * Provides the TransformSystem class for handing all entity movement in a game.
  *
- * @file src/GQE/Entity/systems/MovementSystem.cpp
+ * @file src/GQE/Entity/systems/TransformSystem.cpp
  * @author Jacob Dix
  * @date 20120611 - Initial Release
  * @date 20120616 - Adjustments for new PropertyManager class
@@ -9,26 +9,30 @@
  * @date 20120622 - Small adjustments to implementation and Handle methods
  * @date 20120623 - Improved documentation and adjusted some properties
  * @date 20120630 - Improve ScreenWrap functionality using SpriteRect values
+ * @date 20130622 - Renamed TransformSystem to TransformSystem. vPosition, fRotation and vScale now properties of TransformSystem.
  */
 #include <SFML/Graphics.hpp>
-#include <GQE/Entity/systems/MovementSystem.hpp>
+#include <GQE/Entity/systems/TransformSystem.hpp>
 #include <GQE/Entity/interfaces/IEntity.hpp>
 
 namespace GQE
 {
-  MovementSystem::MovementSystem(IApp& theApp):
-    ISystem("MovementSystem",theApp)
+  TransformSystem::TransformSystem(IApp& theApp):
+    ISystem("TransformSystem",theApp)
   {
   }
-  MovementSystem::~MovementSystem()
+  TransformSystem::~TransformSystem()
   {
   }
 
-  void MovementSystem::AddProperties(IEntity* theEntity)
+  void TransformSystem::AddProperties(IEntity* theEntity)
   {
-    theEntity->mProperties.Add<sf::Vector2f>("vVelocity",sf::Vector2f(0,0));
+    theEntity->mProperties.Add<sf::Vector2f>("vScale",sf::Vector2f(1,1));
+    theEntity->mProperties.Add<sf::Vector2f>("vPosition",sf::Vector2f(0,0));
+    theEntity->mProperties.Add<float>("fRotation", 0.0f);
+		theEntity->mProperties.Add<sf::Vector2f>("vVelocity",sf::Vector2f(0,0));
     theEntity->mProperties.Add<sf::Vector2f>("vAcceleration",sf::Vector2f(0,0));
-		theEntity->mProperties.Add<sf::Vector2f>("vDrag",sf::Vector2f(0,0));
+		theEntity->mProperties.Add<float>("fDrag",0.0f);
     theEntity->mProperties.Add<float>("fRotationalVelocity",0);
 		theEntity->mProperties.Add<float>("fStopThreshold",.01);
     theEntity->mProperties.Add<float>("fRotationalAcceleration",0);
@@ -38,15 +42,15 @@ namespace GQE
 		
   }
 
-  void MovementSystem::HandleInit(IEntity* theEntity)
+  void TransformSystem::HandleInit(IEntity* theEntity)
   {
     // Do nothing
   }
-  void MovementSystem::EntityHandleEvents(IEntity* theEntity,sf::Event theEvent)
+  void TransformSystem::EntityHandleEvents(IEntity* theEntity,sf::Event theEvent)
   { 
 		
 	}
-  void MovementSystem::EntityUpdateFixed(IEntity* theEntity)
+  void TransformSystem::EntityUpdateFixed(IEntity* theEntity)
   {
 		// Are we using fixed movement mathematics?
         if(theEntity->mProperties.Get<bool>("bFixedMovement"))
@@ -55,12 +59,11 @@ namespace GQE
           sf::Vector2f anPosition = theEntity->mProperties.Get<sf::Vector2f>("vPosition");
           float anRotation = theEntity->mProperties.Get<float>("fRotation");
 
-          // Get the MovementSystem properties
+          // Get the TransformSystem properties
           sf::Vector2f anVelocity = theEntity->mProperties.Get<sf::Vector2f>("vVelocity");
           sf::Vector2f anAccelleration = theEntity->mProperties.Get<sf::Vector2f>("vAcceleration");
-					sf::Vector2f anDrag=theEntity->mProperties.Get<sf::Vector2f>("vDrag");
-					sf::Vector2f anVelocityReduction(1,1);
-					anVelocityReduction-=anDrag;
+					float anDrag=theEntity->mProperties.Get<float>("fDrag");
+					float anVelocityReduction=1-anDrag;
           float anRotationalVelocity = theEntity->mProperties.Get<float>("fRotationalVelocity");
           float anRotationalAccelleration = theEntity->mProperties.Get<float>("fRotationalAcceleration");
 					float anStopThreshold=theEntity->mProperties.Get<float>("fStopThreshold");
@@ -71,7 +74,7 @@ namespace GQE
 					anRotationalVelocity += anRotationalAccelleration;
           anRotation += anRotationalVelocity;
 					//Apply Drag
-					anVelocity=sf::Vector2f(anVelocity.x*anVelocityReduction.x,anVelocity.y*anVelocityReduction.y);
+					anVelocity=sf::Vector2f(anVelocity.x*anVelocityReduction,anVelocity.y*anVelocityReduction);
 					if(abs(anVelocity.x)<=anStopThreshold)
 					{
 						anVelocity.x=0;
@@ -87,7 +90,7 @@ namespace GQE
             HandleScreenWrap(theEntity, &anPosition);
           }
 
-          // Now update the MovementSystem properties for this IEntity class
+          // Now update the TransformSystem properties for this IEntity class
           theEntity->mProperties.Set<sf::Vector2f>("vVelocity",anVelocity);
           theEntity->mProperties.Set<float>("fRotationalVelocity",anRotationalVelocity);
 
@@ -98,7 +101,7 @@ namespace GQE
 					theEntity->mProperties.Set<sf::Vector2f>("vAcceleration",sf::Vector2f(0,0));
         } //if(theEntity->mProperties.Get<bool>("bFixedMovement"))
   }
-  void MovementSystem::EntityUpdateVariable(IEntity* theEntity,float theElapsedTime)
+  void TransformSystem::EntityUpdateVariable(IEntity* theEntity,float theElapsedTime)
   {
         // Are we NOT using fixed movement mathematics?
         if(theEntity->mProperties.Get<bool>("bFixedMovement") == false)
@@ -107,7 +110,7 @@ namespace GQE
           sf::Vector2f anPosition = theEntity->mProperties.Get<sf::Vector2f>("vPosition");
           float anRotation = theEntity->mProperties.Get<float>("fRotation");
 
-          // Get the MovementSystem properties
+          // Get the TransformSystem properties
           sf::Vector2f anVelocity = theEntity->mProperties.Get<sf::Vector2f>("vVelocity");
           sf::Vector2f anAccelleration = theEntity->mProperties.Get<sf::Vector2f>("vAcceleration");
           float anRotationalVelocity = theEntity->mProperties.Get<float>("fRotationalVelocity");
@@ -126,7 +129,7 @@ namespace GQE
             HandleScreenWrap(theEntity, &anPosition);
           }
 
-          // Now update the MovementSystem properties for this IEntity class
+          // Now update the TransformSystem properties for this IEntity class
           theEntity->mProperties.Set<sf::Vector2f>("vVelocity", anVelocity);
           theEntity->mProperties.Set<float>("fRotationalVelocity", anRotationalVelocity);
 
@@ -135,15 +138,15 @@ namespace GQE
           theEntity->mProperties.Set<float>("fRotation", anRotation);
         } //if(theEntity->mProperties.Get<bool>("bFixedMovement") == false)		
 	}
-  void MovementSystem::EntityDraw(IEntity* theEntity)
+  void TransformSystem::EntityDraw(IEntity* theEntity)
   {
 	}
-  void MovementSystem::HandleCleanup(IEntity* theEntity)
+  void TransformSystem::HandleCleanup(IEntity* theEntity)
   {
     // Do nothing
   }
 
-  void MovementSystem::HandleScreenWrap(IEntity* theEntity, sf::Vector2f* thePosition)
+  void TransformSystem::HandleScreenWrap(IEntity* theEntity, sf::Vector2f* thePosition)
   {
     // Get SpriteRect to see how many pixels to over shoot screen before wrapping
     sf::IntRect anSpriteRect = theEntity->mProperties.Get<sf::IntRect>("rSpriteRect");

@@ -8,6 +8,7 @@
  * @date 20120622 - Small adjustments to implementation and Handle methods
  * @date 20120623 - Improved documentation and adjusted some properties
  * @date 20130202 - Fix SFML v1.6 compiler issues
+ * @date 20130822 - Changed property set up for render system. Sprites are now just vertexarrays with 6 points.
  */
 #include <SFML/Graphics.hpp>
 #include <GQE/Entity/systems/RenderSystem.hpp>
@@ -26,16 +27,11 @@ namespace GQE
 
   void RenderSystem::AddProperties(IEntity* theEntity)
   {
-		theEntity->mProperties.Add<GQE::Uint8>("RenderFlags",RENDER_SPRITE);
-    theEntity->mProperties.Add<sf::Sprite>("Sprite",sf::Sprite());
-		theEntity->mProperties.Add<sf::RectangleShape>("RectangleShape",sf::RectangleShape());
+		theEntity->mProperties.Add<sf::Texture*>("Texture",NULL);
+		theEntity->mProperties.Add<sf::Color>("cColor",sf::Color(255,255,255,255));
 		theEntity->mProperties.Add<sf::VertexArray>("VertexArray",sf::VertexArray());
-		theEntity->mProperties.Add<sf::IntRect>("rSpriteRect",sf::IntRect(0,0,0,0));
-    theEntity->mProperties.Add<sf::Vector2f>("vScale",sf::Vector2f(1,1));
+		theEntity->mProperties.Add<sf::IntRect>("rTextureRect",sf::IntRect(0,0,0,0));
     theEntity->mProperties.Add<sf::Vector2f>("vOrigin",sf::Vector2f(0,0));
-    theEntity->mProperties.Add<sf::Vector2f>("vPosition",sf::Vector2f(0,0));
-    theEntity->mProperties.Add<sf::Color>("cColor",sf::Color(255,255,255,255));
-    theEntity->mProperties.Add<float>("fRotation", 0.0f);
     theEntity->mProperties.Add<bool>("bVisible", true);
   }
 
@@ -67,57 +63,54 @@ namespace GQE
 			sf::Vector2f anViewSize=anCurrentView.getSize();
 			sf::Vector2f anViewPosition=anCurrentView.getCenter();
 			sf::FloatRect anViewRect(anViewPosition-sf::Vector2f(anViewSize.x/2,anViewSize.y/2),anViewSize);
+			
 			// See if this IEntity is visible, if so draw it now
 			if(theEntity->mProperties.Get<bool>("bVisible"))
 			{
 				// Get the other RenderSystem properties now
-				GQE::Uint8 anRenderFlags=theEntity->mProperties.Get<GQE::Uint8>("RenderFlags");
-				sf::Sprite anSprite=theEntity->mProperties.Get<sf::Sprite>("Sprite");
-				sf::RectangleShape anShape=theEntity->mProperties.Get<sf::RectangleShape>("RectangleShape");
+				
+				sf::Transformable anTransformable;
+				sf::RenderStates anRenderStates;
 				sf::VertexArray anVertexArray=theEntity->mProperties.Get<sf::VertexArray>("VertexArray");
-				anSprite.setPosition(theEntity->mProperties.Get<sf::Vector2f>("vPosition"));
-				anSprite.setRotation(theEntity->mProperties.Get<float>("fRotation"));
-				anSprite.setScale(theEntity->mProperties.Get<sf::Vector2f>("vScale"));
-				anSprite.setColor(theEntity->mProperties.Get<sf::Color>("cColor"));
-				sf::IntRect anRect=theEntity->mProperties.Get<sf::IntRect>("rSpriteRect");
+				sf::Texture* anTexture=theEntity->mProperties.Get<sf::Texture*>("Texture");
+				sf::Color anColor=theEntity->mProperties.Get<sf::Color>("cColor");
+				sf::IntRect anRect=theEntity->mProperties.Get<sf::IntRect>("rTextureRect");
+				sf::Vector2f anOrigin=theEntity->mProperties.Get<sf::Vector2f>("vOrigin");
+				anTransformable.setPosition(theEntity->mProperties.Get<sf::Vector2f>("vPosition"));
+				anTransformable.setRotation(theEntity->mProperties.Get<float>("fRotation"));
+				anTransformable.setScale(theEntity->mProperties.Get<sf::Vector2f>("vScale"));
+				
 				if(anRect.width==0)
 				{
-					const sf::Texture* anTexture=anSprite.getTexture();
-					if(anTexture!=NULL)
-					{
 						anRect.width=anTexture->getSize().x;
-					}
 				}
 				if(anRect.height==0)
 				{
-					const sf::Texture* anTexture=anSprite.getTexture();
-					if(anTexture!=NULL)
-					{
-						anRect.height=anTexture->getSize().y;
-					}
+					anRect.height=anTexture->getSize().y;
 				}
-				anSprite.setTextureRect(anRect);
-				anSprite.setOrigin(theEntity->mProperties.Get<sf::Vector2f>("vOrigin"));
-				//This code ensures that offscreen entities will not be renderd.
-				if(anViewRect.intersects(anSprite.getGlobalBounds()))
+				//if vertex array is empty. default to a sprite( four verties).
+				if(anVertexArray.getVertexCount()==0)
 				{
-					if(anRenderFlags & RENDER_SPRITE)
-					{
-						mApp.mWindow.draw(anSprite);
-					}
-					if(anRenderFlags & RENDER_RECTANGLE && anShape.getSize().x!=0 && anShape.getSize().y!=0)
-					{
-						anShape.setPosition(anSprite.getPosition());
-						anShape.setRotation(anSprite.getRotation());
-						anShape.setOrigin(anSprite.getOrigin());
-						mApp.mWindow.draw(anShape);
-					}
+					anVertexArray.append(sf::Vertex(sf::Vector2f(0,0),anColor,sf::Vector2f(anRect.left,anRect.top)));
+					anVertexArray.append(sf::Vertex(sf::Vector2f(anRect.width,0),anColor,sf::Vector2f(anRect.left+anRect.width,anRect.top)));
+					anVertexArray.append(sf::Vertex(sf::Vector2f(anRect.width,anRect.height),anColor,sf::Vector2f(anRect.left+anRect.width,anRect.top+anRect.height)));
 
-					if(anRenderFlags & RENDER_VERTEX_ARRAY && anVertexArray.getVertexCount()>0)
-					{
-						sf::RenderStates anState(anSprite.getTexture());
-						mApp.mWindow.draw(anVertexArray,anState);
-					}
+					anVertexArray.append(sf::Vertex(sf::Vector2f(anRect.width,anRect.height),anColor,sf::Vector2f(anRect.left+anRect.width,anRect.top+anRect.height)));
+					anVertexArray.append(sf::Vertex(sf::Vector2f(0,anRect.height),anColor,sf::Vector2f(0,anRect.top+anRect.height)));
+					anVertexArray.append(sf::Vertex(sf::Vector2f(0,0),anColor,sf::Vector2f(anRect.left,anRect.top)));
+					anVertexArray.setPrimitiveType(sf::Triangles);
+				}
+				sf::FloatRect anBounds=anVertexArray.getBounds();
+				anBounds.left+=anTransformable.getPosition().x;
+				anBounds.top+=anTransformable.getPosition().y;
+				anTransformable.setOrigin(sf::Vector2f(anOrigin.x*anRect.width,anOrigin.y*anRect.height));
+				//This code ensures that offscreen entities will not be renderd.
+				if(anViewRect.intersects(anBounds))
+				{
+					anRenderStates.texture=anTexture;
+					anRenderStates.transform=anTransformable.getTransform();
+					anRenderStates.shader=NULL;//TODO Add back Shader Support.
+					mApp.mWindow.draw(anVertexArray,anRenderStates);
 				}
 			} // if(theEntity->mProperties.Get<bool>("bVisible"))
 		}
