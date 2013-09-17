@@ -156,10 +156,69 @@ namespace GQE
        * @param[in] thePropertyManager to clone into ourselves
        */
       void Clone(const PropertyManager& thePropertyManager);
+			/**
+       * ParseProperty is responsible for converting a string into a property and adding to mPropties.
+       * @param[in] thePropertyName to use.
+			 * @param[in] thePropertyValue to use.
+       */
+      void ParseProperty(typePropertyID thePropertyName, std::string thePropertyValue);
+			/**
+       * ParseProperty is responsible for converting a string into a property and adding to mPropties using the predefined type.
+       * @param[in] thePropertyName to use.
+			 * @param[in] thePropertyValue to use.
+			 * @param[in] thePropertyType to use.
+       */
+      void ParseProperty(typePropertyID thePropertyName, std::string thePropertyValue, std::string thePropertyType);
 
-      void ParseProperty(std::string thePropertyName, std::string thePropertyValue);
-      void ParseProperty(std::string thePropertyName, std::string thePropertyValue, std::string thePropertyType);
-    protected:
+			/**
+       * GetInt32 is a helper app for retriving int 32 properties.
+       * @param[in] thePropertyName to use.
+			 * @return the value associated with thePropertyName.
+       */
+			Int32 GetInt32(typePropertyID thePropertyID);
+			/**
+       * GetUint32 is a helper app for retriving unsigned int 32 properties.
+       * @param[in] thePropertyName to use.
+			 * @return the value associated with thePropertyName.
+       */
+			Uint32 GetUint32(typePropertyID thePropertyID);
+			/**
+       * GetFloat is a helper app for retriving float properties.
+       * @param[in] thePropertyName to use.
+			 * @return the value associated with thePropertyName.
+       */
+			float GetFloat(typePropertyID thePropertyID);
+			/**
+       * GetString is a helper app for retriving string properties.
+       * @param[in] thePropertyName to use.
+			 * @return the value associated with thePropertyName.
+       */
+			std::string GetString(typePropertyID thePropertyID);
+			/**
+       * SetInt32 is a helper app for setting int 32 properties.
+       * @param[in] thePropertyName to use.
+			 * @param[in] theValue to use.
+			 */
+			void SetInt32(typePropertyID thePropertyID, Int32 theValue);
+			/**
+       * SetUint32 is a helper app for setting unsigned int 32 properties.
+       * @param[in] thePropertyName to use.
+			 * @param[in] theValue to use.
+       */
+			void SetUint32(typePropertyID thePropertyID, Uint32 theValue);
+			/**
+       * SetFloat is a helper app for setting float properties.
+       * @param[in] thePropertyName to use.
+			 * @param[in] theValue to use.
+       */
+			void SetFloat(typePropertyID thePropertyID, float theValue);
+			/**
+       * SetString is a helper app for setting string properties.
+       * @param[in] thePropertyName to use.
+			 * @param[in] theValue to use.
+       */
+			void SetString(typePropertyID thePropertyID, std::string theValue);
+		protected:
 
     private:
       // Variables

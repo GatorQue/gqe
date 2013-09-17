@@ -54,6 +54,7 @@ namespace GQE
 		GQE::IEntity* MovingEntity;
 		GQE::IEntity* OtherEntity;
   };
+	typedef std::map<std::string, Prototype*> typePrototypeList;
 }
 #endif // ENTITY_TYPES_HPP_INCLUDED
 

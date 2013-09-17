@@ -167,7 +167,7 @@ namespace GQE
           anShape.SetPosition(anBoundingBox.Left+anPosition.x,anBoundingBox.Top+anPosition.y);
           mApp.mWindow.Draw(anShape);
 #else
-          sf::RectangleShape anShape(sf::Vector2f(anBoundingBox.width,anBoundingBox.height));
+          sf::RectangleShape anShape(sf::Vector2f((float)anBoundingBox.width,(float)anBoundingBox.height));
 					anShape.setPosition(anPosition.x+anBoundingBox.left*anScale.x,anPosition.y+anBoundingBox.top*anScale.y);
 					anShape.setScale(anScale);
 

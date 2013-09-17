@@ -465,7 +465,38 @@ namespace GQE
       }
     }
   }
-
+	Int32 PropertyManager::GetInt32(typePropertyID thePropertyID)
+	{
+		return Get<Int32>(thePropertyID);
+	}
+	Uint32 PropertyManager::GetUint32(typePropertyID thePropertyID)
+	{
+		return Get<Uint32>(thePropertyID);
+	}
+	float PropertyManager::GetFloat(typePropertyID thePropertyID)
+	{
+		return Get<float>(thePropertyID);
+	}
+	std::string PropertyManager::GetString(typePropertyID thePropertyID)
+	{
+		return Get<std::string>(thePropertyID);
+	}
+	void PropertyManager::SetInt32(typePropertyID thePropertyID, Int32 theValue)
+	{
+		Set<Int32>(thePropertyID,theValue);
+	}
+	void PropertyManager::SetUint32(typePropertyID thePropertyID, Uint32 theValue)
+	{
+		Set<Uint32>(thePropertyID,theValue);
+	}
+	void PropertyManager::SetFloat(typePropertyID thePropertyID, float theValue)
+	{
+		Set<float>(thePropertyID,theValue);
+	}
+	void PropertyManager::SetString(typePropertyID thePropertyID, std::string theValue)
+	{
+		Set<std::string>(thePropertyID,theValue);
+	}
 } // namespace GQE
 
 /**

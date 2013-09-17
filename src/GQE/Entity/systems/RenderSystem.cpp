@@ -63,16 +63,16 @@ namespace GQE
 			sf::Vector2f anViewSize=anCurrentView.getSize();
 			sf::Vector2f anViewPosition=anCurrentView.getCenter();
 			sf::FloatRect anViewRect(anViewPosition-sf::Vector2f(anViewSize.x/2,anViewSize.y/2),anViewSize);
-			
+			sf::Texture* anTexture=theEntity->mProperties.Get<sf::Texture*>("Texture");
 			// See if this IEntity is visible, if so draw it now
-			if(theEntity->mProperties.Get<bool>("bVisible"))
+			if(theEntity->mProperties.Get<bool>("bVisible") && anTexture!=NULL)
 			{
 				// Get the other RenderSystem properties now
 				
 				sf::Transformable anTransformable;
 				sf::RenderStates anRenderStates;
 				sf::VertexArray anVertexArray=theEntity->mProperties.Get<sf::VertexArray>("VertexArray");
-				sf::Texture* anTexture=theEntity->mProperties.Get<sf::Texture*>("Texture");
+				
 				sf::Color anColor=theEntity->mProperties.Get<sf::Color>("cColor");
 				sf::IntRect anRect=theEntity->mProperties.Get<sf::IntRect>("rTextureRect");
 				sf::Vector2f anOrigin=theEntity->mProperties.Get<sf::Vector2f>("vOrigin");
@@ -91,14 +91,12 @@ namespace GQE
 				//if vertex array is empty. default to a sprite( four verties).
 				if(anVertexArray.getVertexCount()==0)
 				{
+					anVertexArray.setPrimitiveType(sf::TrianglesStrip);
 					anVertexArray.append(sf::Vertex(sf::Vector2f(0,0),anColor,sf::Vector2f(anRect.left,anRect.top)));
+					anVertexArray.append(sf::Vertex(sf::Vector2f(0,anRect.height),anColor,sf::Vector2f(anRect.left,anRect.top+anRect.height)));
 					anVertexArray.append(sf::Vertex(sf::Vector2f(anRect.width,0),anColor,sf::Vector2f(anRect.left+anRect.width,anRect.top)));
 					anVertexArray.append(sf::Vertex(sf::Vector2f(anRect.width,anRect.height),anColor,sf::Vector2f(anRect.left+anRect.width,anRect.top+anRect.height)));
-
-					anVertexArray.append(sf::Vertex(sf::Vector2f(anRect.width,anRect.height),anColor,sf::Vector2f(anRect.left+anRect.width,anRect.top+anRect.height)));
-					anVertexArray.append(sf::Vertex(sf::Vector2f(0,anRect.height),anColor,sf::Vector2f(0,anRect.top+anRect.height)));
-					anVertexArray.append(sf::Vertex(sf::Vector2f(0,0),anColor,sf::Vector2f(anRect.left,anRect.top)));
-					anVertexArray.setPrimitiveType(sf::Triangles);
+					
 				}
 				sf::FloatRect anBounds=anVertexArray.getBounds();
 				anBounds.left+=anTransformable.getPosition().x;
