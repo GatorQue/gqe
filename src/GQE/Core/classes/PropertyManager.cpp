@@ -481,6 +481,10 @@ namespace GQE
 	{
 		return Get<std::string>(thePropertyID);
 	}
+	bool PropertyManager::GetBool(typePropertyID thePropertyID)
+	{
+		return Get<bool>(thePropertyID);
+	}
 	void PropertyManager::SetInt32(typePropertyID thePropertyID, Int32 theValue)
 	{
 		Set<Int32>(thePropertyID,theValue);
@@ -496,6 +500,10 @@ namespace GQE
 	void PropertyManager::SetString(typePropertyID thePropertyID, std::string theValue)
 	{
 		Set<std::string>(thePropertyID,theValue);
+	}
+	void PropertyManager::SetBool(typePropertyID thePropertyID, bool theValue)
+	{
+		Set<bool>(thePropertyID,theValue);
 	}
 } // namespace GQE
 

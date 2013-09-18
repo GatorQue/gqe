@@ -4,6 +4,7 @@
  * @file include/GQE/Entity/systems/AnimationSystem.cpp
  * @author Jacob Dix
  * @date 20120623 - Initial Release
+ * @date 20130918 - Revised Animation Methods.
  */
 #ifndef ANIMATION_SYSTEM_HPP_INCLUDED
 #define ANIMATION_SYSTEM_HPP_INCLUDED
@@ -47,7 +48,7 @@ namespace GQE
        * this method will allow each Instance class a chance to have its
        * UpdateFixed method called for each game loop iteration.
        */
-      virtual void UpdateFixed(void);
+      virtual void EntityUpdateFixed(IEntity* theEntity);
 
       /**
        * UpdateVariable is called every time the game loop draws a frame and

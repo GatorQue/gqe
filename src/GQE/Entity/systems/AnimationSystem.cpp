@@ -12,14 +12,6 @@
 #include <GQE/Entity/systems/AnimationSystem.hpp>
 #include <GQE/Entity/interfaces/IEntity.hpp>
 
-// Define Vector2u here since it was not defined for SFML 1.6
-#if (SFML_VERSION_MAJOR < 2)
-namespace sf
-{
-  typedef Vector2<unsigned int> Vector2u;
-}
-#endif
-
 namespace GQE
 {
   AnimationSystem::AnimationSystem(GQE::IApp& theApp) :
@@ -33,15 +25,12 @@ namespace GQE
 
   void AnimationSystem::AddProperties(IEntity* theEntity)
   {
-    theEntity->mProperties.Add<sf::Clock>("FrameClock",sf::Clock());	
-    theEntity->mProperties.Add<float>("fFrameDelay",0.0f);
-#if (SFML_VERSION_MAJOR < 2)
-    theEntity->mProperties.Add<sf::Vector2u>("wFrameModifier",sf::Vector2u(0,0));	
-#else
-    theEntity->mProperties.Add<sf::Vector2u>("wFrameModifier",sf::Vector2u(0,0));
-#endif
-    theEntity->mProperties.Add<sf::IntRect>("rFrameRect",sf::IntRect(0,0,0,0));
-  }
+		theEntity->mProperties.Add<std::string>("CurrentAnimation","DefaultAnimation");
+		theEntity->mProperties.Add<std::vector<sf::IntRect>>("DefaultAnimation",std::vector<sf::IntRect>());
+		theEntity->mProperties.Add<sf::Clock>("AnimationClock",sf::Clock());
+		theEntity->mProperties.Add<float>("FramesPerSecond",12);
+		theEntity->mProperties.Add<GQE::Int32>("CurrentFrame",0);
+	}
 
   void AnimationSystem::HandleInit(GQE::IEntity* theEntity)
   {
@@ -51,115 +40,34 @@ namespace GQE
   {
   }
 
-  void AnimationSystem::UpdateFixed()
+  void AnimationSystem::EntityUpdateFixed(IEntity* theEntity)
   {
-    // Search through each z-order map to find theEntityID provided
-    std::map<const Uint32, std::deque<IEntity*> >::iterator anIter;
-    anIter = mEntities.begin();
-    while(anIter != mEntities.end())
-    {
-      std::deque<IEntity*>::iterator anQueue = anIter->second.begin();
-      while(anQueue != anIter->second.end())
-      {
-        // Get the IEntity address first
-        GQE::IEntity* anEntity = *anQueue;
-
-        // Increment the IEntity iterator second
-        anQueue++;
-
-        // Get the AnimationSystem properties
-        sf::Clock anFrameClock = anEntity->mProperties.Get<sf::Clock>("FrameClock");
-        float anFrameDelay = anEntity->mProperties.Get<float>("fFrameDelay");
-
-        // Is it time to update to the next frame?
-#if (SFML_VERSION_MAJOR < 2)
-        if(anFrameClock.GetElapsedTime() > anFrameDelay)
-        {
-          // Get the RenderSystem properties
-          sf::IntRect anSpriteRect = anEntity->mProperties.Get<sf::IntRect>("rSpriteRect");
-
-          // Get some additional AnimationSystem properties
-          sf::Vector2u anFrameModifier = anEntity->mProperties.Get<sf::Vector2u>("wFrameModifier");
-          sf::IntRect anFrameRect = anEntity->mProperties.Get<sf::IntRect>("rFrameRect");
-
-          // Are we using a horizontal row of animation images?
-          if(anFrameModifier.x > 0)
-          {
-            anSpriteRect.Offset(anSpriteRect.GetWidth()*anFrameModifier.x, 0);
-            if(anSpriteRect.Left >= anFrameRect.Left+anFrameRect.GetWidth())
-            {
-              // Do Right first since GetWidth will change size if Left is done first
-              anSpriteRect.Right = anFrameRect.Left + anSpriteRect.GetWidth();
-              anSpriteRect.Left = anFrameRect.Left;
-            }
-          }
-          // Are we using a vertical row of animation images?
-          if(anFrameModifier.y > 0)
-          {
-            anSpriteRect.Offset(0,anSpriteRect.GetHeight()*anFrameModifier.y);
-            if(anSpriteRect.Top >= anFrameRect.Top+anFrameRect.GetHeight())
-            {
-              // Do Bottom first since GetHeight will change size if Top is done first
-              anSpriteRect.Bottom = anFrameRect.Top + anSpriteRect.GetHeight();
-              anSpriteRect.Top = anFrameRect.Top;
-            }
-          }
-
-          // Restart our animation frame clock
-          anFrameClock.Reset();
-
-          // Now update our AnimationSystem FrameClock property
-          anEntity->mProperties.Set<sf::Clock>("FrameClock",anFrameClock);
-
-          // Update our RenderSystem SpriteRect property
-          anEntity->mProperties.Set<sf::IntRect>("rSpriteRect",anSpriteRect);
-        } // if(anFrameClock > anFrameDelay)
-#else
-        if(anFrameClock.getElapsedTime().asSeconds() > anFrameDelay)
-        {
-          // Get the RenderSystem properties
-          sf::IntRect anSpriteRect = anEntity->mProperties.Get<sf::IntRect>("rSpriteRect");
-
-          // Get some additional AnimationSystem properties
-          sf::Vector2u anFrameModifier = anEntity->mProperties.Get<sf::Vector2u>("wFrameModifier");
-          sf::IntRect anFrameRect = anEntity->mProperties.Get<sf::IntRect>("rFrameRect");
-
-          // Are we using a horizontal row of animation images?
-          if(anFrameModifier.x > 0)
-          {
-            anSpriteRect.left += anSpriteRect.width*anFrameModifier.x;
-            if(anSpriteRect.left >= anFrameRect.left+anFrameRect.width)
-            {
-              anSpriteRect.left = anFrameRect.left;
-            }
-          }
-          // Are we using a vertical row of animation images?
-          if(anFrameModifier.y > 0)
-          {
-            anSpriteRect.top += anSpriteRect.height*anFrameModifier.y;
-            if(anSpriteRect.top >= anFrameRect.top+anFrameRect.height)
-            {
-              anSpriteRect.top = anFrameRect.top;
-            }
-          }
-
-          // Restart our animation frame clock
-          anFrameClock.restart();
-
-          // Now update our AnimationSystem FrameClock property
-          anEntity->mProperties.Set<sf::Clock>("FrameClock",anFrameClock);
-
-          // Update our RenderSystem SpriteRect property
-          anEntity->mProperties.Set<sf::IntRect>("rSpriteRect",anSpriteRect);
-        } // if(anFrameClock > anFrameDelay)
-#endif
-      } // while(anQueue != anIter->second.end())
-
-      // Increment map iterator
-      anIter++;
-    } //while(anIter != mEntities.end())
-  }
-
+		//Variables
+		sf::IntRect anTextureRect;
+				
+    // Get the AnimationSystem properties
+		sf::Clock anClock=theEntity->mProperties.Get<sf::Clock>("AnimationClock");
+		float anFPS=theEntity->mProperties.GetFloat("FramesPerSecond");
+		GQE::Int32 anCurrentFrame=theEntity->mProperties.GetInt32("CurrentFrame");
+		std::string anCurrentAnimation=theEntity->mProperties.GetString("CurrentAnimation");
+		if(anClock.getElapsedTime().asMilliseconds()>1/anFPS)
+		{
+			anClock.restart();
+			anCurrentFrame++;
+			std::vector<sf::IntRect> anAnimation= theEntity->mProperties.Get<std::vector<sf::IntRect> >(anCurrentAnimation);
+			if(anAnimation.size()>0)
+			{
+				if(anCurrentFrame>=anAnimation.size())
+				{
+					anCurrentFrame=0;
+				}
+				anTextureRect=anAnimation[anCurrentFrame];
+				theEntity->mProperties.Set<sf::IntRect>("rTextureRect",anTextureRect);
+				theEntity->mProperties.Set<sf::Clock>("AnimationClock",anClock);
+				theEntity->mProperties.SetInt32("CurrentFrame",anCurrentFrame);
+			}
+		}
+	}
   void AnimationSystem::UpdateVariable(float theElapsedTime)
   {
   }

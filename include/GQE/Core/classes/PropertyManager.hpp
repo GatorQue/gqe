@@ -195,6 +195,12 @@ namespace GQE
        */
 			std::string GetString(typePropertyID thePropertyID);
 			/**
+       * GetBool is a helper app for retriving boolean properties.
+       * @param[in] thePropertyName to use.
+			 * @return the value associated with thePropertyName.
+       */
+			bool GetBool(typePropertyID thePropertyID);
+			/**
        * SetInt32 is a helper app for setting int 32 properties.
        * @param[in] thePropertyName to use.
 			 * @param[in] theValue to use.
@@ -218,6 +224,12 @@ namespace GQE
 			 * @param[in] theValue to use.
        */
 			void SetString(typePropertyID thePropertyID, std::string theValue);
+			/**
+       * SetBool is a helper app for setting boolean properties.
+       * @param[in] thePropertyName to use.
+			 * @param[in] theValue to use.
+       */
+			void SetBool(typePropertyID thePropertyID, bool theValue);
 		protected:
 
     private:

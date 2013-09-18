@@ -55,6 +55,7 @@ namespace GQE
 		GQE::IEntity* OtherEntity;
   };
 	typedef std::map<std::string, Prototype*> typePrototypeList;
+	typedef std::vector<sf::IntRect> typeRectList;
 }
 #endif // ENTITY_TYPES_HPP_INCLUDED
 
