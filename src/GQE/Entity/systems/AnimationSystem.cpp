@@ -26,7 +26,7 @@ namespace GQE
   void AnimationSystem::AddProperties(IEntity* theEntity)
   {
 		theEntity->mProperties.Add<std::string>("sCurrentAnimation","DefaultAnimation");
-		theEntity->mProperties.Add<std::vector<sf::IntRect>>("DefaultAnimation",std::vector<sf::IntRect>());
+		theEntity->mProperties.Add<typeRectList>("DefaultAnimation",typeRectList());
 		theEntity->mProperties.Add<sf::Clock>("AnimationClock",sf::Clock());
 		theEntity->mProperties.Add<Uint32>("uFramesPerSecond",6);
 		theEntity->mProperties.Add<Uint32>("uCurrentFrame",0);
@@ -41,7 +41,7 @@ namespace GQE
   }
 
   void AnimationSystem::EntityUpdateFixed(IEntity* theEntity)
-  {		
+  {
     // Get the AnimationSystem properties
 		sf::Clock anClock=theEntity->mProperties.Get<sf::Clock>("AnimationClock");
 		Uint32 anFPS=theEntity->mProperties.GetUint32("uFramesPerSecond");
@@ -51,7 +51,7 @@ namespace GQE
 		{
 			anClock.restart();
 			anCurrentFrame++;
-			std::vector<sf::IntRect> anAnimation= theEntity->mProperties.Get<std::vector<sf::IntRect> >(anCurrentAnimation);
+			typeRectList anAnimation= theEntity->mProperties.Get<typeRectList>(anCurrentAnimation);
 			if(anAnimation.size()>0)
 			{
 				if(anCurrentFrame>=anAnimation.size())
