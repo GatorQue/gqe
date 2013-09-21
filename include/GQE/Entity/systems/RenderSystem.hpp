@@ -70,7 +70,8 @@ namespace GQE
        * class.
        */
       virtual void EntityDraw(IEntity* theEntity);
-
+      virtual void SetView(std::string theViewID,sf::View theView);
+      virtual sf::View GetView(std::string theViewID);
     protected:
       /**
        * HandleInit is called to allow each derived ISystem to perform any
@@ -84,7 +85,10 @@ namespace GQE
        * to perform any custom work before the IEntity is deleted.
        */
       virtual void HandleCleanup(IEntity* theEntity);
+
+
     private:
+      std::map<std::string, sf::View> mViews;
   }; // class RenderSystem
 } // namespace GQE
 

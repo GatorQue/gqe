@@ -32,6 +32,7 @@ namespace GQE
 		theEntity->mProperties.Add<sf::VertexArray>("VertexArray",sf::VertexArray());
 		theEntity->mProperties.Add<sf::IntRect>("rTextureRect",sf::IntRect(0,0,0,0));
     theEntity->mProperties.Add<sf::Vector2f>("vOrigin",sf::Vector2f(0,0));
+    theEntity->mProperties.Add<std::string>("sView","");
     theEntity->mProperties.Add<bool>("bVisible", true);
   }
 
@@ -55,11 +56,12 @@ namespace GQE
 
   void RenderSystem::EntityDraw(IEntity* theEntity)
   {
-		
+
 		if(theEntity!=NULL)
 		{
-			const sf::View& anCurrentView=mApp.mWindow.getView();
-			
+			std::string anCurrentViewID=theEntity->mProperties.GetString("sView");
+			const sf::View& anCurrentView=GetView(anCurrentViewID);
+      mApp.mWindow.setView(anCurrentView);
 			sf::Vector2f anViewSize=anCurrentView.getSize();
 			sf::Vector2f anViewPosition=anCurrentView.getCenter();
 			sf::FloatRect anViewRect(anViewPosition-sf::Vector2f(anViewSize.x/2,anViewSize.y/2),anViewSize);
@@ -68,18 +70,17 @@ namespace GQE
 			if(theEntity->mProperties.Get<bool>("bVisible") && anTexture!=NULL)
 			{
 				// Get the other RenderSystem properties now
-				
 				sf::Transformable anTransformable;
 				sf::RenderStates anRenderStates;
 				sf::VertexArray anVertexArray=theEntity->mProperties.Get<sf::VertexArray>("VertexArray");
-				
+
 				sf::Color anColor=theEntity->mProperties.Get<sf::Color>("cColor");
 				sf::IntRect anRect=theEntity->mProperties.Get<sf::IntRect>("rTextureRect");
 				sf::Vector2f anOrigin=theEntity->mProperties.Get<sf::Vector2f>("vOrigin");
 				anTransformable.setPosition(theEntity->mProperties.Get<sf::Vector2f>("vPosition"));
 				anTransformable.setRotation(theEntity->mProperties.Get<float>("fRotation"));
 				anTransformable.setScale(theEntity->mProperties.Get<sf::Vector2f>("vScale"));
-				
+
 				if(anRect.width==0)
 				{
 						anRect.width=anTexture->getSize().x;
@@ -96,7 +97,7 @@ namespace GQE
 					anVertexArray.append(sf::Vertex(sf::Vector2f(0,anRect.height),anColor,sf::Vector2f(anRect.left,anRect.top+anRect.height)));
 					anVertexArray.append(sf::Vertex(sf::Vector2f(anRect.width,0),anColor,sf::Vector2f(anRect.left+anRect.width,anRect.top)));
 					anVertexArray.append(sf::Vertex(sf::Vector2f(anRect.width,anRect.height),anColor,sf::Vector2f(anRect.left+anRect.width,anRect.top+anRect.height)));
-					
+
 				}
 				sf::FloatRect anBounds=anVertexArray.getBounds();
 				anBounds.left+=anTransformable.getPosition().x;
@@ -118,6 +119,19 @@ namespace GQE
   {
     // Do nothing
   }
+  void RenderSystem::SetView(std::string theViewID,sf::View theView)
+  {
+    mViews[theViewID]=theView;
+  }
+  sf::View RenderSystem::GetView(std::string theViewID)
+  {
+    if(mViews.find(theViewID)!=mViews.end())
+    {
+      return mViews[theViewID];
+    }
+    return mApp.mWindow.getDefaultView();
+  }
+
 } // namespace GQE
 
 /**
