@@ -72,7 +72,8 @@ namespace GQE
       virtual void EntityDraw(IEntity* theEntity);
       virtual void SetView(std::string theViewID,sf::View theView);
       virtual sf::View GetView(std::string theViewID);
-    protected:
+			void ViewEntity(PropertyManager* theProperties);
+		protected:
       /**
        * HandleInit is called to allow each derived ISystem to perform any
        * initialization steps when a new IEntity is added.
@@ -110,7 +111,8 @@ namespace GQE
  * IEntity to be moved around in the game.
  *
  * Copyright (c) 2010-2012 Jacob Dix
- * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * Permis
+ sion is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell

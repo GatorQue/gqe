@@ -38,7 +38,7 @@ namespace GQE
 
   void RenderSystem::HandleInit(IEntity* theEntity)
   {
-    // Do nothing
+		theEntity->mEventManager.Add<RenderSystem,PropertyManager>("ViewEntity",*this,&RenderSystem::ViewEntity);
   }
 
   void RenderSystem::EntityHandleEvents(IEntity* theEntity,sf::Event theEvent)
@@ -131,7 +131,14 @@ namespace GQE
     }
     return mApp.mWindow.getDefaultView();
   }
-
+	void RenderSystem::ViewEntity(PropertyManager* theProperties)
+	{
+		IEntity* anEntity=theProperties->Get<IEntity*>("Entity");
+		std::string anViewID=theProperties->GetString("sView");
+	  sf::View anView=GetView(anViewID);
+		anView.setCenter(anEntity->mProperties.Get<sf::Vector2f>("vPosition"));
+		SetView(anViewID,anView);
+	}
 } // namespace GQE
 
 /**

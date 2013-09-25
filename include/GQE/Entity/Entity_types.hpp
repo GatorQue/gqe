@@ -53,6 +53,7 @@ namespace GQE
 		bool Collision;
 		GQE::IEntity* MovingEntity;
 		GQE::IEntity* OtherEntity;
+		sf::Vector2f Translation;
   };
 	typedef std::map<std::string, Prototype*> typePrototypeList;
 	typedef std::vector<sf::IntRect> typeRectList;

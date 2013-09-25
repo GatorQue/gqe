@@ -26,6 +26,8 @@ namespace GQE
     theEntity->mProperties.Add<typeEventID>("sCollisionReaction","");
     theEntity->mProperties.Add<typeEventID>("sCollisionEffect","");
     theEntity->mProperties.Add<typeCollisionData>("CollisionData",typeCollisionData());
+		theEntity->mProperties.Add<sf::Vector2f>("CollisionTranslation",sf::Vector2f(0,0));
+
     theEntity->mProperties.Add<bool>("bDebugDraw",false);
   }
 
@@ -66,6 +68,7 @@ namespace GQE
             //Detect Collision
 						sf::Transformable anTransformableA,anTransformableB;
 						anTransformableA.setPosition(anMovableEntity->mProperties.Get<sf::Vector2f>("vPosition"));
+						anTransformableA.move(anMovableEntity->mProperties.Get<sf::Vector2f>("vVelocity"));
             sf::IntRect anRectA=anMovableEntity->mProperties.Get<sf::IntRect>("rBoundingBox");
 						sf::Vector2f anScaleA(1,1);
 						anScaleA=anMovableEntity->mProperties.Get<sf::Vector2f>("vScale");
@@ -90,7 +93,46 @@ namespace GQE
 						if(anTransformableA.getTransform().transformRect(sf::FloatRect(anRectA)).intersects(anTransformableB.getTransform().transformRect(sf::FloatRect(anRectB)),anIntersectRect))
 #endif
             {
+							sf::Vector2f anPointA;
+							sf::Vector2f anPointB;
+							sf::Vector2f anTrasnlation;
+							if(anIntersectRect.width<anIntersectRect.height)
+							{
+								if(anTransformableA.getPosition().x<anTransformableB.getPosition().x)
+								{
+									anPointA=sf::Vector2f(anIntersectRect.left,anIntersectRect.top);
+									anPointB=sf::Vector2f(anIntersectRect.left,anIntersectRect.top+anIntersectRect.height);
+									anTrasnlation=sf::Vector2f(-(anPointA.y-anPointB.y),anPointA.x-anPointB.x);
+								}
+								else if(anTransformableA.getPosition().x>=anTransformableB.getPosition().x)
+								{
+									anPointA=sf::Vector2f(anIntersectRect.left+anIntersectRect.width,anIntersectRect.top);
+									anPointB=sf::Vector2f(anIntersectRect.left+anIntersectRect.width,anIntersectRect.top+anIntersectRect.height);
+									anTrasnlation=sf::Vector2f(anPointA.y-anPointB.y,-(anPointA.x-anPointB.x));
+								}
+							}
+							else if(anIntersectRect.width<anIntersectRect.height)
+							{
+								if(anTransformableA.getPosition().y<anTransformableB.getPosition().y)
+								{
+									anPointA=sf::Vector2f(anIntersectRect.left,anIntersectRect.top);
+									anPointB=sf::Vector2f(anIntersectRect.left+anIntersectRect.width,anIntersectRect.top);
+									anTrasnlation=sf::Vector2f(-(anPointA.y-anPointB.y),anPointA.x-anPointB.x);
+								}
+								else if(anTransformableA.getPosition().y>=anTransformableB.getPosition().y)
+								{
+									anPointA=sf::Vector2f(anIntersectRect.left,anIntersectRect.top+anIntersectRect.height);
+									anPointB=sf::Vector2f(anIntersectRect.left+anIntersectRect.width,anIntersectRect.top+anIntersectRect.height);
+									anTrasnlation=sf::Vector2f(anPointA.y-anPointB.y,-(anPointA.x-anPointB.x));
+								}
+							}
+							else
+							{
+
+							}
               typeCollisionData anData;
+							anTrasnlation=sf::Vector2f(anPointA.y-anPointB.y,-(anPointA.x-anPointB.x));
+							anData.Translation=anTrasnlation;
               anData.Collision = true;
 							anData.IntersectRect = sf::IntRect(anIntersectRect);
 							anData.MovingEntity = anMovableEntity;
