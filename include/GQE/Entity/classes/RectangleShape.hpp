@@ -1,35 +1,47 @@
 /**
- * Provides several math functions and methods used throughout
- * the GQE namespace.
+ * A basic class for rectangle collision objects
  *
- * @file include/GQE/Core/utils/MathUtils.hpp
+ * @file include/GQE/Entity/classes/RectangleShape.hpp
  * @author Jacob Dix
- * @date 20120809 - Initial Release
+ * @date 
  */
-#ifndef CORE_MATH_UTIL_HPP_INCLUDED
-#define CORE_MATH_UTIL_HPP_INCLUDED
-#define PI 3.14159265
-#include <math.h>
-#include <GQE/Core/Core_types.hpp>
+#ifndef RECTANGLE_COLLISION_HPP_INCLUDED
+#define RECTANGLE_COLLISION_HPP_INCLUDED
+
+#include <map>
+#include <GQE/Core/interfaces/IShape.hpp>
+#include <GQE/Entity/Entity_types.hpp>
+
 namespace GQE
 {
-void GQE_API SetSeed(GQE::Uint32 theSeed);
+  /// Provides the RectangleShape class
+  class GQE_API RectangleShape : public IShape
+  {
+    public:
+      /**
+       * RectangleShape default constructor
+       */
+      RectangleShape(GQE::Uint32 theWidth=0,GQE::Uint32 theHeight=0);
 
-float GQE_API Random(float theMin, float theMax);
+      /**
+       * RectangleShape deconstructor
+       */
+      virtual ~RectangleShape();
 
-int GQE_API Random(int theMin, int theMax);
+			void GenerateRectangle(GQE::Uint32 theWidth=0,GQE::Uint32 theHeight=0);
+    protected:
 
-GQE::Uint32 GQE_API Random(GQE::Uint32 theMin, GQE::Uint32 theMax);
-}
+    private:
+  };
+} // namespace GQE
 
-#endif // CORE_MATH_UTIL_HPP_INCLUDED
+#endif // RECTANGLE_COLLISION_HPP_INCLUDED
+
 /**
- * @ingroup Core
- * Provides several math functions and methods used throughout
- * the GQE namespace.
- *
- *
- * Copyright (c) 2010-2011 Ryan Lindeman
+ * @class GQE::RectangleShape
+ * @ingroup Entity
+ * 
+ * Copyright (c) 2010-2012 Jacob Dix
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights

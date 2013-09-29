@@ -21,7 +21,8 @@ set(INC
     ${INCROOT}/Core/classes/StatManager.hpp
     ${INCROOT}/Core/classes/StateManager.hpp
     ${INCROOT}/Core/classes/VersionInfo.hpp
-	${INCROOT}/Core/classes/ReferenceCount.hpp
+	${INCROOT}/Core/classes/Line.hpp
+	${INCROOT}/Core/interfaces/TVector2.hpp
     ${INCROOT}/Core/interfaces/IApp.hpp
     ${INCROOT}/Core/interfaces/IAssetHandler.hpp
     ${INCROOT}/Core/interfaces/IEvent.hpp
@@ -36,8 +37,8 @@ set(INC
     ${INCROOT}/Core/interfaces/TAsset.hpp
     ${INCROOT}/Core/interfaces/TAssetHandler.hpp
     ${INCROOT}/Core/interfaces/TEvent.hpp
-	${INCROOT}/Core/interfaces/TSmartPointer.hpp
     ${INCROOT}/Core/interfaces/TProperty.hpp
+	${INCROOT}/Core/interfaces/IShape.hpp
     ${INCROOT}/Core/loggers/Log_macros.hpp
     ${INCROOT}/Core/loggers/FatalLogger.hpp
     ${INCROOT}/Core/loggers/FileLogger.hpp
@@ -49,6 +50,7 @@ set(INC
     ${INCROOT}/Core/states/SplashState.hpp
     ${INCROOT}/Core/utils/StringUtil.hpp
 	${INCROOT}/Core/utils/MathUtil.hpp
+
 )
 
 # core library source files
@@ -71,7 +73,6 @@ set(SRC
     ${SRCROOT}/Core/classes/StatManager.cpp
     ${SRCROOT}/Core/classes/StateManager.cpp
     ${SRCROOT}/Core/classes/VersionInfo.cpp
-	${SRCROOT}/Core/classes/ReferenceCount.cpp
     ${SRCROOT}/Core/interfaces/IApp.cpp
     ${SRCROOT}/Core/interfaces/IAssetHandler.cpp
     ${SRCROOT}/Core/interfaces/IEvent.cpp
@@ -83,6 +84,7 @@ set(SRC
     ${SRCROOT}/Core/interfaces/IProcess.cpp
     ${SRCROOT}/Core/interfaces/IProperty.cpp
     ${SRCROOT}/Core/interfaces/IState.cpp
+    ${SRCROOT}/Core/interfaces/IShape.cpp
     ${SRCROOT}/Core/loggers/FatalLogger.cpp
     ${SRCROOT}/Core/loggers/FileLogger.cpp
     ${SRCROOT}/Core/loggers/ScopeLogger.cpp

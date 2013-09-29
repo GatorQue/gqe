@@ -14,6 +14,7 @@
  * @date 20120720 - Moved PropertyManager to Core library from Entity library
  * @date 20130107 - Added new INetClient, INetPacket, INetServer, and IProcess classes
  * @date 20130111 - Added new INetPool class
+ * @date 20130927 - Added IShape, TVector2 and Line classes.
  */
 #ifndef   GQE_CORE_HPP_INCLUDED
 #define   GQE_CORE_HPP_INCLUDED
@@ -66,7 +67,9 @@
 #include <GQE/Core/protocols/DirectoryServer.hpp>
 #include <GQE/Core/states/SplashState.hpp>
 #include <GQE/Core/utils/StringUtil.hpp>
-
+#include <GQE/Core/interfaces/TVector2.hpp>
+#include <GQE/Core/interfaces/IShape.hpp>
+#include <GQE/Core/classes/Line.hpp>
 #endif // GQE_CORE_HPP_INCLUDED
 
 /**

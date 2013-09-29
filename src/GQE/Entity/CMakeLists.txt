@@ -11,6 +11,8 @@ set(INC
     ${INCROOT}/Entity/classes/PrototypeManager.hpp
     ${INCROOT}/Entity/classes/Instance.hpp
     ${INCROOT}/Entity/classes/Prototype.hpp
+	${INCROOT}/Entity/classes/RectangleShape.hpp
+	${INCROOT}/Entity/classes/PolygonShape.hpp
     ${INCROOT}/Entity/interfaces/IAction.hpp
     ${INCROOT}/Entity/interfaces/IEntity.hpp
     ${INCROOT}/Entity/interfaces/ISystem.hpp
@@ -29,6 +31,8 @@ set(SRC
     ${SRCROOT}/Entity/classes/PrototypeManager.cpp
     ${SRCROOT}/Entity/classes/Instance.cpp
     ${SRCROOT}/Entity/classes/Prototype.cpp
+	${SRCROOT}/Entity/classes/RectangleShape.cpp
+	${SRCROOT}/Entity/classes/PolygonShape.cpp
     ${SRCROOT}/Entity/interfaces/IAction.cpp
     ${SRCROOT}/Entity/interfaces/IEntity.cpp
     ${SRCROOT}/Entity/interfaces/ISystem.cpp

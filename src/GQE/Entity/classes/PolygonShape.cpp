@@ -1,35 +1,23 @@
-/**
- * Provides several math functions and methods used throughout
- * the GQE namespace.
- *
- * @file include/GQE/Core/utils/MathUtils.hpp
- * @author Jacob Dix
- * @date 20120809 - Initial Release
- */
-#ifndef CORE_MATH_UTIL_HPP_INCLUDED
-#define CORE_MATH_UTIL_HPP_INCLUDED
-#define PI 3.14159265
-#include <math.h>
-#include <GQE/Core/Core_types.hpp>
+#include <GQE/Entity/classes/PolygonShape.hpp>
+#include <GQE/Core/loggers/Log_macros.hpp>
+
 namespace GQE
 {
-void GQE_API SetSeed(GQE::Uint32 theSeed);
+  PolygonShape::PolygonShape(std::vector<Vector2f> thePoints):
+		IShape()
+  {
+		mPoints=thePoints;
+		ConnectLines();
+  }
 
-float GQE_API Random(float theMin, float theMax);
+  PolygonShape::~PolygonShape()
+  {
 
-int GQE_API Random(int theMin, int theMax);
+  }
+} // namespace GQE
 
-GQE::Uint32 GQE_API Random(GQE::Uint32 theMin, GQE::Uint32 theMax);
-}
-
-#endif // CORE_MATH_UTIL_HPP_INCLUDED
 /**
- * @ingroup Core
- * Provides several math functions and methods used throughout
- * the GQE namespace.
- *
- *
- * Copyright (c) 2010-2011 Ryan Lindeman
+ * Copyright (c) 2010-2012 Jacob Dix
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights

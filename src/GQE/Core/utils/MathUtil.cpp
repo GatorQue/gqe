@@ -20,5 +20,4 @@ namespace GQE
 	{
 		return static_cast<double>(std::rand()) / RAND_MAX * theMax + theMin;
 	}
-
 }

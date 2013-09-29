@@ -8,7 +8,7 @@
 #include <SFML/Graphics.hpp>
 #include <GQE/Entity/interfaces/ICollisionSystem.hpp>
 #include <GQE/Entity/interfaces/IEntity.hpp>
-
+#include <GQE/Core/interfaces/IShape.hpp>
 namespace GQE
 {
   ICollisionSystem::ICollisionSystem(IApp& theApp) :
@@ -22,13 +22,11 @@ namespace GQE
 
   void ICollisionSystem::AddProperties(IEntity* theEntity)
   {
-    theEntity->mProperties.Add<sf::IntRect>("rBoundingBox",sf::IntRect());
-    theEntity->mProperties.Add<typeEventID>("sCollisionReaction","");
-    theEntity->mProperties.Add<typeEventID>("sCollisionEffect","");
-    theEntity->mProperties.Add<typeCollisionData>("CollisionData",typeCollisionData());
-		theEntity->mProperties.Add<sf::Vector2f>("CollisionTranslation",sf::Vector2f(0,0));
-
+    theEntity->mProperties.Add<IShape>("CollisionShape",IShape());
     theEntity->mProperties.Add<bool>("bDebugDraw",false);
+		theEntity->mProperties.Add<sf::Vector2f>("vCollisionOffset",sf::Vector2f(0,0));
+		theEntity->mProperties.Add<float>("fCollisionRotation",0.0f);
+
   }
 
   void ICollisionSystem::HandleInit(IEntity* theEntity)
@@ -52,6 +50,12 @@ namespace GQE
     while(anMovablesIter!=mMovables.end())
     {
       IEntity* anMovableEntity=(*anMovablesIter);
+			IShape anMovingShape=anMovableEntity->mProperties.Get<IShape>("CollisionShape");
+			anMovingShape.setPosition(anMovableEntity->mProperties.Get<sf::Vector2f>("vCollisionOffset")+anMovableEntity->mProperties.Get<sf::Vector2f>("vPosition")+anMovableEntity->mProperties.Get<sf::Vector2f>("vVelocity"));
+			anMovingShape.setRotation(anMovableEntity->mProperties.GetFloat("fRotation")+anMovableEntity->mProperties.GetFloat("fCollisionRotation"));
+			anMovingShape.setScale(anMovableEntity->mProperties.Get<sf::Vector2f>("vScale"));
+		
+			anMovableEntity->mProperties.Set<IShape>("CollisionShape",anMovingShape);
       anIter = mEntities.begin();
       while(anIter != mEntities.end())
       {
@@ -63,90 +67,30 @@ namespace GQE
 
           // Increment the IEntity iterator second
           anQueue++;
+
+					EntityUpdateFixed(anEntity);
+
+					IShape anOtherShape=anEntity->mProperties.Get<IShape>("CollisionShape");
+					anOtherShape.setPosition(anEntity->mProperties.Get<sf::Vector2f>("vCollisionOffset")+anEntity->mProperties.Get<sf::Vector2f>("vPosition"));
+					anOtherShape.setRotation(anEntity->mProperties.Get<float>("fRotation"));
+					anOtherShape.setScale(anEntity->mProperties.Get<sf::Vector2f>("vScale"));
+					anEntity->mProperties.Set<IShape>("CollisionShape",anOtherShape);
+          //Make sure we aren't handling two of the same entity.
+					typeCollisionData anMovingData;
           if(anEntity!=anMovableEntity)
           {
-            //Detect Collision
-						sf::Transformable anTransformableA,anTransformableB;
-						anTransformableA.setPosition(anMovableEntity->mProperties.Get<sf::Vector2f>("vPosition"));
-						anTransformableA.move(anMovableEntity->mProperties.Get<sf::Vector2f>("vVelocity"));
-            sf::IntRect anRectA=anMovableEntity->mProperties.Get<sf::IntRect>("rBoundingBox");
-						sf::Vector2f anScaleA(1,1);
-						anScaleA=anMovableEntity->mProperties.Get<sf::Vector2f>("vScale");
-						anTransformableA.setScale(anScaleA);
-						anTransformableB.setPosition(anEntity->mProperties.Get<sf::Vector2f>("vPosition"));
-            sf::IntRect anRectB=anEntity->mProperties.Get<sf::IntRect>("rBoundingBox");
-						sf::Vector2f anScaleB(1,1);
-						anScaleB=anEntity->mProperties.Get<sf::Vector2f>("vScale");
-						anTransformableB.setScale(anScaleB);
-            sf::FloatRect anIntersectRect;
-#if (SFML_VERSION_MAJOR < 2)
-            anRectA.Left+=anPositionA.x;
-            anRectA.Right+=anPositionA.x;
-            anRectA.Top+=anPositionA.y;
-            anRectA.Bottom+=anPositionA.y;
-            anRectB.Left+=anPositionB.x;
-            anRectB.Right+=anPositionB.x;
-            anRectB.Top+=anPositionB.y;
-            anRectB.Bottom+=anPositionB.y;
-            if(anRectA.Intersects(anRectB,&anIntersectRect))
-#else			
-						if(anTransformableA.getTransform().transformRect(sf::FloatRect(anRectA)).intersects(anTransformableB.getTransform().transformRect(sf::FloatRect(anRectB)),anIntersectRect))
-#endif
-            {
-							sf::Vector2f anPointA;
-							sf::Vector2f anPointB;
-							sf::Vector2f anTrasnlation;
-							if(anIntersectRect.width<anIntersectRect.height)
-							{
-								if(anTransformableA.getPosition().x<anTransformableB.getPosition().x)
-								{
-									anPointA=sf::Vector2f(anIntersectRect.left,anIntersectRect.top);
-									anPointB=sf::Vector2f(anIntersectRect.left,anIntersectRect.top+anIntersectRect.height);
-									anTrasnlation=sf::Vector2f(-(anPointA.y-anPointB.y),anPointA.x-anPointB.x);
-								}
-								else if(anTransformableA.getPosition().x>=anTransformableB.getPosition().x)
-								{
-									anPointA=sf::Vector2f(anIntersectRect.left+anIntersectRect.width,anIntersectRect.top);
-									anPointB=sf::Vector2f(anIntersectRect.left+anIntersectRect.width,anIntersectRect.top+anIntersectRect.height);
-									anTrasnlation=sf::Vector2f(anPointA.y-anPointB.y,-(anPointA.x-anPointB.x));
-								}
-							}
-							else if(anIntersectRect.width<anIntersectRect.height)
-							{
-								if(anTransformableA.getPosition().y<anTransformableB.getPosition().y)
-								{
-									anPointA=sf::Vector2f(anIntersectRect.left,anIntersectRect.top);
-									anPointB=sf::Vector2f(anIntersectRect.left+anIntersectRect.width,anIntersectRect.top);
-									anTrasnlation=sf::Vector2f(-(anPointA.y-anPointB.y),anPointA.x-anPointB.x);
-								}
-								else if(anTransformableA.getPosition().y>=anTransformableB.getPosition().y)
-								{
-									anPointA=sf::Vector2f(anIntersectRect.left,anIntersectRect.top+anIntersectRect.height);
-									anPointB=sf::Vector2f(anIntersectRect.left+anIntersectRect.width,anIntersectRect.top+anIntersectRect.height);
-									anTrasnlation=sf::Vector2f(anPointA.y-anPointB.y,-(anPointA.x-anPointB.x));
-								}
-							}
-							else
-							{
-
-							}
-              typeCollisionData anData;
-							anTrasnlation=sf::Vector2f(anPointA.y-anPointB.y,-(anPointA.x-anPointB.x));
-							anData.Translation=anTrasnlation;
-              anData.Collision = true;
-							anData.IntersectRect = sf::IntRect(anIntersectRect);
-							anData.MovingEntity = anMovableEntity;
-							anData.OtherEntity = anEntity;
-              anMovableEntity->mProperties.Set<typeCollisionData>("CollisionData",anData);
-              anEntity->mProperties.Set<typeCollisionData>("CollisionData",anData);
-              EntityCollision(anMovableEntity,anEntity,anData);
-            }
+						if(anMovingShape.Intersection(anOtherShape,anMovingData.MinimumTranslation))
+						{
+							anMovingData.Collision=true;
+							EntityCollision(anMovableEntity,anEntity,anMovingData);
+						}
           }
         } // while(anQueue != anIter->second.end())
 
         // Increment map iterator
         anIter++;
-      } //while(anIter != mEntities.end())
+      
+			} //while(anIter != mEntities.end())
       anMovablesIter++;
     }
   }

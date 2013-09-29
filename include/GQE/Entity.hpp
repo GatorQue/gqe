@@ -26,8 +26,9 @@
 #include <GQE/Entity/interfaces/ISystem.hpp>
 #include <GQE/Entity/interfaces/ICollisionSystem.hpp>
 #include <GQE/Entity/systems/AnimationSystem.hpp>
-#include <GQE/Entity/systems/MovementSystem.hpp>
+#include <GQE/Entity/systems/TransformSystem.hpp>
 #include <GQE/Entity/systems/RenderSystem.hpp>
+#include <GQE/Entity/systems/ActionSystem.hpp>
 
 #endif // ENTITY_HPP_INCLUDED
 

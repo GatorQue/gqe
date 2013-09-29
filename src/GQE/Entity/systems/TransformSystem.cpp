@@ -9,7 +9,8 @@
  * @date 20120622 - Small adjustments to implementation and Handle methods
  * @date 20120623 - Improved documentation and adjusted some properties
  * @date 20120630 - Improve ScreenWrap functionality using SpriteRect values
- * @date 20130622 - Renamed TransformSystem to TransformSystem. vPosition, fRotation and vScale now properties of TransformSystem.
+ * @date 20130722 - Renamed TransformSystem to TransformSystem. vPosition, fRotation and vScale now properties of TransformSystem.
+ * @date 20130928 - changed fDrag to vDrag.
  */
 #include <SFML/Graphics.hpp>
 #include <GQE/Entity/systems/TransformSystem.hpp>
@@ -32,7 +33,7 @@ namespace GQE
     theEntity->mProperties.Add<float>("fRotation", 0.0f);
 		theEntity->mProperties.Add<sf::Vector2f>("vVelocity",sf::Vector2f(0,0));
     theEntity->mProperties.Add<sf::Vector2f>("vAcceleration",sf::Vector2f(0,0));
-		theEntity->mProperties.Add<float>("fDrag",0.0f);
+		theEntity->mProperties.Add<sf::Vector2f>("vDrag",sf::Vector2f(0.0f,0.0f));
     theEntity->mProperties.Add<float>("fRotationalVelocity",0);
 		theEntity->mProperties.Add<float>("fStopThreshold",.01);
     theEntity->mProperties.Add<float>("fRotationalAcceleration",0);
@@ -62,19 +63,19 @@ namespace GQE
           // Get the TransformSystem properties
           sf::Vector2f anVelocity = theEntity->mProperties.Get<sf::Vector2f>("vVelocity");
           sf::Vector2f anAccelleration = theEntity->mProperties.Get<sf::Vector2f>("vAcceleration");
-					float anDrag=theEntity->mProperties.Get<float>("fDrag");
-					float anVelocityReduction=1-anDrag;
+					sf::Vector2f anDrag=theEntity->mProperties.Get<sf::Vector2f>("vDrag");
+					sf::Vector2f anVelocityReduction=sf::Vector2f(1-anDrag.x,1-anDrag.y);
           float anRotationalVelocity = theEntity->mProperties.Get<float>("fRotationalVelocity");
           float anRotationalAccelleration = theEntity->mProperties.Get<float>("fRotationalAcceleration");
 					float anStopThreshold=theEntity->mProperties.Get<float>("fStopThreshold");
           // Now update the current movement properties
-          anVelocity += anAccelleration;
           anPosition += anVelocity;
-					
+					anVelocity += anAccelleration;
+
 					anRotationalVelocity += anRotationalAccelleration;
           anRotation += anRotationalVelocity;
 					//Apply Drag
-					anVelocity=sf::Vector2f(anVelocity.x*anVelocityReduction,anVelocity.y*anVelocityReduction);
+					anVelocity=sf::Vector2f(anVelocity.x*anVelocityReduction.x,anVelocity.y*anVelocityReduction.y);
 					if(abs(anVelocity.x)<=anStopThreshold)
 					{
 						anVelocity.x=0;

@@ -124,14 +124,14 @@ namespace GQE
   class IProcess;
   class IProperty;
   class IState;
-
+	class IShape;
   // Forward declare GQE core classes provided
   class AssetManager;
   class ConfigReader;
   class EventManager;
   class PropertyManager;
   class StateManager;
-
+	class Line;
   // Forward declare GQE core assets provided
   class ConfigAsset;
   class ConfigHandler;
@@ -144,7 +144,7 @@ namespace GQE
   class MusicHandler;
   class SoundAsset;
   class SoundHandler;
-
+	
   // Forward declare GQE core loggers provided
   class FatalLogger;
   class FileLogger;
