@@ -10,7 +10,7 @@ namespace GQE
    public:
 		TVector2()
 		{
-			Vector2<T>();
+			sf::Vector2<T>();
 		}
 		TVector2(T theX, T theY)
 		{

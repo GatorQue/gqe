@@ -16,13 +16,13 @@ namespace GQE
 
 	void RectangleShape::GenerateRectangle(GQE::Uint32 theWidth,GQE::Uint32 theHeight)
 	{
-		Vector2f anPoint=Vector2f(0,0);
+		sf::Vector2f anPoint(0,0);
 		mPoints.push_back(anPoint);
-		anPoint=Vector2f(theWidth,0);
+		anPoint=sf::Vector2f(theWidth,0);
 		mPoints.push_back(anPoint);
-		anPoint=Vector2f(theWidth,theHeight);
+		anPoint=sf::Vector2f(theWidth,theHeight);
 		mPoints.push_back(anPoint);
-		anPoint=Vector2f(0,theHeight);
+		anPoint=sf::Vector2f(0,theHeight);
 		mPoints.push_back(anPoint);
 		ConnectLines();
 	}

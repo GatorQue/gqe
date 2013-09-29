@@ -22,7 +22,6 @@ set(INC
     ${INCROOT}/Core/classes/StateManager.hpp
     ${INCROOT}/Core/classes/VersionInfo.hpp
 	${INCROOT}/Core/classes/Line.hpp
-	${INCROOT}/Core/interfaces/TVector2.hpp
     ${INCROOT}/Core/interfaces/IApp.hpp
     ${INCROOT}/Core/interfaces/IAssetHandler.hpp
     ${INCROOT}/Core/interfaces/IEvent.hpp

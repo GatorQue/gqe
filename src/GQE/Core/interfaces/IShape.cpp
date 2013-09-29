@@ -1,5 +1,5 @@
 #include <GQE/Core/interfaces/IShape.hpp>
-#include <GQE/Config.hpp>
+#include <GQE/Core/utils/MathUtil.hpp>
 #include <limits>
 namespace GQE
 {
@@ -8,7 +8,7 @@ namespace GQE
 	{
 
 	}
-	IShape::IShape(std::vector<Vector2f> thePoints)
+	IShape::IShape(std::vector<sf::Vector2f> thePoints)
 	{
 		mPoints=thePoints;
 		ConnectLines();
@@ -19,19 +19,18 @@ namespace GQE
 	}
 	IShape IShape::GetShape()
 	{
-		std::vector<Vector2f> anPoints;
+		std::vector<sf::Vector2f> anPoints;
 		for(int i=0;i<mPoints.size();i++)
 		{
 			anPoints.push_back(TransformPoint(mPoints[i]));
 		}
 		return IShape(anPoints);
 	}
-	Vector2f IShape::TransformPoint(Vector2f thePoint)
+	sf::Vector2f IShape::TransformPoint(sf::Vector2f thePoint)
 	{
-		sf::Vector2f theTransformedPoint=getTransform().transformPoint((sf::Vector2f)thePoint);
-		return Vector2f(theTransformedPoint.x,theTransformedPoint.y);
+		return getTransform().transformPoint((sf::Vector2f)thePoint);
 	}
-	bool IShape::Intersection(IShape& theOtherShape, Vector2f& theMinimumTranslation)
+	bool IShape::Intersection(IShape& theOtherShape, sf::Vector2f& theMinimumTranslation)
 	{
 		//Exit if either shape is empty;
 		if(theOtherShape.mPoints.empty() || mPoints.empty())
@@ -42,20 +41,20 @@ namespace GQE
 		IShape anShapeB=theOtherShape.GetShape();
 		anShapeB.ConnectLines();
 		//Variables
-		std::vector<Vector2f> anAxes;
+		std::vector<sf::Vector2f> anAxes;
 		Uint32 anIndex;
-		Vector2f anSmallestAxis;
+		sf::Vector2f anSmallestAxis;
 		double anOverlap=std::numeric_limits<double>::max();
 		//Axes for this object.
 		for(anIndex=0;anIndex<anShapeA.mLines.size();++anIndex)
 		{
-			anAxes.push_back(anShapeA.mLines[anIndex].LineNormal().Normalize());
+			anAxes.push_back(NormalizeVector(anShapeA.mLines[anIndex].LineNormal()));
 		}
 
 		//Axes for other object.
 		for(anIndex=0;anIndex<anShapeB.mLines.size();++anIndex)
 		{
-			anAxes.push_back(anShapeB.mLines[anIndex].LineNormal().Normalize());
+			anAxes.push_back(NormalizeVector(anShapeB.mLines[anIndex].LineNormal()));
 		}
 		for(anIndex=0;anIndex<anAxes.size();++anIndex)
 		{
@@ -84,7 +83,7 @@ namespace GQE
 			}
 		}
 		theMinimumTranslation=anSmallestAxis;
-		theMinimumTranslation.Normalize();
+		theMinimumTranslation=NormalizeVector(theMinimumTranslation);
 		theMinimumTranslation*=(float)anOverlap;
 		return true;
 	}

@@ -3,7 +3,7 @@
  *
  * @file include/GQE/Entity/classes/RectangleShape.hpp
  * @author Jacob Dix
- * @date 
+ * @date
  */
 #ifndef POLYGON_COLLISION_HPP_INCLUDED
 #define POLYGON_COLLISION_HPP_INCLUDED
@@ -21,7 +21,7 @@ namespace GQE
       /**
        * TriangleShape default constructor
        */
-			PolygonShape(std::vector<Vector2f> thePoints);
+			PolygonShape(std::vector<sf::Vector2f> thePoints);
 
       /**
        * TriangleShape deconstructor
@@ -39,7 +39,7 @@ namespace GQE
 /**
  * @class GQE::TriangleShape
  * @ingroup Entity
- * 
+ *
  * Copyright (c) 2010-2012 Jacob Dix
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

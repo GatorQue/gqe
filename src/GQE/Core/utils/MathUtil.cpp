@@ -20,4 +20,14 @@ namespace GQE
 	{
 		return static_cast<double>(std::rand()) / RAND_MAX * theMax + theMin;
 	}
+  sf::Vector2f NormalizeVector(sf::Vector2f theVector)
+  {
+    float anMagnitude=sqrt((theVector.x*theVector.x)+(theVector.y*theVector.y));
+    sf::Vector2f anNormal=sf::Vector2f(theVector.x/anMagnitude,theVector.y/anMagnitude);
+    return anNormal;
+  }
+  float dotProduct(sf::Vector2f theVectorA, sf::Vector2f theVectorB)
+  {
+    return ((theVectorA.x*theVectorB.x)+(theVectorA.y*theVectorB.y));
+  }
 }

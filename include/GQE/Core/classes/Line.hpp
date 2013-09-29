@@ -1,10 +1,11 @@
 #ifndef GQE_LINE_HPP_INCLUDED
 #define GQE_LINE_HPP_INCLUDED
-#include <GQE/Core/interfaces/TVector2.hpp>
 #include <vector>
+#include <SFML/System.hpp>
+#include <GQE/Core/Core_types.hpp>
 namespace GQE
 {
-class Line
+class GQE_API Line
 {
   public:
   Line():
@@ -13,21 +14,21 @@ class Line
   {
 
   }
-  Line(Vector2f* thePointA, Vector2f* thePointB):
+  Line(sf::Vector2f* thePointA, sf::Vector2f* thePointB):
   PointA(thePointA),
   PointB(thePointB)
   {
 
   }
-  Vector2f LineNormal()
+  sf::Vector2f LineNormal()
   {
-    return(Vector2f(PointB->y-PointA->y,-(PointB->x-PointA->x)));
+    return(sf::Vector2f(PointB->y-PointA->y,-(PointB->x-PointA->x)));
   }
   bool Intersection(Line theLine)
   {
-    Vector2f CmP=Vector2f(theLine.PointA->x-PointA->x,theLine.PointA->y-PointA->y);
-    Vector2f r=Vector2f(PointB->x-PointA->x,PointB->y-PointA->y);
-    Vector2f s=Vector2f(theLine.PointB->x-theLine.PointA->x,theLine.PointB->y-theLine.PointA->y);
+    sf::Vector2f CmP=sf::Vector2f(theLine.PointA->x-PointA->x,theLine.PointA->y-PointA->y);
+    sf::Vector2f r=sf::Vector2f(PointB->x-PointA->x,PointB->y-PointA->y);
+    sf::Vector2f s=sf::Vector2f(theLine.PointB->x-theLine.PointA->x,theLine.PointB->y-theLine.PointA->y);
     float CmPxr = CmP.x * r.y - CmP.y * r.x;
     float CmPxs = CmP.x * s.y - CmP.y * s.x;
     float rxs = r.x * s.y - r.y * s.x;
@@ -61,8 +62,8 @@ class Line
     }
     return false;
   }
-  Vector2f* PointA;
-  Vector2f* PointB;
+  sf::Vector2f* PointA;
+  sf::Vector2f* PointB;
 };
 }
 

@@ -49,7 +49,7 @@ namespace GQE
 
   struct typeCollisionData
   {
-		Vector2f MinimumTranslation;
+		sf::Vector2f MinimumTranslation;
 		bool Collision;
 
   };

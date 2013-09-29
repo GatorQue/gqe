@@ -20,6 +20,10 @@ float GQE_API Random(float theMin, float theMax);
 int GQE_API Random(int theMin, int theMax);
 
 GQE::Uint32 GQE_API Random(GQE::Uint32 theMin, GQE::Uint32 theMax);
+
+sf::Vector2f GQE_API NormalizeVector(sf::Vector2f theVector);
+
+float GQE_API dotProduct(sf::Vector2f theVectorA, sf::Vector2f theVectorB);
 }
 
 #endif // CORE_MATH_UTIL_HPP_INCLUDED
