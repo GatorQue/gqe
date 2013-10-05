@@ -83,6 +83,7 @@ namespace GQE
 						{
 							anMovingData.Collision=true;
 							EntityCollision(anMovableEntity,anEntity,anMovingData);
+							anMovingShape.setPosition(anMovableEntity->mProperties.Get<sf::Vector2f>("vCollisionOffset")+anMovableEntity->mProperties.Get<sf::Vector2f>("vPosition")+anMovableEntity->mProperties.Get<sf::Vector2f>("vVelocity"));
 						}
           }
         } // while(anQueue != anIter->second.end())
