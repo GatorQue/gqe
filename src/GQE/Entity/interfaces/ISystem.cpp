@@ -177,7 +177,10 @@ namespace GQE
     // Last of all clear our list of deques
     mEntities.clear();
   }
+  void ISystem::AddEvents(IEntity* theEntity)
+  {
 
+  }
   void ISystem::HandleCleanup(IEntity* theEntity)
   {
     // Do nothing

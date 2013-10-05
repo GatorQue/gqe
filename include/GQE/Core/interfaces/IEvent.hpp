@@ -58,7 +58,6 @@ namespace GQE
        * the derived IEvent class.
        */
       virtual void DoEvent(void* theContext = NULL) = 0;
-
     protected:
       /**
        * SetType is responsible for setting the type of class this IEvent

@@ -32,7 +32,7 @@ namespace GQE
       ///////////////////////////////////////////////////////////////////////////
       PropertyManager mProperties;
 
-	  EventManager mEventManager;
+      EventManager mEventManager;
       /**
        * IEntity default constructor
        */

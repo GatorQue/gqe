@@ -3,7 +3,8 @@
 
 namespace GQE
 {
-  PolygonShape::PolygonShape(std::vector<sf::Vector2f> thePoints):
+  PolygonShape::PolygonShape(std::vector<sf::
+  Vector2f> thePoints):
 		IShape()
   {
 		mPoints=thePoints;

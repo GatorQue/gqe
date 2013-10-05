@@ -92,6 +92,18 @@ namespace GQE
       ELOG() << "EventManager::Add() null IEvent pointer provided!" << std::endl;
     }
   }
+  void EventManager::Clone(EventManager& theEventManager)
+  {
+        // Make sure to remove all registered properties on desstruction
+    std::map<const typeEventID, IEvent*>::const_iterator anEventIter;
+    for(anEventIter = theEventManager.mList.begin();
+        anEventIter != theEventManager.mList.end();
+        ++anEventIter)
+    {
+      IEvent* anEvent = (anEventIter->second);
+      Add(anEvent);
+    }
+  }
 } // namespace GQE
 
 /**

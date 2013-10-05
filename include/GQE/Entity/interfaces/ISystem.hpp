@@ -62,6 +62,14 @@ namespace GQE
        */
       virtual void AddProperties(IEntity* theEntity) = 0;
 
+
+      /**
+       * AddEvent is responsible for adding the events used by this
+       * ISystem derived class to the IEntity derived class provided.
+       * @param[in] theEntity to add the events to.
+       */
+      virtual void AddEvents(IEntity* theEntity);
+
       /**
        * HasEntity is responsible for finding if the IEntity class has already
        * been registered with this ISystem.

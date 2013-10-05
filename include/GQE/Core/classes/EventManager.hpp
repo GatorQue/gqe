@@ -101,7 +101,6 @@ namespace GQE
           }
         }
       }
-
       /**
        * Add will manage theEvent provided in this EventManager. Sometimes you might
        * want to create your own IEvent based classes instead of using the TEvent
@@ -109,13 +108,16 @@ namespace GQE
        * @param[in] theEvent is a pointer to a class that derives from IEvent
        */
       void Add(IEvent* theEvent);
-    protected:
 
-    private:
+      void Clone(EventManager& theEventManager);
       // Variables
       ///////////////////////////////////////////////////////////////////////////
       /// A map of all events available for this EventManager class
       std::map<const typeEventID, IEvent*> mList;
+    protected:
+
+    private:
+
 
   }; // EventManager class
 } // namespace GQE
