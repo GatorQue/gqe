@@ -28,7 +28,7 @@ namespace GQE
   class Prototype;
   class Instance;
   class PrototypeManager;
-
+  class SystemManager;
   // Forward declare GQE Entity systems provided
   class ActionSystem;
   class AnimationSystem;

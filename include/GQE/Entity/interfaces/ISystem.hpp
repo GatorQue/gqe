@@ -147,6 +147,8 @@ namespace GQE
        * @param[in] theEntity to update
        */
       virtual void EntityDraw(IEntity* theEntity);
+
+      GQE::EventManager mEventManager;
     protected:
       //Variables
       /////////////////////////////////////////////////////////////
@@ -168,6 +170,7 @@ namespace GQE
        */
       virtual void HandleCleanup(IEntity* theEntity);
 
+      
     private:
       //Variables
       /////////////////////////////////////////////////////////////
