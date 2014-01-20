@@ -54,7 +54,10 @@ namespace GQE
 			anMovingShape.setPosition(anMovableEntity->mProperties.Get<sf::Vector2f>("vCollisionOffset")+anMovableEntity->mProperties.Get<sf::Vector2f>("vPosition")+anMovableEntity->mProperties.Get<sf::Vector2f>("vVelocity"));
 			anMovingShape.setRotation(anMovableEntity->mProperties.GetFloat("fRotation")+anMovableEntity->mProperties.GetFloat("fCollisionRotation"));
 			anMovingShape.setScale(anMovableEntity->mProperties.Get<sf::Vector2f>("vScale"));
-		
+			sf::Vector2f anOrigin=anMovableEntity->mProperties.Get<sf::Vector2f>("vOrigin");
+			anOrigin.x*=anMovingShape.GetSize().x;
+			anOrigin.y*=anMovingShape.GetSize().y;
+			anMovingShape.setOrigin(anOrigin);
 			anMovableEntity->mProperties.Set<IShape>("CollisionShape",anMovingShape);
       anIter = mEntities.begin();
       while(anIter != mEntities.end())
@@ -72,8 +75,12 @@ namespace GQE
 
 					IShape anOtherShape=anEntity->mProperties.Get<IShape>("CollisionShape");
 					anOtherShape.setPosition(anEntity->mProperties.Get<sf::Vector2f>("vCollisionOffset")+anEntity->mProperties.Get<sf::Vector2f>("vPosition"));
-					anOtherShape.setRotation(anEntity->mProperties.Get<float>("fRotation"));
+          anOtherShape.setRotation(anEntity->mProperties.Get<float>("fRotation") + anEntity->mProperties.GetFloat("fCollisionRotation"));
 					anOtherShape.setScale(anEntity->mProperties.Get<sf::Vector2f>("vScale"));
+          sf::Vector2f anOrigin = anEntity->mProperties.Get<sf::Vector2f>("vOrigin");
+          anOrigin.x *= anOtherShape.GetSize().x;
+          anOrigin.y *= anOtherShape.GetSize().y;
+          anOtherShape.setOrigin(anOrigin);
 					anEntity->mProperties.Set<IShape>("CollisionShape",anOtherShape);
           //Make sure we aren't handling two of the same entity.
 					typeCollisionData anMovingData;
@@ -143,24 +150,11 @@ namespace GQE
         // Are we drawing the bounding box
         if(anEntity->mProperties.Get<bool>("bDebugDraw"))
         {
-          sf::IntRect anBoundingBox = anEntity->mProperties.Get<sf::IntRect>("rBoundingBox");
-          sf::Vector2f anPosition = anEntity->mProperties.Get<sf::Vector2f>("vPosition");
-					sf::Vector2f anOrigin = anEntity->mProperties.Get<sf::Vector2f>("vOrigin");
-					sf::Vector2f anScale = anEntity->mProperties.Get<sf::Vector2f>("vScale");
-#if (SFML_VERSION_MAJOR < 2)
-          sf::Shape anShape = sf::Shape::Rectangle(sf::Vector2f(0,0),
-                                                   sf::Vector2f(anBoundingBox.GetWidth(),anBoundingBox.GetHeight()),
-                                                   sf::Color(0,0,0));
-          anShape.SetPosition(anBoundingBox.Left+anPosition.x,anBoundingBox.Top+anPosition.y);
-          mApp.mWindow.Draw(anShape);
-#else
-          sf::RectangleShape anShape(sf::Vector2f((float)anBoundingBox.width,(float)anBoundingBox.height));
-					anShape.setPosition(anPosition.x+anBoundingBox.left*anScale.x,anPosition.y+anBoundingBox.top*anScale.y);
-					anShape.setScale(anScale);
-
-          mApp.mWindow.draw(anShape);
-#endif
-        } //if(anEntity->mProperties.Get<bool>("bFixedMovement") == false)
+          IShape anShape=anEntity->mProperties.Get<IShape>("CollisionShape");
+          sf::ConvexShape anConvexShape = anShape.GetDrawableShape();
+          anConvexShape.setFillColor(sf::Color::Green);
+          mApp.mWindow.draw(anConvexShape);
+        }
       } // while(anQueue != anIter->second.end())
 
       // Increment map iterator

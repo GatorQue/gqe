@@ -1,5 +1,6 @@
 #include <GQE/Core/interfaces/IShape.hpp>
 #include <GQE/Core/utils/MathUtil.hpp>
+#include <SFML/Graphics/ConvexShape.hpp>
 #include <limits>
 namespace GQE
 {
@@ -25,6 +26,31 @@ namespace GQE
 			anPoints.push_back(TransformPoint(mPoints[i]));
 		}
 		return IShape(anPoints);
+	}
+  sf::ConvexShape IShape::GetDrawableShape()
+  {
+    sf::ConvexShape anConvexShape(mPoints.size());
+    for (int i = 0; i<mPoints.size(); i++)
+    {
+      anConvexShape.setPoint(i, TransformPoint(mPoints[i]));
+    }
+    return anConvexShape;
+  }
+	sf::Vector2f IShape::GetSize()
+	{
+		sf::Vector2f anXAxis(1,0), anYAxis(0,1);
+		float anMinX, anMinY, anMaxX, anMaxY;
+		//GetWidth
+		for(int i=0;i<mPoints.size();++i)
+		{
+			ProjectOntoAxis(anXAxis, anMinX, anMaxX);
+		}
+		//GetHeight
+		for(int i=0;i<mPoints.size();++i)
+		{
+			ProjectOntoAxis(anYAxis, anMinY, anMaxY);
+		}
+		return sf::Vector2f(anMaxX-anMinX,anMaxY-anMinY);
 	}
 	sf::Vector2f IShape::TransformPoint(sf::Vector2f thePoint)
 	{

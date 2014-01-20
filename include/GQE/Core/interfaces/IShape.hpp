@@ -12,7 +12,9 @@ namespace GQE
 			virtual ~IShape();
 			bool Intersection(IShape& theOtherShape, sf::Vector2f& theMinimumTranslation);
 			IShape GetShape();
+      sf::ConvexShape GetDrawableShape();
 			void ProjectOntoAxis (const sf::Vector2f& theAxis, float& theMin, float& theMax);
+			sf::Vector2f GetSize();
 			std::vector<sf::Vector2f> mPoints;
       std::vector<Line> mLines;
     protected:

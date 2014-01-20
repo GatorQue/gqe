@@ -329,7 +329,7 @@ namespace GQE
       if((count % 16) == 0)
       {
         // Log this line
-        ILOG() << (count / 16) * 16 << ":" << anPayloadHex.str() << " *" << anPayloadAscii << "*" << std::endl;
+        ILOG() << (count / 16) * 16 << ":" << anPayloadHex.str() << " *" << anPayloadAscii.str() << "*" << std::endl;
 
         // Clear the payload strings and keep going
         anPayloadHex.clear();
