@@ -17,6 +17,7 @@ set(INC
     ${INCROOT}/Entity/interfaces/IEntity.hpp
     ${INCROOT}/Entity/interfaces/ISystem.hpp
     ${INCROOT}/Entity/interfaces/ICollisionSystem.hpp
+    ${INCROOT}/Entity/classes/SystemManager.hpp
     ${INCROOT}/Entity/Entity_types.hpp
 )
 
@@ -32,6 +33,7 @@ set(SRC
     ${SRCROOT}/Entity/classes/Prototype.cpp
 	${SRCROOT}/Entity/classes/RectangleShape.cpp
 	${SRCROOT}/Entity/classes/PolygonShape.cpp
+  ${SRCROOT}/Entity/classes/SystemManager.cpp
     ${SRCROOT}/Entity/interfaces/IAction.cpp
     ${SRCROOT}/Entity/interfaces/IEntity.cpp
     ${SRCROOT}/Entity/interfaces/ISystem.cpp
