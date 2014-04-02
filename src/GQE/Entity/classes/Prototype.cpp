@@ -109,8 +109,6 @@ namespace GQE
         anSystem->AddEntity(anInstance);
       }
 
-      //Copy over the eventlist to our instance
-      anInstance->mEventManager.Clone(mEventManager);
       // Add this Instance to our list of instances we have created
       mInstances.insert(std::pair<const typeEntityID, Instance*>(
         anInstance->GetID(), anInstance));

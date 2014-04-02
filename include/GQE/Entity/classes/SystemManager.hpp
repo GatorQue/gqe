@@ -4,6 +4,7 @@
  * @file include/GQE/Entity/classes/SystemManager.hpp
  * @author Jacob Dix
  * @date 20140111 - Initial Release
+ * @date 20140401 - Renamed from SystemManager to World. 
  */
 
 #ifndef SYSTEM_DIRECTORY_HPP_INCLUDED
@@ -23,12 +24,6 @@ namespace GQE
        * SystemManager default constructor
        */
       SystemManager();
-
-      /**
-       * SystemManager default constructor
-       * @param[in] theActionSystem pointer to use for adding actions
-       */
-      SystemManager(ActionSystem* theActionSystem);
 
       /**
        * SystemManager deconstructor

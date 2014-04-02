@@ -108,8 +108,6 @@ namespace GQE
        * @param[in] theEvent is a pointer to a class that derives from IEvent
        */
       void Add(IEvent* theEvent);
-
-      void Clone(EventManager& theEventManager);
       // Variables
       ///////////////////////////////////////////////////////////////////////////
       /// A map of all events available for this EventManager class

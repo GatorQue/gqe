@@ -38,7 +38,6 @@ namespace GQE
 
   void RenderSystem::HandleInit(IEntity* theEntity)
   {
-		theEntity->mEventManager.Add<RenderSystem,PropertyManager>("ViewEntity",*this,&RenderSystem::ViewEntity);
   }
 
   void RenderSystem::EntityHandleEvents(IEntity* theEntity,sf::Event theEvent)
@@ -75,7 +74,7 @@ namespace GQE
 				sf::VertexArray anVertexArray=theEntity->mProperties.Get<sf::VertexArray>("VertexArray");
 
 				sf::Color anColor=theEntity->mProperties.Get<sf::Color>("cColor");
-				sf::IntRect anRect=theEntity->mProperties.Get<sf::IntRect>("rTextureRect");
+				sf::FloatRect anRect=sf::FloatRect(theEntity->mProperties.Get<sf::IntRect>("rTextureRect"));
 				sf::Vector2f anOrigin=theEntity->mProperties.Get<sf::Vector2f>("vOrigin");
 				anTransformable.setPosition(theEntity->mProperties.Get<sf::Vector2f>("vPosition"));
 				anTransformable.setRotation(theEntity->mProperties.Get<float>("fRotation"));
@@ -83,11 +82,11 @@ namespace GQE
 
 				if(anRect.width==0)
 				{
-						anRect.width=anTexture->getSize().x;
+					anRect.width=(float)anTexture->getSize().x;
 				}
 				if(anRect.height==0)
 				{
-					anRect.height=anTexture->getSize().y;
+          anRect.height=(float)anTexture->getSize().y;
 				}
 				//if vertex array is empty. default to a sprite( four verties).
 				if(anVertexArray.getVertexCount()==0)
@@ -131,7 +130,7 @@ namespace GQE
     }
     return mApp.mWindow.getDefaultView();
   }
-	void RenderSystem::ViewEntity(PropertyManager* theProperties)
+	void RenderSystem::EventViewEntity(PropertyManager* theProperties)
 	{
 		IEntity* anEntity=theProperties->Get<IEntity*>("Entity");
 		std::string anViewID=theProperties->GetString("sView");

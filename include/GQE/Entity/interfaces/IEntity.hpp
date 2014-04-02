@@ -32,7 +32,6 @@ namespace GQE
       ///////////////////////////////////////////////////////////////////////////
       PropertyManager mProperties;
 
-      EventManager mEventManager;
       /**
        * IEntity default constructor
        */
@@ -95,10 +94,6 @@ namespace GQE
        * @param[in] theSystemID to find and drop from this entity
        */
       void DropSystem(const typeSystemID theSystemID);
-
-      virtual void Write(std::fstream& theFileStream);
-
-      virtual void Read(std::fstream& theFileStream);
     protected:
       // Variables
       ///////////////////////////////////////////////////////////////////////////

@@ -123,13 +123,6 @@ namespace GQE
       anSystem->DropEntity(GetID());
     }
   }
-  void IEntity::Write(std::fstream& theFileStream)
-  {
-  }
-  void IEntity::Read(std::fstream& theFileStream)
-  {
-
-  }
 } // namespace GQE
 
 /**
