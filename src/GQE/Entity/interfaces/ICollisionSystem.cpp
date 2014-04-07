@@ -83,13 +83,14 @@ namespace GQE
           anOtherShape.setOrigin(anOrigin);
 					anEntity->mProperties.Set<IShape>("CollisionShape",anOtherShape);
           //Make sure we aren't handling two of the same entity.
-					typeCollisionData anMovingData;
+					CollisionContext anContext;
           if(anEntity!=anMovableEntity)
           {
-						if(anMovingShape.Intersection(anOtherShape,anMovingData.MinimumTranslation))
+            if (anMovingShape.Intersection(anOtherShape, anContext.MinimumTranslation))
 						{
-							anMovingData.Collision=true;
-							EntityCollision(anMovableEntity,anEntity,anMovingData);
+              anContext.MovingEntity = anMovableEntity;
+              anContext.OtherEntity = anEntity;
+              EntityCollision(anContext);
 							anMovingShape.setPosition(anMovableEntity->mProperties.Get<sf::Vector2f>("vCollisionOffset")+anMovableEntity->mProperties.Get<sf::Vector2f>("vPosition")+anMovableEntity->mProperties.Get<sf::Vector2f>("vVelocity"));
 						}
           }
@@ -164,7 +165,22 @@ namespace GQE
 
   void ICollisionSystem::HandleCleanup(IEntity* theEntity)
   {
-    // Do nothing
+    if (theEntity->mProperties.Get<bool>("bMovable"))
+    {
+      GQE::Uint32 anRemovedIndex = 0;
+      bool anFound = false;
+      GQE::Uint32 anIndex;
+      for (anIndex = 0; anIndex != mMovables.size();++anIndex)
+      {
+        GQE::IEntity* anEntity = mMovables.at(anIndex);
+        if (anEntity->GetID() == theEntity->GetID())
+        {
+          anFound = true;
+          anRemovedIndex = anIndex;
+        }
+      }
+      mMovables.erase(mMovables.begin() + anRemovedIndex);
+    }
   }
 } // namespace GQE
 

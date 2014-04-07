@@ -19,6 +19,7 @@ namespace GQE
   RenderSystem::RenderSystem(IApp& theApp):
     ISystem("RenderSystem",theApp)
   {
+    theApp.mEventManager.Add<RenderSystem, ViewContext>("ViewEntity", *this, &RenderSystem::EventViewEntity);
   }
 
   RenderSystem::~RenderSystem()
@@ -130,13 +131,11 @@ namespace GQE
     }
     return mApp.mWindow.getDefaultView();
   }
-	void RenderSystem::EventViewEntity(PropertyManager* theProperties)
+	void RenderSystem::EventViewEntity(ViewContext* theContext)
 	{
-		IEntity* anEntity=theProperties->Get<IEntity*>("Entity");
-		std::string anViewID=theProperties->GetString("sView");
-	  sf::View anView=GetView(anViewID);
-		anView.setCenter(anEntity->mProperties.Get<sf::Vector2f>("vPosition"));
-		SetView(anViewID,anView);
+    sf::View anView = GetView(theContext->ViewID);
+    anView.setCenter(theContext->TargetEntity->mProperties.Get<sf::Vector2f>("vPosition"));
+    SetView(theContext->ViewID, anView);
 	}
 } // namespace GQE
 

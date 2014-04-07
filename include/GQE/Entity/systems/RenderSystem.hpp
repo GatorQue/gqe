@@ -21,6 +21,18 @@ namespace GQE
   class GQE_API RenderSystem : public ISystem
   {
     public:
+      struct ViewContext
+      {
+        std::string ViewID;
+        IEntity* TargetEntity;
+        ViewContext(std::string theViewID, IEntity* theTargetEntity):
+          ViewID(theViewID),
+          TargetEntity(theTargetEntity)
+        {
+
+        }
+      };
+    public:
 
       /**
        * RenderSystem Constructor.
@@ -70,9 +82,10 @@ namespace GQE
        * class.
        */
       virtual void EntityDraw(IEntity* theEntity);
+
       virtual void SetView(std::string theViewID,sf::View theView);
       virtual sf::View GetView(std::string theViewID);
-      void EventViewEntity(PropertyManager* theProperties);
+      void EventViewEntity(ViewContext* theContext);
 		protected:
       /**
        * HandleInit is called to allow each derived ISystem to perform any

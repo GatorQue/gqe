@@ -61,14 +61,10 @@ namespace GQE
   {
     std::map<const typeEventID, IEvent*>::const_iterator anIter =
       mList.find(theEventID);
-    while (anIter != mList.end())
+    if (anIter != mList.end())
     {
       // Get the event to execute
       IEvent* anEvent = anIter->second;
-
-      // Iterate to the next event
-      anIter++;
-
       // Now call DoEvent for this event with theContext provided
       anEvent->DoEvent(theContext);
     }

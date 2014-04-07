@@ -48,15 +48,8 @@ namespace GQE
   /// Declare System ID typedef which is used for identifying ISystem objects
   typedef std::string typeSystemID;
 
-  struct typeCollisionData
-  {
-		sf::Vector2f MinimumTranslation;
-		bool Collision;
-
-  };
 	typedef std::map<std::string, Prototype*> typePrototypeList;
 	typedef std::vector<sf::IntRect> typeRectList;
-  typedef std::queue<IAction> typeActionQueue;
 }
 #endif // ENTITY_TYPES_HPP_INCLUDED
 

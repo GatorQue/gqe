@@ -19,6 +19,12 @@ namespace GQE
   class GQE_API ICollisionSystem : public ISystem
   {
     public:
+      struct CollisionContext
+      {
+        IEntity* MovingEntity;
+        IEntity* OtherEntity;
+        sf::Vector2f MinimumTranslation;
+      };
       /**
        * ICollisionSystem Constructor.
        * @param[in] theApp is the current GQE app.
@@ -81,7 +87,7 @@ namespace GQE
        */
       virtual void HandleCleanup(IEntity* theEntity);
 
-      virtual void EntityCollision(IEntity* theMovingEntity,IEntity* theOtherEntity, typeCollisionData theCollisionData)=0;
+      virtual void EntityCollision(CollisionContext anCollisionContext)=0;
     private:
       std::vector<IEntity*> mMovables;
 
