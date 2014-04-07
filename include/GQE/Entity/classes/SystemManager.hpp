@@ -20,6 +20,8 @@ namespace GQE
   class GQE_API SystemManager
   {
     public:
+      EventManager mEventManager; // holds systemwide events
+    public:
       /**
        * SystemManager default constructor
        */
@@ -31,6 +33,7 @@ namespace GQE
       virtual ~SystemManager();
 
       void TriggerEvent(typeSystemID theSystemId, std::string theEventId,void* theContext=NULL);
+      
       void AddSystem(GQE::ISystem* theSystem, typeSystemID theSystemId = "");
 
       /**

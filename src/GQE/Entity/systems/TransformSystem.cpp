@@ -35,7 +35,7 @@ namespace GQE
     theEntity->mProperties.Add<sf::Vector2f>("vAcceleration",sf::Vector2f(0,0));
 		theEntity->mProperties.Add<sf::Vector2f>("vDrag",sf::Vector2f(0.0f,0.0f));
     theEntity->mProperties.Add<float>("fRotationalVelocity",0);
-		theEntity->mProperties.Add<float>("fStopThreshold",.01);
+		theEntity->mProperties.Add<float>("fStopThreshold",.01f);
     theEntity->mProperties.Add<float>("fRotationalAcceleration",0);
     theEntity->mProperties.Add<bool>("bFixedMovement",true);
     theEntity->mProperties.Add<bool>("bScreenWrap",false);

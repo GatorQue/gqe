@@ -30,6 +30,7 @@
  * @date 20120702 - Call new IState::Cleanup method during game loop
  * @date 20121107 - Fix warning: type qualifiers ignored on function return type
  * @date 20121107 - Padding IApp class
+ * @date 20141107 - Added a global EventManager member.
  */
 
 #include <assert.h>
@@ -68,6 +69,7 @@ namespace GQE
     mStatManager(),
     mStateManager(),
     mVideoMode(DEFAULT_VIDEO_WIDTH, DEFAULT_VIDEO_HEIGHT, DEFAULT_VIDEO_BPP),
+    mEventManager(),
     mMaxUpdates(5),
     mExitCode(0),
 #if (SFML_VERSION_MAJOR < 2)

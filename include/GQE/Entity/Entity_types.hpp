@@ -14,6 +14,7 @@
 #define ENTITY_TYPES_HPP_INCLUDED
 
 #include <string>
+#include <queue>
 #include <GQE/Config.hpp>
 #include <GQE/Core.hpp>
 
@@ -55,6 +56,7 @@ namespace GQE
   };
 	typedef std::map<std::string, Prototype*> typePrototypeList;
 	typedef std::vector<sf::IntRect> typeRectList;
+  typedef std::queue<IAction> typeActionQueue;
 }
 #endif // ENTITY_TYPES_HPP_INCLUDED
 

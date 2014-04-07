@@ -47,7 +47,13 @@ namespace GQE
        * @param[in] theContext for the event, typically a different class
        */
       void DoEvents(void* theContext = NULL);
-
+      /**
+      * DoEvent should be called to execute the DoEvent method for a single
+      * IEvent stored in this EventManager.
+      * @param[in] theEventID for the event.
+      * @param[in] theContext for the event, typically a different class
+      */
+      void DoEvent(typeEventID theEventID, void* theContext = NULL);
       /**
        * Get returns the IEvent that matches theEventID specified that was
        * previously added to the EventManager using the Add methods.

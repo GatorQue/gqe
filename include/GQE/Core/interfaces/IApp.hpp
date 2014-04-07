@@ -21,6 +21,7 @@
  * @date 20120720 - Add new PropertyManager to IApp class for storing app wide properties
  * @date 20121107 - Fix warning: type qualifiers ignored on function return type
  * @date 20121107 - Padding IApp class
+ * @date 20141107 - Added a global EventManager member.
  */
 #ifndef   CORE_APP_HPP_INCLUDED
 #define   CORE_APP_HPP_INCLUDED
@@ -35,6 +36,7 @@
 #include <GQE/Core/classes/PropertyManager.hpp>
 #include <GQE/Core/classes/StatManager.hpp>
 #include <GQE/Core/classes/StateManager.hpp>
+#include <GQE/Core/classes/EventManager.hpp>
 #include <GQE/Core/Core_types.hpp>
 
 namespace GQE
@@ -71,7 +73,8 @@ namespace GQE
       StateManager              mStateManager;
       /// Video Mode to use (width, height, bpp)
       sf::VideoMode             mVideoMode;
-      
+      /// A global event manager
+      EventManager              mEventManager;
       // Constants
       /////////////////////////////////////////////////////////////////////////
       /// Default Video Width to use if config file not found

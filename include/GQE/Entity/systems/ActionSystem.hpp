@@ -81,7 +81,11 @@ namespace GQE
        * class.
        */
       virtual void Draw(void);
-
+      /**
+      * eDoAction is an event function to be set up with an event manager. 
+      * This allows 
+      */
+      void eDoAction(IEntity* theEntity);
     protected:
       /**
        * HandleInit is called to allow each derived ISystem to perform any
