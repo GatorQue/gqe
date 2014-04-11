@@ -21,18 +21,6 @@ namespace GQE
   class GQE_API RenderSystem : public ISystem
   {
     public:
-      struct ViewContext
-      {
-        std::string ViewID;
-        IEntity* TargetEntity;
-        ViewContext(std::string theViewID, IEntity* theTargetEntity):
-          ViewID(theViewID),
-          TargetEntity(theTargetEntity)
-        {
-
-        }
-      };
-    public:
 
       /**
        * RenderSystem Constructor.

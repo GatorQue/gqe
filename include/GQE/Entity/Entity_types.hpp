@@ -50,6 +50,26 @@ namespace GQE
 
 	typedef std::map<std::string, Prototype*> typePrototypeList;
 	typedef std::vector<sf::IntRect> typeRectList;
+	
+	/// Declare Event context for entity events.
+  struct CollisionContext
+  {
+    IEntity* MovingEntity;
+    IEntity* OtherEntity;
+    sf::Vector2f MinimumTranslation;
+  };
+  struct ViewContext
+  {
+    std::string ViewID;
+    IEntity* TargetEntity;
+    ViewContext(std::string theViewID, IEntity* theTargetEntity):
+      ViewID(theViewID),
+      TargetEntity(theTargetEntity)
+    {
+
+    }
+  };
+
 }
 #endif // ENTITY_TYPES_HPP_INCLUDED
 

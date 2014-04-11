@@ -40,7 +40,7 @@ namespace GQE
     theEntity->mProperties.Add<bool>("bFixedMovement",true);
     theEntity->mProperties.Add<bool>("bScreenWrap",false);
     theEntity->mProperties.Add<bool>("bMovable",true);
-		
+
   }
 
   void TransformSystem::HandleInit(IEntity* theEntity)
@@ -48,8 +48,8 @@ namespace GQE
     // Do nothing
   }
   void TransformSystem::EntityHandleEvents(IEntity* theEntity,sf::Event theEvent)
-  { 
-		
+  {
+
 	}
   void TransformSystem::EntityUpdateFixed(IEntity* theEntity)
   {
@@ -62,17 +62,18 @@ namespace GQE
 
           // Get the TransformSystem properties
           sf::Vector2f anVelocity = theEntity->mProperties.Get<sf::Vector2f>("vVelocity");
-          sf::Vector2f anAccelleration = theEntity->mProperties.Get<sf::Vector2f>("vAcceleration");
+          sf::Vector2f anAcceleration = theEntity->mProperties.Get<sf::Vector2f>("vAcceleration");
 					sf::Vector2f anDrag=theEntity->mProperties.Get<sf::Vector2f>("vDrag");
 					sf::Vector2f anVelocityReduction=sf::Vector2f(1-anDrag.x,1-anDrag.y);
           float anRotationalVelocity = theEntity->mProperties.Get<float>("fRotationalVelocity");
-          float anRotationalAccelleration = theEntity->mProperties.Get<float>("fRotationalAcceleration");
+          float anRotationalAcceleration = theEntity->mProperties.Get<float>("fRotationalAcceleration");
 					float anStopThreshold=theEntity->mProperties.Get<float>("fStopThreshold");
           // Now update the current movement properties
-          anPosition += anVelocity;
-					anVelocity += anAccelleration;
 
-					anRotationalVelocity += anRotationalAccelleration;
+          anPosition += anVelocity;
+          anVelocity += anAcceleration;
+
+					anRotationalVelocity += anRotationalAcceleration;
           anRotation += anRotationalVelocity;
 					//Apply Drag
 					anVelocity=sf::Vector2f(anVelocity.x*anVelocityReduction.x,anVelocity.y*anVelocityReduction.y);
@@ -137,7 +138,7 @@ namespace GQE
           // Now update the RenderSystem properties of this IEntity class
           theEntity->mProperties.Set<sf::Vector2f>("vPosition", anPosition);
           theEntity->mProperties.Set<float>("fRotation", anRotation);
-        } //if(theEntity->mProperties.Get<bool>("bFixedMovement") == false)		
+        } //if(theEntity->mProperties.Get<bool>("bFixedMovement") == false)
 	}
   void TransformSystem::EntityDraw(IEntity* theEntity)
   {

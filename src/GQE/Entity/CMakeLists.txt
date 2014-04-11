@@ -11,14 +11,15 @@ set(INC
     ${INCROOT}/Entity/classes/PrototypeManager.hpp
     ${INCROOT}/Entity/classes/Instance.hpp
     ${INCROOT}/Entity/classes/Prototype.hpp
-	${INCROOT}/Entity/classes/RectangleShape.hpp
-	${INCROOT}/Entity/classes/PolygonShape.hpp
+	  ${INCROOT}/Entity/classes/RectangleShape.hpp
+  	${INCROOT}/Entity/classes/PolygonShape.hpp
+  	${INCROOT}/Entity/classes/EntityEvents.hpp
     ${INCROOT}/Entity/interfaces/IAction.hpp
     ${INCROOT}/Entity/interfaces/IEntity.hpp
     ${INCROOT}/Entity/interfaces/ISystem.hpp
     ${INCROOT}/Entity/interfaces/ICollisionSystem.hpp
-    ${INCROOT}/Entity/classes/SystemManager.hpp
     ${INCROOT}/Entity/Entity_types.hpp
+
 )
 
 # Entity library source files
@@ -31,13 +32,14 @@ set(SRC
     ${SRCROOT}/Entity/classes/PrototypeManager.cpp
     ${SRCROOT}/Entity/classes/Instance.cpp
     ${SRCROOT}/Entity/classes/Prototype.cpp
-	${SRCROOT}/Entity/classes/RectangleShape.cpp
-	${SRCROOT}/Entity/classes/PolygonShape.cpp
-  ${SRCROOT}/Entity/classes/SystemManager.cpp
+	  ${SRCROOT}/Entity/classes/RectangleShape.cpp
+	  ${SRCROOT}/Entity/classes/PolygonShape.cpp
+    ${SRCROOT}/Entity/classes/EntityEvents.cpp
     ${SRCROOT}/Entity/interfaces/IAction.cpp
     ${SRCROOT}/Entity/interfaces/IEntity.cpp
     ${SRCROOT}/Entity/interfaces/ISystem.cpp
     ${SRCROOT}/Entity/interfaces/ICollisionSystem.cpp
+
     ${SRCROOT}/Entity/Entity_types.cpp
 )
 

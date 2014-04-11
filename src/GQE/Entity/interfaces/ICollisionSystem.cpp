@@ -58,7 +58,6 @@ namespace GQE
 			anOrigin.x*=anMovingShape.GetSize().x;
 			anOrigin.y*=anMovingShape.GetSize().y;
 			anMovingShape.setOrigin(anOrigin);
-			anMovableEntity->mProperties.Set<IShape>("CollisionShape",anMovingShape);
       anIter = mEntities.begin();
       while(anIter != mEntities.end())
       {
@@ -81,7 +80,6 @@ namespace GQE
           anOrigin.x *= anOtherShape.GetSize().x;
           anOrigin.y *= anOtherShape.GetSize().y;
           anOtherShape.setOrigin(anOrigin);
-					anEntity->mProperties.Set<IShape>("CollisionShape",anOtherShape);
           //Make sure we aren't handling two of the same entity.
 					CollisionContext anContext;
           if(anEntity!=anMovableEntity)
@@ -91,14 +89,16 @@ namespace GQE
               anContext.MovingEntity = anMovableEntity;
               anContext.OtherEntity = anEntity;
               EntityCollision(anContext);
-							anMovingShape.setPosition(anMovableEntity->mProperties.Get<sf::Vector2f>("vCollisionOffset")+anMovableEntity->mProperties.Get<sf::Vector2f>("vPosition")+anMovableEntity->mProperties.Get<sf::Vector2f>("vVelocity"));
+							anMovingShape.setPosition(anMovableEntity->mProperties.Get<sf::Vector2f>("vPosition"));
+							anMovingShape.setRotation(anMovableEntity->mProperties.Get<float>("fRotation"));
+							anMovingShape.setScale(anMovableEntity->mProperties.Get<sf::Vector2f>("vScale"));
 						}
           }
         } // while(anQueue != anIter->second.end())
 
         // Increment map iterator
         anIter++;
-      
+
 			} //while(anIter != mEntities.end())
       anMovablesIter++;
     }
@@ -179,7 +179,8 @@ namespace GQE
           anRemovedIndex = anIndex;
         }
       }
-      mMovables.erase(mMovables.begin() + anRemovedIndex);
+      if(anFound)
+        mMovables.erase(mMovables.begin() + anRemovedIndex);
     }
   }
 } // namespace GQE

@@ -19,12 +19,7 @@ namespace GQE
   class GQE_API ICollisionSystem : public ISystem
   {
     public:
-      struct CollisionContext
-      {
-        IEntity* MovingEntity;
-        IEntity* OtherEntity;
-        sf::Vector2f MinimumTranslation;
-      };
+
       /**
        * ICollisionSystem Constructor.
        * @param[in] theApp is the current GQE app.
