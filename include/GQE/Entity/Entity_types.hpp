@@ -69,7 +69,32 @@ namespace GQE
 
     }
   };
+  struct TimerContext
+  {
+    sf::Clock Clock;
+    sf::Time Time;
+    std::string Event;
+    bool Repeat;
+    bool Active;
+    TimerContext() :
+      Time(sf::Time::Zero),
+      Event(""),
+      Repeat(false),
+      Active(false)
+    {
 
+    }
+    TimerContext(sf::Time theTime, std::string theEvent, bool theRepeat, bool theActive) :
+      Time(theTime),
+      Event(theEvent),
+      Repeat(theRepeat),
+      Active(theActive)
+    {
+
+    }
+  };
+
+  typedef std::map<std::string, TimerContext> typeTimerLists;
 }
 #endif // ENTITY_TYPES_HPP_INCLUDED
 

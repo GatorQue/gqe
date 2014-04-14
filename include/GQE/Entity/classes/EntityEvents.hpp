@@ -11,15 +11,15 @@
 #include <GQE/Entity/Entity_types.hpp>
 namespace GQE
 {
-  class EntityEvents
+  class GQE_API EntityEvents
   {
   public:
-  EntityEvents(IApp& theApp);
-  virtual void RegisterEvents();
-  void EventDestroyEntity(IEntity* theEntity);
-  void EventDestroyEntity(CollisionContext* theEntity);
-  private:
-  IApp& mApp;
+    EntityEvents(IApp& theApp);
+    virtual void RegisterEvents();
+    void EventDestroyEntity(IEntity* theEntity);
+    void EventDestroyEntity(CollisionContext* theEntity);
+  protected:
+    IApp& mApp;
   };
 }
 #endif

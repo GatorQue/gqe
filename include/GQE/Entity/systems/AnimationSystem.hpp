@@ -1,7 +1,7 @@
 /**
  * Provides the AnimationSystem class for handing all IEntity animation in a game.
  *
- * @file include/GQE/Entity/systems/AnimationSystem.cpp
+ * @file include/GQE/Entity/systems/AnimationSystem.hpp
  * @author Jacob Dix
  * @date 20120623 - Initial Release
  * @date 20130918 - Revised Animation Methods.

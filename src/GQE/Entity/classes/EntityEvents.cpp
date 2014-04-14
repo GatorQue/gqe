@@ -10,7 +10,7 @@
 #include <GQE/Entity/interfaces/IEntity.hpp>
 namespace GQE
 {
-  EntityEvents::EntityEvents(IApp& theApp):
+  EntityEvents::EntityEvents(IApp& theApp) :
   mApp(theApp)
   {
 

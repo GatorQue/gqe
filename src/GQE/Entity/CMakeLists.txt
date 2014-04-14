@@ -7,11 +7,12 @@ set(INC
     ${INCROOT}/Entity/systems/AnimationSystem.hpp
     ${INCROOT}/Entity/systems/TransformSystem.hpp
     ${INCROOT}/Entity/systems/RenderSystem.hpp
+	${INCROOT}/Entity/systems/TimerSystem.hpp
     ${INCROOT}/Entity/classes/ActionGroup.hpp
     ${INCROOT}/Entity/classes/PrototypeManager.hpp
     ${INCROOT}/Entity/classes/Instance.hpp
     ${INCROOT}/Entity/classes/Prototype.hpp
-	  ${INCROOT}/Entity/classes/RectangleShape.hpp
+	${INCROOT}/Entity/classes/RectangleShape.hpp
   	${INCROOT}/Entity/classes/PolygonShape.hpp
   	${INCROOT}/Entity/classes/EntityEvents.hpp
     ${INCROOT}/Entity/interfaces/IAction.hpp
@@ -28,18 +29,18 @@ set(SRC
     ${SRCROOT}/Entity/systems/AnimationSystem.cpp
     ${SRCROOT}/Entity/systems/TransformSystem.cpp
     ${SRCROOT}/Entity/systems/RenderSystem.cpp
+	${SRCROOT}/Entity/systems/TimerSystem.cpp
     ${SRCROOT}/Entity/classes/ActionGroup.cpp
     ${SRCROOT}/Entity/classes/PrototypeManager.cpp
     ${SRCROOT}/Entity/classes/Instance.cpp
     ${SRCROOT}/Entity/classes/Prototype.cpp
-	  ${SRCROOT}/Entity/classes/RectangleShape.cpp
-	  ${SRCROOT}/Entity/classes/PolygonShape.cpp
+	${SRCROOT}/Entity/classes/RectangleShape.cpp
+	${SRCROOT}/Entity/classes/PolygonShape.cpp
     ${SRCROOT}/Entity/classes/EntityEvents.cpp
     ${SRCROOT}/Entity/interfaces/IAction.cpp
     ${SRCROOT}/Entity/interfaces/IEntity.cpp
     ${SRCROOT}/Entity/interfaces/ISystem.cpp
     ${SRCROOT}/Entity/interfaces/ICollisionSystem.cpp
-
     ${SRCROOT}/Entity/Entity_types.cpp
 )
 
