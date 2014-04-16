@@ -28,8 +28,8 @@ namespace GQE
   // Forward declare GQE Entity classes provided
   class Prototype;
   class Instance;
-  class PrototypeManager;
-  class SystemManager;
+  class EntityEvents;
+  class EventBinder;
   // Forward declare GQE Entity systems provided
   class ActionSystem;
   class AnimationSystem;
@@ -50,7 +50,19 @@ namespace GQE
 
 	typedef std::map<std::string, Prototype*> typePrototypeList;
 	typedef std::vector<sf::IntRect> typeRectList;
-	
+	//Types of input
+	enum InputTypes
+	{
+	  INPUT_REALTIME,
+	  INPUT_PRESSED,
+	  INPUT_RELEASED
+	};
+	//InputCommand Struct stores input data.
+	struct InputCommand
+	{
+	  typeEventID EventID;
+	  Uint8 InputType;
+	};
 	/// Declare Event context for entity events.
   struct CollisionContext
   {
@@ -93,8 +105,18 @@ namespace GQE
 
     }
   };
-
   typedef std::map<std::string, TimerContext> typeTimerLists;
+
+  struct InputContext
+  {
+    IEntity* Entity;
+    sf::Event Event;
+    InputContext(sf::Event theEvent,IEntity* theEntity):
+    Entity(theEntity),
+    Event(theEvent)
+    {
+    }
+  };
 }
 #endif // ENTITY_TYPES_HPP_INCLUDED
 
