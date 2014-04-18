@@ -73,7 +73,7 @@ namespace GQE
 
       virtual void SetView(std::string theViewID,sf::View theView);
       virtual sf::View GetView(std::string theViewID);
-      void EventViewEntity(ViewContext* theContext);
+      void EventViewEntity(PropertyManager* theContext);
 		protected:
       /**
        * HandleInit is called to allow each derived ISystem to perform any

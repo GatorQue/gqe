@@ -16,8 +16,7 @@ namespace GQE
   public:
     EntityEvents(IApp& theApp);
     virtual void RegisterEvents();
-    void EventDestroyEntity(IEntity* theEntity);
-    void EventDestroyEntity(CollisionContext* theEntity);
+    void EventDestroyEntity(PropertyManager* theContext);
   protected:
     IApp& mApp;
   };

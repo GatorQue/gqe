@@ -29,7 +29,7 @@ namespace GQE
   class Prototype;
   class Instance;
   class EntityEvents;
-  class EventBinder;
+  class KeyBinder;
   // Forward declare GQE Entity systems provided
   class ActionSystem;
   class AnimationSystem;
@@ -57,38 +57,28 @@ namespace GQE
 	  INPUT_PRESSED,
 	  INPUT_RELEASED
 	};
-	//InputCommand Struct stores input data.
-	struct InputCommand
+	/// Declare structs for handling data.
+	//InputData Struct stores input data.
+	struct InputData
 	{
 	  typeEventID EventID;
 	  Uint8 InputType;
 	};
-	/// Declare Event context for entity events.
-  struct CollisionContext
+
+  struct CollisionData
   {
     IEntity* MovingEntity;
     IEntity* OtherEntity;
     sf::Vector2f MinimumTranslation;
   };
-  struct ViewContext
-  {
-    std::string ViewID;
-    IEntity* TargetEntity;
-    ViewContext(std::string theViewID, IEntity* theTargetEntity):
-      ViewID(theViewID),
-      TargetEntity(theTargetEntity)
-    {
-
-    }
-  };
-  struct TimerContext
+  struct TimerData
   {
     sf::Clock Clock;
     sf::Time Time;
     std::string Event;
     bool Repeat;
     bool Active;
-    TimerContext() :
+    TimerData() :
       Time(sf::Time::Zero),
       Event(""),
       Repeat(false),
@@ -96,7 +86,7 @@ namespace GQE
     {
 
     }
-    TimerContext(sf::Time theTime, std::string theEvent, bool theRepeat, bool theActive) :
+    TimerData(sf::Time theTime, std::string theEvent, bool theRepeat, bool theActive) :
       Time(theTime),
       Event(theEvent),
       Repeat(theRepeat),
@@ -105,18 +95,8 @@ namespace GQE
 
     }
   };
-  typedef std::map<std::string, TimerContext> typeTimerLists;
+  typedef std::map<std::string, TimerData> typeTimerLists;
 
-  struct InputContext
-  {
-    IEntity* Entity;
-    sf::Event Event;
-    InputContext(sf::Event theEvent,IEntity* theEntity):
-    Entity(theEntity),
-    Event(theEvent)
-    {
-    }
-  };
 }
 #endif // ENTITY_TYPES_HPP_INCLUDED
 

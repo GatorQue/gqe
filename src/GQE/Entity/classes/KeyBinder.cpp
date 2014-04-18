@@ -12,14 +12,16 @@ namespace GQE
   {
     if(mEntity!=NULL && (theEvent.type==sf::Event::KeyPressed || theEvent.type==sf::Event::KeyReleased))
     {
-      std::map<GQE::Uint32, InputCommand>::iterator anIter;
+      std::map<GQE::Uint32, InputData>::iterator anIter;
       anIter=mBindings.find(theEvent.key.code);
       if(anIter!=mBindings.end())
       {
         if((mBindings[theEvent.key.code].InputType==INPUT_PRESSED && theEvent.type==sf::Event::KeyPressed)||
           (mBindings[theEvent.key.code].InputType==INPUT_RELEASED &&theEvent.type==sf::Event::KeyReleased))
         {
-          InputContext anContext(theEvent,mEntity);
+          PropertyManager anContext;
+          anContext.Add<IEntity*>("Entity",mEntity);
+          anContext.Add<sf::Keyboard::Key>("Key",theEvent.key.code);
           mApp.mEventManager.DoEvent(mBindings[theEvent.key.code].EventID,&anContext);
         }
       }
@@ -29,12 +31,14 @@ namespace GQE
   {
     if(mEntity!=NULL)
     {
-      std::map<GQE::Uint32, InputCommand>::iterator anIter;
+      std::map<GQE::Uint32, InputData>::iterator anIter;
       for(anIter=mBindings.begin();anIter!=mBindings.end();++anIter)
       {
-        if(anIter->second.InputType==INPUT_REALTIME)
+        if(anIter->second.InputType==INPUT_REALTIME && sf::Keyboard::isKeyPressed(sf::Keyboard::Key(anIter->first)))
         {
-          InputContext anContext(sf::Event(),mEntity);
+          PropertyManager anContext;
+          anContext.Add<IEntity*>("Entity",mEntity);
+          anContext.Add<sf::Keyboard::Key>("Key",sf::Keyboard::Key(anIter->first));
           mApp.mEventManager.DoEvent(anIter->second.EventID,&anContext);
         }
       }
@@ -42,7 +46,7 @@ namespace GQE
   }
   void KeyBinder::RegisterEvent(GQE::Uint32 theBinding, typeEventID theEventID, Uint8 theInputType)
   {
-    InputCommand anCommand;
+    InputData anCommand;
     anCommand.EventID=theEventID;
     anCommand.InputType=theInputType;
     mBindings[theBinding]=anCommand;

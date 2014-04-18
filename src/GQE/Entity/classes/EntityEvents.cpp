@@ -17,15 +17,12 @@ namespace GQE
   }
   void EntityEvents::RegisterEvents()
   {
-    mApp.mEventManager.Add<EntityEvents, IEntity>("DestroyEntity", *this, &EntityEvents::EventDestroyEntity);
-    mApp.mEventManager.Add<EntityEvents, CollisionContext>("ColDestroyEntity", *this, &EntityEvents::EventDestroyEntity);
+    mApp.mEventManager.Add<EntityEvents, PropertyManager>("DestroyEntity", *this, &EntityEvents::EventDestroyEntity);
   }
-  void EntityEvents::EventDestroyEntity(IEntity* theEntity)
+  void EntityEvents::EventDestroyEntity(PropertyManager* theContext)
   {
-    theEntity->Destroy();
-  }
-  void EntityEvents::EventDestroyEntity(CollisionContext* theContext)
-  {
-    theContext->MovingEntity->Destroy();
+    IEntity* anEntity=theContext->Get<IEntity*>("Entity");
+    if(anEntity!=NULL)
+      anEntity->Destroy();
   }
 }

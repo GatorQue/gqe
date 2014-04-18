@@ -82,7 +82,7 @@ namespace GQE
        */
       virtual void HandleCleanup(IEntity* theEntity);
 
-      virtual void EntityCollision(CollisionContext anCollisionContext)=0;
+      virtual void EntityCollision(CollisionData anCollisionData)=0;
     private:
       std::vector<IEntity*> mMovables;
 

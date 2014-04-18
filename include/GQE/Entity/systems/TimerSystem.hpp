@@ -48,7 +48,6 @@ namespace GQE
 
     void EntityUpdateFixed(GQE::IEntity* theEntity);
 
-    void EventExpireEntity(TimerContext* theContext);
   };
 }
 #endif

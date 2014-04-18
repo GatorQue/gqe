@@ -30,7 +30,7 @@ namespace GQE
     typeTimerLists::iterator anIter;
     for (anIter = anTimerList.begin(); anIter != anTimerList.end(); ++anIter)
     {
-      TimerContext& anContext = anIter->second;
+      TimerData& anContext = anIter->second;
       anContext.Clock.restart();
       anTimerList[anIter->first] = anContext;
     }
@@ -46,7 +46,7 @@ namespace GQE
     typeTimerLists::iterator anIter;
     for (anIter = anTimerList.begin(); anIter != anTimerList.end(); ++anIter)
     {
-      TimerContext& anContext = anIter->second;
+      TimerData& anContext = anIter->second;
       sf::Time anElapsedTime = anContext.Clock.getElapsedTime();
       if (anElapsedTime >= anContext.Time && anContext.Active)
       {

@@ -81,14 +81,14 @@ namespace GQE
           anOrigin.y *= anOtherShape.GetSize().y;
           anOtherShape.setOrigin(anOrigin);
           //Make sure we aren't handling two of the same entity.
-					CollisionContext anContext;
+					CollisionData anData;
           if(anEntity!=anMovableEntity)
           {
-            if (anMovingShape.Intersection(anOtherShape, anContext.MinimumTranslation))
+            if (anMovingShape.Intersection(anOtherShape, anData.MinimumTranslation))
 						{
-              anContext.MovingEntity = anMovableEntity;
-              anContext.OtherEntity = anEntity;
-              EntityCollision(anContext);
+              anData.MovingEntity = anMovableEntity;
+              anData.OtherEntity = anEntity;
+              EntityCollision(anData);
 							anMovingShape.setPosition(anMovableEntity->mProperties.Get<sf::Vector2f>("vPosition"));
 							anMovingShape.setRotation(anMovableEntity->mProperties.Get<float>("fRotation"));
 							anMovingShape.setScale(anMovableEntity->mProperties.Get<sf::Vector2f>("vScale"));

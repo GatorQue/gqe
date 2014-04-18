@@ -14,7 +14,7 @@ namespace GQE
       void RegisterEntity(IEntity* theEntity);
     private:
       IApp& mApp;
-      std::map<GQE::Uint32, InputCommand> mBindings;
+      std::map<GQE::Uint32, InputData> mBindings;
       IEntity* mEntity;//the controllable entity.
   };
 }
