@@ -28,6 +28,12 @@ float GQE_API dotProduct(sf::Vector2f theVectorA, sf::Vector2f theVectorB);
 template <typename T> int GetSign(T theValue) {
     return (T(0) < theValue) - (theValue < T(0));
 }
+
+float GQE_API ToRadians(float theDegrees);
+
+float GQE_API ToDegrees(float theRadians);
+
+
 }
 
 #endif // CORE_MATH_UTIL_HPP_INCLUDED

@@ -1,3 +1,10 @@
+/**
+* Provides a key binding interface
+*
+* @file src/GQE/Entity/Entity_types.hpp
+* @author Jacob Dix
+* @date 20140419 - Initial Release
+*/
 #include <GQE/Entity/classes/KeyBinder.hpp>
 
 namespace GQE
@@ -16,8 +23,8 @@ namespace GQE
       anIter=mBindings.find(theEvent.key.code);
       if(anIter!=mBindings.end())
       {
-        if((mBindings[theEvent.key.code].InputType==INPUT_PRESSED && theEvent.type==sf::Event::KeyPressed)||
-          (mBindings[theEvent.key.code].InputType==INPUT_RELEASED &&theEvent.type==sf::Event::KeyReleased))
+        if((mBindings[theEvent.key.code].Type==INPUT_PRESSED && theEvent.type==sf::Event::KeyPressed)||
+          (mBindings[theEvent.key.code].Type==INPUT_RELEASED &&theEvent.type==sf::Event::KeyReleased))
         {
           PropertyManager anContext;
           anContext.Add<IEntity*>("Entity",mEntity);
@@ -34,21 +41,23 @@ namespace GQE
       std::map<GQE::Uint32, InputData>::iterator anIter;
       for(anIter=mBindings.begin();anIter!=mBindings.end();++anIter)
       {
-        if(anIter->second.InputType==INPUT_REALTIME && sf::Keyboard::isKeyPressed(sf::Keyboard::Key(anIter->first)))
+        if(anIter->second.Type==INPUT_REALTIME && sf::Keyboard::isKeyPressed(sf::Keyboard::Key(anIter->first)))
         {
           PropertyManager anContext;
           anContext.Add<IEntity*>("Entity",mEntity);
-          anContext.Add<sf::Keyboard::Key>("Key",sf::Keyboard::Key(anIter->first));
+          anContext.Add<InputData>("InputData", anIter->second);
           mApp.mEventManager.DoEvent(anIter->second.EventID,&anContext);
         }
       }
     }
   }
-  void KeyBinder::RegisterEvent(GQE::Uint32 theBinding, typeEventID theEventID, Uint8 theInputType)
+  void KeyBinder::RegisterEvent(GQE::Uint32 theBinding, typeEventID theEventID, Uint8 theType, Uint32 theAction)
   {
     InputData anCommand;
     anCommand.EventID=theEventID;
-    anCommand.InputType=theInputType;
+    anCommand.Type=theType;
+    anCommand.Action = theAction;
+    anCommand.Amount = sf::Vector2f(0,0);
     mBindings[theBinding]=anCommand;
   }
   void KeyBinder::RegisterEntity(IEntity* theEntity)

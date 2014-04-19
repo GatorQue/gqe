@@ -30,4 +30,13 @@ namespace GQE
   {
     return ((theVectorA.x*theVectorB.x)+(theVectorA.y*theVectorB.y));
   }
+
+  float ToRadians(float theDegrees)
+  {
+    return theDegrees*PI / 180;
+  }
+  float ToDegrees(float theRadians)
+  {
+    return theRadians * 180 / PI;
+  }
 }

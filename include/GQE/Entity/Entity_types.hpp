@@ -62,7 +62,9 @@ namespace GQE
 	struct InputData
 	{
 	  typeEventID EventID;
-	  Uint8 InputType;
+	  Uint32 Type;
+    Uint32 Action;
+    sf::Vector2f Amount;//used for mouse/joystick movements
 	};
 
   struct CollisionData
