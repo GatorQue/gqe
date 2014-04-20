@@ -16,6 +16,7 @@ set(INC
   	${INCROOT}/Entity/classes/PolygonShape.hpp
   	${INCROOT}/Entity/classes/EntityEvents.hpp
   	${INCROOT}/Entity/classes/KeyBinder.hpp
+  	${INCROOT}/Entity/classes/MouseBinder.hpp
     ${INCROOT}/Entity/interfaces/IAction.hpp
     ${INCROOT}/Entity/interfaces/IEntity.hpp
     ${INCROOT}/Entity/interfaces/ISystem.hpp
@@ -39,6 +40,7 @@ set(SRC
 	${SRCROOT}/Entity/classes/PolygonShape.cpp
     ${SRCROOT}/Entity/classes/EntityEvents.cpp
     ${SRCROOT}/Entity/classes/KeyBinder.cpp
+  	${SRCROOT}/Entity/classes/MouseBinder.cpp
     ${SRCROOT}/Entity/interfaces/IAction.cpp
     ${SRCROOT}/Entity/interfaces/IEntity.cpp
     ${SRCROOT}/Entity/interfaces/ISystem.cpp

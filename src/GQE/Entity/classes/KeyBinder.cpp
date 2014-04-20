@@ -1,7 +1,7 @@
 /**
 * Provides a key binding interface
 *
-* @file src/GQE/Entity/Entity_types.hpp
+* @file src/GQE/Entity/classes/KeyBinder.cpp
 * @author Jacob Dix
 * @date 20140419 - Initial Release
 */
@@ -27,8 +27,8 @@ namespace GQE
           (mBindings[theEvent.key.code].Type==INPUT_RELEASED &&theEvent.type==sf::Event::KeyReleased))
         {
           PropertyManager anContext;
-          anContext.Add<IEntity*>("Entity",mEntity);
-          anContext.Add<sf::Keyboard::Key>("Key",theEvent.key.code);
+          anContext.Add<IEntity*>("Entity", mEntity);
+          anContext.Add<InputData>("InputData", anIter->second);
           mApp.mEventManager.DoEvent(mBindings[theEvent.key.code].EventID,&anContext);
         }
       }
@@ -57,7 +57,6 @@ namespace GQE
     anCommand.EventID=theEventID;
     anCommand.Type=theType;
     anCommand.Action = theAction;
-    anCommand.Amount = sf::Vector2f(0,0);
     mBindings[theBinding]=anCommand;
   }
   void KeyBinder::RegisterEntity(IEntity* theEntity)

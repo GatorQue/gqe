@@ -1,7 +1,7 @@
 /**
 * Provides a key binding interface
 *
-* @file src/GQE/Entity/Entity_types.hpp
+* @file src/GQE/Entity/classes/KeyBinder.hpp
 * @author Jacob Dix
 * @date 20140419 - Initial Release
 */

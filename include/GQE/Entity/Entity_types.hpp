@@ -30,6 +30,8 @@ namespace GQE
   class Instance;
   class EntityEvents;
   class KeyBinder;
+  class MouseBinder;
+  class JoystickBinder;
   // Forward declare GQE Entity systems provided
   class ActionSystem;
   class AnimationSystem;
@@ -55,7 +57,8 @@ namespace GQE
 	{
 	  INPUT_REALTIME,
 	  INPUT_PRESSED,
-	  INPUT_RELEASED
+	  INPUT_RELEASED,
+    INPUT_MOTION
 	};
 	/// Declare structs for handling data.
 	//InputData Struct stores input data.
@@ -64,7 +67,6 @@ namespace GQE
 	  typeEventID EventID;
 	  Uint32 Type;
     Uint32 Action;
-    sf::Vector2f Amount;//used for mouse/joystick movements
 	};
 
   struct CollisionData

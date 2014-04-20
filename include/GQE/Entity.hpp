@@ -29,7 +29,6 @@
 #include <GQE/Entity/systems/TransformSystem.hpp>
 #include <GQE/Entity/systems/RenderSystem.hpp>
 #include <GQE/Entity/systems/ActionSystem.hpp>
-#include <GQE/Entity/classes/SystemManager.hpp>
 #endif // ENTITY_HPP_INCLUDED
 
 /**
