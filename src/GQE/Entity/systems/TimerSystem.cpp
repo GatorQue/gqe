@@ -54,7 +54,11 @@ namespace GQE
         if (!anContext.Repeat)
           anContext.Active = false;
         if (anContext.Event != "")
-          mApp.mEventManager.DoEvent(anContext.Event, theEntity);
+        {
+          GQE::PropertyManager anProperties;
+          anProperties.Add<GQE::IEntity*>("Entity", theEntity);
+          mApp.mEventManager.DoEvent(anContext.Event, &anProperties);
+        }
       }
       anTimerList[anIter->first] = anContext;
     }

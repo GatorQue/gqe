@@ -24,7 +24,6 @@ namespace GQE
       IApp& mApp;
       std::map<GQE::Uint32, InputData> mButtonBindings;
       InputData mMoveBinding;
-      sf::Vector2f mLastPosition;
       IEntity* mEntity;//the controllable entity.
   };
 }
