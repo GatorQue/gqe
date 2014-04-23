@@ -57,10 +57,10 @@ namespace GQE
         {
           GQE::PropertyManager anProperties;
           anProperties.Add<GQE::IEntity*>("Entity", theEntity);
+          anProperties.Add<TimerData>("TimerData",anContext);
           mApp.mEventManager.DoEvent(anContext.Event, &anProperties);
         }
       }
-      anTimerList[anIter->first] = anContext;
     }
     theEntity->mProperties.Set<typeTimerLists>("Timers", anTimerList);
   }
