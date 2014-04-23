@@ -35,7 +35,7 @@ namespace GQE
     theEntity->mProperties.Add<sf::Vector2f>("vAcceleration",sf::Vector2f(0,0));
 		theEntity->mProperties.Add<sf::Vector2f>("vDrag",sf::Vector2f(0.0f,0.0f));
     theEntity->mProperties.Add<float>("fRotationalVelocity",0);
-		theEntity->mProperties.Add<float>("fStopThreshold",.01f);
+		theEntity->mProperties.Add<float>("fStopThreshold",0.01f);
     theEntity->mProperties.Add<float>("fRotationalAcceleration",0);
     theEntity->mProperties.Add<bool>("bFixedMovement",true);
     theEntity->mProperties.Add<bool>("bScreenWrap",false);
@@ -64,7 +64,7 @@ namespace GQE
           sf::Vector2f anVelocity = theEntity->mProperties.Get<sf::Vector2f>("vVelocity");
           sf::Vector2f anAcceleration = theEntity->mProperties.Get<sf::Vector2f>("vAcceleration");
 					sf::Vector2f anDrag=theEntity->mProperties.Get<sf::Vector2f>("vDrag");
-					sf::Vector2f anVelocityReduction=sf::Vector2f(1-anDrag.x,1-anDrag.y);
+					sf::Vector2f anVelocityReduction=sf::Vector2f(1.0f-anDrag.x,1.0f-anDrag.y);
           float anRotationalVelocity = theEntity->mProperties.Get<float>("fRotationalVelocity");
           float anRotationalAcceleration = theEntity->mProperties.Get<float>("fRotationalAcceleration");
 					float anStopThreshold=theEntity->mProperties.Get<float>("fStopThreshold");
@@ -77,13 +77,9 @@ namespace GQE
           anRotation += anRotationalVelocity;
 					//Apply Drag
 					anVelocity=sf::Vector2f(anVelocity.x*anVelocityReduction.x,anVelocity.y*anVelocityReduction.y);
-					if(abs(anVelocity.x)<=anStopThreshold)
+					if(abs(anVelocity.x)<=anStopThreshold && abs(anVelocity.y)<=anStopThreshold)
 					{
-						anVelocity.x=0;
-					}
-					if(abs(anVelocity.y)<=anStopThreshold)
-					{
-						anVelocity.y=0;
+						anVelocity=sf::Vector2f(0,0);
 					}
           // If ScreenWrap is true, account for screen wrapping
           if(theEntity->mProperties.Get<bool>("bScreenWrap"))

@@ -82,19 +82,22 @@ namespace GQE
     std::string Event;
     bool Repeat;
     bool Active;
+    GQE::Uint32 Action;
     TimerData() :
       Time(sf::Time::Zero),
       Event(""),
       Repeat(false),
-      Active(false)
+      Active(false),
+      Action(0)
     {
 
     }
-    TimerData(sf::Time theTime, std::string theEvent, bool theRepeat, bool theActive) :
+    TimerData(sf::Time theTime, std::string theEvent, bool theRepeat, bool theActive, GQE::Uint32 theAction):
       Time(theTime),
       Event(theEvent),
       Repeat(theRepeat),
-      Active(theActive)
+      Active(theActive),
+      Action(theAction)
     {
 
     }
