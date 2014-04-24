@@ -14,14 +14,14 @@ namespace GQE
   class GQE_API KeyBinder
   {
     public:
-      KeyBinder(IApp& theApp, IEntity* theEntity);
+      KeyBinder(IApp& theApp);
       void HandleEvents(sf::Event theEvent);
       void UpdateFixed();
-      void RegisterEvent(Uint32 theBinding, std::string theEventID, Uint8 theInputType, Uint32 theAction);
+      void RegisterKey(Uint32 theKey, std::string theEventID, Uint8 theInputType, Uint32 theAction);
       void RegisterEntity(IEntity* theEntity);
     private:
       IApp& mApp;
-      std::map<GQE::Uint32, InputData> mBindings;
+      std::map<GQE::Uint32, InputData> mKeyBindings;
       IEntity* mEntity;//the controllable entity.
   };
 }

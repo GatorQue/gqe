@@ -67,6 +67,7 @@ namespace GQE
 	  typeEventID EventID;
 	  Uint32 Type;
     Uint32 Action;
+    sf::Vector2f Axis;
 	};
 
   struct CollisionData

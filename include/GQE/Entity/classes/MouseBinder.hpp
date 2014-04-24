@@ -14,11 +14,11 @@ namespace GQE
   class GQE_API MouseBinder
   {
     public:
-      MouseBinder(IApp& theApp, IEntity* theEntity);
+      MouseBinder(IApp& theApp);
       void HandleEvents(sf::Event theEvent);
       void UpdateFixed();
       void RegisterButton(Uint32 theBinding, std::string theEventID, Uint8 theInputType, Uint32 theAction);
-      void RegisterMovement(std::string theEventID, Uint8 theInputType, Uint32 theAction);
+      void RegisterMovement(std::string theEventID, Uint8 theInputType, Uint32 theAction, sf::Vector2f theAxis=sf::Vector2f(1,1));
       void RegisterEntity(IEntity* theEntity);
     private:
       IApp& mApp;

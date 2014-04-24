@@ -26,7 +26,7 @@ namespace GQE
     theEntity->mProperties.Add<bool>("bDebugDraw",false);
 		theEntity->mProperties.Add<sf::Vector2f>("vCollisionOffset",sf::Vector2f(0,0));
 		theEntity->mProperties.Add<float>("fCollisionRotation",0.0f);
-
+    theEntity->mProperties.Add<bool>("bSolid",true);
   }
 
   void ICollisionSystem::HandleInit(IEntity* theEntity)
@@ -82,7 +82,7 @@ namespace GQE
           anOtherShape.setOrigin(anOrigin);
           //Make sure we aren't handling two of the same entity.
 					CollisionData anData;
-          if(anEntity!=anMovableEntity)
+          if(anEntity!=anMovableEntity && anEntity->mProperties.GetBool("bSolid") && anMovableEntity->mProperties.GetBool("bSolid"))
           {
             if (anMovingShape.Intersection(anOtherShape, anData.MinimumTranslation))
 						{

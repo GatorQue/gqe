@@ -9,22 +9,25 @@
 
 namespace GQE
 {
-  MouseBinder::MouseBinder(IApp& theApp, IEntity* theEntity) :
-  mApp(theApp),
-  mEntity(theEntity)
+  MouseBinder::MouseBinder(IApp& theApp) :
+  mApp(theApp)
   {
 
   }
   void MouseBinder::HandleEvents(sf::Event theEvent)
   {
-    if(mEntity!=NULL && (theEvent.type==sf::Event::MouseButtonPressed || theEvent.type==sf::Event::MouseButtonReleased|| theEvent.type==sf::Event::MouseMoved))
+    if(mEntity!=NULL &&
+    (theEvent.type==sf::Event::MouseButtonPressed ||
+    theEvent.type==sf::Event::MouseButtonReleased ||
+    theEvent.type==sf::Event::MouseMoved))
     {
       std::map<GQE::Uint32, InputData>::iterator anIter;
       anIter = mButtonBindings.find(theEvent.mouseButton.button);
       if (anIter != mButtonBindings.end())
       {
-        if ((mButtonBindings[theEvent.mouseButton.button].Type == INPUT_PRESSED && theEvent.type == sf::Event::MouseButtonPressed) ||
+        if (((mButtonBindings[theEvent.mouseButton.button].Type == INPUT_PRESSED && theEvent.type == sf::Event::MouseButtonPressed) ||
           (mButtonBindings[theEvent.mouseButton.button].Type == INPUT_RELEASED &&theEvent.type == sf::Event::MouseButtonReleased))
+          && mButtonBindings[theEvent.mouseButton.button].EventID!="")
         {
           PropertyManager anContext;
           anContext.Add<IEntity*>("Entity",mEntity);
@@ -33,7 +36,7 @@ namespace GQE
           mApp.mEventManager.DoEvent(mButtonBindings[theEvent.mouseButton.button].EventID, &anContext);
         }
       }
-      if (theEvent.type == sf::Event::MouseMoved)
+      if (theEvent.type == sf::Event::MouseMoved && mMoveBinding.EventID!="" && mMoveBinding.Type==INPUT_MOTION)
       {
         PropertyManager anContext;
         anContext.Add<IEntity*>("Entity", mEntity);
@@ -64,7 +67,7 @@ namespace GQE
         PropertyManager anContext;
         anContext.Add<IEntity*>("Entity", mEntity);
         anContext.Add<InputData>("InputData", mMoveBinding);
-        anContext.Add<sf::Vector2f>("vInputPosition", sf::Vector2f(sf::Mouse::getPosition(mApp.mWindow)));
+        anContext.Add<sf::Vector2f>("vInputPosition", sf::Vector2f(sf::Mouse::getPosition(mApp.mWindow).x*mMoveBinding.Axis.x,sf::Mouse::getPosition(mApp.mWindow).y*mMoveBinding.Axis.y));
         mApp.mEventManager.DoEvent(mMoveBinding.EventID, &anContext);
       }
     }
@@ -77,12 +80,13 @@ namespace GQE
     anCommand.Action = theAction;
     mButtonBindings[theBinding]=anCommand;
   }
-  void MouseBinder::RegisterMovement(typeEventID theEventID, Uint8 theType, Uint32 theAction)
+  void MouseBinder::RegisterMovement(typeEventID theEventID, Uint8 theType, Uint32 theAction,sf::Vector2f theAxis)
   {
     InputData anCommand;
     anCommand.EventID = theEventID;
     anCommand.Type = theType;
     anCommand.Action = theAction;
+    anCommand.Axis=theAxis;
     mMoveBinding = anCommand;
   }
   void MouseBinder::RegisterEntity(IEntity* theEntity)
