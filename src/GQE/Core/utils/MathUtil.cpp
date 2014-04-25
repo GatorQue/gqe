@@ -26,7 +26,7 @@ namespace GQE
     sf::Vector2f anNormal=sf::Vector2f(theVector.x/anMagnitude,theVector.y/anMagnitude);
     return anNormal;
   }
-  float dotProduct(sf::Vector2f theVectorA, sf::Vector2f theVectorB)
+  float DotProduct(sf::Vector2f theVectorA, sf::Vector2f theVectorB)
   {
     return ((theVectorA.x*theVectorB.x)+(theVectorA.y*theVectorB.y));
   }

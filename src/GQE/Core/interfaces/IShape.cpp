@@ -5,7 +5,8 @@
 namespace GQE
 {
 	IShape::IShape():
-		Transformable()
+		Transformable(),
+		mVelocity(0,0)
 	{
 
 	}
@@ -94,21 +95,39 @@ namespace GQE
 			{
 				return false;
 			}
-			else
+			//do this again but account for velocity of both shapes.
+      sf::Vector2f anRelitiveVelocity=anShapeA.mVelocity-anShapeB.mVelocity;
+      // Project the velocity on the current axis
+      float anVelocityProjection = DotProduct(anAxes[anIndex], anRelitiveVelocity);
+
+      // Get the projection of polygon A during the movement
+      if (anVelocityProjection < 0) {
+          anMinA += anVelocityProjection;
+      } else {
+          anMaxA += anVelocityProjection;
+      }
+		  // ... project the points of both OBBs onto the axis ...
+			anShapeA.ProjectOntoAxis(anAxes[anIndex], anMinA, anMaxA);
+			anShapeB.ProjectOntoAxis(anAxes[anIndex], anMinB, anMaxB);
+			// ... and check whether the outermost projected points of both OBBs overlap.
+			// If this is not the case, the Seperating Axis Theorem states that there can be no collision between the rectangles
+			if(!((anMinB<=anMaxA)&&(anMaxB>=anMinA)))
 			{
-				double o;
-				if(anMinB<=anMaxA)
-					o=anMaxA-anMinB;
-				else
-					o=anMaxB-anMinA;
-				if(o<anOverlap)
-				{
-					anSmallestAxis=anAxes[anIndex];
-					anOverlap=o;
-				}
+				return false;
 			}
+			double o;
+      if(anMinB<=anMaxA)
+        o=anMaxA-anMinB;
+      else
+        o=anMaxB-anMinA;
+      if(o<anOverlap)
+      {
+        anSmallestAxis=anAxes[anIndex];
+        anOverlap=o;
+      }
 		}
 		theMinimumTranslation=anSmallestAxis;
+
 		theMinimumTranslation=NormalizeVector(theMinimumTranslation);
 		theMinimumTranslation*=(float)anOverlap;
 		return true;

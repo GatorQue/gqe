@@ -17,8 +17,10 @@ namespace GQE
 			sf::Vector2f GetSize();
 			std::vector<sf::Vector2f> mPoints;
       std::vector<Line> mLines;
+      sf::Vector2f mVelocity;
     protected:
 			sf::Vector2f TransformPoint(sf::Vector2f thePoint);
+
 			void ConnectLines();
   };
 }

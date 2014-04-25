@@ -58,6 +58,7 @@ namespace GQE
 			anOrigin.x*=anMovingShape.GetSize().x;
 			anOrigin.y*=anMovingShape.GetSize().y;
 			anMovingShape.setOrigin(anOrigin);
+			anMovingShape.mVelocity=anMovableEntity->mProperties.Get<sf::Vector2f>("vVelocity");
       anIter = mEntities.begin();
       while(anIter != mEntities.end())
       {
@@ -76,6 +77,7 @@ namespace GQE
 					anOtherShape.setPosition(anEntity->mProperties.Get<sf::Vector2f>("vCollisionOffset")+anEntity->mProperties.Get<sf::Vector2f>("vPosition"));
           anOtherShape.setRotation(anEntity->mProperties.Get<float>("fRotation") + anEntity->mProperties.GetFloat("fCollisionRotation"));
 					anOtherShape.setScale(anEntity->mProperties.Get<sf::Vector2f>("vScale"));
+					anOtherShape.mVelocity=anEntity->mProperties.Get<sf::Vector2f>("vVelocity");
           sf::Vector2f anOrigin = anEntity->mProperties.Get<sf::Vector2f>("vOrigin");
           anOrigin.x *= anOtherShape.GetSize().x;
           anOrigin.y *= anOtherShape.GetSize().y;

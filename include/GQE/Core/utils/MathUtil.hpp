@@ -23,7 +23,7 @@ GQE::Uint32 GQE_API Random(GQE::Uint32 theMin, GQE::Uint32 theMax);
 
 sf::Vector2f GQE_API NormalizeVector(sf::Vector2f theVector);
 
-float GQE_API dotProduct(sf::Vector2f theVectorA, sf::Vector2f theVectorB);
+float GQE_API DotProduct(sf::Vector2f theVectorA, sf::Vector2f theVectorB);
 
 template <typename T> int GetSign(T theValue) {
     return (T(0) < theValue) - (theValue < T(0));
