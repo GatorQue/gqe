@@ -13,7 +13,9 @@ namespace GQE
 {
   class GQE_API JoystickBinder
   {
-    typedef std::map<Uint32,std::map<Uint32,InputData> > typeJoystickData;
+    typedef std::map<Uint32, InputData > typeJoystickData;
+    typedef std::map<Uint32, typeJoystickData > typeJoystickList;
+
     public:
       JoystickBinder(IApp& theApp);
       void HandleEvents(sf::Event theEvent);
@@ -23,8 +25,8 @@ namespace GQE
       void RegisterEntity(Uint32 theJoystickID, IEntity* theEntity);
     private:
       IApp& mApp;
-      typeJoystickData mButtonBindings;
-      typeJoystickData mAxisBindings;
+      typeJoystickList mButtonBindings;
+      typeJoystickList mAxisBindings;
       std::map<Uint32,IEntity*> mEntitys;//the controllable entitys for each Joystick.
   };
 }

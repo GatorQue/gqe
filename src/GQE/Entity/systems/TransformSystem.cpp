@@ -81,12 +81,18 @@ namespace GQE
 					{
 						anVelocity=sf::Vector2f(0,0);
 					}
+          anRotationalVelocity = anRotationalVelocity*((anVelocityReduction.x + anVelocityReduction.y) / 2);
+          if (abs(anRotationalVelocity) <= anStopThreshold)
+          {
+            anRotationalVelocity = 0.0f;
+          }
           // If ScreenWrap is true, account for screen wrapping
-          if(theEntity->mProperties.Get<bool>("bScreenWrap"))
+          if (theEntity->mProperties.Get<bool>("bScreenWrap"))
           {
             // Call our universal HandleScreenWrap method to wrap this IEntity
             HandleScreenWrap(theEntity, &anPosition);
           }
+
 
           // Now update the TransformSystem properties for this IEntity class
           theEntity->mProperties.Set<sf::Vector2f>("vVelocity",anVelocity);
@@ -97,6 +103,7 @@ namespace GQE
           theEntity->mProperties.Set<float>("fRotation",anRotation);
 					//reset acceleration so its only applyed when needed.
 					theEntity->mProperties.Set<sf::Vector2f>("vAcceleration",sf::Vector2f(0,0));
+          theEntity->mProperties.Set<float>("fRotationalAcceleration", 0);
         } //if(theEntity->mProperties.Get<bool>("bFixedMovement"))
   }
   void TransformSystem::EntityUpdateVariable(IEntity* theEntity,float theElapsedTime)

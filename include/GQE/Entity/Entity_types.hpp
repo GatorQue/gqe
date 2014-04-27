@@ -60,6 +60,21 @@ namespace GQE
 	  INPUT_RELEASED,
     INPUT_MOTION
 	};
+  enum InputDevices
+  {
+    DEV_KEYBOARD,
+    DEV_MOUSE,
+    DEV_JOYSTICK,
+    DEV_OTHER
+  };
+  enum Axis
+  {
+    AXIS_NONE=0,
+    AXIS_HORZ=0x01,
+    AXIS_VERT = 0x02,
+    AXIS_POS = 0x04,
+    AXIS_NEG = 0x08
+  };
 	/// Declare structs for handling data.
 	//InputData Struct stores input data.
 	struct InputData
@@ -67,7 +82,8 @@ namespace GQE
 	  typeEventID EventID;
 	  Uint32 Type;
     Uint32 Action;
-    sf::Vector2f Axis;
+    Uint32 Axis;
+    Uint32 Device;
 	};
 
   struct CollisionData

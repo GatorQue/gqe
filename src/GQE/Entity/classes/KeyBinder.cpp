@@ -56,6 +56,7 @@ namespace GQE
     anCommand.EventID=theEventID;
     anCommand.Type=theType;
     anCommand.Action = theAction;
+    anCommand.Device = DEV_KEYBOARD;
     mKeyBindings[theKey]=anCommand;
   }
   void KeyBinder::RegisterEntity(IEntity* theEntity)

@@ -19,13 +19,13 @@ namespace GQE
     if(theEvent.type==sf::Event::JoystickButtonPressed||
       theEvent.type==sf::Event::JoystickButtonReleased)
     {
-      typeJoystickData::iterator anIter;
-      anIter = mButtonBindings.find(theEvent.joystickButton.joystickId);
-      if (anIter != mButtonBindings.end())
+      typeJoystickList::iterator anListIter;
+      anListIter = mButtonBindings.find(theEvent.joystickButton.joystickId);
+      if (anListIter != mButtonBindings.end())
       {
         std::map<Uint32,IEntity*>::iterator anEntityIter=mEntitys.find(theEvent.joystickButton.joystickId);
-        std::map<Uint32,InputData> anJoystick=anIter->second;
-        std::map<Uint32,InputData>::iterator anButtonIter=anJoystick.find(theEvent.joystickButton.button);
+        std::map<Uint32, InputData> anJoystick = anListIter->second;
+        typeJoystickData::iterator anButtonIter = anJoystick.find(theEvent.joystickButton.button);
         if(anButtonIter!=anJoystick.end() && anEntityIter!=mEntitys.end())
         {
           if (((anButtonIter->second.Type == INPUT_PRESSED && theEvent.type == sf::Event::JoystickButtonPressed) ||
@@ -43,13 +43,13 @@ namespace GQE
     }
     if(theEvent.type==sf::Event::JoystickMoved)
     {
-      typeJoystickData::iterator anIter;
-      anIter = mAxisBindings.find(theEvent.joystickMove.joystickId);
-      if (anIter != mButtonBindings.end())
+      typeJoystickList::iterator anListIter;
+      anListIter = mAxisBindings.find(theEvent.joystickMove.joystickId);
+      if (anListIter != mAxisBindings.end())
       {
         std::map<Uint32,IEntity*>::iterator anEntityIter=mEntitys.find(theEvent.joystickButton.joystickId);
-        std::map<Uint32,InputData> anJoystick=anIter->second;
-        std::map<Uint32,InputData>::iterator anMovmentIter=anJoystick.find(theEvent.joystickMove.axis);
+        std::map<Uint32, InputData> anJoystick = anListIter->second;
+        typeJoystickData::iterator anMovmentIter = anJoystick.find(theEvent.joystickMove.axis);
         if(anMovmentIter!=anJoystick.end() && anEntityIter!=mEntitys.end())
         {
           if ((anMovmentIter->second.Type == INPUT_MOTION && theEvent.type == sf::Event::JoystickMoved) &&
@@ -59,6 +59,7 @@ namespace GQE
 
             anContext.Add<IEntity*>("Entity",mEntitys[theEvent.joystickMove.joystickId]);
             anContext.Add<InputData>("InputData", anMovmentIter->second);
+            if ()
             anContext.Add<sf::Vector2f>("vInputPosition", sf::Vector2f(theEvent.joystickMove.position*anMovmentIter->second.Axis.x,theEvent.joystickMove.position*anMovmentIter->second.Axis.y));
             mApp.mEventManager.DoEvent(anMovmentIter->second.EventID, &anContext);
           }
@@ -68,36 +69,35 @@ namespace GQE
   }
   void JoystickBinder::UpdateFixed()
   {
-    typeJoystickData::iterator anIter;
-    for (anIter = mButtonBindings.begin(); anIter != mButtonBindings.end(); ++anIter)
+    typeJoystickList::iterator anListIter;
+    for (anListIter = mButtonBindings.begin(); anListIter != mButtonBindings.end(); ++anListIter)
     {
-      std::map<GQE::Uint32, InputData>::iterator anButtonIter;
-      for (anButtonIter = anIter->second.begin(); anButtonIter != anIter->second.end(); ++anButtonIter)
+      typeJoystickData::iterator anButtonIter;
+      for (anButtonIter = anListIter->second.begin(); anButtonIter != anListIter->second.end(); ++anButtonIter)
       {
-        if(anButtonIter->second.Type==INPUT_REALTIME && sf::Joystick::isButtonPressed(anIter->first,anButtonIter->first))
+        if (anButtonIter->second.Type == INPUT_REALTIME && sf::Joystick::isButtonPressed(anListIter->first, anButtonIter->first))
         {
           PropertyManager anContext;
-          anContext.Add<IEntity*>("Entity",mEntitys[anIter->first]);
+          anContext.Add<IEntity*>("Entity", mEntitys[anListIter->first]);
           anContext.Add<InputData>("InputData", anButtonIter->second);
-          anContext.Add<sf::Vector2f>("vInputPosition", sf::Vector2f(0,0));
-          mApp.mEventManager.DoEvent(anButtonIter->second.EventID,&anContext);
+          anContext.Add<sf::Vector2f>("vInputPosition", sf::Vector2f(0, 0));
+          mApp.mEventManager.DoEvent(anButtonIter->second.EventID, &anContext);
         }
       }
-
-      for (anIter = mAxisBindings.begin(); anIter != mAxisBindings.end(); ++anIter)
+    }
+    for (anListIter = mAxisBindings.begin(); anListIter != mAxisBindings.end(); ++anListIter)
+    {
+      std::map<GQE::Uint32, InputData>::iterator anMoveIter;
+      for (anMoveIter = anListIter->second.begin(); anMoveIter != anListIter->second.end(); ++anMoveIter)
       {
-        std::map<GQE::Uint32, InputData>::iterator anMoveIter;
-        for (anMoveIter = anIter->second.begin(); anMoveIter != anIter->second.end(); ++anMoveIter)
+        if (anMoveIter->second.Type == INPUT_REALTIME)
         {
-          if(anMoveIter->second.Type==INPUT_REALTIME)
-          {
-            PropertyManager anContext;
-            anContext.Add<IEntity*>("Entity",mEntitys[anIter->first]);
-            anContext.Add<InputData>("InputData", anMoveIter->second);
-            float anAxisPosition=sf::Joystick::getAxisPosition(anIter->first,sf::Joystick::Axis(anMoveIter->first));
-            anContext.Add<sf::Vector2f>("vInputPosition", sf::Vector2f(anAxisPosition*anMoveIter->second.Axis.x,anAxisPosition*anMoveIter->second.Axis.y));
-            mApp.mEventManager.DoEvent(anMoveIter->second.EventID,&anContext);
-          }
+          PropertyManager anContext;
+          anContext.Add<IEntity*>("Entity", mEntitys[anListIter->first]);
+          anContext.Add<InputData>("InputData", anMoveIter->second);
+          float anAxisPosition = sf::Joystick::getAxisPosition(anListIter->first, sf::Joystick::Axis(anMoveIter->first));
+          anContext.Add<sf::Vector2f>("vInputPosition", sf::Vector2f(anAxisPosition*anMoveIter->second.Axis.x, anAxisPosition*anMoveIter->second.Axis.y));
+          mApp.mEventManager.DoEvent(anMoveIter->second.EventID, &anContext);
         }
       }
     }

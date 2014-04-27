@@ -17,8 +17,8 @@ namespace GQE
       MouseBinder(IApp& theApp);
       void HandleEvents(sf::Event theEvent);
       void UpdateFixed();
-      void RegisterButton(Uint32 theBinding, std::string theEventID, Uint8 theInputType, Uint32 theAction);
-      void RegisterMovement(std::string theEventID, Uint8 theInputType, Uint32 theAction, sf::Vector2f theAxis=sf::Vector2f(1,1));
+      void RegisterButton(Uint32 theBinding, std::string theEventID, Uint8 theInputType, Uint32 theAction, Uint32 theAxis = AXIS_HORZ | AXIS_VERT);
+      void RegisterMovement(typeEventID theEventID, Uint8 theType, Uint32 theAction, Uint32 theAxis = AXIS_HORZ | AXIS_VERT);
       void RegisterEntity(IEntity* theEntity);
     private:
       IApp& mApp;
