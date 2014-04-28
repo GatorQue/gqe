@@ -21,7 +21,7 @@ namespace GQE
       void HandleEvents(sf::Event theEvent);
       void UpdateFixed();
       void RegisterButton(Uint32 theJoystickID, Uint32 theButton, std::string theEventID, Uint8 theInputType, Uint32 theAction);
-      void RegisterAxis(Uint32 theJoystickID, Uint32 theAxis, std::string theEventID, Uint8 theInputType, Uint32 theAction,sf::Vector2f theMoveAxis);
+      void RegisterAxis(GQE::Uint32 theJoystick, GQE::Uint32 theAxis, typeEventID theEventID, Uint8 theType, Uint32 theAction, Uint32 theMoveAxis);
       void RegisterEntity(Uint32 theJoystickID, IEntity* theEntity);
     private:
       IApp& mApp;
