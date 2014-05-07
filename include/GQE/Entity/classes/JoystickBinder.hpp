@@ -13,8 +13,7 @@ namespace GQE
 {
   class GQE_API JoystickBinder
   {
-    typedef std::map<Uint32, InputData > typeJoystickData;
-    typedef std::map<Uint32, typeJoystickData > typeJoystickList;
+    typedef std::map<Uint32, typeInputDataList > typeJoystickList;
 
     public:
       JoystickBinder(IApp& theApp);

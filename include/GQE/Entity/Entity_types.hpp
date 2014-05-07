@@ -120,7 +120,7 @@ namespace GQE
     }
   };
   typedef std::map<std::string, TimerData> typeTimerLists;
-
+  typedef std::map<Uint32, InputData > typeInputDataList;
 }
 #endif // ENTITY_TYPES_HPP_INCLUDED
 

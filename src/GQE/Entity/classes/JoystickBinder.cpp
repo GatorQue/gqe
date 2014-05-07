@@ -24,8 +24,8 @@ namespace GQE
       if (anListIter != mButtonBindings.end())
       {
         std::map<Uint32,IEntity*>::iterator anEntityIter=mEntitys.find(theEvent.joystickButton.joystickId);
-        std::map<Uint32, InputData> anJoystick = anListIter->second;
-        typeJoystickData::iterator anButtonIter = anJoystick.find(theEvent.joystickButton.button);
+        typeInputDataList anJoystick = anListIter->second;
+        typeInputDataList::iterator anButtonIter = anJoystick.find(theEvent.joystickButton.button);
         if(anButtonIter!=anJoystick.end() && anEntityIter!=mEntitys.end())
         {
           if (((anButtonIter->second.Type == INPUT_PRESSED && theEvent.type == sf::Event::JoystickButtonPressed) ||
@@ -49,7 +49,7 @@ namespace GQE
       {
         std::map<Uint32,IEntity*>::iterator anEntityIter=mEntitys.find(theEvent.joystickButton.joystickId);
         std::map<Uint32, InputData> anJoystick = anListIter->second;
-        typeJoystickData::iterator anMovmentIter = anJoystick.find(theEvent.joystickMove.axis);
+        typeInputDataList::iterator anMovmentIter = anJoystick.find(theEvent.joystickMove.axis);
         if(anMovmentIter!=anJoystick.end() && anEntityIter!=mEntitys.end())
         {
           if ((anMovmentIter->second.Type == INPUT_MOTION && theEvent.type == sf::Event::JoystickMoved) &&
@@ -81,7 +81,7 @@ namespace GQE
     typeJoystickList::iterator anListIter;
     for (anListIter = mButtonBindings.begin(); anListIter != mButtonBindings.end(); ++anListIter)
     {
-      typeJoystickData::iterator anButtonIter;
+      typeInputDataList::iterator anButtonIter;
       for (anButtonIter = anListIter->second.begin(); anButtonIter != anListIter->second.end(); ++anButtonIter)
       {
         if (anButtonIter->second.Type == INPUT_REALTIME && sf::Joystick::isButtonPressed(anListIter->first, anButtonIter->first))
