@@ -67,8 +67,6 @@
 #include <GQE/Core/protocols/DirectoryServer.hpp>
 #include <GQE/Core/states/SplashState.hpp>
 #include <GQE/Core/utils/StringUtil.hpp>
-#include <GQE/Core/interfaces/IShape.hpp>
-#include <GQE/Core/classes/Line.hpp>
 #endif // GQE_CORE_HPP_INCLUDED
 
 /**

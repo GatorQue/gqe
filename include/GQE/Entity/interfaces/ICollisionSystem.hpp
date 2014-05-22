@@ -81,8 +81,17 @@ namespace GQE
        * to perform any custom work before the IEntity is deleted.
        */
       virtual void HandleCleanup(IEntity* theEntity);
-
+      /**
+       * EntityCollision is to be derived by the a system in the game code. This allows handling of 
+       * Collision per game.
+       */
       virtual void EntityCollision(CollisionData anCollisionData)=0;
+      /**
+       * Prooject a shape onto an axis.
+       */
+      static void ProjectOntoAxis(const sf::Shape& theShape, const sf::Vector2f& theAxis, float& theMin, float& theMax);
+
+      static bool Intersection(sf::Shape& theMovingShape, sf::Shape& theOtherShape, sf::Vector2f& theMinimumTranslation);
     private:
       std::vector<IEntity*> mMovables;
 

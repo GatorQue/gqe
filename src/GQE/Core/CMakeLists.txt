@@ -21,7 +21,6 @@ set(INC
     ${INCROOT}/Core/classes/StatManager.hpp
     ${INCROOT}/Core/classes/StateManager.hpp
     ${INCROOT}/Core/classes/VersionInfo.hpp
-	${INCROOT}/Core/classes/Line.hpp
     ${INCROOT}/Core/interfaces/IApp.hpp
     ${INCROOT}/Core/interfaces/IAssetHandler.hpp
     ${INCROOT}/Core/interfaces/IEvent.hpp
@@ -37,7 +36,6 @@ set(INC
     ${INCROOT}/Core/interfaces/TAssetHandler.hpp
     ${INCROOT}/Core/interfaces/TEvent.hpp
     ${INCROOT}/Core/interfaces/TProperty.hpp
-	${INCROOT}/Core/interfaces/IShape.hpp
     ${INCROOT}/Core/loggers/Log_macros.hpp
     ${INCROOT}/Core/loggers/FatalLogger.hpp
     ${INCROOT}/Core/loggers/FileLogger.hpp
@@ -48,7 +46,7 @@ set(INC
     ${INCROOT}/Core/protocols/DirectoryServer.hpp
     ${INCROOT}/Core/states/SplashState.hpp
     ${INCROOT}/Core/utils/StringUtil.hpp
-	${INCROOT}/Core/utils/MathUtil.hpp
+  	${INCROOT}/Core/utils/MathUtil.hpp
 
 )
 
@@ -83,7 +81,6 @@ set(SRC
     ${SRCROOT}/Core/interfaces/IProcess.cpp
     ${SRCROOT}/Core/interfaces/IProperty.cpp
     ${SRCROOT}/Core/interfaces/IState.cpp
-    ${SRCROOT}/Core/interfaces/IShape.cpp
     ${SRCROOT}/Core/loggers/FatalLogger.cpp
     ${SRCROOT}/Core/loggers/FileLogger.cpp
     ${SRCROOT}/Core/loggers/ScopeLogger.cpp

@@ -12,8 +12,6 @@ set(INC
     ${INCROOT}/Entity/classes/PrototypeManager.hpp
     ${INCROOT}/Entity/classes/Instance.hpp
     ${INCROOT}/Entity/classes/Prototype.hpp
-	  ${INCROOT}/Entity/classes/RectangleShape.hpp
-  	${INCROOT}/Entity/classes/PolygonShape.hpp
   	${INCROOT}/Entity/classes/EntityEvents.hpp
   	${INCROOT}/Entity/classes/KeyBinder.hpp
   	${INCROOT}/Entity/classes/MouseBinder.hpp
@@ -37,8 +35,6 @@ set(SRC
     ${SRCROOT}/Entity/classes/PrototypeManager.cpp
     ${SRCROOT}/Entity/classes/Instance.cpp
     ${SRCROOT}/Entity/classes/Prototype.cpp
-	${SRCROOT}/Entity/classes/RectangleShape.cpp
-	${SRCROOT}/Entity/classes/PolygonShape.cpp
     ${SRCROOT}/Entity/classes/EntityEvents.cpp
     ${SRCROOT}/Entity/classes/KeyBinder.cpp
   	${SRCROOT}/Entity/classes/MouseBinder.cpp
