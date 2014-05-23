@@ -182,12 +182,14 @@ namespace GQE
   }
   void ICollisionSystem::ProjectOntoAxis(const sf::Shape& theShape, const sf::Vector2f& theAxis, float& theMin, float& theMax)
 	{
+    sf::Vector2f anPoint=theShape.getTransform().transformPoint(theShape.getPoint(0));
   	GQE::Uint32 anPointCount=theShape.getPointCount();
-		theMin = (theShape.getPoint(0).x*theAxis.x+theShape.getPoint(0).y*theAxis.y);
+		theMin = (anPoint.x*theAxis.x+anPoint.y*theAxis.y);
 		theMax = theMin;
 		for (int j = 1; j<anPointCount; j++)
 		{
-			float Projection = (theShape.getPoint(j).x*theAxis.x+theShape.getPoint(j).y*theAxis.y);
+			anPoint=theShape.getTransform().transformPoint(theShape.getPoint(j));
+			float Projection = (anPoint.x*theAxis.x+anPoint.y*theAxis.y);
 
 			if (Projection<theMin)
 				theMin=Projection;
@@ -205,18 +207,29 @@ namespace GQE
 		Uint32 anIndex;
 		sf::Vector2f anSmallestAxis;
 		double anOverlap=std::numeric_limits<double>::max();
+		Uint32 anMovingPointCount=theMovingShape.getPointCount();
+		Uint32 anOtherPointCount=theOtherShape.getPointCount();
+		sf::Vector2f anPointA, anPointB;
 		//Axes for this object.
-		for(anIndex=0;anIndex<theMovingShape.getPointCount()-1;++anIndex)
+		for(anIndex=0;anIndex<anMovingPointCount-1;++anIndex)
 		{
-      anAxes.push_back(NormalizeVector(sf::Vector2f(theMovingShape.getPoint(anIndex + 1).y - theMovingShape.getPoint(anIndex).y, -(theMovingShape.getPoint(anIndex + 1).x - theMovingShape.getPoint(anIndex).x))));
+      anPointA=theMovingShape.getPoint(anIndex);
+      anPointB=theMovingShape.getPoint(anIndex+1);
+      anAxes.push_back(NormalizeVector(sf::Vector2f(anPointB.y - anPointA.y, -(anPointB.x - anPointA.x))));
 		}
-		anAxes.push_back(NormalizeVector(sf::Vector2f(theMovingShape.getPoint(theMovingShape.getPointCount()-1).y-theMovingShape.getPoint(0).y,-(theMovingShape.getPoint(theMovingShape.getPointCount()-1).x-theMovingShape.getPoint(0).x))));
+    anPointA=theMovingShape.getPoint(anMovingPointCount-1);
+    anPointB=theMovingShape.getPoint(0);
+		anAxes.push_back(NormalizeVector(sf::Vector2f(anPointB.y - anPointA.y, -(anPointB.x - anPointA.x))));
 		//Axes for other object.
 		for(anIndex=0;anIndex<theOtherShape.getPointCount()-1;++anIndex)
 		{
-      anAxes.push_back(NormalizeVector(sf::Vector2f(theOtherShape.getPoint(anIndex + 1).y - theOtherShape.getPoint(anIndex).y, -(theOtherShape.getPoint(anIndex + 1).x - theOtherShape.getPoint(anIndex).x))));
+      anPointA=theOtherShape.getPoint(anIndex);
+      anPointB=theOtherShape.getPoint(anIndex+1);
+      anAxes.push_back(NormalizeVector(sf::Vector2f(anPointB.y - anPointA.y, -(anPointB.x - anPointA.x))));
 		}
-		anAxes.push_back(NormalizeVector(sf::Vector2f(theOtherShape.getPoint(theOtherShape.getPointCount()-1).y-theOtherShape.getPoint(0).y,-(theMovingShape.getPoint(theOtherShape.getPointCount()-1).x-theOtherShape.getPoint(0).x))));
+    anPointA=theOtherShape.getPoint(anOtherPointCount-1);
+    anPointB=theOtherShape.getPoint(0);
+		anAxes.push_back(NormalizeVector(sf::Vector2f(anPointB.y - anPointA.y, -(anPointB.x - anPointA.x))));
 		for(anIndex=0;anIndex<anAxes.size();++anIndex)
 		{
 			float anMinA, anMaxA, anMinB, anMaxB;
@@ -241,12 +254,10 @@ namespace GQE
       }
 		}
 		theMinimumTranslation=anSmallestAxis;
-
-		theMinimumTranslation=NormalizeVector(theMinimumTranslation);
-		theMinimumTranslation*=(float)anOverlap;
+    theMinimumTranslation*=(float)anOverlap;
 		return true;
 	}
-	
+
 } // namespace GQE
 
 /**
