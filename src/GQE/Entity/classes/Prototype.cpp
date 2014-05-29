@@ -106,12 +106,10 @@ namespace GQE
       {
         ISystem* anSystem = (anSystemIter->second);
         anInstance->AddSystem(anSystem);
-        anSystem->AddEntity(anInstance);
       }
 
       // Add this Instance to our list of instances we have created
-      mInstances.insert(std::pair<const typeEntityID, Instance*>(
-        anInstance->GetID(), anInstance));
+      mAdd.push_back(anInstance);
 
       // Make note of this instance in our log file
       ILOG() << "Prototype(" << mPrototypeID << ")::MakeInstance("
@@ -125,45 +123,7 @@ namespace GQE
     // Return the new Instance class created
     return anInstance;
   }
-	Instance* Prototype::MakeInstance(PropertyManager& theProperties)
-  {
-    // Try to create an Instance class right now
-    Instance* anInstance = new(std::nothrow) Instance(*this, GetOrder());
-
-    // If successful, clone our Prototype properties to this new Instance class
-    if(anInstance != NULL)
-    {
-      // Clone our Prototype properties into the new Instance class
-      anInstance->mProperties.Clone(mProperties);
-
-      // Make sure the new Instance is registered with the same systems
-      std::map<const typeSystemID, ISystem*>::iterator anSystemIter;
-      for(anSystemIter=mSystems.begin();
-          anSystemIter!=mSystems.end();
-          ++anSystemIter)
-      {
-        ISystem* anSystem = (anSystemIter->second);
-        anInstance->AddSystem(anSystem);
-        anSystem->AddEntity(anInstance);
-      }
-
-      // Add this Instance to our list of instances we have created
-      mInstances.insert(std::pair<const typeEntityID, Instance*>(
-        anInstance->GetID(), anInstance));
-
-      // Make note of this instance in our log file
-      ILOG() << "Prototype(" << mPrototypeID << ")::MakeInstance("
-        << anInstance->GetID() << ") created successfully!" << std::endl;
-			anInstance->mProperties.Clone(theProperties);
-    }
-    else
-    {
-      ELOG() << "Unable to create instance, out of memory!" << std::endl;
-    }
-
-    // Return the new Instance class created
-    return anInstance;
-  }
+	
   void Prototype::DropAllInstances(void)
   {
     // Make sure we delete all created Instance classes
@@ -191,7 +151,41 @@ namespace GQE
   {
     // Iterate through each Instance in our Cleanup list
     std::vector<Instance*>::iterator anIterator =
-      mCleanup.begin();
+      mAdd.begin();
+
+    while (anIterator != mAdd.end())
+    {
+      // Get the Instance pointer
+      Instance* anInstance = (*anIterator);
+
+      // Increment our iterator first
+      anIterator++;
+
+      // Make sure the new Instance is registered with the same systems
+      std::map<const typeSystemID, ISystem*>::iterator anSystemIter;
+      for (anSystemIter = mSystems.begin();
+        anSystemIter != mSystems.end();
+        ++anSystemIter)
+      {
+        ISystem* anSystem = (anSystemIter->second);
+        anSystem->AddEntity(anInstance);
+      }
+
+      // Add this Instance to our list of instances we have created
+      mInstances.insert(std::pair<const typeEntityID, Instance*>(
+        anInstance->GetID(), anInstance));
+
+      // Remove our pointer to this instance (sanity)
+      anInstance = NULL;
+    }
+
+    // Now clear our Cleanup list
+    mAdd.clear();
+
+
+
+    // Iterate through each Instance in our Cleanup list
+    anIterator = mCleanup.begin();
 
     // Loop through each iterator and delete each Instance class
     while(anIterator != mCleanup.end())
